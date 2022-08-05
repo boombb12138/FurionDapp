@@ -115,7 +115,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/borrow">Borrow & Lendind</nuxt-link>
+                  <nuxt-link to="/liquidity/borrow">Borrow & Lending</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/">Furine Swap</nuxt-link>
