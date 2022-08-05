@@ -1,0 +1,41 @@
+{
+  "name": "nuxt",
+  "version": "1.0.0",
+  "description": "nuxt",
+  "author": "owl",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env MODE=dev nuxt",
+    "build": "cross-env MODE=prod nuxt build",
+    "start": "cross-env MODE=prod nuxt start",
+    "build-uat": "cross-env MODE=uat nuxt build",
+    "start-uat": "cross-env MODE=uat nuxt start",
+    "generate": "nuxt generate",
+    "update": "git pull && npm run build && pm2 restart 0"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.13.1",
+    "@nuxtjs/composition-api": "^0.31.0",
+    "@vue/composition-api": "^1.0.0-rc.6",
+    "cookie-universal-nuxt": "^2.1.4",
+    "dayjs": "^1.10.4",
+    "dinero.js": "^1.8.1",
+    "echarts": "^5.0.2",
+    "element-ui": "^2.15.1",
+    "eruda": "^2.4.1",
+    "lodash": "^4.17.20",
+    "normalize.css": "^8.0.1",
+    "nuxt": "^2.15.3",
+    "nuxt-windicss": "^2.5.0",
+    "store": "^2.0.12",
+    "swiper": "^5.3.6",
+    "vue-awesome-swiper": "^4.1.0",
+    "vue-echarts": "^6.0.0-rc.4",
+    "vue-quill-editor": "^3.0.6"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "sass": "~1.32.6",
+    "sass-loader": "^10.1.1"
+  }
+}
