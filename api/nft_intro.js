@@ -20,3 +20,13 @@ export const getNftIntroByProject = (project, network) => {
         }
     })
 }
+
+export const getUri = (uri) => {
+    return request({
+        url: '/help_get',
+        method: 'get',
+        params:{
+            'url': uri
+        }
+    })
+}
