@@ -96,7 +96,9 @@
           @click="$router.push('/')"
         />
         <ul class="flex items-center h-1/1">
-          <li class="menu-item ml-50px" :class="{ active: activeMenu === '/explore' }">
+          <li class="menu-item ml-50px" :class="{ active: activeMenu === '/' }"
+          @click="$router.push('/')"
+          >
             <span>Explore</span>
           </li>
           <li
