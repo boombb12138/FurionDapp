@@ -9,3 +9,14 @@ export const getNftIntro = (network) => {
         }
     })
 }
+
+export const getNftIntroByProject = (project, network) => {
+    return request({
+        url: '/nft_intro_by_project',
+        method: 'get',
+        params: {
+            'project': project,
+            'network': network
+        }
+    })
+}

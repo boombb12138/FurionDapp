@@ -164,7 +164,7 @@
 <script>
 
 import {
-  NftIntro,
+  nft_intro,
   initNftIntro
 } from "@/config/nft_intro";
 
@@ -180,7 +180,7 @@ export default {
       network: 'rinkeby',
       dialogVisible: false,
       asset: "default text",
-      nft_intro: NftIntro,
+      nft_intro: nft_intro,
       option: {},
       ready: false,
     };
@@ -192,7 +192,7 @@ export default {
 
   methods: {
     viewCollection(row) {
-      this.$router.push(`/collection/separate_pools_item?id=${row.id}`);
+      this.$router.push(`/collection/separate_pools_item?collection=${row.collection}`);
     },
   },
 };

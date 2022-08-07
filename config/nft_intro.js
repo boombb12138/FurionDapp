@@ -1,13 +1,13 @@
 import getCharts from "@/utils/getCharts";
 import { getNftIntro } from "@/api/nft_intro";
 
-export const NftIntro = {
+export const nft_intro = {
     init: false,
     NftList: []
 };
 
 export const initNftIntro = async (network) => {
-    if(NftIntro.NftList.length > 0){
+    if(nft_intro.NftList.length > 0){
         return
     }
     let result = await getNftIntro(network);
@@ -45,7 +45,7 @@ export const initNftIntro = async (network) => {
           option: getCharts(item.last7Days, item.last7Days_type),
         };
     });
-    NftIntro.NftList = final_result;
-    NftIntro.init = true;
-    console.log('NFT intro result', final_result);
+    nft_intro.NftList = final_result;
+    nft_intro.init = true;
+    // console.log('NFT intro result', final_result);
 }
