@@ -13,10 +13,11 @@
 }
 .menu-item {
   @apply flex items-center justify-center text-15px font-700  text-[rgba(252,2553,253,0.7)] cursor-pointer relative h-1/1;
-  &.active {
+  &.active,
+  &:hover {
     color: #f181de;
     &::after {
-      content: "";
+      content: '';
       width: 75px;
       height: 20px;
       background: rgba(255, 101, 222, 0.5);
@@ -51,6 +52,9 @@
       color: rgba(252, 255, 253, 0.7);
       &:hover {
         color: #fff;
+      }
+      a {
+        display: block;
       }
     }
   }
@@ -90,13 +94,13 @@
     <img src="@/assets/images/light_left_bg.png" class="light-left pointer-events-none" />
     <div class="w-1176px h-1/1 flex justify-center items-center justify-between">
       <div class="flex items-center h-1/1">
-        <img
-          class="cursor-pointer"
-          src="@/assets/images/index/logo.svg"
-          @click="$router.push('/')"
-        />
+        <img class="cursor-pointer" src="@/assets/images/index/logo.svg" @click="$router.push('/')" />
         <ul class="flex items-center h-1/1">
-          <li class="menu-item ml-50px" :class="{ active: activeMenu === '/explore' }">
+          <li
+            class="menu-item ml-50px"
+            :class="{ active: activeMenu === '/explore' }"
+            @click="$router.push('/explore')"
+          >
             <span>Explore</span>
           </li>
           <li
@@ -106,19 +110,16 @@
           >
             <span>Collection</span>
           </li>
-          <li
-            class="menu-item has-child ml-30px"
-            :class="{ active: activeMenu === '/liquidity' }"
-          >
+          <li class="menu-item has-child ml-30px" :class="{ active: activeMenu === '/liquidity' }">
             <span>Liquidity</span>
             <img class="ml-7px" src="@/assets/images/index/arrow.svg" />
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/borrow">Borrow & Lending</nuxt-link>
+                  <nuxt-link to="/liquidity/borrow">Borrow & Lendind</nuxt-link>
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/">Furine Swap</nuxt-link>
+                  <nuxt-link to="/liquidity/swap">Furine Swap</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>
@@ -197,9 +198,10 @@ export default {
   components: {},
   computed: {
     showShotSearch() {
-      return ["/collection/separate_pools", "/collection/aggregated_pools"].includes(
-        this.$route.path
-      );
+      return [
+        '/collection/separate_pools',
+        '/collection/aggregated_pools',
+      ].includes(this.$route.path);
     },
     showLongSearch() {
       // return ["/collection/separate_pools"].includes(this.$route.path);
@@ -210,7 +212,7 @@ export default {
   },
   data() {
     return {
-      searchKey: "",
+      searchKey: '',
     };
   },
   mounted() {},
