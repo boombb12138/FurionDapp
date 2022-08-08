@@ -130,7 +130,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/">Token farming</nuxt-link>
+                  <nuxt-link to="/">Token Farming</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/">Staking</nuxt-link>
@@ -145,7 +145,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/">Coming soon</nuxt-link>
+                  <nuxt-link to="/">Coming Soon</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/">Governmance</nuxt-link>
