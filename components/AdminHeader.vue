@@ -96,10 +96,9 @@
       <div class="flex items-center h-1/1">
         <img class="cursor-pointer" src="@/assets/images/index/logo.svg" @click="$router.push('/')" />
         <ul class="flex items-center h-1/1">
-          <li
-            class="menu-item ml-50px"
-            :class="{ active: activeMenu === '/explore' }"
-            @click="$router.push('/explore')"
+
+          <li class="menu-item ml-50px" :class="{ active: activeMenu === '/' }"
+          @click="$router.push('/')"
           >
             <span>Explore</span>
           </li>
@@ -116,7 +115,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/borrow">Borrow & Lendind</nuxt-link>
+                  <nuxt-link to="/liquidity/borrow">Borrow & Lending</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/liquidity/swap">Furine Swap</nuxt-link>
@@ -181,13 +180,17 @@
           <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
         </el-input>
         <img class="cursor-pointer" src="@/assets/images/index/avatar.svg" />
+
         <img class="cursor-pointer ml-20px" src="@/assets/images/index/wallet.svg" />
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import { connectMetamask } from '@/utils/web3/wallet';
 export default {
   props: {
     transparent: {
@@ -197,6 +200,8 @@ export default {
   },
   components: {},
   computed: {
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
     showShotSearch() {
       return [
         '/collection/separate_pools',
@@ -209,15 +214,66 @@ export default {
     activeMenu() {
       return this.$store.state.admin.activeMenu;
     },
+    
   },
   data() {
     return {
       searchKey: '',
     };
   },
-  mounted() {},
+  async mounted() {await this.connectWallet();},
   methods: {
     onSearch() {},
+    async getAlreadyConnectAccount() {
+      try {
+        if (this.walletType == 'Metamask') {
+          ethereum.request({ method: 'eth_accounts' }).then(async accounts => {
+            if (accounts.length != 0) {
+              let userInfo = {
+                isConnect: true,
+                userAddress: accounts[0],
+              };
+              this.$store.dispatch('setUserInfo', userInfo);
+            } else {
+              console.log('The user is not connected');
+              this.$store.commit('update', ['admin.connectDialog', 'simple']);
+              console.log('user address:', this.userInfo.userAddress);
+            }
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async connectWallet() {
+      try {
+        console.log('user connected:', this.userInfo.isConnect);
+        if (this.userInfo.isConnect == true) {
+          try {
+            // console.log('user address:', this.userInfo.userAddress);
+            await this.getAlreadyConnectAccount();
+            this.$store.commit('update', ['admin.connectStatus', 'connected']);
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          // console.log('Currently not connected');
+
+          if (!window.ethereum) {
+            this.$message({
+              message: 'Please install metamask',
+              type: 'warning',
+            });
+            window.location.href = 'https://metamask.app.link/dapp';
+          } else {
+            connectMetamask();
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 };
 </script>
