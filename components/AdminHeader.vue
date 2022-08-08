@@ -13,10 +13,11 @@
 }
 .menu-item {
   @apply flex items-center justify-center text-15px font-700  text-[rgba(252,2553,253,0.7)] cursor-pointer relative h-1/1;
-  &.active {
+  &.active,
+  &:hover {
     color: #f181de;
     &::after {
-      content: "";
+      content: '';
       width: 75px;
       height: 20px;
       background: rgba(255, 101, 222, 0.5);
@@ -51,6 +52,9 @@
       color: rgba(252, 255, 253, 0.7);
       &:hover {
         color: #fff;
+      }
+      a {
+        display: block;
       }
     }
   }
@@ -90,13 +94,12 @@
     <img src="@/assets/images/light_left_bg.png" class="light-left pointer-events-none" />
     <div class="w-1176px h-1/1 flex justify-center items-center justify-between">
       <div class="flex items-center h-1/1">
-        <img
-          class="cursor-pointer"
-          src="@/assets/images/index/logo.svg"
-          @click="$router.push('/')"
-        />
+        <img class="cursor-pointer" src="@/assets/images/index/logo.svg" @click="$router.push('/')" />
         <ul class="flex items-center h-1/1">
-          <li class="menu-item ml-50px" :class="{ active: activeMenu === '/explore' }">
+
+          <li class="menu-item ml-50px" :class="{ active: activeMenu === '/' }"
+          @click="$router.push('/')"
+          >
             <span>Explore</span>
           </li>
           <li
@@ -106,10 +109,7 @@
           >
             <span>Collection</span>
           </li>
-          <li
-            class="menu-item has-child ml-30px"
-            :class="{ active: activeMenu === '/liquidity' }"
-          >
+          <li class="menu-item has-child ml-30px" :class="{ active: activeMenu === '/liquidity' }">
             <span>Liquidity</span>
             <img class="ml-7px" src="@/assets/images/index/arrow.svg" />
             <div class="submenu-list-wrap">
@@ -118,7 +118,7 @@
                   <nuxt-link to="/liquidity/borrow">Borrow & Lending</nuxt-link>
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/">Furine Swap</nuxt-link>
+                  <nuxt-link to="/liquidity/swap">Furine Swap</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>
@@ -180,13 +180,17 @@
           <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
         </el-input>
         <img class="cursor-pointer" src="@/assets/images/index/avatar.svg" />
+
         <img class="cursor-pointer ml-20px" src="@/assets/images/index/wallet.svg" />
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import { connectMetamask } from '@/utils/web3/wallet';
 export default {
   props: {
     transparent: {
@@ -196,10 +200,13 @@ export default {
   },
   components: {},
   computed: {
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
     showShotSearch() {
-      return ["/collection/separate_pools", "/collection/aggregated_pools"].includes(
-        this.$route.path
-      );
+      return [
+        '/collection/separate_pools',
+        '/collection/aggregated_pools',
+      ].includes(this.$route.path);
     },
     showLongSearch() {
       // return ["/collection/separate_pools"].includes(this.$route.path);
@@ -207,15 +214,66 @@ export default {
     activeMenu() {
       return this.$store.state.admin.activeMenu;
     },
+    
   },
   data() {
     return {
-      searchKey: "",
+      searchKey: '',
     };
   },
-  mounted() {},
+  async mounted() {await this.connectWallet();},
   methods: {
     onSearch() {},
+    async getAlreadyConnectAccount() {
+      try {
+        if (this.walletType == 'Metamask') {
+          ethereum.request({ method: 'eth_accounts' }).then(async accounts => {
+            if (accounts.length != 0) {
+              let userInfo = {
+                isConnect: true,
+                userAddress: accounts[0],
+              };
+              this.$store.dispatch('setUserInfo', userInfo);
+            } else {
+              console.log('The user is not connected');
+              this.$store.commit('update', ['admin.connectDialog', 'simple']);
+              console.log('user address:', this.userInfo.userAddress);
+            }
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async connectWallet() {
+      try {
+        console.log('user connected:', this.userInfo.isConnect);
+        if (this.userInfo.isConnect == true) {
+          try {
+            // console.log('user address:', this.userInfo.userAddress);
+            await this.getAlreadyConnectAccount();
+            this.$store.commit('update', ['admin.connectStatus', 'connected']);
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          // console.log('Currently not connected');
+
+          if (!window.ethereum) {
+            this.$message({
+              message: 'Please install metamask',
+              type: 'warning',
+            });
+            window.location.href = 'https://metamask.app.link/dapp';
+          } else {
+            connectMetamask();
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 };
 </script>

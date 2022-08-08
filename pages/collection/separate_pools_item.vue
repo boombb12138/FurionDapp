@@ -45,13 +45,16 @@
     .icon1 {
       display: block;
     }
+
     .icon2 {
       display: none;
     }
+
     &:hover {
       .icon2 {
         display: block;
       }
+
       .icon1 {
         display: none;
       }
@@ -67,6 +70,7 @@
   width: 200px;
   height: 40px;
   @apply px-15px flex items-center justify-between cursor-pointer;
+
   i {
     margin-left: 10px;
   }
@@ -78,7 +82,7 @@
     opacity: 1;
     background: transparent;
 
-    > div {
+    >div {
       background: #edf2ff;
       box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.1),
         inset 0px -2px 6px rgba(0, 0, 0, 0.1);
@@ -92,29 +96,32 @@
 
 <template>
   <div class="!w-1/1 pt-0">
-    <img src="@/assets/images/item.png" class="w-1/1 h-280px object-cover" />
-    <img
-      src="@/assets/images/icon_back.svg"
-      class="absolute left-60px cursor-pointer top-100px hover:opacity-80"
-      @click="$router.go(-1)"
-    />
+    <img :src="separate_pool_info.banner_url" class="w-1/1 h-280px object-cover" />
+    <img src="@/assets/images/icon_back.svg" class="absolute left-60px cursor-pointer top-100px hover:opacity-80"
+      @click="$router.go(-1)" />
+
+
     <div class="w-1124px mx-auto">
+
+      <!-- banner and other basic information for this project -->
       <div class="px-20px">
         <div class="flex justify-between">
           <div class="pl-8px flex">
-            <img src="@/assets/images/avatar.png" class="w-142px rounded-full avatar" />
-            <div class="pt-10px pl-20px flex relative">
-              <div class="font-700 text-28px mb-5px mr-5px">Azuki</div>
+            <img :src="separate_pool_info.avatar" class="w-142px rounded-full avatar" />
+            <div class="pt-10px pl-20px relative">
+              <div class="font-700 text-24px mb-5px mr-5px">{{ formatString(separate_pool_info.collection, 20) }}</div>
 
               <div class="mr-10px text-14px mt-10px">
                 Created by
-                <span class="text-[#34F8FF] font-600">TeamAzuki</span>
-              </div>
-              <div class="pt-15px">
-                <img src="@/assets/images/icon_badge.png" alt="" />
+                <span class="text-[#34F8FF] font-600">{{ separate_pool_info.symbol }}</span>
+                <el-tooltip effect="light" :content="separate_pool_info.description" placement="bottom">
+                  <img src="@/assets/images/icon_badge.png" alt="" />
+                </el-tooltip>
+
               </div>
 
-              <div class="absolute left-0 top-50px left-20px">
+
+              <!-- <div class="absolute left-0 top-50px left-20px">
                 <div class="tag">
                   <div>FFT-A :</div>
                   <img
@@ -124,40 +131,40 @@
                   />
                   <div>0.04</div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="flex items-center h-94px">
             <div>
-              <a href="/" class="block link flex items-center mr-42px">
+              <a :href="separate_pool_info.twitter_link" class="block link flex items-center mr-42px">
                 <img src="@/assets/images/icon_link.png" class="mr-10px" />
-                <div class="text-13px mr-5px">AzukiZen</div>
+                <div class="text-13px mr-5px">{{ formatString(separate_pool_info.twitter_name, 8) }}</div>
                 <div class="text-13px opacity-60">Linked</div>
               </a>
             </div>
 
             <div class="text-center px-15px">
-              <div class="font-600 mb-4px">10.0K</div>
+              <div class="font-600 mb-4px">{{ formatNumber(separate_pool_info.items) }}</div>
               <div class="opacity-40 text-12px">items</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
-              <div class="font-600 mb-4px">10.0K</div>
-              <div class="opacity-40 text-12px">owners</div>
+              <div class="font-600 mb-4px">{{ separate_pool_info.in_pool.length }}</div>
+              <div class="opacity-40 text-12px">in pool</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
               <div class="font-600 mb-4px">
                 <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
-                10.0K
+                {{ separate_pool_info.floor_price }}
               </div>
-              <div class="opacity-40 text-12px">floor price</div>
+              <div class="opacity-40 text-12px">F-X price</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
               <div class="font-600 mb-4px">
                 <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
-                115.0K
+                {{ separate_pool_info.volume }}
               </div>
               <div class="opacity-40 text-12px">volume traded</div>
             </div>
@@ -180,11 +187,7 @@
             </div>
           </div>
           <div class="btn_border">
-            <el-button
-              type="primary"
-              class="!w-170px !h-48px"
-              @click="dialogVisible = true"
-            >
+            <el-button type="primary" class="!w-170px !h-48px" @click="dialogVisible = true">
               <div class="relative -top-2px">
                 <span class="text-20px">+</span>
                 ADD ASSET
@@ -193,26 +196,15 @@
           </div>
         </div>
 
+        <!-- search place and button and list -->
         <div class="flex justify-between items-center mb-12px">
-          <el-input
-            placeholder="Search by name or attribute"
-            v-model="searchKey"
-            class="search !w-858px"
-            clearable
-            @input="search"
-          >
+          <el-input placeholder="Search by name or attribute" v-model="searchKey" class="search !w-858px" clearable
+            @input="search">
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
 
-          <el-popover
-            placement="bottom"
-            title=""
-            trigger="click"
-            popper-class="el-sort"
-            :visible-arrow="false"
-            width="200"
-            ref="sort"
-          >
+          <el-popover placement="bottom" title="" trigger="click" popper-class="el-sort" :visible-arrow="false"
+            width="200" ref="sort">
             <div class="el-sort-item" @click="onSort('Recently listed')">
               Recently listed
             </div>
@@ -254,38 +246,29 @@
           </el-checkbox-group>
         </div>
 
+        <!-- grid for NFT items -->
         <div class="pb-150px grid grid-cols-4 mt-20px">
-          <div
-            class="item"
-            v-for="(item, index) in list"
-            :key="index"
-            @click="$router.push('/collection/detail?id=' + item.id)"
-          >
-            <el-image
-              :src="item.cover"
-              class="w-252px h-252px rounded-12px m-6px mb-16px"
-              lazy
-            >
+          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index"
+            @click="$router.push('/collection/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id)">
+            <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
               <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
             </el-image>
             <div class="px-15px">
               <div class="flex justify-between items-center mb-10px">
-                <div
-                  class="opacity-40 text-13px w-180px line-clamp-1 overflow-ellipsis !block"
-                >
-                  {{ item.name }}
+                <div class="opacity-40 text-13px w-180px line-clamp-1 overflow-ellipsis !block">
+                  {{ separate_pool_info.collection }}
                 </div>
                 <div class="text-13px">
                   <img src="@/assets/images/icon_eth.svg" />
-                  <span class="font-600">13.6</span>
+                  <span class="font-600">{{separate_pool_info.fXprice}}</span>
                 </div>
               </div>
               <div class="flex items-center justify-between text-13px">
                 <div class="font-600 flex-1 mr-10px flex w-110px">
                   <span class="line-clamp-1 overflow-ellipsis !block mr-4px">
-                    {{ item.name }}
+                    {{ separate_pool_info.symbol }}
                   </span>
-                  <span class="flex-shrink-0">#{{ item.id }}</span>
+                  <span class="flex-shrink-0">#{{ item.token_id }}</span>
                 </div>
 
                 <div class="btn2 mr-5px" @click.stop="toCart(item)">
@@ -303,13 +286,10 @@
             </div>
 
             <div
-              class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px"
-            >
+              class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="flex items-center">
-                <div
-                  class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon"
-                >
+                <div class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon">
                   <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
                   <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
                 </div>
@@ -321,47 +301,27 @@
       </div>
     </div>
 
-    <el-dialog
-      title="NFT Contract Address:"
-      :visible.sync="dialogVisible"
-      width="850px"
-      :close-on-click-modal="false"
-      append-to-body
-      custom-class="el-dialog-dark"
-    >
+    <el-dialog title="NFT Contract Address:" :visible.sync="dialogVisible" width="850px" :close-on-click-modal="false"
+      append-to-body custom-class="el-dialog-dark">
       <div slot="title" class="flex font-800 text-20px">
         <div class="pb-2px" style="border-bottom: 2px solid #fff">ADD ASSET</div>
 
-        <el-popover
-          placement="bottom"
-          title=""
-          trigger="hover"
-          :visible-arrow="false"
-          popper-class="el-tip"
-        >
+        <el-popover placement="bottom" title="" trigger="hover" :visible-arrow="false" popper-class="el-tip">
           <div class="text-center text-[#0B1A3B]">
             <div class="text-20px font-600 mb-30px">
               By {locking/storing} (X} (AZUKI), you get
             </div>
             <div class="font-900 text-36px">1000 F-AZUKI</div>
           </div>
-          <img
-            src="@/assets/images/q.svg"
-            class="ml-14px cursor-pointer -mt-3px"
-            slot="reference"
-          />
+          <img src="@/assets/images/q.svg" class="ml-14px cursor-pointer -mt-3px" slot="reference" />
         </el-popover>
       </div>
 
       <div class="h-474px mb-35px">
         <el-scrollbar class="h-1/1">
           <div class="grid grid-cols-3 gap-y-38px">
-            <img
-              src="@/assets/images/cover.png"
-              class="w-218px h-218px rounded-12px"
-              v-for="(item, index) in 9"
-              :key="index"
-            />
+            <img src="@/assets/images/cover.png" class="w-218px h-218px rounded-12px" v-for="(item, index) in 9"
+              :key="index" />
           </div>
         </el-scrollbar>
       </div>
@@ -382,6 +342,14 @@
 </template>
 
 <script>
+import { 
+  separate_pool_info, default_pool_info,
+  initSeparatePoolInfo, initTokenImage
+} from '@/config/separate_pool';
+import {
+  _formatString,
+  _formatNumber,
+} from "@/utils/common";
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
@@ -394,32 +362,33 @@ export default {
     },
   },
   data() {
-    let list = [];
-    list.length = 4;
-    list.fill({
-      id: "3957",
-      name: "Azuki",
-      cover: require("@/assets/images/cover.png"),
-      eth: "13.6",
-      like: "13",
-    });
-    list.unshift({
-      id: "2222",
-      name: "Azuki",
-      cover: require("@/assets/images/cover2.png"),
-      eth: "23.6",
-      like: "23",
-    });
     return {
+      collection: this.$route.query.collection,
+      network: 'rinkeby',
+      ready: false,
       dialogVisible: false,
-      list,
+      separate_pool_info: separate_pool_info,
       checkList: [],
       searchKey: "",
       sort: "Price low to high",
     };
   },
-  mounted() {},
+  async mounted() {
+    this.separate_pool_info = default_pool_info;
+    // console.log('Collection for this page is', this.collection);
+    await initSeparatePoolInfo(this.collection, this.network);
+    this.separate_pool_info = separate_pool_info;
+    this.$forceUpdate();
+    await initTokenImage(this.separate_pool_info);
+    this.ready = true;
+  },
   methods: {
+    formatString(value, len) {
+      return _formatString(value, len);
+    },
+    formatNumber(value) {
+      return _formatNumber(value);
+    },
     search() {
       console.log(this.searchKey);
     },
@@ -431,6 +400,7 @@ export default {
       let arr = [...this.cart, item.id];
       this.$store.commit("save", ["user.cart", arr, this]);
     },
+    
   },
 };
 </script>
