@@ -48,7 +48,7 @@ export default {
     },
     detail: {
       type: Object,
-      default: () => [],
+      default: () => ({}),
     },
   },
   components: {},

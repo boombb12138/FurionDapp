@@ -12,7 +12,10 @@
         marketplace
       </div>
 
-      <div class="btn_border inline-block">
+      <div
+        class="btn_border inline-block"
+        @click="$router.push('/liquidity/borrow_list')"
+      >
         <el-button type="success" class="!w-354px !h-56px !p-0"
           >Start Borrowing & Lending</el-button
         >
@@ -20,7 +23,7 @@
     </div>
     <img
       src="@/assets/images/liquidity/borrow.png"
-      class="absolute right-0 pointer-events-none"
+      class="absolute right-0 top-0 pointer-events-none"
     />
   </div>
 </template>
