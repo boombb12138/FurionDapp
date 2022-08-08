@@ -173,8 +173,8 @@
       </div>
 
       <div class="flex items-center justify-center mt-100px mb-60px">
-        <p class="page-title">Trending in</p>
-        <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">all categories</p>
+        <p class="page-title">Trending</p>
+        <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Now</p>
         <img src="@/assets/images/index/arrow_pink.svg" />
       </div>
 
@@ -238,8 +238,8 @@
       </ul>
 
       <div class="flex items-center justify-center mt-100px mb-60px">
-        <p class="page-title">Trending in</p>
-        <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">all categories</p>
+        <p class="page-title">Trending</p>
+        <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Now</p>
         <img src="@/assets/images/index/arrow_pink.svg" />
       </div>
 
