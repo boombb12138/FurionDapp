@@ -27,7 +27,7 @@ export const initNftIntro = async (network) => {
             external_link: raw_data[i]['external_link'],
             twitter_link: raw_data[i]['twitter_link'],
 
-            volume: "28,919,65",
+            volume: '456777789789',
             _24h: "+2.94%",
             _7d: "-47.56%",
             floor_price: "11.44",

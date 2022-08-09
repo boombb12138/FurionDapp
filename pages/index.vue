@@ -80,7 +80,7 @@
               <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
             </div>
             <div class="text-white font-800 leading-60px text-48px mb-25px">
-              <p>Discover , collect , and</p>
+              <p>Hahahahahahhr , collect , and</p>
               <p>sell extraordinary NFTs</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
