@@ -1,5 +1,6 @@
 import getCharts from "@/utils/getCharts";
 import { getNftIntro } from "@/api/nft_intro";
+import { getNftDynamic } from "@/api/nft_dynamic";
 
 export const nft_intro = {
     init: false,
@@ -14,6 +15,9 @@ export const initNftIntro = async (network) => {
     // console.log('NFT intro request', result);
     let raw_data = result['data']['data'];
     let final_result = [];
+    let result_dynamic = await getNftDynamic(raw_data[i]['address'],network);
+    let raw_data_dynamic = result_dynamic['data']['data'];
+
 
     for(let i=0; i<raw_data.length; i++){
         let temp = {
@@ -27,13 +31,13 @@ export const initNftIntro = async (network) => {
             external_link: raw_data[i]['external_link'],
             twitter_link: raw_data[i]['twitter_link'],
 
-            volume: '456777789789',
-            _24h: "+2.94%",
-            _7d: "-47.56%",
-            floor_price: "11.44",
-            owners: "5.4K",
+            volume: raw_data_dynamic[0]['volume'],
+            _24h: raw_data_dynamic[0]['_24h'],
+            _7d:  raw_data_dynamic[0]['_7d'],
+            floor_price: raw_data_dynamic[0]['floor_price'],
+            owners: raw_data_dynamic[0]['owners'],
             items: raw_data[i]['total_supply'],
-            fXprice: "7.28",
+            fXprice: raw_data_dynamic[0]['reference_price_low'],
             last7Days: ["10", "22", "50", "13", "31", "15", "22"],
             last7Days_type: i%2 + 1,
         };
