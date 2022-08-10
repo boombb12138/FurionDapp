@@ -31,8 +31,8 @@ export const initNftIntro = async (network) => {
             twitter_link: raw_data[i]['twitter_link'],
 
             volume: `${raw_data_dynamic[0]['volume']}`,
-            _24h: `${raw_data_dynamic[0]['_24h']}`,
-            _7d:  `${raw_data_dynamic[0]['_7d']}`,
+            _24h: `${(raw_data_dynamic[0]['_24hs']<0?"":"+") + (raw_data_dynamic[0]['_24hs']*100).toFixed(2)}%`,
+            _7d:  `${(raw_data_dynamic[0]['_7ds']<0?"":"+") + (raw_data_dynamic[0]['_7ds']*100).toFixed(2)}%`,
             floor_price: `${raw_data_dynamic[0]['floor_price']}`,
             owners: `${raw_data_dynamic[0]['owners']}`,
             items: `${raw_data[i]['total_supply']}`,
