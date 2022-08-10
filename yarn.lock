@@ -3007,13 +3007,6 @@
   "resolved" "https://registry.nlark.com/binary-extensions/download/binary-extensions-2.2.0.tgz"
   "version" "2.2.0"
 
-"bindings@^1.5.0":
-  "integrity" "sha1-EDU8npRTNLwFEabZCzj7x8nFBN8="
-  "resolved" "https://registry.nlark.com/bindings/download/bindings-1.5.0.tgz"
-  "version" "1.5.0"
-  dependencies:
-    "file-uri-to-path" "1.0.0"
-
 "blakejs@^1.1.0":
   "integrity" "sha512-QXUSXI3QVc/gJME0dBpXrag1kbzOqCjCX8/b54ntNyW6sjtoqxqRk3LTmXzaJoh71zMsDCjM+47jS7XiwN/+fQ=="
   "resolved" "https://registry.npmjs.org/blakejs/-/blakejs-1.2.1.tgz"
@@ -4981,9 +4974,9 @@
     "d" "^1.0.1"
     "ext" "^1.1.2"
 
-"esbuild-darwin-arm64@0.14.53":
-  "integrity" "sha512-otJwDU3hnI15Q98PX4MJbknSZ/WSR1I45il7gcxcECXzfN4Mrpft5hBDHXNRnCh+5858uPXBXA1Vaz2jVWLaIA=="
-  "resolved" "https://registry.npmmirror.com/esbuild-darwin-arm64/-/esbuild-darwin-arm64-0.14.53.tgz"
+"esbuild-windows-64@0.14.53":
+  "integrity" "sha512-s9skQFF0I7zqnQ2K8S1xdLSfZFsPLuOGmSx57h2btSEswv0N0YodYvqLcJMrNMXh6EynOmWD7rz+0rWWbFpIHQ=="
+  "resolved" "https://registry.npmmirror.com/esbuild-windows-64/-/esbuild-windows-64-0.14.53.tgz"
   "version" "0.14.53"
 
 "esbuild@^0.14.27", "esbuild@>=0.13":
@@ -5635,11 +5628,6 @@
     "loader-utils" "^2.0.0"
     "schema-utils" "^3.0.0"
 
-"file-uri-to-path@1.0.0":
-  "integrity" "sha1-VTp7hEb/b2hDWcRF8eN6BdrMM90="
-  "resolved" "https://registry.nlark.com/file-uri-to-path/download/file-uri-to-path-1.0.0.tgz"
-  "version" "1.0.0"
-
 "fill-range@^4.0.0":
   "integrity" "sha1-1USBHUKPmOsGpj3EAtJAPDKMOPc="
   "resolved" "https://registry.npm.taobao.org/fill-range/download/fill-range-4.0.0.tgz"
@@ -5907,19 +5895,6 @@
   "integrity" "sha512-3XY9e1pP0CVEUCdj5BmfIZxRBTSDycnbqhIOGec9QYtmVH2fbLpj86CFWkrNOkt/Fvty4KZG5lTglL9j/gJ87w=="
   "resolved" "https://registry.npmjs.org/fs/-/fs-0.0.1-security.tgz"
   "version" "0.0.1-security"
-
-"fsevents@^1.2.7":
-  "integrity" "sha1-8yXLBFVZJCi88Rs4M3DvcOO/zDg="
-  "resolved" "https://registry.npmmirror.com/fsevents/download/fsevents-1.2.13.tgz"
-  "version" "1.2.13"
-  dependencies:
-    "bindings" "^1.5.0"
-    "nan" "^2.12.1"
-
-"fsevents@~2.3.2":
-  "integrity" "sha1-ilJveLj99GI7cJ4Ll1xSwkwC/Ro="
-  "resolved" "https://registry.npmmirror.com/fsevents/download/fsevents-2.3.2.tgz"
-  "version" "2.3.2"
 
 "function-bind@^1.1.1":
   "integrity" "sha1-pWiZ0+o8m6uHS7l3O3xe3pL0iV0="
@@ -8040,11 +8015,6 @@
   "integrity" "sha1-FjDEKyJR/4HiooPelqVJfqkuXg0="
   "resolved" "https://registry.npm.taobao.org/mute-stream/download/mute-stream-0.0.8.tgz"
   "version" "0.0.8"
-
-"nan@^2.12.1":
-  "integrity" "sha1-PzSkc/8Y4VwbVia2KQO1rW5mX+4="
-  "resolved" "https://registry.nlark.com/nan/download/nan-2.15.0.tgz?cache=0&sync_timestamp=1628093656744&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fnan%2Fdownload%2Fnan-2.15.0.tgz"
-  "version" "2.15.0"
 
 "nano-json-stream-parser@^0.1.2":
   "integrity" "sha512-9MqxMH/BSJC7dnLsEMPyfN5Dvoo49IsPFYMcHw3Bcfc2kN0lpHRBSzlMSVx4HGyJ7s9B31CyBTVehWJoQ8Ctew=="
