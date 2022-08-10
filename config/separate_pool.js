@@ -1,7 +1,7 @@
 import { getNftIntroByProject, getUri } from "@/api/nft_intro";
 import { query_abi } from "@/api/query_etherscan";
 import { getContract, ipfsToHttp } from '@/utils/common';
-
+import { getNftDynamic } from "@/api/nft_dynamic";
 
 export const default_pool_info = {
     collection: 'Loading',
@@ -37,6 +37,8 @@ export const initSeparatePoolInfo = async (project, network) => {
     let result = await getNftIntroByProject(project, network);
     // console.log('NFT intro request', result);
     let raw_data = result['data']['data'];
+    let result_dynamic = await getNftDynamic(raw_data[i]['address'],network);
+    let raw_data_dynamic = result_dynamic['data']['data'];
 
     // entitle request info into separate pool info
     separate_pool_info.collection = raw_data['project'];
@@ -48,10 +50,10 @@ export const initSeparatePoolInfo = async (project, network) => {
     separate_pool_info.external_link = raw_data['external_link'];
     separate_pool_info.twitter_link = raw_data['twitter_link'];
     separate_pool_info.twitter_name = raw_data['twitter_link'].split('/')[3];
-    separate_pool_info.volume = "28,919,65";
-    separate_pool_info.owners = "5.4K";
-    separate_pool_info.floor_price = "11.44";
-    separate_pool_info.fXprice = "7.28";
+    separate_pool_info.volume = raw_data_dynamic[0]['volume'];
+    separate_pool_info.owners = raw_data_dynamic[0]['owners'];
+    separate_pool_info.floor_price = raw_data_dynamic[0]['floor_price'];
+    separate_pool_info.fXprice = raw_data_dynamic[0]['reference_price_low'];
     separate_pool_info.items = raw_data['total_supply'];
 
     let in_pool = [];
@@ -91,7 +93,7 @@ export const initTokenImage = async (pool_info) => {
                     // console.log(i, 'get updated succesfully')
                     // console.log('URI specific info', res.data)
                     let raw_image_url = res.data.image;
-                    in_pool[i].image_url = raw_image_url[0] == 'i'  
+                    in_pool[i].image_url = raw_image_url[0] == 'i'
                         ? ipfsToHttp(raw_image_url): raw_image_url;
                 })
             }
