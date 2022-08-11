@@ -42,3 +42,13 @@ export const getUri = (uri) => {
         }
     })
 }
+
+export const getNftWeekPrice = (address, network) => {
+    return request({
+        url: '/nft_week_price',
+        method: 'get',
+        params:{
+            address, network
+        }
+    })
+}

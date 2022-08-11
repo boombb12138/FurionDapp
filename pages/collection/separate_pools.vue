@@ -57,8 +57,8 @@
         <el-input v-model="asset" placeholder="Paste Contract address" class="asset"></el-input>
       </el-dialog>
 
-      <el-table :data="nft_info.nft_list" style="width: 100%" @cell-click="viewCollection" >
-        <el-table-column prop="collection" label="Collection" width="320px" >
+      <el-table :data="nft_info.nft_list" style="width: 100%" @cell-click="viewCollection">
+        <el-table-column prop="collection" label="Collection" width="320px">
           <template slot-scope="scope">
             <div class="flex font-500 text-16px pl-30px items-center">
               <div class="w-30px">{{ scope.$index + 1 }}</div>
@@ -70,7 +70,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="volume" label="Volume" sortable width="150px" >
+        <el-table-column prop="volume" label="Volume" sortable width="150px">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
@@ -100,8 +100,8 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="floor_price" label="Floor Price" >
-          <template slot-scope="scope" >
+        <el-table-column prop="floor_price" label="Floor Price">
+          <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
@@ -110,14 +110,16 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="owners" label="Owners" align="center"> <template slot-scope="scope">{{ formatNumber(scope.row.owners) }}
+        <el-table-column prop="owners" label="Owners" align="center"> <template slot-scope="scope">{{
+            formatNumber(scope.row.owners)
+        }}
           </template></el-table-column>
         <el-table-column prop="items" label="ltems" align="center">
           <template slot-scope="scope">{{ formatNumber(scope.row.items) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="fXprice " label="F-X price" >
+        <el-table-column prop="fXprice " label="F-X price">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
@@ -148,6 +150,8 @@ import {
   nft_info,
   initNftInfo
 } from "@/config/nft_info";
+import { getNftWeekPrice } from "@/api/nft_info";
+import getCharts from "@/utils/getCharts";
 import { _formatNumber } from "@/utils/common";
 
 export default {
@@ -168,7 +172,7 @@ export default {
     };
   },
   async mounted() {
-    initNftInfo(this.network);
+    await initNftInfo(this.network);
     this.ready = true;
   },
 

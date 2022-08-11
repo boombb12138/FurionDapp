@@ -96,7 +96,8 @@
 
 <template>
   <div class="!w-1/1 pt-0">
-    <img :src="ready? separate_pool_info.banner_url: default_pool_info.banner_url" class="w-1/1 h-280px object-cover" />
+    <img :src="ready ? separate_pool_info.banner_url : default_pool_info.banner_url"
+      class="w-1/1 h-280px object-cover" />
     <img src="@/assets/images/icon_back.svg" class="absolute left-60px cursor-pointer top-100px hover:opacity-80"
       @click="$router.go(-1)" />
 
@@ -107,7 +108,8 @@
       <div class="px-20px">
         <div class="flex justify-between">
           <div class="pl-8px flex">
-            <img :src="ready? separate_pool_info.avatar :separate_pool_info.avatar" class="w-142px rounded-full avatar" />
+            <img :src="ready ? separate_pool_info.avatar : separate_pool_info.avatar"
+              class="w-142px rounded-full avatar" />
             <div class="pt-10px pl-20px relative">
               <div class="font-700 text-24px mb-5px mr-5px">{{ formatString(separate_pool_info.collection, 20) }}</div>
               <div class="mr-10px text-14px mt-10px">
@@ -176,7 +178,7 @@
       <div class="-mt-20px">
         <div class="flex justify-between items-start mb-20px">
           <div>
-            <div class="font-700 text-32px leading-38px">
+            <div class="font-700 text-20px leading-38px">
               How much do you like this collection?
             </div>
 
@@ -249,8 +251,7 @@
 
         <!-- grid for NFT items -->
         <div class="pb-150px grid grid-cols-4 mt-20px">
-          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index"
-            @click="$router.push('/collection/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id)">
+          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index" @click="clickItem(item)">
             <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
               <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
             </el-image>
@@ -261,7 +262,9 @@
                 </div>
                 <div class="text-13px">
                   <img src="@/assets/images/icon_eth.svg" />
-                  <span class="font-600">{{ separate_pool_info.fXprice.toFixed(2) }}</span>
+                  <span class="font-600">
+                  {{ separate_pool_info.fXprice.toFixed(2) }}
+                  </span>
                 </div>
               </div>
               <div class="flex items-center justify-between text-13px">
@@ -352,6 +355,7 @@ import {
   _formatString,
   _formatNumber,
 } from "@/utils/common";
+import { nft_item } from '@/config/nft_item';
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
@@ -373,6 +377,7 @@ export default {
       default_pool_info: default_pool_info,
       checkList: [],
       searchKey: "",
+      nft_item: nft_item,
       sort: "Price low to high",
     };
   },
@@ -403,7 +408,21 @@ export default {
       let arr = [...this.cart, item.id];
       this.$store.commit("save", ["user.cart", arr, this]);
     },
+    clickItem(item) {
+      nft_item.collection = separate_pool_info.collection;
+      nft_item.address = separate_pool_info.address;
+      nft_item.token_id = item.token_id;
+      nft_item.symbol = separate_pool_info.symbol;
+      nft_item.description = separate_pool_info.description;
+      nft_item.external_link = separate_pool_info.external_link;
+      nft_item.twitter_name = separate_pool_info.twitter_name;
+      nft_item.twitter_link = separate_pool_info.twitter_link;
+      nft_item.fXprice = separate_pool_info.fXprice;
+      nft_item.image = item.image_url;
 
+      console.log('NFT item', nft_item);
+      this.$router.push('/collection/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id);
+    }
   },
 };
 </script>
