@@ -96,7 +96,7 @@
 
 <template>
   <div class="!w-1/1 pt-0">
-    <img :src="separate_pool_info.banner_url" class="w-1/1 h-280px object-cover" />
+    <img :src="ready? separate_pool_info.banner_url: default_pool_info.banner_url" class="w-1/1 h-280px object-cover" />
     <img src="@/assets/images/icon_back.svg" class="absolute left-60px cursor-pointer top-100px hover:opacity-80"
       @click="$router.go(-1)" />
 
@@ -107,13 +107,14 @@
       <div class="px-20px">
         <div class="flex justify-between">
           <div class="pl-8px flex">
-            <img :src="separate_pool_info.avatar" class="w-142px rounded-full avatar" />
+            <img :src="ready? separate_pool_info.avatar :separate_pool_info.avatar" class="w-142px rounded-full avatar" />
             <div class="pt-10px pl-20px relative">
               <div class="font-700 text-24px mb-5px mr-5px">{{ formatString(separate_pool_info.collection, 20) }}</div>
-
               <div class="mr-10px text-14px mt-10px">
                 Created by
-                <span class="text-[#34F8FF] font-600">{{ separate_pool_info.symbol }}</span>
+                <span class="text-[#34F8FF] font-600"> <a :href="separate_pool_info.external_link" target="_blank">{{
+                    separate_pool_info.symbol
+                }}</a></span>
                 <el-tooltip effect="light" :content="separate_pool_info.description" placement="bottom">
                   <img src="@/assets/images/icon_badge.png" alt="" />
                 </el-tooltip>
@@ -136,7 +137,7 @@
           </div>
           <div class="flex items-center h-94px">
             <div>
-              <a :href="separate_pool_info.twitter_link" class="block link flex items-center mr-42px">
+              <a :href="separate_pool_info.twitter_link" target="_blank" class="block link flex items-center mr-42px">
                 <img src="@/assets/images/icon_link.png" class="mr-10px" />
                 <div class="text-13px mr-5px">{{ formatString(separate_pool_info.twitter_name, 8) }}</div>
                 <div class="text-13px opacity-60">Linked</div>
@@ -149,14 +150,14 @@
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
-              <div class="font-600 mb-4px">{{ separate_pool_info.in_pool.length }}</div>
+              <div class="font-600 mb-4px">{{ formatNumber(separate_pool_info.in_pool.length) }}</div>
               <div class="opacity-40 text-12px">in pool</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
               <div class="font-600 mb-4px">
                 <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
-                {{ separate_pool_info.floor_price }}
+                {{ separate_pool_info.fXprice.toFixed(2) }}
               </div>
               <div class="opacity-40 text-12px">F-X price</div>
             </div>
@@ -164,7 +165,7 @@
             <div class="text-center px-15px">
               <div class="font-600 mb-4px">
                 <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
-                {{ separate_pool_info.volume }}
+                {{ formatNumber(separate_pool_info.volume) }}
               </div>
               <div class="opacity-40 text-12px">volume traded</div>
             </div>
@@ -260,7 +261,7 @@
                 </div>
                 <div class="text-13px">
                   <img src="@/assets/images/icon_eth.svg" />
-                  <span class="font-600">{{separate_pool_info.fXprice}}</span>
+                  <span class="font-600">{{ separate_pool_info.fXprice.toFixed(2) }}</span>
                 </div>
               </div>
               <div class="flex items-center justify-between text-13px">
@@ -342,9 +343,10 @@
 </template>
 
 <script>
-import { 
+import {
   separate_pool_info, default_pool_info,
-  initSeparatePoolInfo, initTokenImage
+  initSeparatePoolInfo, initTokenImage,
+  defaultSeparatePoolInfo
 } from '@/config/separate_pool';
 import {
   _formatString,
@@ -368,18 +370,19 @@ export default {
       ready: false,
       dialogVisible: false,
       separate_pool_info: separate_pool_info,
+      default_pool_info: default_pool_info,
       checkList: [],
       searchKey: "",
       sort: "Price low to high",
     };
   },
   async mounted() {
-    this.separate_pool_info = default_pool_info;
+    this.ready = false;
     // console.log('Collection for this page is', this.collection);
     await initSeparatePoolInfo(this.collection, this.network);
-    this.separate_pool_info = separate_pool_info;
-    this.$forceUpdate();
-    await initTokenImage(this.separate_pool_info);
+    // this.separate_pool_info = separate_pool_info;
+    // this.$forceUpdate();
+    await initTokenImage(this.separate_pool_info, this.network);
     this.ready = true;
   },
   methods: {
@@ -400,7 +403,7 @@ export default {
       let arr = [...this.cart, item.id];
       this.$store.commit("save", ["user.cart", arr, this]);
     },
-    
+
   },
 };
 </script>

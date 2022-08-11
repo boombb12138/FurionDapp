@@ -23,10 +23,12 @@ export const getNftInfoByProject = (project, network) => {
 
 export const getNftImages = (address, token_id_str, network) => {
     return request({
-        url: 'nft_images',
+        url: '/nft_images',
         method: 'get',
         params: {
-            address, token_id_str, network
+            'address': address,
+            'token_id_str': token_id_str,
+            'network': network
         }
     })
 }

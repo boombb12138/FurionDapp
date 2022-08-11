@@ -1,7 +1,6 @@
-import { getNftIntroByProject, getUri } from "@/api/nft_info";
+import { getNftInfoByProject, getNftImages } from "@/api/nft_info";
 import { query_abi } from "@/api/query_etherscan";
 import { getContract, ipfsToHttp } from '@/utils/common';
-import { getNftDynamic } from "@/api/nft_dynamic";
 
 export const default_pool_info = {
     collection: 'Loading',
@@ -13,10 +12,10 @@ export const default_pool_info = {
     external_link: '',
     twitter_name: 'furion',
     twitter_link: 'https://twitter.com/furion',
-    volume: "28,919,65",
-    owners: "5.4K",
-    floor_price: "11.44",
-    fXprice: "7.28",
+    volume: 9999,
+    owners: 999,
+    floor_price: 9.99,
+    fXprice: 9.99,
     items: 999,
     in_pool: [
         { token_id: 1, image_url: require("@/assets/images/placeholder.png") },
@@ -29,16 +28,22 @@ export const default_pool_info = {
 
 export const separate_pool_info = default_pool_info;
 
+export const defaultSeparatePoolInfo = () => {
+    for(let key in default_pool_info){
+        separate_pool_info[key] = default_pool_info[key];
+    }
+}
+
 export const initSeparatePoolInfo = async (project, network) => {
     if (separate_pool_info.collection == project) {
         return
     }
 
-    let result = await getNftIntroByProject(project, network);
-    // console.log('NFT intro request', result);
+    defaultSeparatePoolInfo();
+
+    let result = await getNftInfoByProject(project, network);
+    // console.log('NFT info request', result);
     let raw_data = result['data']['data'];
-    let result_dynamic = await getNftDynamic(raw_data['address'],network);
-    let raw_data_dynamic = result_dynamic['data']['data'];
 
     // entitle request info into separate pool info
     separate_pool_info.collection = raw_data['project'];
@@ -50,11 +55,12 @@ export const initSeparatePoolInfo = async (project, network) => {
     separate_pool_info.external_link = raw_data['external_link'];
     separate_pool_info.twitter_link = raw_data['twitter_link'];
     separate_pool_info.twitter_name = raw_data['twitter_link'].split('/')[3];
-    separate_pool_info.volume = `${raw_data_dynamic[0]['volume']}`;
-    separate_pool_info.owners = `${raw_data_dynamic[0]['owners']}`;
-    separate_pool_info.floor_price = `${raw_data_dynamic[0]['floor_price']}`;
-    separate_pool_info.fXprice = raw_data_dynamic[0]['reference_price_low'];
-    separate_pool_info.items = `${raw_data_dynamic[0]['total_supply']}`;
+    separate_pool_info.volume = raw_data['volume'];
+    separate_pool_info.owners = raw_data['owners'];
+    separate_pool_info.floor_price = raw_data['floor_price'];
+    separate_pool_info.fXprice = raw_data['reference_price_high'];
+    separate_pool_info.items = raw_data['total_supply'];
+
 
     let in_pool = [];
     for (let j = 0; j < raw_data['in_pool'].length; j++) {
@@ -70,33 +76,27 @@ export const initSeparatePoolInfo = async (project, network) => {
 }
 
 /**
- * initial token image for different NFT, directly query onchain, sync
+ * initial token image for different NFT, pick images from centralized database
  * @param {object} pool_info pool info to operate on
  * @returns no returns, directly update pool info
  */
-export const initTokenImage = async (pool_info) => {
+export const initTokenImage = async (pool_info, network) => {
     if (pool_info.address.length < 4) {
         return
     }
     let in_pool = pool_info.in_pool;
 
-    const nft_abi_request = await query_abi(pool_info.address);
-    const nft_abi = JSON.parse(nft_abi_request['data']['result']);
-    // console.log('ABI info', nft_abi, '\n Address info', pool_info.address)
-    let nft_contract = await getContract(nft_abi, pool_info.address);
-    // console.log('NFT contract info', nft_contract);
+    let token_id_str = '';
+    for(let i=0; i<in_pool.length; i++){
+        token_id_str += in_pool[i].token_id + '_';
+    }
+
+    const nft_image_request = await getNftImages(pool_info.address, token_id_str.substr(0, token_id_str.length - 1), network);
+    // console.log('Image info', nft_image_request)
+
+    const nft_images = nft_image_request['data']['data'];
+
     for (let i = 0; i < in_pool.length; i++) {
-        nft_contract.methods.tokenURI(in_pool[i].token_id).call().then(
-            (uri) => {
-                // console.log('Token URI', uri);
-                getUri(uri).then(res=>{
-                    // console.log(i, 'get updated succesfully')
-                    // console.log('URI specific info', res.data)
-                    let raw_image_url = res.data.image;
-                    in_pool[i].image_url = raw_image_url[0] == 'i'
-                        ? ipfsToHttp(raw_image_url): raw_image_url;
-                })
-            }
-        )
+        in_pool[i].image_url = nft_images[in_pool[i].token_id];
     }
 }

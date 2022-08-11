@@ -11,7 +11,7 @@ export const initNftInfo = async (network) => {
         return
     }
     let result = await getNftInfo(network);
-    console.log('NFT info request', result);
+    // console.log('NFT info request', result);
     let raw_data = result['data']['data'];
     let final_result = [];
 
@@ -47,5 +47,5 @@ export const initNftInfo = async (network) => {
     });
     nft_info.nft_list = final_result;
     nft_info.init = true;
-    console.log('NFT intro result', final_result);
+    // console.log('NFT intro result', final_result);
 }
