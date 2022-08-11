@@ -81,7 +81,7 @@
             </div>
             <div class="text-white font-800 leading-60px text-48px mb-25px">
               <p>Discover , collect , and</p>
-              <p>sell extraordinary NFTs</p>
+              <p>sell special NFTs</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
               <p>New ecosystem towards NFT, for better liquidity,</p>
@@ -161,7 +161,6 @@
       <div class="flex items-center justify-center mt-100px mb-60px">
         <p class="page-title">Top collections over</p>
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">last 24 hours</p>
-        <img src="@/assets/images/index/arrow_pink.svg" />
       </div>
       <ul class="collection-list flex flex-wrap">
         <li class="collection-item" v-for="(item, index) in collectionList" :key="index">
@@ -175,7 +174,6 @@
       <div class="flex items-center justify-center mt-100px mb-60px">
         <p class="page-title">Trending</p>
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Now</p>
-        <img src="@/assets/images/index/arrow_pink.svg" />
       </div>
 
       <div class="w-1250px mx-auto mt-60px mb-90px">
@@ -206,7 +204,7 @@
                 </p>
               </div>
               <div
-                class="slide-bottom bg-[rgba(1,19,46,0.6)] h-40px absolute w-1/1 left-0 bottom-0 leading-40px text-center text-[rgba(252,255,253,0.6)] font-500"
+                class="slide-bottom bg-[rgba(1,19,46,0.6)] h-40px absolute w-1/1 left-0 bottom-0 leading-30px text-center text-[rgba(252,255,253,0.6)] font-500"
               >
                 {{ slotProps.item.question }}
               </div>
@@ -225,14 +223,18 @@
       </div>
 
       <ul class="w-1300px flex justify-between">
-        <li class="flex flex-col items-center flex-1" v-for="i in 4" :key="i">
-          <img :src="require(`@/assets/images/index/pool${i}.svg`)" />
-          <p class="text-16px font-700 text-[#fcfffd] mt-10px mb-14px">NFT pools</p>
+        <li class="flex flex-col items-center flex-1" v-for="(item, index) in List"
+          :key="index">
+          <img :src="require(`@/assets/images/index/pool${index+1}.svg`)" />
+          <p class="text-16px font-700 text-[#fcfffd] mt-10px mb-14px">{{item.tital}}</p>
           <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
-            Add your NFT into our single pool
+            {{item.remark1}}
           </p>
           <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
-            to get $F-X tokens
+            {{item.remark2}}
+          </p>
+          <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
+            {{item.remark3}}
           </p>
         </li>
       </ul>
@@ -240,7 +242,6 @@
       <div class="flex items-center justify-center mt-100px mb-60px">
         <p class="page-title">Learn with</p>
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Furion</p>
-        <img src="@/assets/images/index/arrow_pink.svg" />
       </div>
 
       <ul class="category-list w-1300px flex justify-between mb-140px">
@@ -298,27 +299,53 @@ export default {
           description: "and marketplace  world's first world first",
         },
       ],
+      List: [
+        {
+          tital: "NFT pools",
+          remark1: "Add your NFT into your separate pools",
+          remark2:  "to get $F-X tokens",
+          remark3:  "",
+        },
+        {
+          img: "Aggregating liquidity",
+          remark1: "Compile liquidity from different NFT " ,
+          remark2:  "collections in aggregate pools and ",
+          remark3:  "generate index tokens"
+        },
+        {
+          img: "Swapping",
+          remark1: "Swap your tokens in the AMM solution",
+          remark2:  "",
+          remark3:  "",
+        },
+        {
+          img: "Borrowing & Lending",
+          remark1: "Borrow & lend your ERC-20 tokens ",
+          remark2: "and NFTs at different risk tiers",
+          remark3: "via peer-to-pool methods",
+        },
+      ],
       swiperList: [
         {
           img: require("@/assets/images/index/swiper1.jpg"),
-          avatar: require("@/assets/images/index/avatar3.svg"),
-          name: "AzukiAzukiAzuki",
-          description: "AzukiAzuk",
-          question: "Are you degen enough?",
+          avatar: require("@/assets/images/index/avatar1.jpg"),
+          name: "Cool Cats NFT",
+          description: "CoolCatsContract",
+          question: "Remember, all cats are cool, but some are cooler than others.",
         },
         {
           img: require("@/assets/images/index/swiper2.jpg"),
-          avatar: require("@/assets/images/index/avatar3.svg"),
-          name: "AzukiAzukiAzuki",
-          description: "AzukiAzuk",
-          question: "Are you degen enough?",
+          avatar: require("@/assets/images/index/avatar2.jpg"),
+          name: "Invisible Friends",
+          description: "RandomCharacterCollective",
+          question: "Invisible Friends is a collection of 5000 animated invisible characters by Markus Magnusson.",
         },
         {
           img: require("@/assets/images/index/swiper3.jpg"),
-          avatar: require("@/assets/images/index/avatar3.svg"),
-          name: "AzukiAzukiAzuki",
-          description: "AzukiAzuk",
-          question: "Are you degen enough?",
+          avatar: require("@/assets/images/index/avatar3.jpg"),
+          name: "World of Women",
+          description: "WorldofWomen",
+          question: "A community celebrating representation, inclusivity, and equal opportunities for all.",
         },
       ],
       categoryList: [

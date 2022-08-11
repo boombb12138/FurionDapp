@@ -17,7 +17,7 @@ export const initNftIntro = async (network) => {
     let final_result = [];
 
     for(let i=0; i<raw_data.length; i++){
-        let result_dynamic = await getNftDynamic(raw_data[i]['address'],network);
+        let result_dynamic = getNftDynamic(raw_data[i]['address'],network);
         let raw_data_dynamic = result_dynamic['data']['data'];
         let temp = {
             id: i,
@@ -30,7 +30,7 @@ export const initNftIntro = async (network) => {
             external_link: raw_data[i]['external_link'],
             twitter_link: raw_data[i]['twitter_link'],
 
-            volume: `${raw_data_dynamic[0]['volume']}`,
+            volume: '213213',//`${raw_data_dynamic[0]['volume']}`,
             _24h: `${(raw_data_dynamic[0]['_24hs']<0?"":"+") + (raw_data_dynamic[0]['_24hs']*100).toFixed(2)}%`,
             _7d:  `${(raw_data_dynamic[0]['_7ds']<0?"":"+") + (raw_data_dynamic[0]['_7ds']*100).toFixed(2)}%`,
             floor_price: `${raw_data_dynamic[0]['floor_price']}`,

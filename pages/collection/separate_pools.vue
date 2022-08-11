@@ -29,7 +29,7 @@
 
           <div class="btn_border" @click="$router.push('/collection/aggregated_pools')">
             <el-button type="primary" class="!w-265px !h-56px" plain>
-              Aggregated pools
+              Aggregate pools
             </el-button>
           </div>
         </div>

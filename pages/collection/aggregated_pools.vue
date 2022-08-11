@@ -32,7 +32,7 @@
 
           <div class="btn_border">
             <el-button type="primary" class="!w-265px !h-56px">
-              Aggregated pools
+              Aggregate pools
             </el-button>
           </div>
         </div>

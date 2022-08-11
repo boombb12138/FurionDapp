@@ -30,30 +30,7 @@
             <slot :item="item"></slot>
           </swiper-slide>
         </swiper>
-        <img
-          src="@/assets/images/index/arrow_left.svg"
-          class="indicator-left absolute -left-36px top-260px cursor-pointer z-1"
-          :style="{top:arrowTop}"
-          @click="turnLeft"
-        />
-        <img
-          src="@/assets/images/index/arrow_right.svg"
-          class="indicator-right absolute -right-36px top-260px cursor-pointer z-1"
-          :style="{top:arrowTop}"
-          @click="turnRight"
-        />
       </client-only>
-    </div>
-    <div class="indicator-list mt-40px flex justify-center">
-      <ul class="flex items-center">
-        <li
-          class="indicator"
-          :class="{active:index===kvIndex}"
-          v-for="(item,index) in list"
-          :key="index"
-          @click="selectIndicator(index)"
-        ></li>
-      </ul>
     </div>
   </div>
 </template>
