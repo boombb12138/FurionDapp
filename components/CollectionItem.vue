@@ -8,31 +8,38 @@
   padding: 0 20px 0 24px;
   @apply flex items-center justify-between text-[rgba(252,255,253,0.5)];
 }
+.swiper-img {
+    background: #d9d9d9;
+    border: 0.8px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.01);
+  }
+
 </style>
 
 <template>
   <div class="collection-item-wrap">
     <div class="flex items-center">
-      <div class="no mr-20px text-white text-15px font-600">1</div>
+      <div class="no mr-20px text-white text-15px font-600">{{index+1}}</div>
       <div class="avatar-wrap relative mr-10px">
-        <img src="@/assets/images/avatar1.svg" />
+        <img class="w-66px h-66px object-cover"
+            :src="detail.avatar" />
         <img class="checked absolute right-0 bottom-0" src="@/assets/images/index/checked.svg" />
       </div>
       <div class="info">
-        <p class="text-white font-600 mr-10px mb-5px">AzukiAzukiAzuki</p>
+        <p class="text-white font-600 mr-10px mb-5px">{{detail.collection}}</p>
         <div class="flex items-center text-13px">
           <p>Floor price:</p>
           <img class="mx-8px" src="@/assets/images/index/price.svg" />
-          <p>1344.6</p>
+          <p>{{detail.floor_price}}</p>
         </div>
       </div>
     </div>
     <div class="numbers">
-      <p v-if="index===0" class="text-[#50CD7E] mb-8px text-right text-13px">+42.36%</p>
-      <p v-else class="text-[#D35D64] mb-8px text-right text-13px">-22.36%</p>
+      <p class="text-[#50CD7E] mb-8px text-right text-13px">{{detail._24h}}</p>
       <div class="flex items-center text-13px text-right">
         <img class="mr-8px" src="@/assets/images/index/price.svg" />
-        <p>1344.6123123</p>
+        <p>{{detail.volume}}</p>
       </div>
     </div>
   </div>

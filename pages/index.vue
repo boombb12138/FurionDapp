@@ -163,8 +163,8 @@
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">last 24 hours</p>
       </div>
       <ul class="collection-list flex flex-wrap">
-        <li class="collection-item" v-for="(item, index) in collectionList" :key="index">
-          <CollectionItem :index="index" />
+        <li class="collection-item" v-for="(item, index) in nft_info.nft_list" :key="index">
+          <CollectionItem :index="index" CollectionItem :detail="item" />
         </li>
       </ul>
       <div class="btn_border w-200px mx-auto mt-60px mb-100px">
@@ -204,7 +204,7 @@
                 </p>
               </div>
               <div
-                class="slide-bottom bg-[rgba(1,19,46,0.6)] h-40px absolute w-1/1 left-0 bottom-0 leading-30px text-center text-[rgba(252,255,253,0.6)] font-500"
+                class="slide-bottom bg-[rgba(1,19,46,0.6)] h-40px absolute w-1/1 left-0 bottom-0 leading-40px text-center text-[rgba(252,255,253,0.6)] font-500"
               >
                 {{ slotProps.item.question }}
               </div>
@@ -266,6 +266,12 @@
   </div>
 </template>
 <script>
+
+import {
+  nft_info,
+  initNftInfo
+} from "@/config/nft_info";
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/"]);
@@ -276,12 +282,12 @@ export default {
   computed: {},
   data() {
     return {
-      collectionList: [
-        {
-          name: "AzukiAzukiAzuki",
-          floorPrice: 1344.6,
-        },
-      ],
+      network: 'rinkeby',
+      dialogVisible: false,
+      asset: "default text",
+      nft_info: nft_info,
+      option: {},
+      ready: false,
       dropList: [
         {
           img: require("@/assets/images/index/drop1.jpg"),
@@ -331,21 +337,21 @@ export default {
           avatar: require("@/assets/images/index/avatar1.jpg"),
           name: "Cool Cats NFT",
           description: "CoolCatsContract",
-          question: "Remember, all cats are cool, but some are cooler than others.",
+          question: "Some cats are cooler than others.",
         },
         {
           img: require("@/assets/images/index/swiper2.jpg"),
           avatar: require("@/assets/images/index/avatar2.jpg"),
           name: "Invisible Friends",
           description: "RandomCharacterCollective",
-          question: "Invisible Friends is a collection of 5000 animated invisible characters by Markus Magnusson.",
+          question: "5000 animated invisible characters",
         },
         {
           img: require("@/assets/images/index/swiper3.jpg"),
           avatar: require("@/assets/images/index/avatar3.jpg"),
           name: "World of Women",
           description: "WorldofWomen",
-          question: "A community celebrating representation, inclusivity, and equal opportunities for all.",
+          question: "Celebrate representation,inclusivity & equal opportunities.",
         },
       ],
       categoryList: [
@@ -362,7 +368,7 @@ export default {
           remark: "How to Find an NFT You Love",
         },
       ],
-      collectionList: new Array(15).fill({
+      collectionList: new Array(4).fill({
         floorPrice: 1344.6,
         currentPrice: 1344.9232,
         percent: 23,
@@ -371,7 +377,11 @@ export default {
       }),
     };
   },
-  mounted() {},
+  async mounted() {
+    initNftInfo(this.network);
+    this.ready = true;
+  },
   methods: {},
+
 };
 </script>
