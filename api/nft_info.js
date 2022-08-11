@@ -1,8 +1,8 @@
 import request from "./service";
 
-export const getNftIntro = (network) => {
+export const getNftInfo = (network) => {
     return request({
-        url: '/nft_intro',
+        url: '/nft_info',
         method: 'get',
         params: {
             'network': network
@@ -10,13 +10,23 @@ export const getNftIntro = (network) => {
     })
 }
 
-export const getNftIntroByProject = (project, network) => {
+export const getNftInfoByProject = (project, network) => {
     return request({
-        url: '/nft_intro_by_project',
+        url: '/nft_info_by_project',
         method: 'get',
         params: {
             'project': project,
             'network': network
+        }
+    })
+}
+
+export const getNftImages = (address, token_id_str, network) => {
+    return request({
+        url: 'nft_images',
+        method: 'get',
+        params: {
+            address, token_id_str, network
         }
     })
 }

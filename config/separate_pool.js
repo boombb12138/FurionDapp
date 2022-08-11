@@ -1,4 +1,4 @@
-import { getNftIntroByProject, getUri } from "@/api/nft_intro";
+import { getNftIntroByProject, getUri } from "@/api/nft_info";
 import { query_abi } from "@/api/query_etherscan";
 import { getContract, ipfsToHttp } from '@/utils/common';
 import { getNftDynamic } from "@/api/nft_dynamic";

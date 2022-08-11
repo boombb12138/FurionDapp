@@ -184,17 +184,20 @@
         </div>
       </div>
     </div>
+
+    <SelectToken :DialogVisible="select_token" :DialogClose="closeTokenSelect" />
   </div>
 </template>
 
 <script>
 import { initFurionSwap } from '@/config/furion_swap';
+import SelectToken from '../../components/Dialog/SelectToken.vue';
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit('update', ['admin.activeMenu', '/liquidity']);
   },
   props: {},
-  components: {},
+  components: { SelectToken },
   computed: {},
   data() {
     return {
@@ -207,6 +210,7 @@ export default {
       number2: '',
       type1: 'AVAX',
       type2: 'USDC',
+      select_token: true,
     };
   },
   mounted() { 
@@ -231,6 +235,9 @@ export default {
       this.$refs.type2.doClose();
       this.type2 = str;
     },
+    closeTokenSelect(){
+      this.select_token = false;
+    }
   },
 };
 </script>
