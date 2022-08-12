@@ -83,24 +83,23 @@
     </div>
     <SwapTab2 v-model="active2" class="mb-24px"></SwapTab2>
 
-    <el-table :data="list" ref="table" @cell-click="cell_click" class="custom w-1/1 pb-100px">
+    <el-table :data="pool_info.pool_list" ref="table" @cell-click="cell_click" class="custom w-1/1 pb-100px">
       <el-table-column label="Name" width="374px">
         <template slot-scope="scope">
           <div class="flex items-center pl-64px py-7px">
             <div class="flex items-center mr-15px">
-              <img class="flex-shrink-0 w-49px h-49px" src="@/assets/images/liquidity/bit.svg" />
+              <img class="flex-shrink-0 w-49px h-49px" :src="scope.row.token_0_image" />
               <img
                 class="flex-shrink-0 w-49px h-49px -ml-11px"
-                src="@/assets/images/liquidity/pointer.svg"
+                :src="scope.row.token_1_image"
               />
             </div>
             <div>
-              <div class="mb-5px flex items-center">
-                <span>USDC.e</span>
+              <div class="flex items-center">
+                <span>{{scope.row.token_0}}</span>
                 <span class="mx-5px text-[rgba(252,255,253,0.4)]">/</span>
-                <span>WAVAX</span>
+                <span>{{scope.row.token_1}}</span>
               </div>
-              <div class="font-400 text-13px text-[rgba(252,255,253,0.6)]">ZH9875</div>
             </div>
           </div>
         </template>
@@ -142,6 +141,8 @@
 </template>
 
 <script>
+import { pool_info, single_swap_pool } from '@/config/furion_swap/pool';
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit('update', ['admin.activeMenu', '/liquidity']);
@@ -159,48 +160,7 @@ export default {
       searchKey: '',
       number1: '',
       number2: '',
-      list: [
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-        {
-          Pool: 'USDC.e / WAVAX',
-          Pool_Icon: require('@/assets/images/token.svg'),
-        },
-      ],
+      pool_info: pool_info
     };
   },
   mounted() {},
@@ -216,7 +176,12 @@ export default {
       this.sort = str;
     },
     cell_click(row) {
-      this.$router.push('/liquidity/pool_detail');
+      // console.log("Row info", row);
+      for(let key in single_swap_pool){
+        single_swap_pool[key] = row[key];
+      }
+      // console.log('New single swap pool', single_swap_pool);
+      this.$router.push(`/liquidity/furion_swap/pool_detail?token_0=${row.token_0_address}&token_1=${row.token_1_address}`);
     },
   },
 };
