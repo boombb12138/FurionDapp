@@ -118,7 +118,7 @@
                   <nuxt-link to="/liquidity/borrow">Borrow & Lending</nuxt-link>
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/furion_swap">Furion Swap</nuxt-link>
+                  <nuxt-link to="/liquidity/furion_swap/swap">Furion Swap</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>

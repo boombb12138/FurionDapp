@@ -93,6 +93,10 @@
 .box-right {
   background: url(@/assets/images/liquidity/box_right_bg.png) 0 0/ 370px 540px no-repeat;
 }
+
+.select{
+  cursor: pointer;
+}
 </style>
 
 <template>
@@ -161,10 +165,14 @@
         </div>
         <p class="text-13px text-[rgba(252,255,253,0.4)] font-500 mb-10px text-center">Trade tokens in aninstant</p>
 
-
+        <!-- pick tokens to trade -->
         <div class="divider mb-20px"></div>
         <div class="flex items-center mb-8px">
-          <TypeSelector v-model="type1"></TypeSelector>
+          <div class="flex items-center select" v-on:click="pickToken(true)">
+            <img class="flex-shrink-0 mr-8px" :src="swap_info.token_0_image" width="28px"/>
+            <p class="font-600 text-[rgba(252,255,253,0.8)] text-13px">{{swap_info.token_0}}</p>&nbsp;&nbsp;
+            <img class="flex-shrink-0" src="@/assets/images/liquidity/arrow_down.svg" />
+          </div>
         </div>
         <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="number1"></el-input>
         <div class="text-center mt-14px mb-5px">
@@ -172,8 +180,13 @@
         </div>
 
         <div class="flex items-center mb-8px">
-          <TypeSelector v-model="type2"></TypeSelector>
+          <div class="flex items-center select" v-on:click="pickToken(false)">
+            <img class="flex-shrink-0 mr-8px" :src="swap_info.token_1_image" width="28px"/>
+            <p class="font-600 text-[rgba(252,255,253,0.8)] text-13px">&nbsp;{{swap_info.token_1}}&nbsp;</p>&nbsp;&nbsp;
+            <img class="flex-shrink-0" src="@/assets/images/liquidity/arrow_down.svg" />
+          </div>
         </div>
+
         <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="number2"></el-input>
         <div class="flex items-center justify-between mt-14px">
           <p class="ml-16px text-[rgba(252,255,253,0.8)] text-13px font-500">Slippage Tolerance</p>
@@ -185,13 +198,13 @@
       </div>
     </div>
 
-    <SelectToken :DialogVisible="select_token" :DialogClose="closeTokenSelect" />
+    <SelectToken :DialogVisible="select_token" :DialogClose="closeTokenSelect" :Token0="pick_token0" />
   </div>
 </template>
 
 <script>
-import { initFurionSwap } from '@/config/furion_swap';
-import SelectToken from '../../components/Dialog/SelectToken.vue';
+import { initFurionSwap, swap_info } from '@/config/furion_swap/swap';
+import SelectToken from '@/components/Dialog/SelectToken.vue';
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit('update', ['admin.activeMenu', '/liquidity']);
@@ -210,10 +223,12 @@ export default {
       number2: '',
       type1: 'AVAX',
       type2: 'USDC',
-      select_token: true,
+      select_token: false,
+      pick_token0: true,
+      swap_info: swap_info
     };
   },
-  mounted() { 
+  mounted() {
     initFurionSwap();
   },
   methods: {
@@ -227,15 +242,11 @@ export default {
       this.$refs.sort.doClose();
       this.sort = str;
     },
-    onSelect1(str) {
-      this.$refs.type1.doClose();
-      this.type1 = str;
+    pickToken(pick_token_0){
+      this.pick_token0 = pick_token_0;
+      this.select_token = true;
     },
-    onSelect2(str) {
-      this.$refs.type2.doClose();
-      this.type2 = str;
-    },
-    closeTokenSelect(){
+    closeTokenSelect() {
       this.select_token = false;
     }
   },
