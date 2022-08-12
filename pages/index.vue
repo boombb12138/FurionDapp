@@ -225,7 +225,7 @@
       <ul class="w-1300px flex justify-between">
         <li class="flex flex-col items-center flex-1" v-for="(item, index) in List"
           :key="index">
-          <img :src="require(`@/assets/images/index/pool${index+1}.svg`)" />
+          <img :src="require(`@/assets/images/index/pool${index+1}.png`)" />
           <p class="text-16px font-700 text-[#fcfffd] mt-10px mb-14px">{{item.tital}}</p>
           <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
             {{item.remark1}}
@@ -291,44 +291,44 @@ export default {
       dropList: [
         {
           img: require("@/assets/images/index/drop1.jpg"),
-          name: "Furion is the world's",
-          description: "and marketplace  world's first world first",
+          name: "Mad Dragons",
+          description: "No promises, no roadmap, just good vibes!",
         },
         {
           img: require("@/assets/images/index/drop2.jpg"),
-          name: "Furion is the world's",
-          description: "and marketplace  world's first world first",
+          name: "MEGAMI",
+          description: "MEGAMI is a collection of 10,000 PFPs designed by illustrator and YouTuber Naoki Saito",
         },
         {
           img: require("@/assets/images/index/drop3.jpg"),
-          name: "Furion is the world's",
-          description: "and marketplace  world's first world first",
+          name: "Saphire",
+          description: "777 Genesis; 80% of profits are invested in the utilities for this project",
         },
       ],
       List: [
         {
           tital: "NFT pools",
-          remark1: "Add your NFT into your separate pools",
-          remark2:  "to get $F-X tokens",
+          remark1: "Lock or store your NFT into our ",
+          remark2:  "separate pools to get the instant liquidity",
           remark3:  "",
         },
         {
-          img: "Aggregating liquidity",
-          remark1: "Compile liquidity from different NFT " ,
-          remark2:  "collections in aggregate pools and ",
-          remark3:  "generate index tokens"
+          tital: "Aggregating liquidity",
+          remark1: "Get your market-driven index tokens" ,
+          remark2:  "by joining our aggregate pools",
+          remark3:  ""
         },
         {
-          img: "Swapping",
-          remark1: "Swap your tokens in the AMM solution",
-          remark2:  "",
+          tital: "Swapping",
+          remark1: "Swap any tokens that you want in our ",
+          remark2:  "automated market maker protocol",
           remark3:  "",
         },
         {
-          img: "Borrowing & Lending",
-          remark1: "Borrow & lend your ERC-20 tokens ",
-          remark2: "and NFTs at different risk tiers",
-          remark3: "via peer-to-pool methods",
+          tital: "Borrowing & Lending",
+          remark1: "Borrow & lend your ERC-20 tokens and ",
+          remark2: "NFTs via peer-to-pool pools",
+          remark3: "",
         },
       ],
       swiperList: [
