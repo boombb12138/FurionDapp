@@ -144,7 +144,9 @@
             >
               <div class="float-top absolute left-0 top-0 w-1/1 h-45px"></div>
               <div class="float-bottom absolute left-0 bottom-0 w-1/1 h-128px"></div>
-              <img class="w-1/1 h-1/1 object-cover" :src="slotProps.item.img" />
+              <a @click="clickDropItem(slotProps.item.twitter)">
+                  <img class="w-1/1 h-1/1 object-cover" :src="slotProps.item.img" />
+              </a>
               <div class="info absolute left-0 bottom-20px w-1/1 pl-20px">
                 <p class="text-20px font-600 text-[#fcfffd] mb-10px">
                   {{ slotProps.item.name }}
@@ -167,9 +169,7 @@
           <CollectionItem :index="index" CollectionItem :detail="item" />
         </li>
       </ul>
-      <div class="btn_border w-200px mx-auto mt-60px mb-100px">
-        <el-button type="primary" class="!w-200px !h-56px">GO TO RANKINGS</el-button>
-      </div>
+
 
       <div class="flex items-center justify-center mt-100px mb-60px">
         <p class="page-title">Trending</p>
@@ -181,12 +181,13 @@
           <template v-slot="slotProps">
             <div
               class="swiper-item-wrap2 h-334px rounded-16px overflow-hidden border-3px border-[rgba(255,255,255,0.1)] bg-[rgba(23,37,72,0.8)] relative"
+              @click="clickSwiperItem(slotProps.item.collection)"
             >
               <div class="img-wrap h-180px rounded-18px overflow-hidden relative">
-                <img
-                  class="w-1/1 h-1/1 object-cover swiper-img"
-                  :src="slotProps.item.img"
-                />
+                  <img
+                    class="w-1/1 h-1/1 object-cover swiper-img"
+                    :src="slotProps.item.img"
+                  />
                 <div class="img-float absolute w-1/1 h-80px left-0 bottom-0"></div>
               </div>
               <div
@@ -293,16 +294,19 @@ export default {
           img: require("@/assets/images/index/drop1.jpg"),
           name: "Mad Dragons",
           description: "No promises, no roadmap, just good vibes!",
+          twitter: "MadDragonsNFT",
         },
         {
           img: require("@/assets/images/index/drop2.jpg"),
           name: "MEGAMI",
           description: "MEGAMI is a collection of 10,000 PFPs designed by illustrator and YouTuber Naoki Saito",
+          twitter: "MEGAMINFT",
         },
         {
           img: require("@/assets/images/index/drop3.jpg"),
           name: "Saphire",
           description: "777 Genesis; 80% of profits are invested in the utilities for this project",
+          twitter: "SaphireNFT",
         },
       ],
       List: [
@@ -333,6 +337,7 @@ export default {
       ],
       swiperList: [
         {
+          collection: "Cool%20Cats",
           img: require("@/assets/images/index/swiper1.jpg"),
           avatar: require("@/assets/images/index/avatar1.jpg"),
           name: "Cool Cats NFT",
@@ -340,6 +345,7 @@ export default {
           question: "Some cats are cooler than others.",
         },
         {
+          collection: "Invisible%20Friends",
           img: require("@/assets/images/index/swiper2.jpg"),
           avatar: require("@/assets/images/index/avatar2.jpg"),
           name: "Invisible Friends",
@@ -347,6 +353,7 @@ export default {
           question: "5000 animated invisible characters",
         },
         {
+          collection: "World%20Of%20Women",
           img: require("@/assets/images/index/swiper3.jpg"),
           avatar: require("@/assets/images/index/avatar3.jpg"),
           name: "World of Women",
@@ -381,7 +388,13 @@ export default {
     initNftInfo(this.network);
     this.ready = true;
   },
-  methods: {},
-
+  methods: {
+    clickSwiperItem(collection) {
+      this.$router.push('/collection/separate_pools_item/?collection='+collection);
+    },
+    clickDropItem(twitter) {
+      window.location.href = 'https://twitter.com/'+twitter;
+    }
+  },
 };
 </script>
