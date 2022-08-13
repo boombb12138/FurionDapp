@@ -168,6 +168,10 @@
   background: rgba(217, 217, 217, 0.2);
   @apply w-1px h-32px;
 }
+
+.add-liquidity {
+  margin-top: 20px;
+}
 </style>
 
 <template>
@@ -218,20 +222,20 @@
           </p>
           <div class="flex">
             <div class="w-145px flex-shrink-0">
-              <p class="label">Liquidity</p>
+              <p class="label">{{ this.single_swap_pool.token_0 }} Reserve</p>
               <br />
-              <p class="value">$27,746,541</p>
+              <p class="value">{{ formatNumber(this.single_swap_pool.token_0_reserve) }}</p>
 
             </div>
             <div class="w-155px flex-shrink-0">
-              <p class="label">Volume (24H)</p>
+              <p class="label">{{ this.single_swap_pool.token_1 }} Reserve</p>
               <br />
-              <p class="value">$6,516,537</p>
+              <p class="value">{{ formatNumber(this.single_swap_pool.token_1_reserve) }}</p>
             </div>
             <div class="w-145px flex-shrink-0">
-              <p class="label">Fees (24H)</p>
+              <p class="label"> Fees (24h)</p>
               <br />
-              <p class="value">$16,291</p>
+              <p class="value">{{ formatNumber(this.single_swap_pool.pool_liquidity / 1000) }}</p>
             </div>
             <div class="w-145px flex-shrink-0">
               <p class="label">APR</p>
@@ -243,26 +247,26 @@
         <div class="pl-40px mt-55px">
           <div class="flex">
             <div class="w-330px">
-              <p class="label">Your pool share</p>
+              <p class="label">Your Pool Share</p>
               <br />
-              <p class="value2">0%</p>
+              <p class="value2">{{ formatNumber(this.single_swap_pool.user_liquidity_proportion * 100, 2) }} %</p>
             </div>
             <div>
-              <p class="label">Your pool tokens</p>
+              <p class="label">Pooled {{ single_swap_pool.token_0 }}</p>
               <br />
-              <p class="value2">0</p>
+              <p class="value2">{{ formatNumber(single_swap_pool.token_0_pooled, 2) }}</p>
             </div>
           </div>
           <div class="flex mt-70px">
             <div class="w-330px">
-              <p class="label">Pooled</p>
+              <p class="label">Pooled {{ single_swap_pool.token_1 }}</p>
               <br />
-              <p class="value2">0</p>
+              <p class="value2">{{ formatNumber(single_swap_pool.token_1_pooled, 2) }}</p>
             </div>
             <div>
-              <p class="label">Pooled</p>
+              <p class="label">Total Liquidity</p>
               <br />
-              <p class="value2">0</p>
+              <p class="value2">{{ formatNumber(single_swap_pool.pair_liquidity, 2) }}</p>
             </div>
           </div>
         </div>
@@ -273,17 +277,20 @@
           <SwapTab3 v-model="active2"></SwapTab3>
         </div>
 
+        <!-- add liquidity part -->
         <template v-if="active2 === 1">
           <div class="flex justify-between items-center mb-8px px-10px">
             <p class="text-13px text-[rgba(252,255,253,0.4)] font-500">Input</p>
             <p class="text-13px text-[rgba(252,255,253,0.8)] font-700">
-              Balance: 1.02868
+              Balance: {{ formatNumber(single_swap_pool.token_0_balance) }}
             </p>
           </div>
 
           <div class="input-wrap">
-            <el-input class="box-input no-border" placeholder="0.0" style="width: 160px" v-model="number1"></el-input>
-            <div class="tag">MAX</div>
+            <el-input class="box-input no-border" placeholder="0.0" style="width: 160px" v-model="(token_0_amount)"
+              @input.native="calAmount1">
+            </el-input>
+            <div class="tag" v-on:click="maxAmount0">MAX</div>
             <div class="divider ml-10px mr-12px"></div>
 
             <div class="flex items-center select">
@@ -299,12 +306,14 @@
           <div class="flex justify-between items-center mb-8px px-10px mt-20px">
             <p class="text-13px text-[rgba(252,255,253,0.4)] font-500">Input</p>
             <p class="text-13px text-[rgba(252,255,253,0.8)] font-700">
-              Balance: 1.02868
+              Balance: {{ formatNumber(single_swap_pool.token_1_balance) }}
             </p>
           </div>
           <div class="input-wrap">
-            <el-input class="box-input no-border" placeholder="0.0" style="width: 160px" v-model="number2"></el-input>
-            <div class="tag">MAX</div>
+            <el-input class="box-input no-border" placeholder="0.0" style="width: 160px" v-model="token_1_amount"
+              @input.native="calAmount0">
+            </el-input>
+            <div class="tag" v-on:click="maxAmount1">MAX</div>
             <div class="divider ml-10px mr-12px"></div>
             <div class="flex items-center select">
               <img class="flex-shrink-0 mr-8px" :src="single_swap_pool.token_1_image" width="28px" />
@@ -312,17 +321,34 @@
               &nbsp;&nbsp;
             </div>
           </div>
-
-          <div class="btn_border w-1/1 mt-120px">
-            <el-button type="primary" class="!w-1/1 !h-52x" disabled>Enter an amount</el-button>
+          <div class="flex justify-between items-center">
+            <div class="btn_border w-1/2 mt-60px">
+              <el-button type="primary" class="!w-1/1 !h-52x" :disabled="approved" @click="approveToken">{{ approved ?
+                  "Approved" : "Approve"
+              }}
+              </el-button>
+            </div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <div class="btn_border w-1/2 mt-60px">
+              <el-button type="primary" class="!w-1/1 !h-52x" @click="addLiquidity" :disabled="!valid_add">{{ valid_add ?
+                  "Add liquidity" : "Insufficient"
+              }}</el-button>
+            </div>
           </div>
+
         </template>
+
+        <!-- remove liquidity part -->
         <teamplate v-if="active2 === 2">
-          <div class="flex justify-between items-center mb-8px px-10px mt-20px">
-            <p class="text-13px text-[rgba(252,255,253,0.4)] font-500">You Pool Tokens</p>
+          <div class="flex justify-between items-center mb-8px px-10px">
+            <p class="text-13px text-[rgba(252,255,253,0.4)] font-500">Your Pool Tokens</p>
+            <p class="text-13px text-[rgba(252,255,253,0.8)] font-700">
+              {{ formatNumber(single_swap_pool.user_liquidity, 2) }}
+            </p>
           </div>
           <el-input class="box-input rounded-12px" placeholder="0.0"
-            style="width: 100%; background-color: rgba(1, 17, 41, 0.6) !important" v-model="number3"></el-input>
+            style="width: 100%; background-color: rgba(1, 17, 41, 0.6) !important" v-model="remove_amount"
+            @input.native="calRemoval"></el-input>
           <div class="mt-10px mb-20px">
             <el-tag class="w-70px mr-14px" size type="primary" @click="percent_change(25)">
               <span class="leading-32px">25%</span>
@@ -343,31 +369,43 @@
           <div class="input-wrap !h-84px px-24px py-12px !block">
             <div class="flex items-center justify-between h-1/2">
               <span>-</span>
-              <el-input class="box-input no-border small" style="width: 228px; height: 30px" v-model="number4">
+              <el-input class="box-input no-border small" style="width: 228px; height: 30px" v-model="token_0_removal"
+                disabled>
               </el-input>
-              <span class="text-16px text-[rgba(252,255,253,0.8)] font-500 ml-12px">AVAX</span>
+              <span class="text-16px text-[rgba(252,255,253,0.8)] font-500 ml-12px">{{ single_swap_pool.token_0
+              }}</span>
             </div>
             <div class="flex items-center justify-between h-1/2">
               <span>-</span>
-              <el-input class="box-input no-border small" style="width: 228px; height: 30px" v-model="number5">
+              <el-input class="box-input no-border small" style="width: 228px; height: 30px" v-model="token_1_removal"
+                disabled>
               </el-input>
-              <span class="text-16px text-[rgba(252,255,253,0.8)] font-500 ml-12px">USDC</span>
+              <span class="text-16px text-[rgba(252,255,253,0.8)] font-500 ml-12px">{{ single_swap_pool.token_1
+              }}</span>
             </div>
           </div>
           <div class="flex justify-between mt-10px">
-            <p class="label">You Pool Tokens</p>
+            <p class="label">Your Pool Tokens</p>
             <div>
-              <p class="label mb-5px">1 AVAX=17.4412 USDC</p>
-              <p class="label">1 USDC=0.0573354 AVAX</p>
+              <p class="label mb-5px">1 {{ single_swap_pool.token_0 }} = {{
+                  formatNumber(single_swap_pool.token_1_reserve /
+                    single_swap_pool.token_0_reserve, 2)
+              }} {{ single_swap_pool.token_1 }}</p>
+              <p class="label">1 {{ single_swap_pool.token_1 }} = {{ formatNumber(single_swap_pool.token_0_reserve /
+                  single_swap_pool.token_1_reserve, 2)
+              }} {{ single_swap_pool.token_0 }}</p>
             </div>
           </div>
           <div class="flex mt-35px justify-between">
             <div class="btn_border w-162px">
-              <el-button type="primary" class="!w-1/1 !h-52x">Approve</el-button>
+              <el-button type="primary" class="!w-1/1 !h-52x" :disabled="liquidity_approved" @click="approveLPToken">{{
+                  liquidity_approved ? "Approved" : "Approve"
+              }}
+              </el-button>
             </div>
             <div class="btn_border w-162px">
-              <el-button type="primary" class="!w-1/1 !h-52x">
-                <span class="-ml-5px">Enter amount</span>
+              <el-button type="primary" class="!w-1/1 !h-52x" @click="removeLiquidity" :disabled="!valid_remove">
+                <span class="-ml-5px">{{ valid_remove ? "Withdraw" : "Insufficient" }}</span>
               </el-button>
             </div>
           </div>
@@ -381,6 +419,10 @@
 import { mapState } from 'vuex';
 import { single_swap_pool, initSinglePool } from '@/config/furion_swap/pool';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
+import { fromWei, toWei } from '@/utils/common';
+import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
+import { getTxURL } from '@/utils/common';
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
@@ -400,43 +442,257 @@ export default {
       percent: 0,
       chainId: 4,
       sort: "HOT",
-      type1: "AVAX",
-      type2: "AVAX",
       searchKey: "",
-      number1: "",
-      number2: "",
-      number3: "",
-      number4: "",
-      number5: "",
+      token_0_amount: "",
+      token_1_amount: "",
+      remove_amount: '',
+      token_0_removal: '',
+      token_1_removal: '',
       single_swap_pool: single_swap_pool,
       multicall: multicall,
+      approved: false,
+      liquidity_approved: false,
+      allowance_0: 0,
+      allowance_1: 0,
+      allowance_liquidity: 0,
+      valid_add: true,
+      valid_remove: true
     };
   },
   async mounted() {
+    this.single_swap_pool = single_swap_pool;
     this.single_swap_pool = await initSinglePool(this.single_swap_pool, this.chainId);
+    if (!this.single_swap_pool.initialized) {
+      this.$router.push('/liquidity/furion_swap/pool');
+    }
+    await this.updateUserInfo();
     console.log('This is initialized single pool', this.single_swap_pool);
-    await this.initUserInfo();
+    this.checkApproval();
+    this.checkLiquidityApprove();
   },
   methods: {
-    async initUserInfo() {
+    async updateUserInfo() {
       let account = this.userInfo.userAddress;
-      console.log('Account info', account)
+      // console.log('Account info', account)
       let token_0_contract = this.single_swap_pool.token_0_contract;
       let token_1_contract = this.single_swap_pool.token_1_contract;
-      // try {
-        let multicall_list = [token_1_contract.methods.balanceOf(account)];
+      try {
+        let multicall_list = [token_0_contract.methods.balanceOf(account), token_1_contract.methods.balanceOf(account)];
         const balance_results = await this.multicall.aggregate(multicall_list);
-        console.log('Balance result', balance_results);
-      // } catch (e) {
-      //   console.warn('Fail to load balance')
-      // }
+        // console.log('Balance info', balance_results);
+        this.single_swap_pool.token_0_balance = fromWei(balance_results[0], parseInt(this.single_swap_pool.token_0_decimal));
+        this.single_swap_pool.token_1_balance = fromWei(balance_results[1], parseInt(this.single_swap_pool.toke_1_decimal));
+      } catch (e) {
+        console.warn('Fail to load balance')
+      }
+
+      let pair_contract = this.single_swap_pool.pair_contract;
+      let new_multicall_list = [pair_contract.methods.totalSupply(), pair_contract.methods.balanceOf(account)];
+      const pair_results = await this.multicall.aggregate(new_multicall_list);
+
+      // console.log('Pair results', pair_results);
+      this.single_swap_pool.pair_liquidity = parseInt(pair_results[0] / 1e10);
+      this.single_swap_pool.user_liquidity = parseInt(pair_results[1] / 1e10);
+      this.single_swap_pool.user_liquidity_proportion = this.single_swap_pool.user_liquidity / this.single_swap_pool.pair_liquidity;
+      this.single_swap_pool.token_0_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_0_reserve;
+      this.single_swap_pool.token_1_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_1_reserve;
+    },
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
+      } else {
+        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
+      }
+      if (final_result[0] == '-' || final_result[0] == 'N') {
+        final_result = '--'
+      }
+      return final_result
+    },
+
+    maxAmount0() {
+      this.token_0_amount = this.single_swap_pool.token_0_balance;
+      this.calAmount1();
+      if (this.token_1_amount > this.single_swap_pool.token_1_balance) {
+        this.token_1_amount = this.single_swap_pool.token_1_balance;
+        this.calAmount0();
+      }
+    },
+    maxAmount1() {
+      this.token_1_amount = this.single_swap_pool.token_1_balance;
+      this.calAmount0();
+      if (this.token_0_amount > this.single_swap_pool.token_0_balance) {
+        this.token_0_amount = this.single_swap_pool.token_0_balance;
+        this.calAmount1();
+      }
+    },
+    calAmount0() {
+
+      let reserve0 = this.single_swap_pool.token_0_reserve;
+      let reserve1 = this.single_swap_pool.token_1_reserve;
+      // console.log('Reserve info', reserve0, reserve1);
+      if (reserve1 != 0) {
+        let desired_amount_0 = reserve0 / reserve1 * this.token_1_amount;
+        this.token_0_amount = desired_amount_0.toFixed(4);
+        // console.log('Token 0 amount change to be', desired_amount_0);
+      }
+      if (this.token_1_amount > this.single_swap_pool.token_1_balance || this.token_0_amount > this.single_swap_pool.token_0_balance) {
+        this.valid_add = false;
+        return
+      }
+      this.valid_add = true;
+    },
+    calAmount1() {
+      let reserve0 = this.single_swap_pool.token_0_reserve;
+      let reserve1 = this.single_swap_pool.token_1_reserve;
+      // console.log('Reserve info', reserve0, reserve1);
+      if (reserve0 != 0) {
+        let desired_amount_1 = reserve1 / reserve0 * this.token_0_amount;
+        this.token_1_amount = desired_amount_1.toFixed(4);
+        // console.log('Token 1 amount change to be', desired_amount_1);
+      }
+      if (this.token_1_amount > this.single_swap_pool.token_1_balance || this.token_0_amount > this.single_swap_pool.token_0_balance) {
+        this.valid_add = false;
+        return
+      }
+      this.valid_add = true;
+    },
+    checkApproval() {
+      let account = this.userInfo.userAddress;
+      // console.log('Router address', this.single_swap_pool.router_address);
+      let multicall_list = [
+        this.single_swap_pool.token_0_contract.methods.allowance(account, this.single_swap_pool.router_address),
+        this.single_swap_pool.token_1_contract.methods.allowance(account, this.single_swap_pool.router_address)
+      ];
+      this.multicall.aggregate(multicall_list).then((allowance) => {
+        // console.log('Allowance', allowance);
+        this.allowance_0 = allowance[0];
+        this.allowance_1 = allowance[1];
+        if (parseInt(allowance[0]) > ALLOWANCE_THRESHOLD && parseInt(allowance[1]) > ALLOWANCE_THRESHOLD) {
+          this.approved = true;
+        }
+      });
+    },
+    checkLiquidityApprove() {
+      let account = this.userInfo.userAddress;
+      // console.log('Router address', this.single_swap_pool.router_address);
+      let multicall_list = [
+        this.single_swap_pool.pair_contract.methods.allowance(account, this.single_swap_pool.router_address)
+      ];
+      this.multicall.aggregate(multicall_list).then((allowance) => {
+        // console.log('Allowance', allowance);
+        this.allowance_liquidity = allowance[0];
+        if (parseInt(allowance[0]) > ALLOWANCE_THRESHOLD) {
+          this.liquidity_approved = true;
+        }
+      });
+    },
+
+    async approveToken() {
+      let account = this.userInfo.userAddress;
+      // console.log('Ready for approval')
+      if (this.allowance_0 < ALLOWANCE_THRESHOLD) {
+        await tokenApprove(this.single_swap_pool.token_0_address, account, this.single_swap_pool.router_address);
+        // console.log('Approve token', this.single_swap_pool.token_0);
+      }
+      if (this.allowance_1 < ALLOWANCE_THRESHOLD) {
+        await tokenApprove(this.single_swap_pool.token_1_address, account, this.single_swap_pool.router_address);
+        // console.log('Approve token', this.single_swap_pool.token_1);
+      }
+    },
+    async approveLPToken() {
+      let account = this.userInfo.userAddress;
+      // console.log('Ready for approval')
+      if (this.allowance_liquidity < ALLOWANCE_THRESHOLD) {
+        await tokenApprove(this.single_swap_pool.pair_address, account, this.single_swap_pool.router_address);
+        // console.log('Approve token', this.single_swap_pool.token_0);
+      }
+    },
+
+    calRemoval() {
+      console.log('Pool liquidity', this.single_swap_pool.pool_liquidity)
+      this.token_0_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_0_reserve).toFixed(4);
+      this.token_1_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_1_reserve).toFixed(4);
+      if(this.remove_amount>single_swap_pool.token_0_pooled * single_swap_pool.token_1_pooled){
+        this.valid_remove = false;
+        return
+      }
+      this.valid_remove = true;
+      // console.log('Token removal changed', this.token_0_removal, this.token_1_removal);
+    },
+
+    async addLiquidity() {
+      let account = this.userInfo.userAddress;
+      let router_contract = this.single_swap_pool.router_contract;
+      let current_time = Date.parse(new Date());
+      // console.log(this.single_swap_pool.token_0_decimal, this.single_swap_pool.token_1_decimal);
+      try {
+        let tx_result = await router_contract.methods.addLiquidity(
+          this.single_swap_pool.token_0_address,
+          this.single_swap_pool.token_1_address,
+          toWei(this.token_0_amount, parseInt(this.single_swap_pool.token_0_decimal)),
+          toWei(this.token_1_amount, parseInt(this.single_swap_pool.token_1_decimal)),
+          0, 0,
+          account,
+          current_time + 400).send({ from: account });
+        this.successMessage(tx_result, 'Add Liquidity Successfully');
+      } catch (e) {
+        this.errorMessage('Add Liquidity Err');
+        return
+      }
+      this.remove_amount = '';
+      await this.updatePool();
+      await this.updateUserInfo();
+    },
+
+    async removeLiquidity() {
+      let account = this.userInfo.userAddress;
+      let router_contract = this.single_swap_pool.router_contract;
+      let current_time = Date.parse(new Date());
+      // console.log(this.single_swap_pool.token_0_decimal, this.single_swap_pool.token_1_decimal);
+      try {
+        let tx_result = await router_contract.methods.removeLiquidity(
+          this.single_swap_pool.token_0_address,
+          this.single_swap_pool.token_1_address,
+          this.remove_amount * 1e10,
+          0, 0,
+          account,
+          current_time + 400).send({ from: account });
+        this.successMessage(tx_result, 'Remove Liquidity Successfully');
+      } catch (e) {
+        console.warn(e)
+        this.errorMessage('Remove Liquidity Err');
+        return
+      }
+      this.remove_amount = '';
+      this.token_0_removal = '';
+      this.token_1_removal = ''
+      await this.updatePool();
+      await this.updateUserInfo();
+    },
+
+    async updatePool() {
+
+      let pair_contract = this.single_swap_pool.pair_contract;
+      const reserves = await pair_contract.methods.getReserves().call();
+      if (this.single_swap_pool.token_0_address < this.single_swap_pool.token_1_address) {
+        this.single_swap_pool.token_0_reserve = fromWei(reserves[0], parseInt(this.single_swap_pool.token_0_decimal));
+        this.single_swap_pool.token_1_reserve = fromWei(reserves[1], parseInt(this.single_swap_pool.token_1_decimal));
+      } else {
+        this.single_swap_pool.token_0_reserve = fromWei(reserves[1], parseInt(this.single_swap_pool.token_0_decimal));
+        this.single_swap_pool.token_1_reserve = fromWei(reserves[0], parseInt(this.single_swap_pool.token_1_decimal));
+      }
+      this.single_swap_pool.pool_liquidity = this.single_swap_pool.token_0_reserve * this.single_swap_pool.token_1_reserve;
 
     },
+
     percent_change(n) {
       if (n) {
         this.percent = n;
       }
-      this.num = (this.amount * this.percent) / 100;
+      this.remove_amount = ((this.single_swap_pool.user_liquidity * n) / 100).toFixed(4);
+      this.calRemoval();
     },
     onSort(str) {
       this.$refs.sort.doClose();
@@ -449,6 +705,22 @@ export default {
     onSelect2(str) {
       this.$refs.type2.doClose();
       this.type2 = str;
+    },
+    successMessage(receipt, title) {
+      const txURL = getTxURL(receipt.transactionHash);
+      this.$notify({
+        title: title,
+        dangerouslyUseHTMLString: true,
+        message: txURL,
+        type: 'success',
+      });
+    },
+    errorMessage(title) {
+      this.$notify.error({
+        title: title,
+        message: '',
+        dangerouslyUseHTMLString: true,
+      });
     },
   },
 };

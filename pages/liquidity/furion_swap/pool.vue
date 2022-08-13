@@ -105,7 +105,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="TVL">
+      <el-table-column label="Liquidity" >
         <template slot-scope="scope">
           <div>
             <span class="font-600 text-16px">$ 1,436</span>
@@ -113,7 +113,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Borrowed">
+      <el-table-column label="Volume (24h)">
         <template slot-scope="scope">
           <div>
             <span class="font-600 text-16px">$ 28.00</span>
@@ -121,15 +121,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Available">
+      <el-table-column label="Fees (24h)">
         <template slot-scope="scope">
-          <div>
+          <div >
             <span class="font-600 text-16px">$ 1,436</span>
           </div>
         </template>
       </el-table-column>
 
-      <el-table-column label="Borrow APR">
+      <el-table-column label="APR" >
         <template slot-scope="scope">
           <div>
             <span class="font-600 text-16px">37.01%</span>
@@ -180,8 +180,9 @@ export default {
       for(let key in single_swap_pool){
         single_swap_pool[key] = row[key];
       }
+      single_swap_pool['initialized'] = true;
       // console.log('New single swap pool', single_swap_pool);
-      this.$router.push(`/liquidity/furion_swap/pool_detail?token_0=${row.token_0_address}&token_1=${row.token_1_address}`);
+      this.$router.push(`/liquidity/furion_swap/pool_detail?token_0=${row.token_0}&token_1=${row.token_1}`);
     },
   },
 };
