@@ -57,7 +57,59 @@
         <el-input v-model="asset" placeholder="Paste Contract address" class="asset"></el-input>
       </el-dialog>
 
+      <el-table :data="nft_info.nft_list" style="width: 100%" @cell-click="viewCollection">
+        <el-table-column prop="collection" label="Collection" width="320px">
+          <template slot-scope="scope">
+            <div class="flex font-500 text-16px pl-30px items-center">
+              <div class="w-30px">{{ scope.$index + 1 }}</div>
+              <img :src="scope.row.avatar" v-if="scope.row.avatar" class="w-52px rounded-full" />
+              <img src="@/assets/images/avatar0.png" v-else class="w-52px rounded-full" />
 
+              <Search-keyword class="w-170px line-clamp-1 ml-10px" :keyword="$route.query.key"
+                :text="scope.row.collection"></Search-keyword>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="volume" label="Volume" sortable width="150px">
+          <template slot-scope="scope">
+            <div class="flex items-center">
+              <img src="@/assets/images/icon_eth.svg" />
+              <div class="ml-5px">
+                {{ formatNumber(scope.row.volume) }}
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="_24h" label="24h%" align="center">
+          <template slot-scope="scope">
+            <div :class="{
+              'text-[#5DB57D]': scope.row._24h.startsWith('+'),
+              'text-[#D35D64]': scope.row._24h.startsWith('-'),
+            }">
+              {{ scope.row._24h }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="_7d" label="7d%" align="center">
+          <template slot-scope="scope">
+            <div :class="{
+              'text-[#5DB57D]': scope.row._7d.startsWith('+'),
+              'text-[#D35D64]': scope.row._7d.startsWith('-'),
+            }">
+              {{ scope.row._7d }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="floor_price" label="Floor Price">
+          <template slot-scope="scope">
+            <div class="flex items-center">
+              <img src="@/assets/images/icon_eth.svg" />
+              <div class="ml-5px">
+                {{ scope.row.floor_price.toFixed(2) }}
+              </div>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="owners" label="Owners" align="center"> <template slot-scope="scope">{{
             formatNumber(scope.row.owners)
         }}
@@ -67,7 +119,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="FXprice " label="F-X price">
+        <el-table-column prop="fXprice " label="F-X price">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
@@ -94,8 +146,6 @@
 
 <script>
 
-
-
 import {
   nft_info,
   initNftInfo
@@ -113,6 +163,7 @@ export default {
   computed: {},
   data() {
     return {
+      network: 'rinkeby',
       dialogVisible: false,
       asset: "default text",
       nft_info: nft_info,

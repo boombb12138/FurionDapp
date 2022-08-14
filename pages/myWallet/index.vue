@@ -36,64 +36,97 @@
   }
 }
 
-.type {
-  font-weight: 500;
-  font-size: 15px;
-  color: #667181;
+.sort {
+  margin-left: 30px;
+  background: linear-gradient(
+    180deg,
+    rgba(51, 53, 114, 0.12) 9.68%,
+    rgba(51, 53, 114, 0.15) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  width: 190px;
+  height: 40px;
+  padding-left: 22px;
+  padding-right: 16px;
   cursor: pointer;
-  img {
-    margin-right: 10px;
-  }
-  &.active {
-    color: #fff;
-  }
-  & + .type {
-    margin-left: 35px;
+  font-weight: 600;
+  font-size: 14px;
+  opacity: 0.6;
+  i {
+    transition: all 0.3s;
   }
 }
 </style>
 
 <template>
-  <div class="!w-1160px">
-    <div class="pl-40px pr-20px mb-28px flex justify-between pt-36px">
-      <el-input
-        placeholder="search"
-        v-model="searchKey"
-        class="search !w-590px"
-        clearable
-        @input="search"
-      >
-        <i slot="prefix" class="el-input__icon el-icon-search"></i>
-      </el-input>
+  <div>
+    <div class="px-40px mb-24px flex justify-between">
+      <div></div>
+      <div class="flex">
+        <el-popover
+          placement="bottom"
+          width="190"
+          trigger="click"
+          :visible-arrow="false"
+          popper-class="tooltip"
+          v-model="tooltip1"
+        >
+          <div>
+            <div
+              class="cursor-pointer hover:opacity-60"
+              @click="setdata('without locked')"
+            >
+              without locked
+            </div>
+            <el-divider class="!my-12px"></el-divider>
+            <div
+              class="cursor-pointer hover:opacity-60"
+              @click="setdata('with locked')"
+            >
+              with locked
+            </div>
+          </div>
+          <div class="sort flex justify-between items-center" slot="reference">
+            <div>{{ RecentlyListed || 'Recently Listed' }}</div>
+            <i
+              class="el-icon-caret-top transform"
+              :class="{ 'rotate-180': tooltip1 }"
+            ></i>
+          </div>
+        </el-popover>
 
-      <div class="flex flex-1 items-center justify-end">
-        <div
-          class="flex items-center type"
-          :class="{ active: type == 1 }"
-          @click="type = 1"
+        <el-popover
+          placement="bottom"
+          width="190"
+          trigger="click"
+          :visible-arrow="false"
+          popper-class="tooltip"
+          v-model="tooltip2"
         >
-          <img src="@/assets/images/mywallet/icon1s.svg" alt="" v-if="type == 1" />
-          <img src="@/assets/images/mywallet/icon1.svg" alt="" v-else />
-          <div>My Wallet</div>
-        </div>
-        <div
-          class="flex items-center type"
-          :class="{ active: type == 2 }"
-          @click="type = 2"
-        >
-          <img src="@/assets/images/mywallet/icon2s.svg" alt="" v-if="type == 2" />
-          <img src="@/assets/images/mywallet/icon2.svg" alt="" v-else />
-          <div>Locked In Pool</div>
-        </div>
-        <div
-          class="flex items-center type"
-          :class="{ active: type == 3 }"
-          @click="type = 3"
-        >
-          <img src="@/assets/images/mywallet/icon3s.svg" alt="" v-if="type == 3" />
-          <img src="@/assets/images/mywallet/icon3.svg" alt="" v-else />
-          <div>My Furion Token</div>
-        </div>
+          <div>
+            <div
+              class="cursor-pointer hover:opacity-60"
+              @click="setdata2('price low to high')"
+            >
+              price low to high
+            </div>
+            <el-divider class="!my-12px"></el-divider>
+            <div
+              class="cursor-pointer hover:opacity-60"
+              @click="setdata2('price high to low')"
+            >
+              price high to low
+            </div>
+          </div>
+          <div class="sort flex justify-between items-center" slot="reference">
+            <div>{{ RecentlyListed2 || 'Recently Listed' }}</div>
+            <i
+              class="el-icon-caret-top transform"
+              :class="{ 'rotate-180': tooltip2 }"
+            ></i>
+          </div>
+        </el-popover>
       </div>
     </div>
     <div class="pl-40px pb-100px clearfix">
@@ -108,7 +141,11 @@
           class="w-252px h-252px rounded-12px m-6px mb-16px"
           lazy
         >
-          <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
+          <img
+            src="@/assets/images/placeholder.png"
+            alt=""
+            slot="placeholder"
+          />
         </el-image>
         <div class="px-15px">
           <div class="flex justify-between items-center mb-10px">
@@ -160,26 +197,46 @@
 
 <script>
 export default {
+  async asyncData({ store, $axios, app, query }) {
+    store.commit('update', ['admin.activeMenu', '/myWallet']);
+  },
   props: {},
   components: {},
   computed: {},
   data() {
+    let list = [];
+    list.length = 4;
+    list.fill({
+      id: '3957',
+      name: 'AzukiAzukiAzukiAzukiAzukiAzukiAzukiAzuki',
+      cover: require('@/assets/images/cover.png'),
+      eth: '13.6',
+      like: '13',
+    });
+    list.unshift({
+      id: '2222',
+      name: '2AzukiAzukiAzukiAzukiAzukiAzukiAzukiAzuki',
+      cover: require('@/assets/images/cover2.png'),
+      eth: '23.6',
+      like: '23',
+    });
     return {
-      list: new Array(15).fill({
-        id: "3957",
-        name: "AzukiAzukiAzukiAzukiAzukiAzukiAzukiAzuki",
-        cover: require("@/assets/images/cover.png"),
-        eth: "13.6",
-        like: "13",
-      }),
-      searchKey: "",
-      type: 1,
+      list,
+      RecentlyListed: '',
+      RecentlyListed2: '',
+      tooltip1: false,
+      tooltip2: false,
     };
   },
   mounted() {},
   methods: {
-    search() {
-      console.log(this.searchKey);
+    setdata(v) {
+      this.RecentlyListed = v;
+      this.tooltip1 = false;
+    },
+    setdata2(v) {
+      this.RecentlyListed2 = v;
+      this.tooltip2 = false;
     },
   },
 };
