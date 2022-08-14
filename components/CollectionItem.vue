@@ -18,7 +18,8 @@
 </style>
 
 <template>
-  <div class="collection-item-wrap">
+  <div class="collection-item-wrap"
+  @click="clickCollectionItem(detail.collection)">
     <div class="flex items-center">
       <div class="no mr-20px text-white text-15px font-600">{{index+1}}</div>
       <div class="avatar-wrap relative mr-10px">
@@ -64,6 +65,10 @@ export default {
     return {};
   },
   mounted() {},
-  methods: {},
+  methods: {
+    clickCollectionItem(collection) {
+        this.$router.push('/collection/separate_pools_item/?collection='+collection);
+    }
+  },
 };
 </script>
