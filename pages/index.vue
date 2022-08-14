@@ -84,8 +84,8 @@
               <p>sell special NFTs</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
-              <p>New ecosystem towards NFT, for better liquidity,</p>
-              <p>price oracle, and AMM solutions.</p>
+              <p>Furion is the world's first and largest NFT</p>
+              <p>marketplace</p>
             </div>
             <div class="mt-64px">
               <div class="flex items-center">

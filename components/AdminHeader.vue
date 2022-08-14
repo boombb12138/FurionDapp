@@ -17,7 +17,7 @@
   &:hover {
     color: #f181de;
     &::after {
-      content: '';
+      content: "";
       width: 75px;
       height: 20px;
       background: rgba(255, 101, 222, 0.5);
@@ -81,6 +81,7 @@
     border-radius: 8px;
     &::-webkit-input-placeholder {
       color: rgba(255, 255, 255, 0.3);
+      font-size: 13px;
     }
   }
 }
@@ -89,16 +90,20 @@
 <template>
   <div
     class="header-wrap w-1/1 h-80px flex justify-center items-center fixed left-0 right-0 top-0 z-100"
-    :class="{ transparent }"
   >
     <img src="@/assets/images/light_left_bg.png" class="light-left pointer-events-none" />
     <div class="w-1176px h-1/1 flex justify-center items-center justify-between">
       <div class="flex items-center h-1/1">
-        <img class="cursor-pointer" src="@/assets/images/index/logo.svg" @click="$router.push('/')" />
-        <ul class="flex items-center h-1/1">
-
-          <li class="menu-item ml-50px" :class="{ active: activeMenu === '/' }"
+        <img
+          class="cursor-pointer"
+          src="@/assets/images/index/logo.svg"
           @click="$router.push('/')"
+        />
+        <ul class="flex items-center h-1/1">
+          <li
+            class="menu-item ml-50px"
+            :class="{ active: activeMenu === '/explore' }"
+            @click="$router.push('/explore')"
           >
             <span>Explore</span>
           </li>
@@ -109,13 +114,16 @@
           >
             <span>Collection</span>
           </li>
-          <li class="menu-item has-child ml-30px" :class="{ active: activeMenu === '/liquidity' }">
+          <li
+            class="menu-item has-child ml-30px"
+            :class="{ active: activeMenu === '/liquidity' }"
+          >
             <span>Liquidity</span>
             <img class="ml-7px" src="@/assets/images/index/arrow.svg" />
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/borrow">Borrow & Lending</nuxt-link>
+                  <nuxt-link to="/liquidity/borrow">Borrow & Lendind</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/liquidity/furion_swap/swap">Furion Swap</nuxt-link>
@@ -124,13 +132,16 @@
               <div class="shadow-top"></div>
             </div>
           </li>
-          <li class="menu-item has-child ml-38px">
+          <li
+            class="menu-item has-child ml-38px"
+            :class="{ active: activeMenu === '/mining' }"
+          >
             <span>Mining</span>
             <img class="ml-7px" src="@/assets/images/index/arrow.svg" />
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/">Token Farming</nuxt-link>
+                  <nuxt-link to="/mining/token_farming">Token farming</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/">Staking</nuxt-link>
@@ -139,16 +150,20 @@
               <div class="shadow-top"></div>
             </div>
           </li>
-          <li class="menu-item has-child ml-36px">
+          <li
+            class="menu-item has-child ml-36px"
+            :class="{ active: activeMenu === '/more' }"
+          >
             <span>More</span>
             <img class="ml-7px" src="@/assets/images/index/arrow.svg" />
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/">Coming Soon</nuxt-link>
+                  <nuxt-link to="/comingsoon">Coming soon</nuxt-link>
+
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/">Governmance</nuxt-link>
+                  <nuxt-link to="/governmance">Governmance</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>
@@ -179,101 +194,53 @@
         >
           <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
         </el-input>
-        <img class="cursor-pointer" src="@/assets/images/index/avatar.svg" />
+        <el-input
+          style="width: 300px"
+          v-if="showLongSearch2"
+          clearable
+          placeholder="search by name, symbol, address"
+          class="search-wrap mr-25px"
+          v-model="searchKey"
+          @keyup.enter.native="onSearch"
+        >
+          <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
+        </el-input>
 
-        <img class="cursor-pointer ml-20px" src="@/assets/images/index/wallet.svg" />
-
+        <DrawerAccount></DrawerAccount>
+        <DrawerWallet class="ml-20px"></DrawerWallet>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { connectMetamask } from '@/utils/web3/wallet';
 export default {
-  props: {
-    transparent: {
-      type: Boolean,
-      default: false,
-    },
-  },
+  props: {},
   components: {},
   computed: {
-    ...mapState('admin', ['connectStatus']),
-    ...mapState(['userInfo']),
     showShotSearch() {
-      return [
-        '/collection/separate_pools',
-        '/collection/aggregated_pools',
-      ].includes(this.$route.path);
+      return ["/collection/separate_pools", "/collection/aggregated_pools"].includes(
+        this.$route.path
+      );
     },
     showLongSearch() {
-      // return ["/collection/separate_pools"].includes(this.$route.path);
+      return ["/liquidity/borrow_list"].includes(this.$route.path);
+    },
+    showLongSearch2() {
+      return ["/mining/token_farming"].includes(this.$route.path);
     },
     activeMenu() {
       return this.$store.state.admin.activeMenu;
     },
-    
   },
   data() {
     return {
-      searchKey: '',
+      searchKey: "",
     };
   },
-  async mounted() {await this.connectWallet();},
+  mounted() {},
   methods: {
     onSearch() {},
-    async getAlreadyConnectAccount() {
-      try {
-        if (this.walletType == 'Metamask') {
-          ethereum.request({ method: 'eth_accounts' }).then(async accounts => {
-            if (accounts.length != 0) {
-              let userInfo = {
-                isConnect: true,
-                userAddress: accounts[0],
-              };
-              this.$store.dispatch('setUserInfo', userInfo);
-            } else {
-              console.log('The user is not connected');
-              this.$store.commit('update', ['admin.connectDialog', 'simple']);
-              console.log('user address:', this.userInfo.userAddress);
-            }
-          });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async connectWallet() {
-      try {
-        console.log('user connected:', this.userInfo.isConnect);
-        if (this.userInfo.isConnect == true) {
-          try {
-            // console.log('user address:', this.userInfo.userAddress);
-            await this.getAlreadyConnectAccount();
-            this.$store.commit('update', ['admin.connectStatus', 'connected']);
-          } catch (error) {
-            console.log(error);
-          }
-        } else {
-          // console.log('Currently not connected');
-
-          if (!window.ethereum) {
-            this.$message({
-              message: 'Please install metamask',
-              type: 'warning',
-            });
-            window.location.href = 'https://metamask.app.link/dapp';
-          } else {
-            connectMetamask();
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
   },
 };
 </script>
