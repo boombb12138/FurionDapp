@@ -81,7 +81,7 @@
             </div>
             <div class="text-white font-800 leading-60px text-48px mb-25px">
               <p>Discover , collect , and</p>
-              <p>sell extraordinary NFTs</p>
+              <p>sell special NFTs</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
               <p>Furion is the world's first and largest NFT</p>
@@ -112,13 +112,8 @@
               </div>
               <div class="flex justify-between items-center">
                 <div class="flex">
-                  <img
-                    class="cursor-pointer mr-12px"
-                    src="@/assets/images/index/avatar2.svg"
-                  />
-                  <div class="mt-3px">
-                    <p class="text-white font-600">CLONEX-XTAKASHI</p>
-                    <p class="text-[#34f8ff] font-600">Azuki</p>
+                  <div class="mt-10px">
+                    <p class="text-white font-600">Welcome to Furion!</p>
                   </div>
                 </div>
                 <img
@@ -144,7 +139,9 @@
             >
               <div class="float-top absolute left-0 top-0 w-1/1 h-45px"></div>
               <div class="float-bottom absolute left-0 bottom-0 w-1/1 h-128px"></div>
-              <img class="w-1/1 h-1/1 object-cover" :src="slotProps.item.img" />
+              <a @click="clickDropItem(slotProps.item.twitter)">
+                  <img class="w-1/1 h-1/1 object-cover" :src="slotProps.item.img" />
+              </a>
               <div class="info absolute left-0 bottom-20px w-1/1 pl-20px">
                 <p class="text-20px font-600 text-[#fcfffd] mb-10px">
                   {{ slotProps.item.name }}
@@ -161,21 +158,17 @@
       <div class="flex items-center justify-center mt-100px mb-60px">
         <p class="page-title">Top collections over</p>
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">last 24 hours</p>
-        <img src="@/assets/images/index/arrow_pink.svg" />
       </div>
       <ul class="collection-list flex flex-wrap">
-        <li class="collection-item" v-for="(item, index) in collectionList" :key="index">
-          <CollectionItem :index="index" />
+        <li class="collection-item" v-for="(item, index) in nft_info.nft_list" :key="index">
+          <CollectionItem :index="index" CollectionItem :detail="item" />
         </li>
       </ul>
-      <div class="btn_border w-200px mx-auto mt-60px mb-100px">
-        <el-button type="primary" class="!w-200px !h-56px">GO TO RANKINGS</el-button>
-      </div>
+
 
       <div class="flex items-center justify-center mt-100px mb-60px">
-        <p class="page-title">Trending in</p>
-        <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">all categories</p>
-        <img src="@/assets/images/index/arrow_pink.svg" />
+        <p class="page-title">Trending</p>
+        <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Now</p>
       </div>
 
       <div class="w-1250px mx-auto mt-60px mb-90px">
@@ -183,12 +176,13 @@
           <template v-slot="slotProps">
             <div
               class="swiper-item-wrap2 h-334px rounded-16px overflow-hidden border-3px border-[rgba(255,255,255,0.1)] bg-[rgba(23,37,72,0.8)] relative"
+              @click="clickSwiperItem(slotProps.item.collection)"
             >
               <div class="img-wrap h-180px rounded-18px overflow-hidden relative">
-                <img
-                  class="w-1/1 h-1/1 object-cover swiper-img"
-                  :src="slotProps.item.img"
-                />
+                  <img
+                    class="w-1/1 h-1/1 object-cover swiper-img"
+                    :src="slotProps.item.img"
+                  />
                 <div class="img-float absolute w-1/1 h-80px left-0 bottom-0"></div>
               </div>
               <div
@@ -225,22 +219,27 @@
       </div>
 
       <ul class="w-1300px flex justify-between">
-        <li class="flex flex-col items-center flex-1" v-for="i in 4" :key="i">
-          <img :src="require(`@/assets/images/index/pool${i}.svg`)" />
-          <p class="text-16px font-700 text-[#fcfffd] mt-10px mb-14px">NFT pools</p>
+        <li class="flex flex-col items-center flex-1" v-for="(item, index) in List"
+          :key="index">
+          <img :src="require(`@/assets/images/index/pool${index+1}.png`)" />
+          <a @click="clickListItem(item.docs_url)">
+          <p class="text-16px font-700 text-[#fcfffd] mt-10px mb-14px">{{item.tital}}</p>
+          </a>
           <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
-            Add your NFT into our single pool
+            {{item.remark1}}
           </p>
           <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
-            to get $F-X tokens
+            {{item.remark2}}
+          </p>
+          <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
+            {{item.remark3}}
           </p>
         </li>
       </ul>
 
       <div class="flex items-center justify-center mt-100px mb-60px">
-        <p class="page-title">Trending in</p>
-        <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">all categories</p>
-        <img src="@/assets/images/index/arrow_pink.svg" />
+        <p class="page-title">Learn with</p>
+        <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Furion</p>
       </div>
 
       <ul class="category-list w-1300px flex justify-between mb-140px">
@@ -254,7 +253,10 @@
             <div class="img-float absolute w-1/1 h-80px left-0 bottom-0"></div>
           </div>
           <p class="font-500 text-16px text-[#fcfffd] text-center mt-15px">
-            {{ item.remark }}
+            {{ item.remark1 }}
+          </p>
+          <p class="font-500 text-16px text-[#fcfffd] text-center mt-15px">
+            {{ item.remark2 }}
           </p>
         </li>
       </ul>
@@ -265,6 +267,12 @@
   </div>
 </template>
 <script>
+
+import {
+  nft_info,
+  initNftInfo
+} from "@/config/nft_info";
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/"]);
@@ -275,67 +283,106 @@ export default {
   computed: {},
   data() {
     return {
-      collectionList: [
-        {
-          name: "AzukiAzukiAzuki",
-          floorPrice: 1344.6,
-        },
-      ],
+      network: 'rinkeby',
+      dialogVisible: false,
+      asset: "default text",
+      nft_info: nft_info,
+      option: {},
+      ready: false,
       dropList: [
         {
           img: require("@/assets/images/index/drop1.jpg"),
-          name: "Furion is the world's",
-          description: "and marketplace  world's first world first",
+          name: "Mad Dragons",
+          description: "No promises, no roadmap, just good vibes!",
+          twitter: "MadDragonsNFT",
         },
         {
           img: require("@/assets/images/index/drop2.jpg"),
-          name: "Furion is the world's",
-          description: "and marketplace  world's first world first",
+          name: "MEGAMI",
+          description: "MEGAMI is a collection of 10,000 PFPs designed by illustrator and YouTuber Naoki Saito",
+          twitter: "MEGAMINFT",
         },
         {
           img: require("@/assets/images/index/drop3.jpg"),
-          name: "Furion is the world's",
-          description: "and marketplace  world's first world first",
+          name: "Saphire",
+          description: "777 Genesis; 80% of profits are invested in the utilities for this project",
+          twitter: "SaphireNFT",
+        },
+      ],
+      List: [
+        {
+          tital: "NFT pools",
+          remark1: "Lock or store your NFT into our ",
+          remark2:  "separate pools to get the instant liquidity",
+          remark3:  "",
+          docs_url: "furion-pools/furion-separate-pools",
+        },
+        {
+          tital: "Aggregating liquidity",
+          remark1: "Get your market-driven index tokens" ,
+          remark2:  "by joining our aggregate pools",
+          remark3:  "",
+          docs_url: "furion-pools/furion-aggregate-pools",
+        },
+        {
+          tital: "Swapping",
+          remark1: "Swap any tokens that you want in our ",
+          remark2:  "automated market maker protocol",
+          remark3:  "",
+          docs_url: "furion-swap",
+        },
+        {
+          tital: "Borrowing & Lending",
+          remark1: "Borrow & lend your ERC-20 tokens and ",
+          remark2: "NFTs via peer-to-pool pools",
+          remark3: "",
+          docs_url: "furion-money-market",
         },
       ],
       swiperList: [
         {
+          collection: "Cool%20Cats",
           img: require("@/assets/images/index/swiper1.jpg"),
-          avatar: require("@/assets/images/index/avatar3.svg"),
-          name: "AzukiAzukiAzuki",
-          description: "AzukiAzuk",
-          question: "Are you degen enough?",
+          avatar: require("@/assets/images/index/avatar1.jpg"),
+          name: "Cool Cats NFT",
+          description: "CoolCatsContract",
+          question: "Some cats are cooler than others.",
         },
         {
+          collection: "Invisible%20Friends",
           img: require("@/assets/images/index/swiper2.jpg"),
-          avatar: require("@/assets/images/index/avatar3.svg"),
-          name: "AzukiAzukiAzuki",
-          description: "AzukiAzuk",
-          question: "Are you degen enough?",
+          avatar: require("@/assets/images/index/avatar2.jpg"),
+          name: "Invisible Friends",
+          description: "RandomCharacterCollective",
+          question: "5000 animated invisible characters",
         },
         {
+          collection: "World%20Of%20Women",
           img: require("@/assets/images/index/swiper3.jpg"),
-          avatar: require("@/assets/images/index/avatar3.svg"),
-          name: "AzukiAzukiAzuki",
-          description: "AzukiAzuk",
-          question: "Are you degen enough?",
+          avatar: require("@/assets/images/index/avatar3.jpg"),
+          name: "World of Women",
+          description: "WorldofWomen",
+          question: "Celebrate representation,inclusivity & equal opportunities.",
         },
       ],
       categoryList: [
         {
           img: require("@/assets/images/index/swiper1.jpg"),
-          remark: "How to Easily Setup a MetaMask Wallet",
+          remark1: "How to split your NFT into ERC-20 tokens?",
+          remark2: "",
         },
         {
           img: require("@/assets/images/index/swiper2.jpg"),
-          remark: "How to Fund MetaMask with ETH",
+          remark1: "How to set up MetaMask wallet in Furion?",
+          remark2: "",
         },
         {
           img: require("@/assets/images/index/swiper3.jpg"),
-          remark: "How to Find an NFT You Love",
+          remark1: "How can different collections aggregate their",
+          remark2: "liquidity? ",
         },
       ],
-      collectionList: new Array(15).fill({
+      collectionList: new Array(4).fill({
         floorPrice: 1344.6,
         currentPrice: 1344.9232,
         percent: 23,
@@ -344,7 +391,20 @@ export default {
       }),
     };
   },
-  mounted() {},
-  methods: {},
+  async mounted() {
+    initNftInfo(this.network);
+    this.ready = true;
+  },
+  methods: {
+    clickSwiperItem(collection) {
+      this.$router.push('/collection/separate_pools_item/?collection='+collection);
+    },
+    clickDropItem(twitter) {
+      window.location.href = 'https://twitter.com/'+twitter;
+    },
+    clickListItem(url) {
+      window.location.href = 'https://docs.furion.io/function/'+url;
+    }
+  },
 };
 </script>

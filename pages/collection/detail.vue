@@ -108,14 +108,14 @@
     <div class="w-1150px mx-auto">
       <div class="pt-70px flex mb-32px">
         <img
-          src="@/assets/images/cover0.png"
+          :src="nft_item.image"
           class="w-400px h-400px rounded-20px mr-30px"
         />
         <div class="flex-1 flex flex-col">
           <div class="flex justify-between mb-80px">
             <div class="pl-30px">
-              <div class="text-[#31C2C7] text-20px font-600 mb-20px">Azuki</div>
-              <div class="text-32px font-700">Azuki #3957</div>
+              <div class="text-[#31C2C7] text-20px font-600 mb-20px">{{nft_item.collection}}</div>
+              <div class="text-32px font-700">{{nft_item.symbol}} #{{nft_item.token_id}}</div>
             </div>
             <div class="flex cursor-pointer btns">
               <div class="br">
@@ -167,10 +167,10 @@
             </div>
           </div>
           <div class="bg flex-1 p-30px">
-            <div class="mb-15px opacity-60 font-500 text-20px">Reference Price</div>
+            <div class="mb-15px opacity-60 font-500 text-20px">F&nbsp;-&nbsp;{{nft_item.symbol}}</div>
             <div class="flex items-center mb-55px">
               <img src="@/assets/images/icon_eth.svg" class="w-24px mr-10px" />
-              <div class="font-700 text-32px">6.4838</div>
+              <div class="font-700 text-32px">{{nft_item.fXprice.toFixed(2)}}</div>
             </div>
 
             <div class="flex">
@@ -315,6 +315,8 @@
 </template>
 
 <script>
+import { nft_item } from '@/config/nft_item';
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
@@ -329,6 +331,7 @@ export default {
   data() {
     return {
       html: "",
+      nft_item: nft_item,
       editorOption: {
         placeholder:
           "Share how you feel about the creation or even ask the creator a question.",

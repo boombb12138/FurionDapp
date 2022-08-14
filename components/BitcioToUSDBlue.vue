@@ -99,7 +99,7 @@ export default {
             color: '#fff',
           },
           formatter: params => {
-            console.log(params);
+            // console.log(params);
             const num = params[0].data;
             this.getNum(num);
           },

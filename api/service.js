@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
 const service = axios.create({
-  // baseURL: 'http://localhost:6010',
+  // baseURL: 'https://localhost:6010',
   baseURL: 'https://furion.io:6010',
   timeout: 6000000,
 });

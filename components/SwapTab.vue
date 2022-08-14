@@ -69,9 +69,9 @@ export default {
     change(val) {
       this.$emit('input', val);
       if (val == 1) {
-        this.$router.push('/liquidity/swap');
+        this.$router.push('/liquidity/furion_swap/swap');
       } else if (val == 2) {
-        this.$router.push('/liquidity/pool');
+        this.$router.push('/liquidity/furion_swap/pool');
       }
     },
   },

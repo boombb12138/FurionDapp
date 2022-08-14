@@ -140,7 +140,7 @@ export const tokenApprove = async (tokenAddress, fromAccount, toAccount) => {
       console.log('Tx', hash);
     })
     .on('receipt', receipt => {
-      console.log('Receipt', receipt);
+      // console.log('Receipt', receipt);
       return receipt;
     })
     .on('error', error => {

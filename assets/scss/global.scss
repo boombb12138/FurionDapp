@@ -40,10 +40,8 @@
       border-bottom: none !important;
     }
   }
-  &.not-min-width {
-    min-width: unset !important;
-  }
 }
+
 .el-select-dropdown {
   border-radius: 24px;
   padding: 8px 28px;
@@ -157,13 +155,24 @@
     color: #02193a;
     &:hover,
     &:focus {
-      color: #02193a;
-      background: #fe8cea;
+      color: #02193a !important;
+      background: #fe8cea !important;
     }
     &.is-disabled {
-      opacity: 0.5;
-      color: #02193a !important;
-      background: linear-gradient(0deg, #fa6be1, #fa6be1) !important;
+      opacity: 0.6;
+      background: linear-gradient(
+        269.59deg,
+        #4528b9 -3.63%,
+        #a630de 133.61%
+      ) !important;
+      &:hover,
+      &:focus {
+        background: linear-gradient(
+          269.59deg,
+          #4528b9 -3.63%,
+          #a630de 133.61%
+        ) !important;
+      }
     }
   }
   &.is-round {
@@ -198,7 +207,7 @@
 .el-dialog {
   border-radius: 20px;
   padding: 40px 32px 60px;
-  background: #d5dcee;
+  background: #d5dcee url("~@/assets/images/pay_bg.png");
   background-size: 100% 100%;
   margin-top: 50vh !important;
   margin-bottom: 0 !important;
@@ -389,7 +398,7 @@
     tr {
       background: #0c193b;
       .el-table__cell {
-        color: rgba(252, 255, 253, 0.6);
+        color: #fcfffd;
         font-weight: 600;
         font-size: 14px;
         background: transparent;
@@ -766,7 +775,9 @@
 }
 
 .el-dialog-dark {
-  background: #0b1a3c;
+  background: #273556 url("~@/assets/images/pay_bg.png");
+  background-size:cover;
+  border-radius: 40px;
   box-shadow: 0px 6px 30px rgba(0, 0, 0, 0.3),
     inset 0px 2px 0px rgba(255, 255, 255, 0.5),
     inset 0px -3px 2px rgba(0, 0, 0, 0.3);
