@@ -26,8 +26,8 @@ export const pool_info = {
 export const single_swap_pool = {
     token_0: 'USDT',
     token_1: 'FUR',
-    token_0_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
-    token_1_address: '0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84',
+    token_0_address: '0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84',
+    token_1_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
     token_0_contract: {},
     token_1_contract: {},
     token_0_image: require("@/assets/images/liquidity/tokens/USDT.png"),
