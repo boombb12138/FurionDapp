@@ -1,15 +1,9 @@
 const env = require('./env');
-import path from 'path'
-import fs from 'fs'
 
 export default {
   server: {
     port: env[process.env.MODE].PORT,
     host: env[process.env.MODE].HOST,
-    https:{
-      key: fs.readFileSync(path.resolve(__dirname, 'furion.key')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'furion.pem'))
-    }
   },
   components: ['~/components'],
   env: env[process.env.MODE],

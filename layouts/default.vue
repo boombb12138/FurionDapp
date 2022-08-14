@@ -14,12 +14,9 @@
         class="light-left pointer-events-none"
       />
 
-      <Admin-header :transparent="transparent"></Admin-header>
+      <Admin-header></Admin-header>
       <nuxt class="min-h-100vh w-1280px relative pt-80px mx-auto" />
     </div>
-
-    <Wallet-connect></Wallet-connect>
-    <Wallet-account></Wallet-account>
 
     <CartIcon></CartIcon>
   </div>
@@ -36,12 +33,7 @@ export default {
       },
     ],
   },
-  computed: {
-    transparent() {
-      let list = ["/faq", "/governance", "/governance/detail"];
-      return list.includes(this.$route.path);
-    },
-  },
+  computed: {},
   data() {
     return {};
   },

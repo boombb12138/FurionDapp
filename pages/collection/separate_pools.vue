@@ -69,14 +69,14 @@
         ></el-input>
       </el-dialog>
 
-      <el-table :data="nft_intro.NftList" style="width: 100%" @cell-click="viewCollection">
-        <el-table-column prop="collection" label="Collection" width="320px">
+      <el-table :data="list" style="width: 100%" @cell-click="item">
+        <el-table-column prop="Collection" label="Collection" width="320px">
           <template slot-scope="scope">
             <div class="flex font-500 text-16px pl-30px items-center">
               <div class="w-30px">{{ scope.$index + 1 }}</div>
               <img
-                :src="scope.row.avatar"
-                v-if="scope.row.avatar"
+                :src="scope.row.Avatar"
+                v-if="scope.row.Avatar"
                 class="w-52px rounded-full"
               />
               <img src="@/assets/images/avatar0.png" v-else class="w-52px rounded-full" />
@@ -84,17 +84,17 @@
               <Search-keyword
                 class="w-170px line-clamp-1 ml-10px"
                 :keyword="$route.query.key"
-                :text="scope.row.collection"
+                :text="scope.row.Collection"
               ></Search-keyword>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="volume" label="Volume" sortable width="150px">
+        <el-table-column prop="Volume" label="Volume" sortable width="150px">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
-                {{ scope.row.volume }}
+                {{ scope.row.Volume }}
               </div>
             </div>
           </template>
@@ -123,31 +123,31 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="floor_price" label="Floor Price">
+        <el-table-column prop="FloorPrice " label="Floor Price">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
-                {{ scope.row.floor_price }}
+                {{ scope.row.FloorPrice }}
               </div>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="owners" label="Owners"> </el-table-column>
-        <el-table-column prop="items" label="ltems"> </el-table-column>
+        <el-table-column prop="Owners" label="Owners"> </el-table-column>
+        <el-table-column prop="ltems" label="ltems"> </el-table-column>
 
-        <el-table-column prop="fXprice " label="F-X price">
+        <el-table-column prop="FXprice " label="F-X price">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
-                {{ scope.row.fXprice }}
+                {{ scope.row.FXprice }}
               </div>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="last7Days" label="Last 7 Days" width="150px">
+        <el-table-column prop="Last7Days" label="Last 7 Days" width="150px">
           <template slot-scope="scope">
             <div>
               <client-only>
@@ -162,11 +162,7 @@
 </template>
 
 <script>
-
-import {
-  nft_intro,
-  initNftIntro
-} from "@/config/nft_intro";
+import getCharts from "@/utils/getCharts";
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -177,22 +173,91 @@ export default {
   computed: {},
   data() {
     return {
-      network: 'rinkeby',
       dialogVisible: false,
       asset: "default text",
-      nft_intro: nft_intro,
+      list: [
+        {
+          id: 1,
+          Collection: "Azuki",
+          Avatar: require("@/assets/images/avatar.png"),
+          Volume: "28,919,65",
+          _24h: "+2.94%",
+          _7d: "-47.56%",
+          FloorPrice: "11.44",
+          Owners: "5.4K",
+          ltems: "10.0K",
+          FXprice: "7.28",
+          Last7Days: [
+            "10",
+            "22",
+            "50",
+            "13",
+            "31",
+            "15",
+            "0",
+            "22",
+            "10",
+            "22",
+            "10",
+            "50",
+            "13",
+            "31",
+            "15",
+            "0",
+            "22",
+          ],
+          Last7Days_type: 1,
+        },
+        {
+          id: 2,
+          Collection: "CLONEX-XTAKASHI11111",
+          Avatar: "",
+          Volume: "28,919,64",
+          _24h: "+2.94%",
+          _7d: "-47.56%",
+          FloorPrice: "11.44",
+          Owners: "5.4K",
+          ltems: "10.0K",
+          FXprice: "7.28",
+          Last7Days: [
+            "10",
+            "22",
+            "50",
+            "13",
+            "31",
+            "15",
+            "0",
+            "22",
+            "10",
+            "22",
+            "10",
+            "50",
+            "13",
+            "31",
+            "15",
+            "0",
+            "22",
+          ],
+          Last7Days_type: 2,
+        },
+      ],
       option: {},
       ready: false,
     };
   },
   async mounted() {
-    initNftIntro(this.network);
+    this.list = this.list.map((item) => {
+      return {
+        ...item,
+        option: getCharts(item.Last7Days, item.Last7Days_type),
+      };
+    });
     this.ready = true;
   },
 
   methods: {
-    viewCollection(row) {
-      this.$router.push(`/collection/separate_pools_item?collection=${row.collection}`);
+    item(row) {
+      this.$router.push(`/collection/separate_pools_item?id=${row.id}`);
     },
   },
 };
