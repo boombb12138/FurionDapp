@@ -255,9 +255,6 @@
           <p class="font-500 text-16px text-[#fcfffd] text-center mt-15px">
             {{ item.remark1 }}
           </p>
-          <p class="font-500 text-16px text-[#fcfffd] text-center mt-15px">
-            {{ item.remark2 }}
-          </p>
         </li>
       </ul>
     </div>
@@ -368,18 +365,15 @@ export default {
       categoryList: [
         {
           img: require("@/assets/images/index/category1.jpg"),
-          remark1: "How to split your NFT into ERC-20 tokens?",
-          remark2: "",
+          remark1: "The Story of Furion",
         },
         {
           img: require("@/assets/images/index/category2.jpg"),
-          remark1: "How to set up MetaMask wallet in Furion?",
-          remark2: "",
+          remark1: "Introducing Furion",
         },
         {
           img: require("@/assets/images/index/category3.jpg"),
-          remark1: "How can different collections aggregate their",
-          remark2: "liquidity? ",
+          remark1: "NFT News of the Wee",
         },
       ],
       collectionList: new Array(4).fill({
