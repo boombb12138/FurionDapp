@@ -21,6 +21,7 @@
   <div>
     <div class="pt-45px pb-100px">
       <div class="flex justify-between mb-45px">
+        <!-- Toggle pool types -->
         <div class="flex">
           <div class="btn_border mr-30px">
             <el-button type="primary" class="!w-265px !h-56px">
@@ -30,10 +31,11 @@
 
           <div class="btn_border" @click="$router.push('/collection/aggregated_pools')">
             <el-button type="primary" class="!w-265px !h-56px" plain>
-              Aggregate pools
+              Aggregated pools
             </el-button>
           </div>
         </div>
+        <!-- Create pool button -->
         <div class="btn_border">
           <el-button type="primary" class="!w-170px !h-56px" @click="dialogVisible = true">
             <div class="relative -top-2px">
@@ -44,19 +46,28 @@
         </div>
       </div>
 
+      <!-- Modal box for creating separate pool -->
       <el-dialog title="NFT Contract Address:" :visible.sync="dialogVisible" width="600px" :close-on-click-modal="false"
         append-to-body>
         <div class="text-[#FCFFFD] absolute -top-240px text-center center-x">
           <div class="text-28px font-800 mb-30px">CREATE A POOL</div>
           <div class="text-18px whitespace-nowrap">
-            Paste the address of the NFT contract and pay the TX fee, it will
+            Enter the address of the NFT contract and pay the TX fee, it will
             automatically create a pool to tokenize your NFTs.
           </div>
         </div>
 
-        <el-input v-model="asset" placeholder="Paste Contract address" class="asset"></el-input>
+        <el-input v-model="asset" placeholder="NFT contract address" class="asset"></el-input>
+
+        <el-button type="primary" class="!w-200px !h-56px"  @click="createSeparatePool">
+          <div class="relative -top-0px">
+            <span class="text-20px"></span>
+            CREATE
+          </div>
+        </el-button>
       </el-dialog>
 
+      <!-- Separate pool list -->
       <el-table :data="nft_info.nft_list" style="width: 100%" @cell-click="viewCollection">
         <el-table-column prop="collection" label="Collection" width="320px">
           <template slot-scope="scope">
@@ -150,9 +161,12 @@ import {
   nft_info,
   initNftInfo
 } from "@/config/nft_info";
+import { mapState } from 'vuex';
 import { getNftWeekPrice } from "@/api/nft_info";
 import getCharts from "@/utils/getCharts";
 import { _formatNumber } from "@/utils/common";
+import { initSeparatePoolFactoryContract } from "@/config/separate_pool_factory.js";
+import { getTxURL } from '@/utils/common';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -160,7 +174,10 @@ export default {
   },
   props: {},
   components: {},
-  computed: {},
+  computed: {
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
+  },
   data() {
     return {
       network: 'rinkeby',
@@ -169,11 +186,15 @@ export default {
       nft_info: nft_info,
       option: {},
       ready: false,
+      factoryContract: {},
+      asset: ""
     };
   },
   async mounted() {
     await initNftInfo(this.network);
     this.ready = true;
+
+    this.factoryContract = await initSeparatePoolFactoryContract();
   },
 
   methods: {
@@ -182,6 +203,38 @@ export default {
     },
     viewCollection(row) {
       this.$router.push(`/collection/separate_pools_item?collection=${row.collection}`);
+    },
+    async createSeparatePool() {
+      let account = this.userInfo.userAddress;
+
+      if(this.asset === "") {
+        this.errorMessage("Please enter address of NFT");
+        return
+      } else {
+        try {
+          let tx_result = await this.factoryContract.methods.createPool(this.asset).send({ from: account });
+          this.successMessage(tx_result, 'Create pool succeeded');
+        } catch(e) {
+          this.errorMessage('Create pool failed');
+          return
+        }
+      }
+    },
+    successMessage(receipt, title) {
+      const txURL = getTxURL(receipt.transactionHash);
+      this.$notify({
+        title: title,
+        dangerouslyUseHTMLString: true,
+        message: txURL,
+        type: 'success',
+      });
+    },
+    errorMessage(title) {
+      this.$notify.error({
+        title: title,
+        message: '',
+        dangerouslyUseHTMLString: true,
+      });
     },
   },
 };
