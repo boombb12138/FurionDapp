@@ -1,10 +1,12 @@
 import { getNftInfoByProject, getNftImages } from "@/api/nft_info";
 import { query_abi } from "@/api/query_etherscan";
 import { getContract, ipfsToHttp } from '@/utils/common';
+import { initSeparatePoolFactoryContract } from "@/config/separate_pool_factory";
+import { getSeparatePoolABI } from "@/utils/common/contractABI";
 
 export const default_pool_info = {
     collection: 'Loading',
-    address: '0x',
+    nft_address: '0x',
     symbol: 'Furion',
     avatar: require("@/assets/images/avatar.png"),
     banner_url: require("@/assets/images/item.png"),
@@ -47,7 +49,7 @@ export const initSeparatePoolInfo = async (project, network) => {
 
     // entitle request info into separate pool info
     separate_pool_info.collection = raw_data['project'];
-    separate_pool_info.address = raw_data['address'];
+    separate_pool_info.nft_address = raw_data['address'];
     separate_pool_info.symbol = raw_data['symbol'];
     separate_pool_info.avatar = raw_data['image_url'];
     separate_pool_info.banner_url = raw_data['banner_url'];
@@ -75,13 +77,25 @@ export const initSeparatePoolInfo = async (project, network) => {
     // console.log('Separate Pool Info', separate_pool_info);
 }
 
+export const initSeparatePoolContract = async (nftAddress) => {
+  const factoryContract = await initSeparatePoolFactoryContract();
+
+  let separate_pool_contract = {};
+  const poolAddress = await factoryContract.methods.getPool(nftAddress).call();
+  const poolContract = await getContract(await getSeparatePoolABI(), poolAddress)
+  separate_pool_contract.address = poolAddress;
+  separate_pool_contract.contract = poolContract;
+
+  return separate_pool_contract;
+}
+
 /**
  * initial token image for different NFT, pick images from centralized database
  * @param {object} pool_info pool info to operate on
  * @returns no returns, directly update pool info
  */
 export const initTokenImage = async (pool_info, network) => {
-    if (pool_info.address.length < 4) {
+    if (pool_info.nft_address.length < 4) {
         return
     }
     let in_pool = pool_info.in_pool;
@@ -91,7 +105,7 @@ export const initTokenImage = async (pool_info, network) => {
         token_id_str += in_pool[i].token_id + '_';
     }
 
-    const nft_image_request = await getNftImages(pool_info.address, token_id_str.substr(0, token_id_str.length - 1), network);
+    const nft_image_request = await getNftImages(pool_info.nft_address, token_id_str.substr(0, token_id_str.length - 1), network);
     // console.log('Image info', nft_image_request)
 
     const nft_images = nft_image_request['data']['data'];
