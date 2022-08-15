@@ -1,5 +1,8 @@
 import { getNftInfo, getNftInfoByProject, getNftImages, getNftWeekPrice } from "@/api/nft_info";
+import { getNftDynamic } from "@/api/nft_dynamic";
 import getCharts from "@/utils/getCharts";
+import { getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
+import { getContract } from "@/utils/common/index";
 
 export const nft_info = {
     init: false,
@@ -662,9 +665,8 @@ export const nft_info = {
 };
 
 export const initNftInfo = async (network, loadWeek) => {
-    if (nft_info.nft_list.length > 0) {
-        return
-    }
+    let nft_info = { nft_init: false, nft_list: [] };
+
     let result = await getNftInfo(network);
     // console.log('NFT info request', result);
     let raw_data = result['data']['data'];
@@ -706,4 +708,82 @@ export const initNftInfo = async (network, loadWeek) => {
 
     nft_info.nft_list = final_result;
     nft_info.init = true;
+    return nft_info;
+}
+
+export const initPooledNftInfo = async (network, loadWeek) => {
+    let nft_info = { nft_init: false, nft_list: [] };
+
+    const factoryContract = await getContract(await getSeparatePoolFactoryABI(), '');
+    const nftsWithPool = await factoryContract.methods.getAllNfts().call();
+
+    let result = await getNftInfo(network);
+    let raw_data = result['data']['data'];
+    let final_result = [];
+
+    for (let i = 0; i < nftsWithPool.length; i++) {
+      const nftAddress = nftsWithPool[i];
+
+      // Assume collection is found in contract but not in backend
+      let temp = {
+          id: i,
+          collection: "--",
+          address: nftAddress,
+          symbol: "--",
+          avatar: "--",
+          banner_url: "--",
+          description: "--",
+          external_link: "--",
+          twitter_link: "--",
+
+          volume: "--",
+          _24h: "--",
+          _7d: "--",
+          floor_price: "--",
+          owners: "--",
+          items: "--",
+          fXprice: "--",
+          last7Days: "--",
+          last7Days_type: "--",
+      };
+
+      for (let j = 0; j < raw_data.length; j++) {
+        // Collection found in contract and backend
+        if (raw_data[j]['address'] == nftAddress) {
+            temp.collection = raw_data[j]['project'],
+            temp.symbol = raw_data[j]['symbol'],
+            temp.avatar = raw_data[j]['image_url'],
+            temp.banner_url = raw_data[j]['banner_url'],
+            temp.description = raw_data[j]['description'],
+            temp.external_link = raw_data[j]['external_link'],
+            temp.twitter_link = raw_data[j]['twitter_link'],
+
+            temp.volume = raw_data[j]['volume'],
+            temp._24h = `${(raw_data[j]['_24hs'] < 0 ? "" : "+") + (raw_data[j]['_24hs'] * 100).toFixed(2)}%`,
+            temp._7d = `${(raw_data[j]['_7ds'] < 0 ? "" : "+") + (raw_data[j]['_7ds'] * 100).toFixed(2)}%`,
+            temp.floor_price = raw_data[j]['floor_price'].toFixed(2),
+            temp.owners = raw_data[j]['owners'],
+            temp.items = raw_data[j]['total_supply'],
+            temp.fXprice = raw_data[j]['reference_price_high'].toFixed(2),
+            temp.last7Days = raw_data[j]['week_price'],
+            temp.last7Days_type = raw_data[j]['type'],
+
+            final_result.push(temp);
+            break;
+        }
+      }
+      // Collection is found in contract but not in backend
+      final_result.push(temp);
+    }
+
+    final_result = final_result.map((item) => {
+        return {
+            ...item,
+            option: getCharts(item.last7Days, item.last7Days_type)
+        };
+    });
+
+    nft_info.nft_list = final_result;
+    nft_info.init = true;
+    return nft_info;
 }
