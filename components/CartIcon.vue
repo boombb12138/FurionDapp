@@ -33,16 +33,22 @@
 </style>
 
 <template>
-  <div ref="cartIconRef" class="cart-icon-wrap" :class="{ isShow }" @mousedown="onMouseDown">
+  <div
+    ref="cartIconRef"
+    class="cart-icon-wrap"
+    :class="{ isShow }"
+    @mousedown="onMouseDown"
+    @click="click"
+  >
     <img src="@/assets/images/cart3.svg" />
     <div class="count" v-if="cart.length">{{ cart.length }}</div>
   </div>
 </template>
 
 <script>
-import store from 'store';
+import store from "store";
 export default {
-  name: 'CartIcon',
+  name: "CartIcon",
   props: {},
   components: {},
   computed: {
@@ -60,6 +66,7 @@ export default {
       startX: 0,
       startY: 0,
       isShow: false,
+      isMove: false,
     };
   },
   mounted() {
@@ -67,23 +74,23 @@ export default {
   },
   methods: {
     getPos() {
-      const pos = store.get('furionPos');
+      const pos = store.get("furionPos");
       if (pos) {
-        this.x =
-          pos.x != null
-            ? window.innerWidth * pos.x
-            : window.innerWidth - 52 - 45;
+        this.x = pos.x != null ? window.innerWidth * pos.x : window.innerWidth - 52 - 45;
         this.y =
-          pos.y != null
-            ? window.innerHeight * pos.y
-            : window.innerHeight - 52 - 75;
+          pos.y != null ? window.innerHeight * pos.y : window.innerHeight - 52 - 75;
       } else {
         this.x = window.innerWidth - 52 - 45;
         this.y = window.innerHeight - 52 - 75;
       }
-      this.icon.style.left = this.x + 'px';
-      this.icon.style.top = this.y + 'px';
+      this.icon.style.left = this.x + "px";
+      this.icon.style.top = this.y + "px";
       this.isShow = true;
+    },
+    click() {
+      if (!this.isMove) {
+        this.$router.push("/cart");
+      }
     },
     onMouseDown(event) {
       const box = this.icon;
@@ -92,27 +99,31 @@ export default {
       let innerX = event.clientX - box.offsetLeft;
       let innerY = event.clientY - box.offsetTop;
 
-      const onMouseMove = event => {
-        box.style.left = event.clientX - innerX + 'px';
-        box.style.top = event.clientY - innerY + 'px';
+      const onMouseMove = (event) => {
+        this.isMove = true;
+        box.style.left = event.clientX - innerX + "px";
+        box.style.top = event.clientY - innerY + "px";
 
         if (box.offsetLeft < 0) {
-          box.style.left = 0 + 'px';
+          box.style.left = 0 + "px";
         }
 
         if (box.offsetTop < 0) {
-          box.style.top = 0 + 'px';
+          box.style.top = 0 + "px";
         }
         // console.log(box.offsetLeft + box.offsetWidth, window.innerWidth);
         if (box.offsetLeft + box.offsetWidth > window.innerWidth) {
-          box.style.left = window.innerWidth - box.offsetWidth + 'px';
+          box.style.left = window.innerWidth - box.offsetWidth + "px";
         }
 
         if (box.offsetTop + box.offsetHeight > window.innerHeight) {
-          box.style.top = window.innerHeight - box.offsetHeight + 'px';
+          box.style.top = window.innerHeight - box.offsetHeight + "px";
         }
       };
-      const onMouseUp = event => {
+      const onMouseUp = (event) => {
+        setTimeout(() => {
+          this.isMove = false;
+        }, 100);
         // // console.log('up',e.pageX);
         const pos = {
           x: box.offsetLeft / window.innerWidth,
@@ -122,17 +133,13 @@ export default {
         // this.x = e.pageX - diffX;
         // this.y = e.pageY - diffY;
         // // console.log(pos.x, pos.y);
-        store.set('furionPos', pos);
-        document.documentElement.removeEventListener('mousemove', onMouseMove);
-        document.documentElement.removeEventListener('mouseup', onMouseUp);
+        store.set("furionPos", pos);
+        document.documentElement.removeEventListener("mousemove", onMouseMove);
+        document.documentElement.removeEventListener("mouseup", onMouseUp);
       };
 
-      document.documentElement.addEventListener(
-        'mousemove',
-        onMouseMove,
-        false,
-      );
-      document.documentElement.addEventListener('mouseup', onMouseUp, false);
+      document.documentElement.addEventListener("mousemove", onMouseMove, false);
+      document.documentElement.addEventListener("mouseup", onMouseUp, false);
     },
   },
 };

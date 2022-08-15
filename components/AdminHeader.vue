@@ -130,7 +130,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/">Token Farming</nuxt-link>
+                  <nuxt-link to="/mining/token_farming">Token Farming</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/">Staking</nuxt-link>
@@ -139,16 +139,19 @@
               <div class="shadow-top"></div>
             </div>
           </li>
-          <li class="menu-item has-child ml-36px">
+          <li
+            class="menu-item has-child ml-36px"
+            :class="{ active: activeMenu === '/more' }"
+          >
             <span>More</span>
             <img class="ml-7px" src="@/assets/images/index/arrow.svg" />
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/">Coming Soon</nuxt-link>
+                  <nuxt-link to="/comingsoon">Coming Soon</nuxt-link>
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/">Governmance</nuxt-link>
+                  <nuxt-link to="/governance">Governance</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>
@@ -179,9 +182,8 @@
         >
           <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
         </el-input>
-        <img class="cursor-pointer" src="@/assets/images/index/avatar.svg" />
-
-        <img class="cursor-pointer ml-20px" src="@/assets/images/index/wallet.svg" />
+         <DrawerAccount></DrawerAccount>
+        <DrawerWallet class="ml-20px"></DrawerWallet>
 
       </div>
     </div>
@@ -209,7 +211,10 @@ export default {
       ].includes(this.$route.path);
     },
     showLongSearch() {
-      // return ["/collection/separate_pools"].includes(this.$route.path);
+       return ["/liquidity/borrow_list"].includes(this.$route.path);
+    },
+    showLongSearch2() {
+      return ["/mining/token_farming"].includes(this.$route.path);
     },
     activeMenu() {
       return this.$store.state.admin.activeMenu;
