@@ -106,13 +106,16 @@
     />
 
     <div class="w-1150px mx-auto">
+
       <div class="pt-70px flex mb-32px">
+        <!-- NFT image -->
         <img
           :src="nft_item.image"
           class="w-400px h-400px rounded-20px mr-30px"
         />
         <div class="flex-1 flex flex-col">
           <div class="flex justify-between mb-80px">
+            <!-- NFT basic info -->
             <div class="pl-30px">
               <div class="text-[#31C2C7] text-20px font-600 mb-20px">{{nft_item.collection}}</div>
               <div class="text-32px font-700">{{nft_item.symbol}} #{{nft_item.token_id}}</div>
@@ -166,6 +169,7 @@
               </div>
             </div>
           </div>
+          <!-- NFT price and user functions box -->
           <div class="bg flex-1 p-30px">
             <div class="mb-15px opacity-60 font-500 text-20px">F&nbsp;-&nbsp;{{nft_item.symbol}}</div>
             <div class="flex items-center mb-55px">
@@ -183,7 +187,7 @@
                 </el-button>
               </div>
               <div class="btn_border">
-                <el-button type="primary" class="w-310px !h-60px">
+                <el-button type="primary" class="w-310px !h-60px" @click="buy">
                   <div class="text-20px font-800">BUY NOW</div>
                 </el-button>
               </div>
@@ -192,6 +196,7 @@
         </div>
       </div>
 
+      <!-- Transaction activity log -->
       <div class="mb-53px">
         <div class="flex items-center pl-44px h-76px title">
           <img src="@/assets/images/icon_item.svg" class="mr-10px" />
@@ -226,6 +231,7 @@
         </el-table>
       </div>
 
+      <!-- Comment section -->
       <div class="comments">
         <div class="head">
           <img src="@/assets/images/message.svg" class="mr-12px" />
@@ -315,7 +321,9 @@
 </template>
 
 <script>
-import { nft_item } from '@/config/nft_item';
+import { mapState } from 'vuex';
+import { nft_item, initNftItem } from '@/config/nft_item';
+import { initSeparatePoolContract } from "@/config/separate_pool"
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -324,6 +332,8 @@ export default {
   props: {},
   components: {},
   computed: {
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
     cart() {
       return this.$store.state.user.cart;
     },
@@ -331,7 +341,9 @@ export default {
   data() {
     return {
       html: "",
+      network: "rinkeby",
       nft_item: nft_item,
+      poolContract: {},
       editorOption: {
         placeholder:
           "Share how you feel about the creation or even ask the creator a question.",
@@ -373,7 +385,11 @@ export default {
       comments: [{}, {}, {}],
     };
   },
-  mounted() {
+  async mounted() {
+    this.nft_item = await initNftItem(this.nft_item, this.$route.query.collection, this.$route.query.token_id, this.network);
+
+    this.poolContract = await initSeparatePoolContract(this.nft_item.address);
+
     this.comments = this.comments.map((item) => {
       return {
         show: false,
@@ -384,6 +400,33 @@ export default {
     toCart() {
       let arr = [...this.cart, 1];
       this.$store.commit("save", ["user.cart", arr, this]);
+    },
+    async buy() {
+      let account = this.userInfo.userAddress;
+
+      try {
+        let tx_result = await this.poolContract.contract.methods.buy(this.nft_item.token_id).send({ from: account });
+        this.successMessage(tx_result, 'NFT purchase succeeded');
+      } catch(e) {
+        this.errorMessage('NFT purchase failed');
+        return
+      }
+    },
+    successMessage(receipt, title) {
+      const txURL = getTxURL(receipt.transactionHash);
+      this.$notify({
+        title: title,
+        dangerouslyUseHTMLString: true,
+        message: txURL,
+        type: 'success',
+      });
+    },
+    errorMessage(title) {
+      this.$notify.error({
+        title: title,
+        message: '',
+        dangerouslyUseHTMLString: true,
+      });
     },
   },
 };
