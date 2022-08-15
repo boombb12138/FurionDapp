@@ -7,6 +7,9 @@ import FurionSwapFactory from "@/assets/abis/rinkeby/furion-swap/FurionSwapFacto
 import FurionSwapV2Router from "@/assets/abis/rinkeby/furion-swap/FurionSwapV2Router.sol/FurionSwapV2Router.json";
 import FurionSwapPair from "@/assets/abis/rinkeby/furion-swap/FurionSwapPair.sol/FurionSwapPair.json";
 
+import SeparatePoolFactory from "@/assets/abis/rinkeby/separate-pool/SeparatePoolFactory.sol/SeparatePoolFactory.json";
+import SeparatePool from "@/assets/abis/rinkeby/separate-pool/SeparatePool.sol/SeparatePool.json";
+
 export const getAddress = () => {
     let address = addressStore['rinkeby'];
     return address;
@@ -40,4 +43,16 @@ export const getFurionSwapPairABI = async () => {
     let address = getAddress();
     FurionSwapPair.address = ''; // we do not have a pair for address
     return FurionSwapPair;
+}
+
+export const getSeparatePoolFactoryABI = async () => {
+    let address = getAddress();
+    SeparatePoolFactory.address = address['SeparatePoolFactory'];
+    return SeparatePoolFactory;
+}
+
+export const getSeparatePoolABI = async () => {
+    let address = getAddress();
+    SeparatePool.address = '';
+    return SeparatePool;
 }
