@@ -373,7 +373,7 @@ export default {
         },
         {
           img: require("@/assets/images/index/category3.jpg"),
-          remark1: "NFT News of the Wee",
+          remark1: "NFT News of the Week",
         },
       ],
       collectionList: new Array(4).fill({
