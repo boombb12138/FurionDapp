@@ -367,17 +367,17 @@ export default {
       ],
       categoryList: [
         {
-          img: require("@/assets/images/index/swiper1.jpg"),
+          img: require("@/assets/images/index/category1.jpg"),
           remark1: "How to split your NFT into ERC-20 tokens?",
           remark2: "",
         },
         {
-          img: require("@/assets/images/index/swiper2.jpg"),
+          img: require("@/assets/images/index/category2.jpg"),
           remark1: "How to set up MetaMask wallet in Furion?",
           remark2: "",
         },
         {
-          img: require("@/assets/images/index/swiper3.jpg"),
+          img: require("@/assets/images/index/category3.jpg"),
           remark1: "How can different collections aggregate their",
           remark2: "liquidity? ",
         },
