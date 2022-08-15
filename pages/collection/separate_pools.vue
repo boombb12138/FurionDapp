@@ -116,7 +116,7 @@
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
-                {{ scope.row.floor_price.toFixed(2) }}
+                {{ scope.row.floor_price }}
               </div>
             </div>
           </template>
@@ -135,7 +135,7 @@
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
-                {{ scope.row.fXprice.toFixed(2) }}
+                {{ scope.row.fXprice }}
               </div>
             </div>
           </template>
@@ -159,7 +159,8 @@
 
 import {
   nft_info,
-  initNftInfo
+  initNftInfo,
+  initPooledNftInfo
 } from "@/config/nft_info";
 import { mapState } from 'vuex';
 import { getNftWeekPrice } from "@/api/nft_info";
@@ -191,7 +192,8 @@ export default {
     };
   },
   async mounted() {
-    await initNftInfo(this.network);
+    this.nft_info = await initNftInfo(this.network);
+    //this.nft_info = await initPooledNftInfo(this.network);
     this.ready = true;
 
     this.factoryContract = await initSeparatePoolFactoryContract();

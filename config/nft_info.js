@@ -687,10 +687,10 @@ export const initNftInfo = async (network, loadWeek) => {
             volume: raw_data[i]['volume'],
             _24h: `${(raw_data[i]['_24hs'] < 0 ? "" : "+") + (raw_data[i]['_24hs'] * 100).toFixed(2)}%`,
             _7d: `${(raw_data[i]['_7ds'] < 0 ? "" : "+") + (raw_data[i]['_7ds'] * 100).toFixed(2)}%`,
-            floor_price: raw_data[i]['floor_price'],
+            floor_price: raw_data[i]['floor_price'].toFixed(2),
             owners: raw_data[i]['owners'],
             items: raw_data[i]['total_supply'],
-            fXprice: raw_data[i]['reference_price_high'],
+            fXprice: raw_data[i]['reference_price_high'].toFixed(2),
             last7Days: raw_data[i]['week_price'],
             last7Days_type: raw_data[i]['type'],
         };
