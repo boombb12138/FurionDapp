@@ -81,11 +81,11 @@
             </div>
             <div class="text-white font-800 leading-60px text-48px mb-25px">
               <p>Discover , collect , and</p>
-              <p>sell special NFTs</p>
+              <p>sell your NFTs</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
-              <p>New ecosystem towards NFT, for better liquidity,</p>
-              <p>price oracle, and AMM solutions.</p>
+              <p>All-in-one NFT platform for better liquidity,</p>
+              <p>AMM solution, and price oracle</p>
             </div>
             <div class="mt-64px">
               <div class="flex items-center">
@@ -221,7 +221,9 @@
       <ul class="w-1300px flex justify-between">
         <li class="flex flex-col items-center flex-1" v-for="(item, index) in List"
           :key="index">
+          <a @click="clickListItem(item.docs_url)">
           <img :src="require(`@/assets/images/index/pool${index+1}.png`)" />
+          </a>
           <a @click="clickListItem(item.docs_url)">
           <p class="text-16px font-700 text-[#fcfffd] mt-10px mb-14px">{{item.tital}}</p>
           </a>
@@ -254,9 +256,6 @@
           </div>
           <p class="font-500 text-16px text-[#fcfffd] text-center mt-15px">
             {{ item.remark1 }}
-          </p>
-          <p class="font-500 text-16px text-[#fcfffd] text-center mt-15px">
-            {{ item.remark2 }}
           </p>
         </li>
       </ul>
@@ -311,29 +310,29 @@ export default {
       ],
       List: [
         {
-          tital: "NFT pools",
-          remark1: "Lock or store your NFT into our ",
+          tital: "Instant Liquidity",
+          remark1: "Lock or store your NFT into our",
           remark2:  "separate pools to get the instant liquidity",
           remark3:  "",
           docs_url: "furion-pools/furion-separate-pools",
         },
         {
-          tital: "Aggregating liquidity",
+          tital: "Aggregated Liquidity",
           remark1: "Get your market-driven index tokens" ,
           remark2:  "by joining our aggregate pools",
           remark3:  "",
           docs_url: "furion-pools/furion-aggregate-pools",
         },
         {
-          tital: "Swapping",
-          remark1: "Swap any tokens that you want in our ",
+          tital: "AMM Swap",
+          remark1: "Swap any tokens that you want in our",
           remark2:  "automated market maker protocol",
           remark3:  "",
           docs_url: "furion-swap",
         },
         {
-          tital: "Borrowing & Lending",
-          remark1: "Borrow & lend your ERC-20 tokens and ",
+          tital: "Furion Money Market",
+          remark1: "Borrow & lend your ERC-20 tokens and",
           remark2: "NFTs via peer-to-pool pools",
           remark3: "",
           docs_url: "furion-money-market",
@@ -368,18 +367,15 @@ export default {
       categoryList: [
         {
           img: require("@/assets/images/index/category1.jpg"),
-          remark1: "How to split your NFT into ERC-20 tokens?",
-          remark2: "",
+          remark1: "The Story of Furion",
         },
         {
           img: require("@/assets/images/index/category2.jpg"),
-          remark1: "How to set up MetaMask wallet in Furion?",
-          remark2: "",
+          remark1: "Introducing Furion",
         },
         {
           img: require("@/assets/images/index/category3.jpg"),
-          remark1: "How can different collections aggregate their",
-          remark2: "liquidity? ",
+          remark1: "NFT News of the Week",
         },
       ],
       collectionList: new Array(4).fill({
