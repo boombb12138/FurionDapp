@@ -47,7 +47,7 @@
   <div class="w-1150px">
     <div class="flex items-end justify-between mt-70px mb-40px">
       <SwapTab v-model="active"></SwapTab>
-      <div class="flex search-section items-end">
+      <!-- <div class="flex search-section items-end">
         <div class="mr-30px">
           <p class="label">SORT BY</p>
           <el-popover
@@ -72,7 +72,7 @@
           <p class="label">SEARCH</p>
           <el-input v-model="searchKey" placeholder="Searcg Farns" style="width:184px"></el-input>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="pool-stripe pt-55px pl-78px mb-40px">
       <h4 class="text-white text-44px font-900 mb-40px">POOL</h4>

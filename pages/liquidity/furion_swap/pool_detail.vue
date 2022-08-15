@@ -655,7 +655,7 @@ export default {
         let tx_result = await router_contract.methods.removeLiquidity(
           this.single_swap_pool.token_0_address,
           this.single_swap_pool.token_1_address,
-          this.remove_amount * 1e10,
+          toWei(this.remove_amount / 1e8),
           0, 0,
           account,
           current_time + 400).send({ from: account });
