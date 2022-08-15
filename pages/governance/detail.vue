@@ -1,8 +1,4 @@
 <style lang="scss" scoped>
-.bg {
-  background: url('@/assets/images/bg.png') 100% 100% no-repeat;
-  background-attachment: fixed;
-}
 .tag {
   width: 60px;
   height: 28px;
@@ -75,11 +71,7 @@
 }
 
 .mask {
-  background: linear-gradient(
-    179.99deg,
-    rgba(5, 23, 52, 0) -62.58%,
-    #021833 84.88%
-  );
+  background: linear-gradient(179.99deg, rgba(5, 23, 52, 0) -62.58%, #021833 84.88%);
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -116,8 +108,8 @@
 </style>
 
 <template>
-  <div class="px-90px pb-100px -mt-124px bg min-h-100vh">
-    <div class="w-620px pt-124px">
+  <div class="pb-100px min-h-100vh flex">
+    <div class="w-620px pt-60px ml-50px">
       <div class="text-28px leading-42px pr-50px mb-12px">
         OIP-79:Approve FIAT DAO as an OHMDEBTOR
       </div>
@@ -143,10 +135,7 @@
             src="@/assets/images/icon_forward.svg"
             class="w-24px mr-16px cursor-pointer"
           />
-          <img
-            src="@/assets/images/icon_more.svg"
-            class="w-24px cursor-pointer"
-          />
+          <img src="@/assets/images/icon_more.svg" class="w-24px cursor-pointer" />
         </div>
       </div>
 
@@ -169,42 +158,37 @@
             approve-fiat-dao-as-an-ohmdebtor"
               class="text-[#FCFFFD] font-600 hover:underline"
             >
-              https://forum.olympusdao.finance/d/1055-oip-79- Snapshot
-              14,253,491G approve-fiat-dao-as-an-ohmdebtor
+              https://forum.olympusdao.finance/d/1055-oip-79- Snapshot 14,253,491G
+              approve-fiat-dao-as-an-ohmdebtor
             </a>
           </div>
 
           <div>Summary</div>
           <div>
-            FIAT DAO is transitioning away from gOHM-denominated liquidity on
-            Results mainnet Sushiswap to OHM-denominated liquldity on mainnet
-            Uniswap v3.In consultation with the Treasury and Partnerships teams
-            For 1IK OHM 99.86% of the Olympus DAO,we are proposing that we be
-            approved as an OHMDEBTOR at a maximum loan-to-value ratio of 75% so
-            as to Against 15 OHM 0.14% maximize the capital efficiency of our
-            current OHM holdings. Motivation
+            FIAT DAO is transitioning away from gOHM-denominated liquidity on Results
+            mainnet Sushiswap to OHM-denominated liquldity on mainnet Uniswap v3.In
+            consultation with the Treasury and Partnerships teams For 1IK OHM 99.86% of
+            the Olympus DAO,we are proposing that we be approved as an OHMDEBTOR at a
+            maximum loan-to-value ratio of 75% so as to Against 15 OHM 0.14% maximize the
+            capital efficiency of our current OHM holdings. Motivation
           </div>
           <div>
-            FIAT DAO is transitioning away from gOHM-denominated liquidity on
-            Results mainnet Sushiswap to OHM-denominated liquldity on mainnet
-            Uniswap v3.In consultation with the Treasury and Partnerships teams
-            For 1IK OHM 99.86% of the Olympus DAO,we are proposing that we be
-            approved as an OHMDEBTOR at a maximum loan-to-value ratio of 75% so
-            as to Against 15 OHM 0.14% maximize the capital efficiency of our
-            current OHM holdings. Motivation FIAT DAO is transitioning away from
-            gOHM-denominated liquidity on Results mainnet Sushiswap to
-            OHM-denominated liquldity on mainnet Uniswap v3.In consultation with
-            the Treasury and Partnerships teams For 1IK OHM 99.86% of the
-            Olympus DAO,we are proposing that we be approved as an OHMDEBTOR at
-            a maximum loan-to-value ratio of 75% so as to Against 15 OHM 0.14%
-            maximize the capital efficiency of our current OHM holdings.
-            Motivation
+            FIAT DAO is transitioning away from gOHM-denominated liquidity on Results
+            mainnet Sushiswap to OHM-denominated liquldity on mainnet Uniswap v3.In
+            consultation with the Treasury and Partnerships teams For 1IK OHM 99.86% of
+            the Olympus DAO,we are proposing that we be approved as an OHMDEBTOR at a
+            maximum loan-to-value ratio of 75% so as to Against 15 OHM 0.14% maximize the
+            capital efficiency of our current OHM holdings. Motivation FIAT DAO is
+            transitioning away from gOHM-denominated liquidity on Results mainnet
+            Sushiswap to OHM-denominated liquldity on mainnet Uniswap v3.In consultation
+            with the Treasury and Partnerships teams For 1IK OHM 99.86% of the Olympus
+            DAO,we are proposing that we be approved as an OHMDEBTOR at a maximum
+            loan-to-value ratio of 75% so as to Against 15 OHM 0.14% maximize the capital
+            efficiency of our current OHM holdings. Motivation
           </div>
         </div>
         <div class="mask" v-if="!morePost"></div>
-        <div class="more" v-if="!morePost" @click="morePost = true">
-          Show more
-        </div>
+        <div class="more" v-if="!morePost" @click="morePost = true">Show more</div>
       </div>
 
       <div :class="{ moreTable: !moreList }">
@@ -254,7 +238,7 @@
       </div>
     </div>
 
-    <div class="fixed top-140px left-1050px w-300px">
+    <div class="fixed top-140px center-x w-300px ml-480px">
       <div class="card mb-20px">
         <div class="title">Information</div>
         <div class="content">
@@ -310,21 +294,13 @@
             <div class="opacity-60">For11KOHM</div>
             <div class="opacity-60">99.86%</div>
           </div>
-          <el-progress
-            :percentage="99"
-            :show-text="false"
-            class="mb-18px"
-          ></el-progress>
+          <el-progress :percentage="99" :show-text="false" class="mb-18px"></el-progress>
 
           <div class="flex justify-between items-center h-24px mb-6px">
             <div class="opacity-60">Against15 OHM</div>
             <div class="opacity-60">0.14%</div>
           </div>
-          <el-progress
-            :percentage="1"
-            :show-text="false"
-            class="mb-10px"
-          ></el-progress>
+          <el-progress :percentage="1" :show-text="false" class="mb-10px"></el-progress>
         </div>
       </div>
     </div>
@@ -333,8 +309,9 @@
 
 <script>
 export default {
+  layout: "governance",
   async asyncData({ store, $axios, app, query }) {
-    store.commit('update', ['admin.activeMenu', '/governance']);
+    store.commit("update", ["admin.activeMenu", "/governance"]);
   },
   props: {},
   components: {},
@@ -343,10 +320,10 @@ export default {
     let list = [];
     list.length = 6;
     list.fill({
-      avatar: require('@/assets/images/avatar_g.png'),
-      address: '0x3459.5sCC',
-      type: 'For',
-      detail: '2.2K OHM 22',
+      avatar: require("@/assets/images/avatar_g.png"),
+      address: "0x3459.5sCC",
+      type: "For",
+      detail: "2.2K OHM 22",
     });
     return {
       list,
@@ -360,10 +337,10 @@ export default {
       let arr = [];
       arr.length = 6;
       arr.fill({
-        avatar: require('@/assets/images/avatar_g.png'),
-        address: '0x3459.5sCC',
-        type: 'For',
-        detail: '2.2K OHM 22',
+        avatar: require("@/assets/images/avatar_g.png"),
+        address: "0x3459.5sCC",
+        type: "For",
+        detail: "2.2K OHM 22",
       });
       this.list = [...this.list, ...arr];
       this.moreList = true;
