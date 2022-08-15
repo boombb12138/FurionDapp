@@ -30,10 +30,10 @@
     // left: -50%;
   }
   .submenu-list-wrap {
-    width: 162px;
+    width: 200px;
     height: 90px;
     background: url(@/assets/images/index/menu_bg.png);
-    background-position: -20px -11px;
+    background-position: -10px -20px;
     position: absolute;
     top: 70px;
     left: -5px;
@@ -115,7 +115,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/borrow">Borrow & Lending</nuxt-link>
+                  <nuxt-link to="/liquidity/borrow">Borrowing & Lending</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/liquidity/furion_swap/swap">Furion Swap</nuxt-link>
@@ -219,7 +219,7 @@ export default {
     activeMenu() {
       return this.$store.state.admin.activeMenu;
     },
-    
+
   },
   data() {
     return {
