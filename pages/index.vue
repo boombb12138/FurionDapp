@@ -89,12 +89,12 @@
             </div>
             <div class="mt-64px">
               <div class="flex items-center">
-                <div class="btn_border w-160px mr-35px">
-                  <el-button type="primary" class="!w-160px !h-56px">EXPLORE</el-button>
+                <div class="btn_border w-190px mr-35px">
+                  <el-button type="primary" class="!w-190px !h-56px">SEE COLLECTIONS</el-button>
                 </div>
                 <div class="btn_border">
-                  <el-button type="primary" plain class="!w-160px !h-56px"
-                    >CREATE</el-button
+                  <el-button type="primary" plain class="!w-190px !h-56px"
+                    >GET MY NFT PASS</el-button
                   >
                 </div>
               </div>
