@@ -145,13 +145,13 @@ export default {
     ClickOutside,
   },
   async mounted() {
-    setTimeout(()=>{
-console.log('User connected?', this.userInfo.isConnect)
-    if (!this.userInfo.isConnect) {
-      this.isShow = true;
-    }
+    setTimeout(() => {
+      // console.log('User connected?', this.userInfo.isConnect)
+      if (!this.userInfo.isConnect) {
+        this.isShow = true;
+      }
     }, 200)
-    
+
     // await this.connectWallet();
   },
   methods: {
@@ -211,7 +211,7 @@ console.log('User connected?', this.userInfo.isConnect)
     },
     hide(e) {
       // console.log(e.target.id);
-      if(!this.userInfo.isConnect){
+      if (!this.userInfo.isConnect) {
         return
       }
       if (e.target.id === "wallet-icon") {
