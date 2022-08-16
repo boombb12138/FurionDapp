@@ -703,7 +703,7 @@ export const initNftInfo = async (network, loadWeek) => {
         };
     });
 
-    console.log(final_result)
+    // console.log(final_result)
 
 
     nft_info.nft_list = final_result;

@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { getProvider, providerFromEther_test, providerFromEther } from './provider';
 
 export const ETHEREUM_MAINNET_PARAMS = {
-  chainId: '1',
+  chainId: '0x1',
   chainName: 'Ethereum Mainnet',
   nativeCurrency: {
     name: 'Ether',
@@ -14,7 +14,7 @@ export const ETHEREUM_MAINNET_PARAMS = {
 };
 
 export const ETHEREUM_TESTNET_PARAMS = {
-  chainId: '4',
+  chainId: '0x4',
   chainName: 'Ethereum Rinkeby Testnet',
   nativeCurrency: {
     name: 'Ether',

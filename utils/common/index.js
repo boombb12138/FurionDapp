@@ -267,16 +267,16 @@ export const _formatString = (value, length) => {
   return value.substr(0, length - half_length) + '...' + value.substr(-half_length);
 }
 
-export const showUserAddressText = userInfo => {
+export const _showUserAddressText = userInfo => {
   let addressText;
   const fullAddress = userInfo.userAddress;
   if (fullAddress) {
     addressText =
       fullAddress.substr(0, 1) +
       fullAddress.substr(1, 1).toLowerCase() +
-      fullAddress.substr(2, 5) +
+      fullAddress.substr(2, 7) +
       '...' +
-      fullAddress.substr(-5);
+      fullAddress.substr(-7);
   }
   return addressText;
 };

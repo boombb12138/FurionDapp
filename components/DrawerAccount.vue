@@ -163,7 +163,7 @@
                 <div class="flex items-center">
                   <img class="mr-15px" src="@/assets/images/drawer/case.svg" />
                   <p class="text-[rgba(252,255,253,0.9)] font-600 text-16px">
-                    OxA7A8a51D…bB357A36
+                    {{showUserAddress()}}
                   </p>
                 </div>
                 <img
@@ -378,10 +378,15 @@
 
 <script>
 import ClickOutside from "vue-click-outside";
+import { mapState } from 'vuex';
+import { _showUserAddressText } from "@/utils/common";
 export default {
   props: {},
   components: {},
-  computed: {},
+  computed: {
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
+  },
   data() {
     return {
       isShow: false,
@@ -419,6 +424,9 @@ export default {
   },
   mounted() {},
   methods: {
+    showUserAddress(){
+      return _showUserAddressText(this.userInfo);
+    },
     more() {
       this.notifications = [
         ...this.notifications,
@@ -446,7 +454,7 @@ export default {
       // this.isShow = !this.isShow;
     },
     hide(e) {
-      console.log("e.target.id", e.target.id);
+      // console.log("e.target.id", e.target.id);
       if (e.target.id === "avatar-icon") {
         this.isShow = !this.isShow;
       } else {

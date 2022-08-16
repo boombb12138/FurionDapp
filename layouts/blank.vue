@@ -6,9 +6,9 @@
 }
 </style>
 <template>
-  <div class="relative">
+  <div class="relative text-[#FCFFFD]">
     <img src="@/assets/images/light_left_bg.png" class="light-left pointer-events-none" />
-    <AdminHeader :transparent="transparent"></AdminHeader>
+    <AdminHeader></AdminHeader>
     <nuxt />
   </div>
 </template>
@@ -25,10 +25,10 @@ export default {
     ],
   },
   computed: {
-    transparent() {
-      let list = ['/faq', '/governance', '/governance/detail'];
-      return list.includes(this.$route.path);
-    },
+    // transparent() {
+    //   let list = ['/faq', '/governance', '/governance/detail'];
+    //   return list.includes(this.$route.path);
+    // },
   },
   data() {
     return {};
