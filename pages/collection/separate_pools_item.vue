@@ -137,6 +137,7 @@
               </div> -->
             </div>
           </div>
+
           <div class="flex items-center h-94px">
             <div>
               <a :href="separate_pool_info.twitter_link" target="_blank" class="block link flex items-center mr-42px">
@@ -175,6 +176,7 @@
         </div>
       </div>
 
+      <!-- Rate collection, button to start store and lock -->
       <div class="-mt-20px">
         <div class="flex justify-between items-start mb-20px">
           <div>
@@ -199,7 +201,7 @@
           </div>
         </div>
 
-        <!-- search place and button and list -->
+        <!-- search bar and item sorting -->
         <div class="flex justify-between items-center mb-12px">
           <el-input placeholder="Search by name or attribute" v-model="searchKey" class="search !w-858px" clearable
             @input="search">
@@ -241,6 +243,7 @@
           </el-popover>
         </div>
 
+        <!-- Filter checkboxes -->
         <div>
           <el-checkbox-group v-model="checkList">
             <el-checkbox label="ALL"></el-checkbox>
@@ -252,10 +255,12 @@
         <!-- grid for NFT items -->
         <div class="pb-150px grid grid-cols-4 mt-20px">
           <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index" @click="clickItem(item)">
+            <!-- NFT image -->
             <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
               <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
             </el-image>
             <div class="px-15px">
+              <!-- Collection name and NFT price -->
               <div class="flex justify-between items-center mb-10px">
                 <div class="opacity-40 text-13px w-180px line-clamp-1 overflow-ellipsis !block">
                   {{ separate_pool_info.collection }}
@@ -268,6 +273,7 @@
                 </div>
               </div>
               <div class="flex items-center justify-between text-13px">
+                <!-- NFT info -->
                 <div class="font-600 flex-1 mr-10px flex w-110px">
                   <span class="line-clamp-1 overflow-ellipsis !block mr-4px">
                     {{ separate_pool_info.symbol }}
@@ -275,13 +281,15 @@
                   <span class="flex-shrink-0">#{{ item.token_id }}</span>
                 </div>
 
+                <!-- Add to cart button -->
                 <div class="btn2 mr-5px" @click.stop="toCart(item)">
                   <img src="@/assets/images/cart.png" class="icon mr-5px -mt-1px" />
                   <img src="@/assets/images/cart2.png" class="icon2 mr-5px -mt-1px" />
                   CART
                 </div>
 
-                <div class="btn2">
+                <!-- Buy button -->
+                <div class="btn2" @click.stop="buy(item.token_id)">
                   <img src="@/assets/images/buy.png" class="icon mr-5px" />
                   <img src="@/assets/images/buy2.png" class="icon2 mr-5px" />
                   BUY
@@ -305,6 +313,7 @@
       </div>
     </div>
 
+    <!-- Modal box for storing and locking NFTs -->
     <el-dialog title="NFT Contract Address:" :visible.sync="dialogVisible" width="850px" :close-on-click-modal="false"
       append-to-body custom-class="el-dialog-dark">
       <div slot="title" class="flex font-800 text-20px">
@@ -321,6 +330,7 @@
         </el-popover>
       </div>
 
+      <!-- Azuki examples -->
       <div class="h-474px mb-35px">
         <el-scrollbar class="h-1/1">
           <div class="grid grid-cols-3 gap-y-38px">
@@ -330,14 +340,15 @@
         </el-scrollbar>
       </div>
 
+      <!-- Lock/Store buttons -->
       <div class="flex justify-between items-center pr-44px">
         <div></div>
         <div class="flex">
           <div class="btn_border mr-15px">
-            <el-button plain class="!w-124px !h-38px !p-0">LOCK</el-button>
+            <el-button plain class="!w-124px !h-38px !p-0" @click="lock(nftToPool)">LOCK</el-button>
           </div>
           <div class="btn_border">
-            <el-button type="primary" class="!w-124px !h-38px !p-0">STORE</el-button>
+            <el-button type="primary" class="!w-124px !h-38px !p-0" @click="store(nftToPool)">STORE</el-button>
           </div>
         </div>
       </div>
@@ -346,9 +357,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import {
   separate_pool_info, default_pool_info,
-  initSeparatePoolInfo, initTokenImage,
+  initSeparatePoolInfo, initSeparatePoolContract, initTokenImage,
   defaultSeparatePoolInfo
 } from '@/config/separate_pool';
 import {
@@ -356,6 +368,9 @@ import {
   _formatNumber,
 } from "@/utils/common";
 import { nft_item } from '@/config/nft_item';
+import { tokenBalance, tokenAllowanceCheck, getTxURL, toWei } from '@/utils/common';
+import addressStore from "@/assets/abis/address.json";
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
@@ -363,6 +378,8 @@ export default {
   props: {},
   components: {},
   computed: {
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
     cart() {
       return this.$store.state.user.cart;
     },
@@ -379,6 +396,8 @@ export default {
       searchKey: "",
       nft_item: nft_item,
       sort: "Price low to high",
+      poolContract: {},
+      nftToPool: [],
     };
   },
   async mounted() {
@@ -387,6 +406,7 @@ export default {
     await initSeparatePoolInfo(this.collection, this.network);
     // this.separate_pool_info = separate_pool_info;
     // this.$forceUpdate();
+    this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address);
     await initTokenImage(this.separate_pool_info, this.network);
     this.ready = true;
   },
@@ -420,9 +440,70 @@ export default {
       nft_item.fXprice = separate_pool_info.fXprice;
       nft_item.image = item.image_url;
 
-      console.log('NFT item', nft_item);
+      // console.log('NFT item', nft_item);
       this.$router.push('/collection/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id);
-    }
+    },
+    async buy(tokenId) {
+      let account = this.userInfo.userAddress;
+
+      try {
+        let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
+        this.successMessage(tx_result, 'Buy NFT succeeded');
+      } catch(e) {
+        this.errorMessage('Buy NFT failed');
+        return
+      }
+    },
+    async store(tokenIds) {
+      let account = this.userInfo.userAddress;
+
+      if(tokenIds.length == 0) {
+        this.errorMessage("No NFTs selected");
+        return
+      } else {
+        try {
+          let tx_result = await this.poolContract.contract.methods.sell(tokenIds).send({ from: account });
+          this.successMessage(tx_result, 'Store NFT succeeded');
+          this.nftToPool = [];
+        } catch(e) {
+          this.errorMesssage('Store NFT failed');
+          return
+        }
+      }
+    },
+    async lock(tokenIds) {
+      let account = this.userInfo.userAddress
+
+      if(tokenIds.length == 0) {
+        this.errorMessage("No NFTs selected");
+        return
+      } else {
+        try {
+          let tx_result = await this.poolContract.contract.methods.lock(tokenIds).send({ from: account });
+          this.successMessage(tx_result, 'Lock NFT succeeded');
+          this.nftToPool = [];
+        } catch(e) {
+          this.errorMesssage('Lock NFT failed');
+          return
+        }
+      }
+    },
+    successMessage(receipt, title) {
+      const txURL = getTxURL(receipt.transactionHash);
+      this.$notify({
+        title: title,
+        dangerouslyUseHTMLString: true,
+        message: txURL,
+        type: 'success',
+      });
+    },
+    errorMessage(title) {
+      this.$notify.error({
+        title: title,
+        message: '',
+        dangerouslyUseHTMLString: true,
+      });
+    },
   },
 };
 </script>
