@@ -360,16 +360,17 @@
 import { mapState } from 'vuex';
 import {
   separate_pool_info, default_pool_info,
-  initSeparatePoolInfo, initSeparatePoolContract, initTokenImage,
-  defaultSeparatePoolInfo
+  initSeparatePoolInfo, initSeparatePoolContract, initFurContract,
+  initTokenImage, defaultSeparatePoolInfo
 } from '@/config/separate_pool';
 import {
   _formatString,
   _formatNumber,
 } from "@/utils/common";
 import { nft_item } from '@/config/nft_item';
-import { tokenBalance, tokenAllowanceCheck, getTxURL, toWei } from '@/utils/common';
+import { getTxURL, toWei } from '@/utils/common';
 import addressStore from "@/assets/abis/address.json";
+import { newMultiCallProvider } from "@/utils/web3/multicall";
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -385,6 +386,7 @@ export default {
     },
   },
   data() {
+    const multicall = newMultiCallProvider(4);
     return {
       collection: this.$route.query.collection,
       network: 'rinkeby',
@@ -397,7 +399,9 @@ export default {
       nft_item: nft_item,
       sort: "Price low to high",
       poolContract: {},
+      furContract: {},
       nftToPool: [],
+      multicall: multicall,
     };
   },
   async mounted() {
@@ -406,8 +410,9 @@ export default {
     await initSeparatePoolInfo(this.collection, this.network);
     // this.separate_pool_info = separate_pool_info;
     // this.$forceUpdate();
-    this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address);
     await initTokenImage(this.separate_pool_info, this.network);
+    this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address);
+    this.furContract = await initFurContract();
     this.ready = true;
   },
   methods: {
@@ -430,7 +435,7 @@ export default {
     },
     clickItem(item) {
       nft_item.collection = separate_pool_info.collection;
-      nft_item.address = separate_pool_info.address;
+      nft_item.address = separate_pool_info.nft_address;
       nft_item.token_id = item.token_id;
       nft_item.symbol = separate_pool_info.symbol;
       nft_item.description = separate_pool_info.description;
@@ -443,49 +448,114 @@ export default {
       // console.log('NFT item', nft_item);
       this.$router.push('/collection/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id);
     },
+
+    /** Balance & allowance checks **/
+
+    async hasEnoughFur(account, lockAmount) {
+      let array = [false, false];
+
+      let multicall_list = [
+        this.furContract.contract.methods.balanceOf(account),
+        this.furContract.contract.methods.allowance(account, this.poolContract.address)
+      ];
+      const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
+
+      const requiredAmount = toWei(150 * lockAmount);
+      if(result[0] > requiredAmount) {
+        array[0] = true;
+      }
+      if(result[1] > requiredAmount) {
+        array[1] = true;
+      }
+
+      return array
+    },
+    async hasEnoughFx(account) {
+      let array = [false, false];
+
+      let multicall_list = [
+        this.poolContract.contract.methods.balanceOf(account),
+        this.poolContract.contract.methods.allowance(account, this.poolContract.address)
+      ];
+      const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
+
+      const requiredAmount = toWei(1000);
+      if(result[0] > requiredAmount) {
+        array[0] = true;
+      }
+      if(result[1] > requiredAmount) {
+        array[1] = true;
+      }
+
+      return array
+    },
+
+    /** Contract functions **/
+
     async buy(tokenId) {
-      let account = this.userInfo.userAddress;
+      const account = this.userInfo.userAddress;
+      const check = await this.hasEnoughFx(account);
+
+      if(!check[0]) {
+        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
+        return;
+      }
+      if(!check[1]) {
+        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} allowance`);
+        return;
+      }
 
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
-        this.successMessage(tx_result, 'Buy NFT succeeded');
+        this.successMessage(tx_result, 'Purchase succeeded');
       } catch(e) {
-        this.errorMessage('Buy NFT failed');
-        return
+        this.errorMessage('Purchase failed');
+        return;
       }
     },
     async store(tokenIds) {
-      let account = this.userInfo.userAddress;
+      const account = this.userInfo.userAddress;
 
       if(tokenIds.length == 0) {
         this.errorMessage("No NFTs selected");
-        return
       } else {
         try {
           let tx_result = await this.poolContract.contract.methods.sell(tokenIds).send({ from: account });
-          this.successMessage(tx_result, 'Store NFT succeeded');
+          this.successMessage(tx_result, 'Store succeeded');
           this.nftToPool = [];
         } catch(e) {
-          this.errorMesssage('Store NFT failed');
+          this.errorMesssage('Store failed');
           return
         }
       }
     },
     async lock(tokenIds) {
-      let account = this.userInfo.userAddress
+      const lockAmount = tokenIds.length;
 
-      if(tokenIds.length == 0) {
+      if(lockAmount == 0) {
         this.errorMessage("No NFTs selected");
-        return
-      } else {
-        try {
-          let tx_result = await this.poolContract.contract.methods.lock(tokenIds).send({ from: account });
-          this.successMessage(tx_result, 'Lock NFT succeeded');
-          this.nftToPool = [];
-        } catch(e) {
-          this.errorMesssage('Lock NFT failed');
-          return
-        }
+        return;
+      }
+
+      const account = this.userInfo.userAddress;
+      const check = await this.hasEnoughFur(account, lockAmount);
+
+      if(!check[0]) {
+        this.errorMessage("Insufficient FUR balance");
+        return;
+      }
+      if(!check[1]) {
+        this.errorMessage("Insufficient FUR allowance");
+        return;
+      }
+
+      try {
+        let tx_result = await this.poolContract.contract.methods.lock(tokenIds).send({ from: account });
+        this.successMessage(tx_result, 'Lock succeeded');
+        this.nftToPool = [];
+      } catch(e) {
+        this.errorMesssage('Lock failed');
+        return;
       }
     },
     successMessage(receipt, title) {

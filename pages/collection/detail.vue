@@ -323,7 +323,8 @@
 <script>
 import { mapState } from 'vuex';
 import { nft_item, initNftItem } from '@/config/nft_item';
-import { initSeparatePoolContract } from "@/config/separate_pool"
+import { initSeparatePoolContract } from "@/config/separate_pool";
+import { newMultiCallProvider } from "@/utils/web3/multicall";
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -339,6 +340,7 @@ export default {
     },
   },
   data() {
+    const multicall = newMultiCallProvider(4);
     return {
       html: "",
       network: "rinkeby",
@@ -383,33 +385,69 @@ export default {
         },
       ],
       comments: [{}, {}, {}],
+      multicall: multicall,
     };
   },
   async mounted() {
     this.nft_item = await initNftItem(this.nft_item, this.$route.query.collection, this.$route.query.token_id, this.network);
-
-    this.poolContract = await initSeparatePoolContract(this.nft_item.address);
 
     this.comments = this.comments.map((item) => {
       return {
         show: false,
       };
     });
+
+    this.poolContract = await initSeparatePoolContract(this.nft_item.address);
   },
   methods: {
     toCart() {
       let arr = [...this.cart, 1];
       this.$store.commit("save", ["user.cart", arr, this]);
     },
+
+    /** Balance & allowance checks **/
+
+    async hasEnoughFx(account) {
+      let array = [false, false];
+
+      let multicall_list = [
+        this.poolContract.contract.methods.balanceOf(account),
+        this.poolContract.contract.methods.allowance(account, this.poolContract.address)
+      ];
+      const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
+
+      const requiredAmount = toWei(1000);
+      if(result[0] > requiredAmount) {
+        array[0] = true;
+      }
+      if(result[1] > requiredAmount) {
+        array[1] = true;
+      }
+
+      return array
+    },
+
+    /** Contract functions **/
+
     async buy() {
-      let account = this.userInfo.userAddress;
+      const account = this.userInfo.userAddress;
+      const check = await this.hasEnoughFx(account);
+
+      if(!check[0]) {
+        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
+        return;
+      }
+      if(!check[1]) {
+        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} allowance`);
+        return;
+      }
 
       try {
         let tx_result = await this.poolContract.contract.methods.buy(this.nft_item.token_id).send({ from: account });
-        this.successMessage(tx_result, 'NFT purchase succeeded');
+        this.successMessage(tx_result, 'Purchase succeeded');
       } catch(e) {
-        this.errorMessage('NFT purchase failed');
-        return
+        this.errorMessage('Purchase failed');
+        return;
       }
     },
     successMessage(receipt, title) {
