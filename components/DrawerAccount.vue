@@ -12,24 +12,27 @@
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
   border-radius: 12px;
   overflow: hidden;
+
   &.isShow {
     transform: translateX(0);
   }
+
   .drawer-header {
     height: 80px;
     background: #1c2a4f;
     box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.3);
+
     .header-tab {
       color: rgba(252, 255, 253, 0.6);
       position: relative;
+
       &.active {
         color: #ff88eb;
         font-weight: 700;
-        background: linear-gradient(
-          0deg,
-          rgba(110, 101, 168, 0.4) -61.36%,
-          rgba(110, 101, 168, 0) 95.45%
-        );
+        background: linear-gradient(0deg,
+            rgba(110, 101, 168, 0.4) -61.36%,
+            rgba(110, 101, 168, 0) 95.45%);
+
         &::after {
           content: "";
           display: block;
@@ -48,54 +51,66 @@
     @apply absolute left-0 top-0 w-420px h-944px;
     background: url(@/assets/images/drawer/border_top2.png) -1px -1px/ 422px 944px no-repeat;
   }
+
   .wrap-bg-bottom {
     @apply absolute left-0 bottom-0 w-420px h-944px;
-    background: url(@/assets/images/drawer/border_bottom2.png) -1px 1px/ 422px 944px
-      no-repeat;
+    background: url(@/assets/images/drawer/border_bottom2.png) -1px 1px/ 422px 944px no-repeat;
   }
+
   .drawer-scroll-wrap {
     height: calc(100vh - 160px - 40px);
     margin-left: -2px;
   }
+
   .section {
     background: rgba(1, 17, 41, 0.4);
     border-radius: 12px;
     padding: 12px 20px 20px;
   }
+
   .section-title {
     font-size: 14px;
     color: rgba(252, 255, 253, 0.6);
     font-weight: 500;
     line-height: 28px;
   }
+
   .form-item {
     @apply flex items-center cursor-pointer;
+
     .icon-wrap {
-      @apply w-30px h-30px flex items-center justify-center mr-19px bg-[rgba(109,121,139,0.4)] rounded-8px;
+      @apply w-30px h-30px flex items-center justify-center mr-19px bg-[rgba(109, 121, 139, 0.4)] rounded-8px;
     }
+
     .label {
-      @apply text-[rgba(252,255,253,0.8)] text-13px leading-28px font-600;
+      @apply text-[rgba(252, 255, 253, 0.8)] text-13px leading-28px font-600;
     }
   }
+
   .form-item2 {
-    @apply cursor-pointer flex items-center justify-between text-[rgba(252,255,253,0.8)] font-600 text-14px;
+    @apply cursor-pointer flex items-center justify-between text-[rgba(252, 255, 253, 0.8)] font-600 text-14px;
+
     .icon {
       @apply w-34px h-34px mr-14px;
     }
   }
+
   .notification-item {
     padding: 9px 16px 12px 14px;
     background: rgba(1, 17, 41, 0.4);
     border-radius: 12px;
     margin-bottom: 14px;
     @apply flex items-center;
+
     .icon-wrap {
-      @apply w-34px h-34px flex items-center justify-center mr-16px rounded-8px bg-[rgba(217,217,217,0.26)] flex-shrink-0;
+      @apply w-34px h-34px flex items-center justify-center mr-16px rounded-8px bg-[rgba(217, 217, 217, 0.26)] flex-shrink-0;
     }
   }
+
   .close-btn {
     opacity: 0.3;
     @apply absolute top-18px right-18px cursor-pointer z-10;
+
     &:hover {
       opacity: 1;
     }
@@ -120,42 +135,33 @@
 
 <template>
   <div>
-    <img
-      id="avatar-icon"
-      class="cursor-pointer"
-      src="@/assets/images/index/avatar.svg"
-      @click="toggle"
-    />
+    <img id="avatar-icon" class="cursor-pointer" src="@/assets/images/index/avatar.svg" @click="toggle" />
     <div v-click-outside="hide" class="drawer-wrap" :class="{ isShow }">
       <div class="wrap-bg-top"></div>
       <div class="wrap-bg-bottom"></div>
-      <img
-        class="close-btn"
-        src="@/assets/images/drawer/close_active.svg"
-        @click.stop="isShow = false"
-      />
+      <img class="close-btn" src="@/assets/images/drawer/close_active.svg" @click.stop="isShow = false" />
+
+      <!-- header for tab switch -->
       <div class="drawer-header flex pt-17px cursor-pointer">
-        <div
-          class="header-tab flex flex-1 items-center justify-center w-1/1"
-          :class="{ active: tab === 'account' }"
-          @click="changeTab('account')"
-        >
+        <div class="header-tab flex flex-1 items-center justify-center w-1/1" :class="{ active: tab === 'account' }"
+          @click="changeTab('account')">
           <img v-if="tab === 'account'" src="@/assets/images/drawer/avatar_pink.svg" />
           <img v-else src="@/assets/images/drawer/avatar.svg" />
           <p class="ml-5px mt-3px">Account</p>
         </div>
-        <div
-          class="header-tab flex flex-1 items-center justify-center w-1/1"
-          :class="{ active: tab === 'notification' }"
-          @click="changeTab('notification')"
-        >
+        <div class="header-tab flex flex-1 items-center justify-center w-1/1"
+          :class="{ active: tab === 'notification' }" @click="changeTab('notification')">
           <img v-if="tab === 'notification'" src="@/assets/images/drawer/bell_pink.svg" />
           <img v-else src="@/assets/images/drawer/bell.svg" />
           <p class="ml-5px">Notifications</p>
         </div>
       </div>
+
+
       <div class="py-35px px-12px overflow-hidden">
         <el-scrollbar class="drawer-scroll-wrap overflow-hidden w-401px">
+
+          <!-- account view -->
           <div v-if="tab === 'account'">
             <div class="section mb-15px">
               <p class="section-title mb-20px">Connected wallet</p>
@@ -163,23 +169,21 @@
                 <div class="flex items-center">
                   <img class="mr-15px" src="@/assets/images/drawer/case.svg" />
                   <p class="text-[rgba(252,255,253,0.9)] font-600 text-16px">
-                    {{showUserAddress()}}
+                    {{ showUserAddress() }}
                   </p>
                 </div>
-                <img
-                  class="cursor-pointer"
-                  src="@/assets/images/drawer/copy.svg"
-                  @click="copy"
-                />
+                <img class="cursor-pointer" src="@/assets/images/drawer/copy.svg" @click="copy" />
               </div>
-              <div class="flex justify-between items-center font-500 text-13px">
+              <!-- <div class="flex justify-between items-center font-500 text-13px">
+                <p class="text-[#ff88eb] cursor-pointer leading-28px"></p>
                 <p class="text-[rgba(252,255,253,0.4)] leading-28px">
                   Connected with MetaMask
                 </p>
-                <p class="text-[#ff88eb] cursor-pointer leading-28px">Change provider</p>
-              </div>
+
+              </div> -->
             </div>
 
+            <!-- my profile -->
             <div class="section mb-15px" v-show="isShowProfile">
               <p class="section-title mb-20px">My profile</p>
               <div class="ml-16px">
@@ -196,25 +200,16 @@
                   <p class="label">Notification Preferences</p>
                 </div>
                 <div class="flex mb-22px">
-                  <div
-                    class="form-item flex-1"
-                    @click="profile.comment = !profile.comment"
-                  >
+                  <div class="form-item flex-1" @click="profile.comment = !profile.comment">
                     <div class="icon-wrap">
-                      <img
-                        v-if="profile.comment"
-                        src="@/assets/images/drawer/checkbox_checked.svg"
-                      />
+                      <img v-if="profile.comment" src="@/assets/images/drawer/checkbox_checked.svg" />
                       <img v-else src="@/assets/images/drawer/checkbox_empty.svg" />
                     </div>
                     <p class="label">Comment</p>
                   </div>
                   <div class="form-item flex-1" @click="profile.alert = !profile.alert">
                     <div class="icon-wrap">
-                      <img
-                        v-if="profile.alert"
-                        src="@/assets/images/drawer/checkbox_checked.svg"
-                      />
+                      <img v-if="profile.alert" src="@/assets/images/drawer/checkbox_checked.svg" />
                       <img v-else src="@/assets/images/drawer/checkbox_empty.svg" />
                     </div>
                     <p class="label">Liquidation alert</p>
@@ -223,10 +218,7 @@
                 <div class="flex mb-22px">
                   <div class="form-item flex-1" @click="profile.news = !profile.news">
                     <div class="icon-wrap">
-                      <img
-                        v-if="profile.news"
-                        src="@/assets/images/drawer/checkbox_checked.svg"
-                      />
+                      <img v-if="profile.news" src="@/assets/images/drawer/checkbox_checked.svg" />
                       <img v-else src="@/assets/images/drawer/checkbox_empty.svg" />
                     </div>
                     <p class="label">Hot News</p>
@@ -241,6 +233,7 @@
               </div>
             </div>
 
+            <!-- quick links -->
             <div class="section mb-15px" v-show="!isShowProfile">
               <p class="section-title mb-20px">Quicklinks</p>
               <div class="ml-16px">
@@ -307,61 +300,55 @@
               <p class="section-title mb-20px">Wallet balances</p>
               <div class="form-item2 mb-24px">
                 <div class="flex items-center">
-                  <img class="icon" src="@/assets/images/drawer/eth.svg" />
+                  <img class="icon" src="@/assets/images/liquidity/tokens/ETH.png" />
                   <p>ETH</p>
                 </div>
-                <p>0.22</p>
+                <p>{{formatNumber(eth_balance, 3)}}</p>
               </div>
               <div class="form-item2 mb-24px">
                 <div class="flex items-center">
-                  <img class="icon" src="@/assets/images/drawer/weth.svg" />
-                  <p>WETH</p>
+                  <img class="icon" src="@/assets/images/liquidity/tokens/FUR.png" />
+                  <p>FUR</p>
                 </div>
-                <p>0.0000</p>
+                <p>{{formatNumber(fur_balance, 3)}}</p>
               </div>
-              <div class="form-item2 mb-40px">
+              <!-- <div class="form-item2 mb-40px">
                 <div class="flex items-center">
                   <img class="icon" src="@/assets/images/drawer/bend.svg" />
                   <p>BEND</p>
                 </div>
                 <p>0.00</p>
-              </div>
-              <div class="flex justify-between">
+              </div> -->
+
+              <!-- final two buttons -->
+              <!-- <div class="flex justify-between">
                 <div class="btn_border w-170px">
                   <el-button type="primary" class="!w-170px !h-48px">WRAP</el-button>
                 </div>
                 <div class="btn_border w-170px">
                   <el-button type="primary" class="!w-170px !h-48px">UNWRAP</el-button>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
+
+          <!-- notification view -->
           <div v-if="tab === 'notification'" class="pb-20px">
             <ul>
-              <li
-                class="notification-item"
-                v-for="(item, index) in notifications"
-                :key="index"
-              >
+              <li class="notification-item" v-for="(item, index) in notifications" :key="index">
                 <div class="icon-wrap">
                   <img src="@/assets/images/drawer/case2.svg" />
                 </div>
                 <div>
                   <div class="flex items-center justify-between">
-                    <p
-                      class="title font-600 leading-28px text-[rgba(252,255,253,0.8)] mb-3px"
-                    >
+                    <p class="title font-600 leading-28px text-[rgba(252,255,253,0.8)] mb-3px">
                       {{ item.title }}
                     </p>
-                    <p
-                      class="time text-12px font-600 leading-28px text-[rgba(252,255,253,0.3)]"
-                    >
+                    <p class="time text-12px font-600 leading-28px text-[rgba(252,255,253,0.3)]">
                       {{ item.time }}
                     </p>
                   </div>
-                  <div
-                    class="content text-[rgba(252,255,253,0.4)] font-500 text-13px leading-17px"
-                  >
+                  <div class="content text-[rgba(252,255,253,0.4)] font-500 text-13px leading-17px">
                     {{ item.content }}
                   </div>
                 </div>
@@ -379,7 +366,15 @@
 <script>
 import ClickOutside from "vue-click-outside";
 import { mapState } from 'vuex';
-import { _showUserAddressText } from "@/utils/common";
+import { fromWei, _showUserAddressText, _formatNumber, getNativeTokenAmount } from "@/utils/common";
+import { getContract } from "@/utils/common";
+
+import Vue from "vue";
+import VueClipboard from 'vue-clipboard2'
+Vue.use(VueClipboard);
+
+import {getFurionTokenABI, getAddress} from "@/utils/common/contractABI";
+
 export default {
   props: {},
   components: {},
@@ -389,9 +384,11 @@ export default {
   },
   data() {
     return {
-      isShow: false,
-      isShowProfile: true,
+      isShow: true,
+      isShowProfile: false,
       tab: "account", // account notification
+      fur_balance: 0,
+      eth_balance: 0,
       notifications: [
         {
           title: "Connected wallet",
@@ -422,9 +419,27 @@ export default {
   directives: {
     ClickOutside,
   },
-  mounted() {},
+  async mounted() { 
+    setTimeout(()=>{
+ this.getBalance();
+    }, 500)
+   
+  },
   methods: {
-    showUserAddress(){
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
+      } else {
+        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
+      }
+      if (final_result[0] == '-' || final_result[0] == 'N') {
+        final_result = '--'
+      }
+      return final_result
+    },
+    showUserAddress() {
       return _showUserAddressText(this.userInfo);
     },
     more() {
@@ -454,10 +469,9 @@ export default {
       // this.isShow = !this.isShow;
     },
     hide(e) {
-      // console.log("e.target.id", e.target.id);
       if (e.target.id === "avatar-icon") {
         this.isShow = !this.isShow;
-      } else {
+      }else{
         this.isShow = false;
       }
     },
@@ -465,7 +479,15 @@ export default {
       console.log(tab);
       this.tab = tab;
     },
-    copy() {},
+    copy() {
+      this.$copyText(this.userInfo.userAddress);
+      this.$message({
+        message: 'Address Copied',
+        type: 'success',
+        center: true,
+      });
+      this.isShow = true;
+    },
     go(url) {
       this.$router.push(url);
       this.isShow = false;
@@ -473,6 +495,17 @@ export default {
     showProfile(flag) {
       this.isShowProfile = flag;
     },
+    async getBalance(){
+      if(!this.userInfo.isConnect){
+        return
+      }
+       // get native token balance
+      this.eth_balance = await getNativeTokenAmount(this.userInfo.userAddress);
+
+      const fur_contract = await getContract(await getFurionTokenABI(), await getAddress()['FurionToken']);
+      const fur_balance = await fromWei(await fur_contract.methods.balanceOf(this.userInfo.userAddress).call());
+      this.fur_balance = fur_balance;
+    }
   },
 };
 </script>
