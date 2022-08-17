@@ -3,40 +3,48 @@ export const DialogInfo = {
   DialogVisible: false,
   StepsInfo: [],
   ImgOptions: [
-    [
-      require('@/assets/images/loading/1.png'),
-      require('@/assets/images/loading/2.png'),
-      require('@/assets/images/loading/3.png'),
-    ],
-    [
-      require('@/assets/images/loading/1.png'),
-      require('@/assets/images/loading/2.png'),
-      require('@/assets/images/loading/3.png'),
-    ],
-    [
-      require('@/assets/images/loading/1.png'),
-      require('@/assets/images/loading/2.png'),
-      require('@/assets/images/loading/3.png'),
-    ],
-    [
-      require('@/assets/images/loading/1.png'),
-      require('@/assets/images/loading/2.png'),
-      require('@/assets/images/loading/3.png'),
-    ],
+    require('@/assets/images/loading/1.png'),
+    require('@/assets/images/loading/2.png'),
+    require('@/assets/images/loading/3.png'),
   ],
 };
 
 export const ProcessInfo = {
-  APPROVE_USDC: {
-    intro: 'Approval for USDC.e',
+  SWAP_APPROVE_TOKEN: {
+    intro: 'Approval for Token',
     detail:
-      'To use protection on Degis, you firstly need to approve our contract to spend your USDC.e, please wait for a while',
+      'To use furion swap, you firstly need to approve our contract to spend your token, please wait for a while',
   },
-  UNSTAKE_INCOME_SHARING_POOL: {
-    intro: 'Unlock from income sharing pool',
+  SWAP_TOKEN: {
+    intro: 'Swap on Furion Swap',
     detail:
-      'You are going to unlock from the income sharing pool, please sign and wait for the transaction to be done',
+      'You are going to swap tokens on Furion, please sign and wait for the transaction to be done',
   },
+  SWAP_APPROVE_TOKEN_1:{
+    intro: 'Approval for Token 1',
+    detail:
+      'To provide liquidity on furion swap, you firstly need to approve our contract to spend your token',
+  },
+  SWAP_APPROVE_TOKEN_2:{
+    intro: 'Approval for Token 2',
+    detail:
+      'To provide liquidity on furion swap, you firstly need to approve our contract to spend your token',
+  },
+  SWAP_ADD_LIQUIDITY:{
+    intro: 'Add liquidity on Furion Swap',
+    detail:
+      'You are going to provide liquidity on Furion, please sign and wait for the transaction to be done',
+  },
+  APPROVE_LIQUIDITY_TOKEN:{
+    intro: 'Approval for liquidity token',
+    detail:
+      'Approve our contract to spend your liquidity token',
+  },
+  SWAP_REMOVE_LIQUIDITY:{
+    intro: 'Remove liquidity on Furion Swap',
+    detail:
+      'You are going to remove liquidity on Furion, please sign and wait for the transaction to be done',
+  }
 };
 
 export const initDialog = DialogInfo => {

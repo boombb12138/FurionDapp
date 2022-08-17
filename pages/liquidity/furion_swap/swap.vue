@@ -285,13 +285,9 @@ export default {
     };
   },
   async mounted() {
-    await openDialog(this.dialogue_info, [ProcessInfo.APPROVE_USDC, ProcessInfo.UNSTAKE_INCOME_SHARING_POOL]);
-    // this.dialogue_info.StepsInfo = [ProcessInfo.APPROVE_USDC];
-    // this.dialogue_info.DialogVisible = true;
-
     this.swap_info = await initFurionSwapInfo(this.swap_info, this.chainId);
     await this.updateUserInfo();
-    console.log('This is initialized furion swap', this.swap_info);
+    // console.log('This is initialized furion swap', this.swap_info);
     await this.checkApproval();
   },
   methods: {
@@ -337,6 +333,7 @@ export default {
       this.select_token = false;
     },
     async swap() {
+      await openDialog(this.dialogue_info, [ProcessInfo.SWAP_TOKEN]);
       let account = this.userInfo.userAddress;
       let router_contract = this.swap_info.router_contract;
       let current_time = Date.parse(new Date());
@@ -352,20 +349,24 @@ export default {
         this.successMessage(tx_result, 'Swap Successfully');
       } catch (e) {
         console.warn(e);
-        this.errorMessage('Swap Err');
+        this.errorMessage('Swap Error');
+        closeDialog(this.dialogue_info);
         return
       }
       this.token_0_amount = '';
       this.token_1_amount = '';
       await this.updateUserInfo();
+      closeDialog(this.dialogue_info);
     },
     async approveToken() {
       let account = this.userInfo.userAddress;
       // console.log('Ready for approval')
       if (this.allowance_0 < ALLOWANCE_THRESHOLD) {
+        await openDialog(this.dialogue_info, [ProcessInfo.SWAP_APPROVE_TOKEN]);
         await tokenApprove(this.swap_info.token_0_address, account, this.swap_info.router_address);
         // console.log('Approve token', this.swap_info.token_0);
       }
+      closeDialog(this.dialogue_info);
     },
     checkApproval() {
       let account = this.userInfo.userAddress;
@@ -407,7 +408,7 @@ export default {
 
     // swicth info for these two tokens
     switchToken() {
-      console.log('Switch token');
+      // console.log('Switch token');
       const token_0 = this.swap_info.token_0;
       this.swap_info.token_0 = this.swap_info.token_1;
       this.swap_info.token_1 = token_0;
@@ -422,7 +423,7 @@ export default {
     },
 
     async addToken() {
-      console.log('Add token');
+      // console.log('Add token');
       await addToken({
         tokenAddress: this.swap_info.token_1_address,
         tokenSymbol: this.swap_info.token_1,

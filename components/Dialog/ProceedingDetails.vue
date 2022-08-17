@@ -22,8 +22,8 @@
   text-align: center;
   color: #ffffff;
   font-weight: 600;
-  padding-left: 10%;
-  padding-right: 10%;
+  padding-left: 8%;
+  padding-right: 8%;
 }
 
 .step-img {
@@ -68,17 +68,17 @@
             <div class="loading-img-text">
               <img src="@/assets/images/loading/loading-text.png" width="80" />
             </div>
-            <div class="step-body text-[#FCFFFD] font-400" style="word-break: break-word">
+            <div class="step-body text-[#FCFFFD] font-400 leading-7" style="word-break: break-word">
               <br />
               {{ props.row.detail }}
-              <br /><br />
+              <br />
             </div>
           </template>
         </el-table-column>
         <el-table-column label="intro" prop="intro">
           <template slot-scope="props">
             <div class="step-img">
-              <img :src="DialogInfo.ImgOptions[DialogInfo.Step][props.row.step]" width="54" />
+              <img :src="DialogInfo.ImgOptions[props.row.step]" width="54" />
             </div>
             <div class="step-title">{{ props.row.intro }} <br /></div>
           </template>

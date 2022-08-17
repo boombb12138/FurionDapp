@@ -412,6 +412,8 @@
         </teamplate>
       </div>
     </div>
+
+    <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
 </template>
 
@@ -423,12 +425,23 @@ import { fromWei, toWei } from '@/utils/common';
 import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
 import { getTxURL } from '@/utils/common';
 
+import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
+
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from '~/config/loading_info';
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
   },
   props: {},
-  components: {},
+  components: {ProceedingDetails},
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
@@ -456,7 +469,8 @@ export default {
       allowance_1: 0,
       allowance_liquidity: 0,
       valid_add: true,
-      valid_remove: true
+      valid_remove: true,
+      dialogue_info: DialogInfo
     };
   },
   async mounted() {
@@ -466,7 +480,7 @@ export default {
       this.$router.push('/liquidity/furion_swap/pool');
     }
     await this.updateUserInfo();
-    console.log('This is initialized single pool', this.single_swap_pool);
+    // console.log('This is initialized single pool', this.single_swap_pool);
     this.checkApproval();
     this.checkLiquidityApprove();
   },
@@ -591,27 +605,32 @@ export default {
 
     async approveToken() {
       let account = this.userInfo.userAddress;
+      openDialog(this.dialogue_info, [ProcessInfo.SWAP_APPROVE_TOKEN_1, ProcessInfo.SWAP_APPROVE_TOKEN_2])
       // console.log('Ready for approval')
       if (this.allowance_0 < ALLOWANCE_THRESHOLD) {
         await tokenApprove(this.single_swap_pool.token_0_address, account, this.single_swap_pool.router_address);
         // console.log('Approve token', this.single_swap_pool.token_0);
       }
+      stepDialog(this.dialogue_info);
       if (this.allowance_1 < ALLOWANCE_THRESHOLD) {
         await tokenApprove(this.single_swap_pool.token_1_address, account, this.single_swap_pool.router_address);
         // console.log('Approve token', this.single_swap_pool.token_1);
       }
+      closeDialog(this.dialogue_info);
     },
     async approveLPToken() {
       let account = this.userInfo.userAddress;
       // console.log('Ready for approval')
+      openDialog(this.dialogue_info, [ProcessInfo.APPROVE_LIQUIDITY_TOKEN])
       if (this.allowance_liquidity < ALLOWANCE_THRESHOLD) {
         await tokenApprove(this.single_swap_pool.pair_address, account, this.single_swap_pool.router_address);
         // console.log('Approve token', this.single_swap_pool.token_0);
       }
+      closeDialog(this.dialogue_info);
     },
 
     calRemoval() {
-      console.log('Pool liquidity', this.single_swap_pool.pool_liquidity)
+      // console.log('Pool liquidity', this.single_swap_pool.pool_liquidity)
       this.token_0_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_0_reserve).toFixed(4);
       this.token_1_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_1_reserve).toFixed(4);
       if(this.remove_amount>single_swap_pool.token_0_pooled * single_swap_pool.token_1_pooled){
@@ -623,6 +642,7 @@ export default {
     },
 
     async addLiquidity() {
+      await openDialog(this.dialogue_info, [ProcessInfo.SWAP_ADD_LIQUIDITY]);
       let account = this.userInfo.userAddress;
       let router_contract = this.single_swap_pool.router_contract;
       let current_time = Date.parse(new Date());
@@ -638,15 +658,18 @@ export default {
           current_time + 400).send({ from: account });
         this.successMessage(tx_result, 'Add Liquidity Successfully');
       } catch (e) {
-        this.errorMessage('Add Liquidity Err');
+        this.errorMessage('Add Liquidity Error');
+        closeDialog(this.dialogue_info);
         return
       }
       this.remove_amount = '';
       await this.updatePool();
       await this.updateUserInfo();
+      closeDialog(this.dialogue_info);
     },
 
     async removeLiquidity() {
+      openDialog(this.dialogue_info, [ProcessInfo.SWAP_REMOVE_LIQUIDITY]);
       let account = this.userInfo.userAddress;
       let router_contract = this.single_swap_pool.router_contract;
       let current_time = Date.parse(new Date());
@@ -662,7 +685,8 @@ export default {
         this.successMessage(tx_result, 'Remove Liquidity Successfully');
       } catch (e) {
         console.warn(e)
-        this.errorMessage('Remove Liquidity Err');
+        this.errorMessage('Remove Liquidity Error');
+        closeDialog(this.dialogue_info);
         return
       }
       this.remove_amount = '';
@@ -670,6 +694,7 @@ export default {
       this.token_1_removal = ''
       await this.updatePool();
       await this.updateUserInfo();
+      closeDialog(this.dialogue_info);
     },
 
     async updatePool() {
