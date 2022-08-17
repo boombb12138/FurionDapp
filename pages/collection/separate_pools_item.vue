@@ -62,6 +62,49 @@
   }
 }
 
+.selectedBorder {
+  border: 2px solid rgb(1, 182, 46) !important;
+}
+
+.item-wallet {
+  width: 195px;
+  height: 225px;
+  background: rgba(23, 37, 72, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  box-sizing: border-box;
+  margin-right: 12px;
+  margin-bottom: 15px;
+  position: relative;
+
+  &:hover .el-image {
+    transition: all 0.3s;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .icon {
+    .icon1 {
+      display: block;
+    }
+
+    .icon2 {
+      display: none;
+    }
+
+    &:hover {
+      .icon2 {
+        display: block;
+      }
+
+      .icon1 {
+        display: none;
+      }
+    }
+  }
+}
+
 .sort {
   font-weight: 600;
   color: #a9acb0;
@@ -192,7 +235,7 @@
             </div>
           </div>
           <div class="btn_border">
-            <el-button type="primary" class="!w-170px !h-48px" @click="dialogVisible = true">
+            <el-button type="primary" class="!w-170px !h-48px" @click="dialogVisible = true; initSelectedStyle();">
               <div class="relative -top-2px">
                 <span class="text-20px">+</span>
                 ADD ASSET
@@ -314,8 +357,8 @@
     </div>
 
     <!-- Modal box for storing and locking NFTs -->
-    <el-dialog title="NFT Contract Address:" :visible.sync="dialogVisible" width="850px" :close-on-click-modal="false"
-      append-to-body custom-class="el-dialog-dark">
+    <el-dialog title="NFT Contract Address:" :visible.sync="dialogVisible" width="880px" :close-on-click-modal="false"
+      append-to-body custom-class="el-dialog-dark el-dialog-padding">
       <div slot="title" class="flex font-800 text-20px">
         <div class="pb-2px" style="border-bottom: 2px solid #fff">ADD ASSET</div>
 
@@ -331,24 +374,45 @@
       </div>
 
       <!-- Azuki examples -->
-      <div class="h-474px mb-35px">
+      <div class="min-h-250px max-h-425px h-65vh mb-35px">
         <el-scrollbar class="h-1/1">
+          <!--
           <div class="grid grid-cols-3 gap-y-38px">
             <img src="@/assets/images/cover.png" class="w-218px h-218px rounded-12px" v-for="(item, index) in 9"
               :key="index" />
+          </div>
+          -->
+          <div class="grid grid-cols-4 mt-10px mr-20px">
+            <div class="item-wallet text-center" v-for="(item, index) in separate_pool_info.in_pool" :key="index" :class="{ selectedBorder: applySelectedStyle[index] }" @click="toList(item.token_id, index)">
+              <!-- NFT image -->
+              <el-image :src="item.image_url" class="w-181px h-181px rounded-12px mt-5px" lazy>
+                <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
+              </el-image>
+
+              <div
+                class="h-32px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px font-600">
+                <div class="flex">
+                  <span class="line-clamp-1 overflow-ellipsis !block mr-4px">
+                    {{ separate_pool_info.symbol }}
+                  </span>
+                  <span class="flex-shrink-0">#{{ item.token_id }}</span>
+                </div>
+                <img src="@/assets/images/icon_eth.svg" />
+              </div>
+            </div>
           </div>
         </el-scrollbar>
       </div>
 
       <!-- Lock/Store buttons -->
-      <div class="flex justify-between items-center pr-44px">
+      <div class="flex justify-between items-center pr-20px">
         <div></div>
         <div class="flex">
-          <div class="btn_border mr-15px">
-            <el-button plain class="!w-124px !h-38px !p-0" @click="lock(nftToPool)">LOCK</el-button>
+          <div class="btn_border mr-25px">
+            <el-button plain class="!w-150px !h-50px !p-0" @click="lock()">LOCK</el-button>
           </div>
           <div class="btn_border">
-            <el-button type="primary" class="!w-124px !h-38px !p-0" @click="store(nftToPool)">STORE</el-button>
+            <el-button type="primary" class="!w-150px !h-50px !p-0" @click="store()">STORE</el-button>
           </div>
         </div>
       </div>
@@ -401,6 +465,7 @@ export default {
       poolContract: {},
       furContract: {},
       nftToPool: [],
+      applySelectedStyle: [],
       multicall: multicall,
     };
   },
@@ -416,6 +481,12 @@ export default {
     this.ready = true;
   },
   methods: {
+    initSelectedStyle(){
+      for (let i = 0; i < this.separate_pool_info.in_pool.length; i++) {
+        this.$set(this.applySelectedStyle, i, false);
+      }
+      // console.log(this.applySelectedStyle);
+    },
     formatString(value, len) {
       return _formatString(value, len);
     },
@@ -448,10 +519,23 @@ export default {
       // console.log('NFT item', nft_item);
       this.$router.push('/collection/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id);
     },
+    toList(tokenId, tokenIndex) {
+      const index = this.nftToPool.indexOf(tokenId);
+
+      if(index > -1) {
+        this.nftToPool.splice(index, 1);
+      } else {
+        this.nftToPool.push(tokenId);
+      }
+
+      this.$set(this.applySelectedStyle, tokenIndex, !this.applySelectedStyle[tokenIndex]);
+
+      // console.log(this.applySelectedStyle);
+    },
 
     /** Balance & allowance checks **/
 
-    async hasEnoughFur(account, lockAmount) {
+    async hasEnoughFur(account, nftAmount, type) {
       let array = [false, false];
 
       let multicall_list = [
@@ -460,7 +544,7 @@ export default {
       ];
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
 
-      const requiredAmount = toWei(150 * lockAmount);
+      const requiredAmount = type === "buy" ? toWei(100 * nftAmount) : toWei(150 * nftAmount);
       if(result[0] > requiredAmount) {
         array[0] = true;
       }
@@ -471,66 +555,69 @@ export default {
       return array
     },
     async hasEnoughFx(account) {
-      let array = [false, false];
+      let hasEnough = false;
 
       let multicall_list = [
         this.poolContract.contract.methods.balanceOf(account),
-        this.poolContract.contract.methods.allowance(account, this.poolContract.address)
       ];
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
 
       const requiredAmount = toWei(1000);
       if(result[0] > requiredAmount) {
-        array[0] = true;
-      }
-      if(result[1] > requiredAmount) {
-        array[1] = true;
+        hasEnough = true;
       }
 
-      return array
+      return hasEnough;
     },
 
     /** Contract functions **/
 
     async buy(tokenId) {
       const account = this.userInfo.userAddress;
-      const check = await this.hasEnoughFx(account);
+      const checkFx = await this.hasEnoughFx(account);
+      const checkFur = await this.hasEnoughFur(account, 1, "buy");
 
-      if(!check[0]) {
+
+      if(!checkFx) {
         this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
         return;
       }
-      if(!check[1]) {
-        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} allowance`);
+      if(!checkFur[0]) {
+        this.errorMessage("Insufficient FUR balance");
+        return;
+      }
+      if(!checkFur[1]) {
+        this.errorMessage("Insufficient FUR allowance");
         return;
       }
 
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
-        this.successMessage(tx_result, 'Purchase succeeded');
+        this.successMessage(tx_result, `Purchase F-TOADZ #${tokenId} succeeded`);
       } catch(e) {
-        this.errorMessage('Purchase failed');
+        this.errorMessage(`Purchase F-TOADZ #${tokenId} failed`);
         return;
       }
     },
-    async store(tokenIds) {
+    async store() {
       const account = this.userInfo.userAddress;
 
-      if(tokenIds.length == 0) {
+      if(this.nftToPool.length == 0) {
         this.errorMessage("No NFTs selected");
-      } else {
-        try {
-          let tx_result = await this.poolContract.contract.methods.sell(tokenIds).send({ from: account });
-          this.successMessage(tx_result, 'Store succeeded');
-          this.nftToPool = [];
-        } catch(e) {
-          this.errorMesssage('Store failed');
-          return
-        }
+        return;
+      }
+
+      try {
+        let tx_result = await this.poolContract.contract.methods.sell(this.nftToPool).send({ from: account });
+        this.successMessage(tx_result, 'Store succeeded');
+        this.nftToPool = [];
+      } catch(e) {
+        this.errorMesssage('Store failed');
+        return
       }
     },
-    async lock(tokenIds) {
-      const lockAmount = tokenIds.length;
+    async lock() {
+      const lockAmount = this.nftToPool.length;
 
       if(lockAmount == 0) {
         this.errorMessage("No NFTs selected");
@@ -538,19 +625,19 @@ export default {
       }
 
       const account = this.userInfo.userAddress;
-      const check = await this.hasEnoughFur(account, lockAmount);
+      const checkFur = await this.hasEnoughFur(account, lockAmount, "lock");
 
-      if(!check[0]) {
+      if(!checkFur[0]) {
         this.errorMessage("Insufficient FUR balance");
         return;
       }
-      if(!check[1]) {
+      if(!checkFur[1]) {
         this.errorMessage("Insufficient FUR allowance");
         return;
       }
 
       try {
-        let tx_result = await this.poolContract.contract.methods.lock(tokenIds).send({ from: account });
+        let tx_result = await this.poolContract.contract.methods.lock(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Lock succeeded');
         this.nftToPool = [];
       } catch(e) {
