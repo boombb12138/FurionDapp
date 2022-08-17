@@ -535,7 +535,7 @@ export default {
 
     /** Balance & allowance checks **/
 
-    async hasEnoughFur(account, lockAmount) {
+    async hasEnoughFur(account, nftAmount, type) {
       let array = [false, false];
 
       let multicall_list = [
@@ -544,7 +544,7 @@ export default {
       ];
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
 
-      const requiredAmount = toWei(150 * lockAmount);
+      const requiredAmount = type === "buy" ? toWei(100 * nftAmount) : toWei(150 * nftAmount);
       if(result[0] > requiredAmount) {
         array[0] = true;
       }
@@ -555,45 +555,47 @@ export default {
       return array
     },
     async hasEnoughFx(account) {
-      let array = [false, false];
+      let hasEnough = false;
 
       let multicall_list = [
         this.poolContract.contract.methods.balanceOf(account),
-        this.poolContract.contract.methods.allowance(account, this.poolContract.address)
       ];
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
 
       const requiredAmount = toWei(1000);
       if(result[0] > requiredAmount) {
-        array[0] = true;
-      }
-      if(result[1] > requiredAmount) {
-        array[1] = true;
+        hasEnough = true;
       }
 
-      return array
+      return hasEnough;
     },
 
     /** Contract functions **/
 
     async buy(tokenId) {
       const account = this.userInfo.userAddress;
-      const check = await this.hasEnoughFx(account);
+      const checkFx = await this.hasEnoughFx(account);
+      const checkFur = await this.hasEnoughFur(account, 1, "buy");
 
-      if(!check[0]) {
+
+      if(!checkFx) {
         this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
         return;
       }
-      if(!check[1]) {
-        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} allowance`);
+      if(!checkFur[0]) {
+        this.errorMessage("Insufficient FUR balance");
+        return;
+      }
+      if(!checkFur[1]) {
+        this.errorMessage("Insufficient FUR allowance");
         return;
       }
 
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
-        this.successMessage(tx_result, 'Purchase succeeded');
+        this.successMessage(tx_result, `Purchase F-TOADZ #${tokenId} succeeded`);
       } catch(e) {
-        this.errorMessage('Purchase failed');
+        this.errorMessage(`Purchase F-TOADZ #${tokenId} failed`);
         return;
       }
     },
@@ -623,13 +625,13 @@ export default {
       }
 
       const account = this.userInfo.userAddress;
-      const check = await this.hasEnoughFur(account, lockAmount);
+      const checkFur = await this.hasEnoughFur(account, lockAmount, "lock");
 
-      if(!check[0]) {
+      if(!checkFur[0]) {
         this.errorMessage("Insufficient FUR balance");
         return;
       }
-      if(!check[1]) {
+      if(!checkFur[1]) {
         this.errorMessage("Insufficient FUR allowance");
         return;
       }
