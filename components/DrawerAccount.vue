@@ -384,7 +384,7 @@ export default {
   },
   data() {
     return {
-      isShow: true,
+      isShow: false,
       isShowProfile: false,
       tab: "account", // account notification
       fur_balance: 0,

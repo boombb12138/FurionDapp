@@ -230,6 +230,8 @@
     </div>
 
     <SelectToken :DialogVisible="select_token" :DialogClose="closeTokenSelect" :Token0="pick_token0" />
+
+    <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
 </template>
 
@@ -237,16 +239,27 @@
 import { mapState } from 'vuex';
 import { initFurionSwapInfo, swap_info } from '@/config/furion_swap/swap';
 import SelectToken from '@/components/Dialog/SelectToken.vue';
+import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
+
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei } from '@/utils/common';
 import { addToken } from '@/utils/web3/wallet';
+
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from '~/config/loading_info';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit('update', ['admin.activeMenu', '/liquidity']);
   },
   props: {},
-  components: { SelectToken },
+  components: { SelectToken, ProceedingDetails, ProceedingDetails },
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
@@ -268,9 +281,14 @@ export default {
       swap_info: swap_info,
       approved: false,
       valid_swap: true,
+      dialogue_info: DialogInfo
     };
   },
   async mounted() {
+    await openDialog(this.dialogue_info, [ProcessInfo.APPROVE_USDC, ProcessInfo.UNSTAKE_INCOME_SHARING_POOL]);
+    // this.dialogue_info.StepsInfo = [ProcessInfo.APPROVE_USDC];
+    // this.dialogue_info.DialogVisible = true;
+
     this.swap_info = await initFurionSwapInfo(this.swap_info, this.chainId);
     await this.updateUserInfo();
     console.log('This is initialized furion swap', this.swap_info);
