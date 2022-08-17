@@ -10,6 +10,11 @@ export const DialogInfo = {
 };
 
 export const ProcessInfo = {
+  CREATE_SEPARATE_POOL:{
+    intro: 'Create Separate Pool for NFT',
+    detail:
+      'You are going to create new separate pool, please sign and wait for the transaction to be done',
+  },
   SWAP_APPROVE_TOKEN: {
     intro: 'Approval for Token',
     detail:

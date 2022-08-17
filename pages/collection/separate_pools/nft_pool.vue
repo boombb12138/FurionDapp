@@ -426,12 +426,12 @@ import {
   separate_pool_info, default_pool_info,
   initSeparatePoolInfo, initSeparatePoolContract, initFurContract,
   initTokenImage, defaultSeparatePoolInfo
-} from '@/config/separate_pool';
+} from '@/config/collection/separate_pool';
 import {
   _formatString,
   _formatNumber,
 } from "@/utils/common";
-import { nft_item } from '@/config/nft_item';
+import { nft_item } from '@/config/collection/nft_item';
 import { getTxURL, toWei } from '@/utils/common';
 import addressStore from "@/assets/abis/address.json";
 import { newMultiCallProvider } from "@/utils/web3/multicall";

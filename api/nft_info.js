@@ -21,6 +21,17 @@ export const getNftInfoByProject = (project, network) => {
     })
 }
 
+export const getNftInfoByAddress = (address, network) => {
+    return request({
+        url: '/nft_info_by_address',
+        method: 'get',
+        params: {
+            'address': address,
+            'network': network
+        }
+    })
+}
+
 export const getNftInfoRanking = (network) => {
     return request({
         url: '/nft_info_ranking',

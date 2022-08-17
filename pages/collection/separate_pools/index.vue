@@ -15,6 +15,10 @@
     border: 2px solid #55e7ec;
   }
 }
+
+.create-pool-button {
+  text-align: center;
+}
 </style>
 
 <template>
@@ -58,13 +62,16 @@
         </div>
 
         <el-input v-model="asset" placeholder="NFT contract address" class="asset"></el-input>
+        <div class="create-pool-button">
+          <br /><br />
+          <el-button type="primary" class="!w-200px !h-56px" @click="createSeparatePool">
+            <div class="relative -top-0px">
+              <span class="text-20px"></span>
+              CREATE
+            </div>
 
-        <el-button type="primary" class="!w-200px !h-56px"  @click="createSeparatePool">
-          <div class="relative -top-0px">
-            <span class="text-20px"></span>
-            CREATE
-          </div>
-        </el-button>
+          </el-button>
+        </div>
       </el-dialog>
 
       <!-- Separate pool list -->
@@ -152,6 +159,8 @@
         </el-table-column>
       </el-table>
     </div>
+
+    <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
 </template>
 
@@ -161,20 +170,29 @@ import {
   nft_info,
   initNftInfo,
   initPooledNftInfo
-} from "@/config/nft_info";
+} from "@/config/collection/nft_info";
+import { initSeparatePoolFactoryContract } from "@/config/collection/separate_pool";
 import { mapState } from 'vuex';
 import { getNftWeekPrice } from "@/api/nft_info";
 import getCharts from "@/utils/getCharts";
-import { _formatNumber } from "@/utils/common";
-import { initSeparatePoolFactoryContract } from "@/config/separate_pool_factory.js";
-import { getTxURL } from '@/utils/common';
+import { _formatNumber, getTxURL } from "@/utils/common";
+
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from '~/config/loading_info';
+import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
   },
   props: {},
-  components: {},
+  components: { ProceedingDetails },
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
@@ -188,12 +206,14 @@ export default {
       option: {},
       ready: false,
       factoryContract: {},
-      asset: ""
+      asset: "",
+      dialogue_info: DialogInfo
     };
   },
   async mounted() {
-    this.nft_info = await initNftInfo(this.network);
-    //this.nft_info = await initPooledNftInfo(this.network);
+    this.nft_info = await initPooledNftInfo(this.network);
+    // this.nft_info = await initNftInfo(this.network);
+
     this.ready = true;
 
     this.factoryContract = await initSeparatePoolFactoryContract();
@@ -204,23 +224,31 @@ export default {
       return _formatNumber(value);
     },
     viewCollection(row) {
-      this.$router.push(`/collection/separate_pools_item?collection=${row.collection}`);
+      this.$router.push(`/collection/separate_pools/nft_pool?collection=${row.collection}`);
     },
     async createSeparatePool() {
+      openDialog(this.dialogue_info, [ProcessInfo.CREATE_SEPARATE_POOL]);
       let account = this.userInfo.userAddress;
 
-      if(this.asset === "") {
+      if (this.asset === "") {
         this.errorMessage("Please enter address of NFT");
+        closeDialog(this.dialogue_info);
         return
       } else {
         try {
           let tx_result = await this.factoryContract.methods.createPool(this.asset).send({ from: account });
+
           this.successMessage(tx_result, 'Create pool succeeded');
-        } catch(e) {
+        } catch (e) {
           this.errorMessage('Create pool failed');
+          closeDialog(this.dialogue_info);
           return
         }
       }
+      closeDialog(this.dialogue_info);
+      this.nft_info = await initPooledNftInfo(this.network);
+      this.ready = true;
+      this.dialogVisible = false;
     },
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);

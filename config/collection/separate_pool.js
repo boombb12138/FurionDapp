@@ -1,8 +1,7 @@
 import { getNftInfoByProject, getNftImages } from "@/api/nft_info";
 import { query_abi } from "@/api/query_etherscan";
 import { getContract, ipfsToHttp } from '@/utils/common';
-import { initSeparatePoolFactoryContract } from "@/config/separate_pool_factory";
-import { getSeparatePoolABI, getFurionTokenABI } from "@/utils/common/contractABI";
+import { getSeparatePoolABI, getFurionTokenABI, getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
 
 export const default_pool_info = {
     collection: 'Loading',
@@ -123,3 +122,7 @@ export const initTokenImage = async (pool_info, network) => {
         in_pool[i].image_url = nft_images[in_pool[i].token_id];
     }
 }
+
+export const initSeparatePoolFactoryContract = async () => {
+    return await getContract(await getSeparatePoolFactoryABI(), '');
+  }

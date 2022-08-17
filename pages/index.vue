@@ -270,7 +270,7 @@
 import {
   nft_info,
   initNftInfo
-} from "@/config/nft_info";
+} from "@/config/collection/nft_info";
 
 export default {
   async asyncData({ store, $axios, app, query }) {
