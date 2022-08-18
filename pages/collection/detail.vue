@@ -317,6 +317,8 @@
         </div>
       </div>
     </div>
+
+    <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
 </template>
 
@@ -327,12 +329,22 @@ import { initSeparatePoolContract, initFurContract } from "@/config/collection/s
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { getTxURL, toWei } from '@/utils/common';
 
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from '~/config/loading_info';
+import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
   },
   props: {},
-  components: {},
+  components: { ProceedingDetails },
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
@@ -388,6 +400,7 @@ export default {
       ],
       comments: [{}, {}, {}],
       multicall: multicall,
+      dialogue_info: DialogInfo
     };
   },
   async mounted() {
@@ -466,13 +479,18 @@ export default {
         return;
       }
 
+      openDialog(this.dialogue_info, [ProcessInfo.BUY_NFT]);
+
       try {
         let tx_result = await this.poolContract.contract.methods.buy(this.nft_item.token_id).send({ from: account });
         this.successMessage(tx_result, `Purchase F-TOADZ #${this.nft_item.token_id} succeeded`);
       } catch(e) {
         this.errorMessage(`Purchase F-TOADZ #${this.nft_item.token_id} failed`);
+        closeDialog(this.dialogue_info);
         return;
       }
+
+      closeDialog(this.dialogue_info);
     },
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);
