@@ -35,8 +35,8 @@
     background: url(@/assets/images/index/menu_bg.png);
     background-position: -20px -11px;
     position: absolute;
-    top: 70px;
-    left: -5px;
+    top: 80px;
+    left: 0px;
     transition: opacity 0.4s ease-in;
     padding: 15px 20px;
     z-index: 99;
@@ -123,7 +123,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/borrow">Borrow & Lendind</nuxt-link>
+                  <nuxt-link to="/liquidity/borrow">Money Market</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/liquidity/furion_swap/swap">Furion Swap</nuxt-link>

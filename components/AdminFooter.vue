@@ -11,9 +11,9 @@
   <div class="foote-wrap h-400px w-1/1 flex justify-center items-center bg-[#00173A]">
     <div class="w-1104px flex justify-between">
       <div>
-        <img class="cursor-pointer -ml-14px" src="@/assets/images/index/logo2.svg" />
+        <img class="cursor-pointer -ml-14px" src="@/assets/images/index/logo2.png" height="101" width="251">
         <p class="text-[rgba(252,255,253,0.8)] text-16px font-600 mt-10px">
-          Unleashing NFT potential.
+          All-in-one NFT platform with better liquidity, AMM solution, and price oracle
         </p>
       </div>
       <div class="flex relative left-50px">

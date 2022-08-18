@@ -67,10 +67,10 @@
 </style>
 
 <template>
-  <div class="page pt-80px bg-[#01132E] overflow-hidden">
-    <div class="page-wrap pt-114px">
+  <div class="page pt-10px bg-[#01132E] overflow-hidden">
+    <div class="page-absolute pt-114px">
       <div class="float-bg">
-        <img class="w-1/1 h-626px" src="@/assets/images/cover3_float.png" />
+        <img class="w-1/1 h-626px" src="@/assets/images/cover3_float.png">
       </div>
       <div class="flex justify-center relative z-1">
         <div class="flex justify-between w-1182px">
@@ -80,12 +80,11 @@
               <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
             </div>
             <div class="text-white font-800 leading-60px text-48px mb-25px">
-              <p>Discover , collect , and</p>
-              <p>sell your NFTs</p>
+              <p>Unleashing NFT liquidity</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
-              <p>All-in-one NFT platform for better liquidity,</p>
-              <p>AMM solution, and price oracle</p>
+              <p>All-in-one NFT platform with better liquidity,</p>
+              <p>price oracle, and AMM solutions.</p>
             </div>
             <div class="mt-64px">
               <div class="flex items-center">
@@ -142,12 +141,15 @@
               <a @click="clickDropItem(slotProps.item.twitter)">
                   <img class="w-1/1 h-1/1 object-cover" :src="slotProps.item.img" />
               </a>
-              <div class="info absolute left-0 bottom-20px w-1/1 pl-20px">
+              <div class="info absolute left-0 top-490px w-1/1 pl-20px">
                 <p class="text-20px font-600 text-[#fcfffd] mb-10px">
                   {{ slotProps.item.name }}
                 </p>
                 <p class="text-14px font-400 text-[rgba(252,255,253,0.7)]">
                   {{ slotProps.item.description }}
+                </p>
+                <p class="text-14px font-400 text-[rgba(252,255,253,0.7)]">
+                  {{ slotProps.item.description2 }}
                 </p>
               </div>
             </div>
@@ -222,10 +224,10 @@
         <li class="flex flex-col items-center flex-1" v-for="(item, index) in List"
           :key="index">
           <a @click="clickListItem(item.docs_url)">
-          <img :src="require(`@/assets/images/index/pool${index+1}.png`)" />
+          <img :src="require(`@/assets/images/index/pool${index+1}.png`)" height="240" width="240"/>
           </a>
           <a @click="clickListItem(item.docs_url)">
-          <p class="text-16px font-700 text-[#fcfffd] mt-10px mb-14px">{{item.tital}}</p>
+          <p class="text-16px font-700 text-[#fcfffd] mt-5px mb-14px">{{item.tital}}</p>
           </a>
           <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
             {{item.remark1}}
@@ -293,18 +295,21 @@ export default {
           img: require("@/assets/images/index/drop1.jpg"),
           name: "Mad Dragons",
           description: "No promises, no roadmap, just good vibes!",
+          description2: "      ",
           twitter: "MadDragonsNFT",
         },
         {
           img: require("@/assets/images/index/drop2.jpg"),
           name: "MEGAMI",
-          description: "MEGAMI is a collection of 10,000 PFPs designed by illustrator and YouTuber Naoki Saito",
+          description: "MEGAMI is a collection of 10,000 PFPs designed by",
+          description2: "illustrator and YouTuber Naoki Saito",
           twitter: "MEGAMINFT",
         },
         {
           img: require("@/assets/images/index/drop3.jpg"),
           name: "Saphire",
-          description: "777 Genesis; 80% of profits are invested in the utilities for this project",
+          description: "777 Genesis; 80% of profits are invested in the",
+          description2: "utilities for this project",
           twitter: "SaphireNFT",
         },
       ],
@@ -317,21 +322,21 @@ export default {
           docs_url: "furion-pools/furion-separate-pools",
         },
         {
-          tital: "Aggregated Liquidity",
+          tital: "Aggregating liquidity",
           remark1: "Get your market-driven index tokens" ,
           remark2:  "by joining our aggregate pools",
           remark3:  "",
           docs_url: "furion-pools/furion-aggregate-pools",
         },
         {
-          tital: "AMM Swap",
+          tital: "Swapping",
           remark1: "Swap any tokens that you want in our",
           remark2:  "automated market maker protocol",
           remark3:  "",
           docs_url: "furion-swap",
         },
         {
-          tital: "Furion Money Market",
+          tital: "Borrowing & Lending",
           remark1: "Borrow & lend your ERC-20 tokens and",
           remark2: "NFTs via peer-to-pool pools",
           remark3: "",
@@ -345,7 +350,7 @@ export default {
           avatar: require("@/assets/images/index/avatar1.jpg"),
           name: "Cool Cats NFT",
           description: "CoolCatsContract",
-          question: "Some cats are cooler than others.",
+          question: "Some cats are cooler than others",
         },
         {
           collection: "Invisible%20Friends",
@@ -361,7 +366,7 @@ export default {
           avatar: require("@/assets/images/index/avatar3.jpg"),
           name: "World of Women",
           description: "WorldofWomen",
-          question: "Celebrate representation,inclusivity & equal opportunities.",
+          question: "Celebrate inclusivity & equal opportunities",
         },
       ],
       categoryList: [

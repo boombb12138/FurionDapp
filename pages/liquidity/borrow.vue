@@ -4,7 +4,7 @@
   <div>
     <div class="absolute center-y">
       <div class="font-800 text-48px leading-60px mb-25px">
-        Stratified Borrow & <br />
+        Stratified Borrowing & <br />
         Lending
       </div>
       <div class="text-22px text-[rgba(252,255,253,0.6)] leading-34px mb-64px">
