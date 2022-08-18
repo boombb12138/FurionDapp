@@ -227,24 +227,23 @@ export default {
       this.$router.push(`/collection/separate_pools/nft_pool?collection=${row.collection}`);
     },
     async createSeparatePool() {
+      if (this.asset === "") {
+        this.errorMessage("Please enter address of NFT");
+        return
+      }
+
       openDialog(this.dialogue_info, [ProcessInfo.CREATE_SEPARATE_POOL]);
       let account = this.userInfo.userAddress;
 
-      if (this.asset === "") {
-        this.errorMessage("Please enter address of NFT");
+      try {
+        let tx_result = await this.factoryContract.contract.methods.createPool(this.asset).send({ from: account });
+        this.successMessage(tx_result, 'Create pool succeeded');
+      } catch (e) {
+        this.errorMessage('Create pool failed');
         closeDialog(this.dialogue_info);
         return
-      } else {
-        try {
-          let tx_result = await this.factoryContract.methods.createPool(this.asset).send({ from: account });
-
-          this.successMessage(tx_result, 'Create pool succeeded');
-        } catch (e) {
-          this.errorMessage('Create pool failed');
-          closeDialog(this.dialogue_info);
-          return
-        }
       }
+
       closeDialog(this.dialogue_info);
       this.nft_info = await initPooledNftInfo(this.network);
       this.ready = true;

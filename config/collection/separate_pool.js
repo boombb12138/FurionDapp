@@ -80,8 +80,8 @@ export const initSeparatePoolContract = async (nftAddress) => {
   const factoryContract = await initSeparatePoolFactoryContract();
 
   let separate_pool_contract = {};
-  const poolAddress = await factoryContract.methods.getPool(nftAddress).call();
-  const poolContract = await getContract(await getSeparatePoolABI(), poolAddress)
+  const poolAddress = await factoryContract.contract.methods.getPool(nftAddress).call();
+  const poolContract = await getContract(await getSeparatePoolABI(), poolAddress);
   separate_pool_contract.address = poolAddress;
   separate_pool_contract.contract = poolContract;
 
@@ -124,5 +124,10 @@ export const initTokenImage = async (pool_info, network) => {
 }
 
 export const initSeparatePoolFactoryContract = async () => {
-    return await getContract(await getSeparatePoolFactoryABI(), '');
-  }
+    let factory_contract = {};
+    const factoryABI = await getSeparatePoolFactoryABI();
+    factory_contract.address = factoryABI.address;
+    factory_contract.contract = await getContract(factoryABI, '');
+
+    return factory_contract;
+}
