@@ -24,6 +24,32 @@
     },
     {
       "inputs": [],
+      "name": "getAllNfts",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "nftsWithPool",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllPools",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "poolAddresses",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "numOfPools",
       "outputs": [
         {
