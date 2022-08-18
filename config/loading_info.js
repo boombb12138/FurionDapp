@@ -13,7 +13,22 @@ export const ProcessInfo = {
   CREATE_SEPARATE_POOL:{
     intro: 'Create Separate Pool for NFT',
     detail:
-      'You are going to create new separate pool, please sign and wait for the transaction to be done',
+      'You are creating a new separate pool, please sign and wait for the transaction to be done',
+  },
+  BUY_NFT:{
+    intro: 'Buy NFT',
+    detail: 
+      'Your new NFT is just one click away! Please sign and wait for the transaction to complete',
+  },
+  STORE_NFT:{
+    intro: 'Store NFT',
+    detail:
+      'You are storing your NFT to the pool, please sign and wait for the transaction to complete',
+  },
+  LOCK_NFT:{  
+    intro: 'Lock NFT',
+    detail: 
+      'You are locking your NFT to the pool for 30 days, please sign and wait for the transaction to complete',
   },
   SWAP_APPROVE_TOKEN: {
     intro: 'Approval for Token',

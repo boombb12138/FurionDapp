@@ -417,6 +417,8 @@
         </div>
       </div>
     </el-dialog>
+
+    <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
 </template>
 
@@ -436,12 +438,22 @@ import { getTxURL, toWei } from '@/utils/common';
 import addressStore from "@/assets/abis/address.json";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from '~/config/loading_info';
+import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
   },
   props: {},
-  components: {},
+  components: { ProceedingDetails },
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
@@ -467,6 +479,7 @@ export default {
       nftToPool: [],
       applySelectedStyle: [],
       multicall: multicall,
+      dialogue_info: DialogInfo
     };
   },
   async mounted() {
@@ -476,7 +489,7 @@ export default {
     // this.separate_pool_info = separate_pool_info;
     // this.$forceUpdate();
     await initTokenImage(this.separate_pool_info, this.network);
-    this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address);
+    this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address); //("0x7e357a7eE77872DdD51947f1550381BA0913920B");
     this.furContract = await initFurContract();
     this.ready = true;
   },
@@ -533,7 +546,7 @@ export default {
       // console.log(this.applySelectedStyle);
     },
 
-    /** Balance & allowance checks **/
+    /******************************* Balance & allowance checks *******************************/
 
     async hasEnoughFur(account, nftAmount, type) {
       let array = [false, false];
@@ -570,7 +583,7 @@ export default {
       return hasEnough;
     },
 
-    /** Contract functions **/
+    /*********************************** Contract functions ***********************************/
 
     async buy(tokenId) {
       const account = this.userInfo.userAddress;
@@ -591,21 +604,27 @@ export default {
         return;
       }
 
+      openDialog(this.dialogue_info, [ProcessInfo.BUY_NFT]);
+      
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
         this.successMessage(tx_result, `Purchase F-TOADZ #${tokenId} succeeded`);
       } catch(e) {
         this.errorMessage(`Purchase F-TOADZ #${tokenId} failed`);
+        closeDialog(this.dialogue_info);
         return;
       }
+
+      closeDialog(this.dialogue_info);
     },
     async store() {
-      const account = this.userInfo.userAddress;
-
       if(this.nftToPool.length == 0) {
         this.errorMessage("No NFTs selected");
         return;
       }
+
+      openDialog(this.dialogue_info, [ProcessInfo.STORE_NFT]);
+      const account = this.userInfo.userAddress;
 
       try {
         let tx_result = await this.poolContract.contract.methods.sell(this.nftToPool).send({ from: account });
@@ -613,8 +632,12 @@ export default {
         this.nftToPool = [];
       } catch(e) {
         this.errorMesssage('Store failed');
+        closeDialog(this.dialogue_info);
         return
       }
+
+      closeDialog(this.dialogue_info);
+      this.dialogVisible = false;
     },
     async lock() {
       const lockAmount = this.nftToPool.length;
@@ -636,14 +659,20 @@ export default {
         return;
       }
 
+      openDialog(this.dialogue_info, [ProcessInfo.LOCK_NFT]);
+
       try {
         let tx_result = await this.poolContract.contract.methods.lock(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Lock succeeded');
         this.nftToPool = [];
       } catch(e) {
         this.errorMesssage('Lock failed');
+        closeDialog(this.dialogue_info);
         return;
       }
+
+      closeDialog(this.dialogue_info);
+      this.dialogVisible = false;
     },
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);
