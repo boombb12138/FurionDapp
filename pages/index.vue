@@ -74,7 +74,8 @@
       <div class="flex justify-center relative z-1">
         <div class="flex justify-between w-1182px">
           <div class="pt-80px">
-            <div class="flex items-center mb-17px">
+            <div class="flex items-center mb-17px"
+            @click="clickLearnmoreaboutFurion()">
               <img class="mr-13px" src="@/assets/images/index/video.svg" />
               <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
             </div>
@@ -402,6 +403,9 @@ export default {
     },
     clickListItem(url) {
       window.location.href = 'https://docs.furion.io/function/'+url;
+    },
+    clickLearnmoreaboutFurion(){
+      window.location.href = 'https://docs.furion.io/';
     }
   },
 };
