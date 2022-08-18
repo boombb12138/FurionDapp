@@ -63,30 +63,61 @@
     transform: matrix(1, 0, 0, -1, 0, 0);
   }
 }
+.text {
+  -webkit-text-stroke: 2px white;
+  color: rgba(0,0,0,0.08);
+}
+.text-animation {
+  background: url("@/assets/images/arts.png");
+  background-size: 120%;
+  background-position: 40% 40%;
+  -webkit-background-clip: text;
+  animation: zoomout 6s ease forwards;
+}
+.text-animation1 {
+  background: url("@/assets/images/arts.png");
+  background-size: 120%;
+  background-position: 60% 60%;
+  -webkit-background-clip: text;
+  color: rgba(0,0,0,0.08);
+  animation: zoomout 6s ease forwards;
+}
+@keyframes zoomout {
+  0% {
+    background-size: 120%;
+  }
+  20% {
+    background-size: 120%;
+  }
+  100% {
+    background-size: 40%
+  }
+}
 </style>
 
 <template>
-  <div class="page pt-20px bg-[#01132E] overflow-hidden">
-    <div class="page-wrap pt-114px">
+  <div class="page pt-80px bg-[#01132E] overflow-hidden">
+    <div class="page-wrap pt-0px">
       <div class="float-bg">
-        <img class="w-1/1 h-626px" src="@/assets/images/cover3_float.png">
+        <img class="w-1/1 h-626px" src="@/assets/images/cover3_float.png" />
       </div>
-      <div class="flex justify-center relative z-1">
-        <div class="flex justify-between w-1182px">
-          <div class="pt-80px">
+      <div class="flex justify-center items-center relative z-1 h-626px">
+        <div class="flex justify-between items-center w-1182px">
+          <div class="pt-0px">
             <div class="flex items-center mb-17px"
             @click="clickLearnmoreaboutFurion()">
               <img class="mr-13px" src="@/assets/images/index/video.svg" />
               <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
             </div>
-            <div class="text-white font-800 leading-60px text-48px mb-25px">
-              <p>Unleashing NFT liquidity</p>
+            <div class="text-white font-800 leading-75px text-78px mb-25px">
+              <p :class="{ 'text-animation': showAnimation }" class="text">Unleashing NFT</p>
+              <p :class="{ 'text-animation1': showAnimation }" class="text">Liquidity</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
-              <p>All-in-one NFT platform with better liquidity,</p>
-              <p>price oracle, and AMM solutions.</p>
+              <p>All-in-one NFT platform for better liquidity,</p>
+              <p>AMM solution, and price oracle</p>
             </div>
-            <div class="mt-64px">
+            <div class="mt-50px">
               <div class="flex items-center">
                 <div class="btn_border w-190px mr-35px">
                   <el-button type="primary" class="!w-190px !h-56px">SEE COLLECTIONS</el-button>
@@ -141,7 +172,7 @@
               <a @click="clickDropItem(slotProps.item.twitter)">
                   <img class="w-1/1 h-1/1 object-cover" :src="slotProps.item.img" />
               </a>
-              <div class="info absolute left-0 top-490px w-1/1 pl-20px">
+              <div class="info absolute left-0 bottom-20px w-1/1 pl-20px">
                 <p class="text-20px font-600 text-[#fcfffd] mb-10px">
                   {{ slotProps.item.name }}
                 </p>
@@ -288,6 +319,7 @@ export default {
       nft_info: nft_info,
       option: {},
       ready: false,
+      showAnimation: false,
       dropList: [
         {
           img: require("@/assets/images/index/drop1.jpg"),
@@ -391,6 +423,7 @@ export default {
     };
   },
   async mounted() {
+    this.showAnimation = true;
     initNftInfo(this.network);
     this.ready = true;
   },
