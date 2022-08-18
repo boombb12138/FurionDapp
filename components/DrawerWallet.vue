@@ -115,7 +115,7 @@
           <!-- <div class="tab-btn text-[rgba(176,183,243,0.4)] bg-[#162548]">Salana</div> -->
         </div>
       </div>
-      <div class="btn_border w-310px mt-26px mx-auto">
+      <div class="btn_border w-310px mt-26px mx-auto" v-on:click="closeWallet">
         <el-button type="primary" plain class="!w-304px !h-48px">
           <span class="text-14px font-700">Close window</span>
         </el-button>
@@ -146,7 +146,10 @@ export default {
   },
   async mounted() {
     setTimeout(() => {
-      // console.log('User connected?', this.userInfo.isConnect)
+      console.log('User connected?', this.userInfo.isConnect)
+      if(this.$route.path.length < 2){
+        return
+      }
       if (!this.userInfo.isConnect) {
         this.isShow = true;
       }
@@ -208,6 +211,9 @@ export default {
     },
     toggle() {
       // this.isShow = !this.isShow;
+    },
+    closeWallet(){
+      this.isShow = false;
     },
     hide(e) {
       // console.log(e.target.id);

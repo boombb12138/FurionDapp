@@ -1,8 +1,7 @@
 import { getNftInfoByProject, getNftImages } from "@/api/nft_info";
 import { query_abi } from "@/api/query_etherscan";
 import { getContract, ipfsToHttp } from '@/utils/common';
-import { initSeparatePoolFactoryContract } from "@/config/separate_pool_factory";
-import { getSeparatePoolABI, getFurionTokenABI } from "@/utils/common/contractABI";
+import { getSeparatePoolABI, getFurionTokenABI, getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
 
 export const default_pool_info = {
     collection: 'Loading',
@@ -81,8 +80,8 @@ export const initSeparatePoolContract = async (nftAddress) => {
   const factoryContract = await initSeparatePoolFactoryContract();
 
   let separate_pool_contract = {};
-  const poolAddress = await factoryContract.methods.getPool(nftAddress).call();
-  const poolContract = await getContract(await getSeparatePoolABI(), poolAddress)
+  const poolAddress = await factoryContract.contract.methods.getPool(nftAddress).call();
+  const poolContract = await getContract(await getSeparatePoolABI(), poolAddress);
   separate_pool_contract.address = poolAddress;
   separate_pool_contract.contract = poolContract;
 
@@ -122,4 +121,13 @@ export const initTokenImage = async (pool_info, network) => {
     for (let i = 0; i < in_pool.length; i++) {
         in_pool[i].image_url = nft_images[in_pool[i].token_id];
     }
+}
+
+export const initSeparatePoolFactoryContract = async () => {
+    let factory_contract = {};
+    const factoryABI = await getSeparatePoolFactoryABI();
+    factory_contract.address = factoryABI.address;
+    factory_contract.contract = await getContract(factoryABI, '');
+
+    return factory_contract;
 }

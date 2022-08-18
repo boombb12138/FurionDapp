@@ -7,8 +7,10 @@
 .step-title {
   font-family: 'Montserrat';
   font-size: 14pt;
+  font-weight: 800 !important;
   text-align: left;
-  color: #2c2d2f;
+  color: #ffffff;
+  opacity: 1.2;
   position: relative;
   display: inline-block;
   vertical-align: middle;
@@ -18,29 +20,35 @@
   font-family: 'Montserrat';
   font-size: 12pt;
   text-align: center;
-  color: #2c2d2f;
-  padding-left: 10%;
-  padding-right: 10%;
+  color: #ffffff;
+  font-weight: 600;
+  padding-left: 8%;
+  padding-right: 8%;
 }
 
 .step-img {
-  margin-left: -2%;
+  margin-left: -1%;
+  margin-right: 3%;
+  width: 33px;
+  z-index: 9999 !important;
   display: inline-block;
   vertical-align: middle;
+}
+
+.loading-img {
+  text-align: center;
+}
+
+.loading-img-text{
+  text-align: center;
+  margin-left: 3%;
 }
 </style>
 
 <template>
-  <el-dialog
-    title="Complete the process"
-    footer
-    append-to-body
-    custom-class="network_dialog"
-    :close-on-click-modal="false"
-    :visible.sync="DialogInfo.DialogVisible"
-    @close="closeDialog"
-  >
-    <div class="network_dialog_body">
+  <el-dialog title="Complete the process" footer append-to-body custom-class="el-dialog-dark"
+    :close-on-click-modal="false" :visible.sync="DialogInfo.DialogVisible" @close="closeDialog">
+    <div class="text-[#FCFFFD] font-400 leading-30px text-14px">
       <p>
         Please do not close the pop-up windows until you finish the whole
         transaction
@@ -48,29 +56,29 @@
       <br />
     </div>
     <div class="dialog-table">
-      <el-table
-        :data="DialogInfo.StepsInfo"
-        style="width: 100%"
-        :show-header="false"
-        row-key="step"
-        :expand-row-keys="[DialogInfo.Step]"
-      >
+      <el-table :data="DialogInfo.StepsInfo" class="process" style="width: 100%" :show-header="false" row-key="step"
+        :expand-row-keys="[DialogInfo.Step]">
         <el-table-column type="expand">
           <template slot-scope="props">
-            <div class="step-body" style="word-break: break-word">
-              <br /><br />
+            <div class="loading-img">
+              <img src="@/assets/images/loading/loading.png" width="50" />
+
+            </div>
+            <br />
+            <div class="loading-img-text">
+              <img src="@/assets/images/loading/loading-text.png" width="80" />
+            </div>
+            <div class="step-body text-[#FCFFFD] font-400 leading-7" style="word-break: break-word">
+              <br />
               {{ props.row.detail }}
-              <br /><br />
+              <br />
             </div>
           </template>
         </el-table-column>
         <el-table-column label="intro" prop="intro">
           <template slot-scope="props">
             <div class="step-img">
-              <img
-                :src="DialogInfo.ImgOptions[DialogInfo.Step][props.row.step]"
-                width="54"
-              />
+              <img :src="DialogInfo.ImgOptions[props.row.step]" width="54" />
             </div>
             <div class="step-title">{{ props.row.intro }} <br /></div>
           </template>
