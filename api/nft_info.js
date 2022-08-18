@@ -73,3 +73,13 @@ export const getNftWeekPrice = (address, network) => {
         }
     })
 }
+
+export const getNftHoldingInfo = (nft_address, owner, network) => {
+    return request({
+        url: '/nft_holding_info',
+        method: 'get',
+        params:{
+            nft_address, owner, network
+        }
+    })
+}

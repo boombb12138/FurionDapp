@@ -10,6 +10,21 @@ export const DialogInfo = {
 };
 
 export const ProcessInfo = {
+  APPROVE_FUR:{
+    intro: 'Approval for FUR',
+    detail:
+      'To use FUR, you firstly need to approve our contract to spend your token, please wait for a while',
+  },
+  APPROVE_FX:{
+    intro: 'Approval for F-X Token',
+    detail:
+      'To use F-X, you firstly need to approve our contract to spend your token, please wait for a while',
+  },
+  APPROVE_NFT:{
+    intro: 'Approval for NFT',
+    detail:
+      'To use NFT, you firstly need to approve our contract to spend your token, please wait for a while',
+  },
   CREATE_SEPARATE_POOL:{
     intro: 'Create Separate Pool for NFT',
     detail:

@@ -235,10 +235,11 @@
             </div>
           </div>
           <div class="btn_border">
-            <el-button type="primary" class="!w-170px !h-48px" @click="dialogVisible = true; initSelectedStyle();">
+            <el-button type="primary" :disabled="!ready" class="!w-170px !h-48px"
+              @click="dialogVisible = true; initSelectedStyle();">
               <div class="relative -top-2px">
                 <span class="text-20px">+</span>
-                ADD ASSET
+                {{ ready ? "ADD ASSET" : "LOADING" }}
               </div>
             </el-button>
           </div>
@@ -311,7 +312,7 @@
                 <div class="text-13px">
                   <img src="@/assets/images/icon_eth.svg" />
                   <span class="font-600">
-                  {{ separate_pool_info.fXprice.toFixed(2) }}
+                    {{ separate_pool_info.fXprice.toFixed(2) }}
                   </span>
                 </div>
               </div>
@@ -383,7 +384,8 @@
           </div>
           -->
           <div class="grid grid-cols-4 mt-10px mr-20px">
-            <div class="item-wallet text-center" v-for="(item, index) in separate_pool_info.in_pool" :key="index" :class="{ selectedBorder: applySelectedStyle[index] }" @click="toList(item.token_id, index)">
+            <div class="item-wallet text-center" v-for="(item, index) in user_nft" :key="index"
+              :class="{ selectedBorder: applySelectedStyle[index] }" @click="toList(item.token_id, index)">
               <!-- NFT image -->
               <el-image :src="item.image_url" class="w-181px h-181px rounded-12px mt-5px" lazy>
                 <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
@@ -427,15 +429,15 @@ import { mapState } from 'vuex';
 import {
   separate_pool_info, default_pool_info,
   initSeparatePoolInfo, initSeparatePoolContract, initFurContract,
-  initTokenImage, defaultSeparatePoolInfo
+  initTokenImage, defaultSeparatePoolInfo, query_user_holding
 } from '@/config/collection/separate_pool';
+import { getNftHoldingInfo } from '@/api/nft_info';
 import {
   _formatString,
   _formatNumber,
 } from "@/utils/common";
 import { nft_item } from '@/config/collection/nft_item';
-import { getTxURL, toWei } from '@/utils/common';
-import addressStore from "@/assets/abis/address.json";
+import { getTxURL, toWei, fromWei, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 
 import {
@@ -473,28 +475,36 @@ export default {
       checkList: [],
       searchKey: "",
       nft_item: nft_item,
+      user_nft: [],
       sort: "Price low to high",
       poolContract: {},
+      pool_address: '',
       furContract: {},
       nftToPool: [],
       applySelectedStyle: [],
       multicall: multicall,
-      dialogue_info: DialogInfo
+      dialogue_info: DialogInfo,
+      approved_fur: true,
+      approved_fx: true
     };
   },
   async mounted() {
     this.ready = false;
-    // console.log('Collection for this page is', this.collection);
+
     await initSeparatePoolInfo(this.collection, this.network);
     // this.separate_pool_info = separate_pool_info;
     // this.$forceUpdate();
     await initTokenImage(this.separate_pool_info, this.network);
     this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address); //("0x7e357a7eE77872DdD51947f1550381BA0913920B");
     this.furContract = await initFurContract();
+    await this.initUserInfo();
+
+    await this.checkApproval();
     this.ready = true;
   },
   methods: {
-    initSelectedStyle(){
+    /******************************* Utility Functions *******************************/
+    initSelectedStyle() {
       for (let i = 0; i < this.separate_pool_info.in_pool.length; i++) {
         this.$set(this.applySelectedStyle, i, false);
       }
@@ -512,6 +522,27 @@ export default {
     onSort(str) {
       this.$refs.sort.doClose();
       this.sort = str;
+    },
+
+    /******************************* Initialize or Update states *******************************/
+    async initUserInfo() {
+      const account = this.userInfo.userAddress;
+      this.user_nft = await query_user_holding(separate_pool_info.nft_address, account, this.network);
+    },
+    async refreshPool() {
+      let raw_in_pool = (await getNftHoldingInfo(this.separate_pool_info.nft_address, this.poolContract.address.toLowerCase(), this.network))['data']['data'];
+
+      let in_pool = [];
+      for (let j = 0; j < raw_in_pool.length; j++) {
+        let single_record = {
+          token_id: raw_in_pool[j],
+          image_url: require("@/assets/images/placeholder.png")
+        }
+        in_pool.push(single_record);
+      }
+      this.separate_pool_info.in_pool = in_pool;
+      await initTokenImage(this.separate_pool_info, this.network);
+      await this.initUserInfo();
     },
     toCart(item) {
       let arr = [...this.cart, item.id];
@@ -535,7 +566,7 @@ export default {
     toList(tokenId, tokenIndex) {
       const index = this.nftToPool.indexOf(tokenId);
 
-      if(index > -1) {
+      if (index > -1) {
         this.nftToPool.splice(index, 1);
       } else {
         this.nftToPool.push(tokenId);
@@ -547,6 +578,22 @@ export default {
     },
 
     /******************************* Balance & allowance checks *******************************/
+    async checkApproval() {
+      const account = this.userInfo.userAddress;
+      let multicall_list = [
+        this.furContract.contract.methods.allowance(account, this.poolContract.address),
+        this.poolContract.contract.methods.allowance(account, this.poolContract.address)
+      ];
+      
+      const result = await this.multicall.aggregate(multicall_list); // [fur allowance, f-x allowance]
+
+      if (fromWei(result[0]) < ALLOWANCE_THRESHOLD) {
+        this.approved_fur = false;
+      }
+      if (fromWei(result[1]) < ALLOWANCE_THRESHOLD) {
+        this.approved_fx = false;
+      }
+    },
 
     async hasEnoughFur(account, nftAmount, type) {
       let array = [false, false];
@@ -558,10 +605,10 @@ export default {
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
 
       const requiredAmount = type === "buy" ? toWei(100 * nftAmount) : toWei(150 * nftAmount);
-      if(result[0] > requiredAmount) {
+      if (result[0] > requiredAmount) {
         array[0] = true;
       }
-      if(result[1] > requiredAmount) {
+      if (result[1] > requiredAmount) {
         array[1] = true;
       }
 
@@ -575,8 +622,10 @@ export default {
       ];
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
 
+      // console.log('F-X balance', result);
+
       const requiredAmount = toWei(1000);
-      if(result[0] > requiredAmount) {
+      if (result[0] >= requiredAmount) {
         hasEnough = true;
       }
 
@@ -590,59 +639,100 @@ export default {
       const checkFx = await this.hasEnoughFx(account);
       const checkFur = await this.hasEnoughFur(account, 1, "buy");
 
-
-      if(!checkFx) {
+      if (!checkFx) {
         this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
         return;
       }
-      if(!checkFur[0]) {
+      if (!checkFur[0]) {
         this.errorMessage("Insufficient FUR balance");
         return;
       }
-      if(!checkFur[1]) {
-        this.errorMessage("Insufficient FUR allowance");
-        return;
+
+      // initialize tx window
+      let dialog_list = [];
+      if (!this.approved_fur) {
+        dialog_list.push(ProcessInfo.APPROVE_FUR);
+      }
+      if (!this.approved_fx) {
+        dialog_list.push(ProcessInfo.APPROVE_FX);
+      }
+      dialog_list.push(ProcessInfo.BUY_NFT);
+
+      openDialog(this.dialogue_info, dialog_list);
+
+      if (!this.approved_fur) {
+        try {
+          await tokenApprove(this.furContract.address, account, this.poolContract.address);
+          stepDialog(this.dialogue_info);
+          this.approved_fur = true;
+        }
+        catch (e) {
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
+      if (!this.approved_fx) {
+        try {
+          await tokenApprove(this.poolContract.address, account, this.poolContract.address);
+          stepDialog(this.dialogue_info);
+          this.approved_fx = true;
+          return
+        }
+        catch (e) {
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return
+        }
       }
 
-      openDialog(this.dialogue_info, [ProcessInfo.BUY_NFT]);
-      
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
         this.successMessage(tx_result, `Purchase F-TOADZ #${tokenId} succeeded`);
-      } catch(e) {
+      } catch (e) {
         this.errorMessage(`Purchase F-TOADZ #${tokenId} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
-
       closeDialog(this.dialogue_info);
+      setTimeout(()=>this.refreshPool(), 3000);
     },
     async store() {
-      if(this.nftToPool.length == 0) {
+      if (this.nftToPool.length == 0) {
         this.errorMessage("No NFTs selected");
         return;
       }
 
-      openDialog(this.dialogue_info, [ProcessInfo.STORE_NFT]);
+      openDialog(this.dialogue_info, [ProcessInfo.APPROVE_NFT, ProcessInfo.STORE_NFT]);
       const account = this.userInfo.userAddress;
-
+      try {
+        let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
+        this.successMessage(approve_result, 'Approval succeeded');
+        stepDialog(this.dialogue_info);
+      } catch (e) {
+        console.warn(e);
+        closeDialog(this.dialogue_info);
+        return
+      }
       try {
         let tx_result = await this.poolContract.contract.methods.sell(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Store succeeded');
         this.nftToPool = [];
-      } catch(e) {
-        this.errorMesssage('Store failed');
+      } catch (e) {
+        this.errorMessage('Store failed');
         closeDialog(this.dialogue_info);
         return
       }
 
       closeDialog(this.dialogue_info);
       this.dialogVisible = false;
+      setTimeout(()=>this.refreshPool(), 3000);
     },
+
     async lock() {
       const lockAmount = this.nftToPool.length;
 
-      if(lockAmount == 0) {
+      if (lockAmount == 0) {
         this.errorMessage("No NFTs selected");
         return;
       }
@@ -650,11 +740,11 @@ export default {
       const account = this.userInfo.userAddress;
       const checkFur = await this.hasEnoughFur(account, lockAmount, "lock");
 
-      if(!checkFur[0]) {
+      if (!checkFur[0]) {
         this.errorMessage("Insufficient FUR balance");
         return;
       }
-      if(!checkFur[1]) {
+      if (!checkFur[1]) {
         this.errorMessage("Insufficient FUR allowance");
         return;
       }
@@ -665,8 +755,8 @@ export default {
         let tx_result = await this.poolContract.contract.methods.lock(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Lock succeeded');
         this.nftToPool = [];
-      } catch(e) {
-        this.errorMesssage('Lock failed');
+      } catch (e) {
+        this.user_nft('Lock failed');
         closeDialog(this.dialogue_info);
         return;
       }
