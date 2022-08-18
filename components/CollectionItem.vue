@@ -32,7 +32,7 @@
         <div class="flex items-center text-13px">
           <p>Floor price:</p>
           <img class="mx-8px" src="@/assets/images/index/price.svg" />
-          <p>{{detail.floor_price.toFixed(2)}}</p>
+          <p>{{detail.floor_price}}</p>
         </div>
       </div>
     </div>
@@ -40,7 +40,7 @@
       <p class="text-[#50CD7E] mb-8px text-right text-13px">{{detail._24h}}</p>
       <div class="flex items-center text-13px text-right">
         <img class="mr-8px" src="@/assets/images/index/price.svg" />
-        <p>{{detail.fXprice.toFixed(2)}}</p>
+        <p>{{detail.fXprice}}</p>
       </div>
     </div>
   </div>

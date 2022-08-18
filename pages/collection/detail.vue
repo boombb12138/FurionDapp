@@ -398,7 +398,7 @@ export default {
         show: false,
       };
     });
-
+    // console.log('NFT address', this.nft_item.address);
     this.poolContract = await initSeparatePoolContract(this.nft_item.address);
     this.furContract = await initFurContract();
   },
@@ -421,10 +421,10 @@ export default {
 
       const requiredAmount = toWei(100);
       if(result[0] > requiredAmount) {
-        array[0] = true;
+        hasEnough[0] = true;
       }
       if(result[1] > requiredAmount) {
-        array[1] = true;
+        hasEnough[1] = true;
       }
 
       return hasEnough;
@@ -454,7 +454,7 @@ export default {
 
 
       if(!checkFx) {
-        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
+        this.errorMessage(`Insufficient F-${nft_item.symbol} balance`);
         return;
       }
       if(!checkFur[0]) {

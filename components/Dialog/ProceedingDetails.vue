@@ -61,7 +61,7 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <div class="loading-img">
-              <img src="@/assets/images/loading/loading.png" width="50" />
+              <img src="@/assets/images/loading/loading.gif" width="80" />
 
             </div>
             <br />
