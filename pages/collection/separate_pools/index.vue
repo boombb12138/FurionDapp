@@ -226,9 +226,23 @@ export default {
     viewCollection(row) {
       this.$router.push(`/collection/separate_pools/nft_pool?collection=${row.collection}`);
     },
+    async alreadyCreated(nftAddress) {
+      let existingPools = await this.factoryContract.contract.methods.getAllNfts().call();
+
+      if(existingPools.includes(nftAddress)) {
+        return true;
+      }
+
+      return false;
+    },
     async createSeparatePool() {
       if (this.asset === "") {
         this.errorMessage("Please enter address of NFT");
+        return
+      }
+
+      if(await this.alreadyCreated(this.asset)) {
+        this.errorMessage("Pool already exists");
         return
       }
 
