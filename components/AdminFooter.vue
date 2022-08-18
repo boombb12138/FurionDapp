@@ -9,12 +9,23 @@
 
 <template>
   <div class="foote-wrap h-400px w-1/1 flex justify-center items-center bg-[#00173A]">
-    <div class="w-1104px flex justify-between">
+    <div class="w-1104px flex justify-between mt-180px">
       <div>
         <img class="cursor-pointer -ml-14px" src="@/assets/images/index/logo2.png" height="101" width="251">
-        <p class="text-[rgba(252,255,253,0.8)] text-16px font-600 mt-10px">
-          All-in-one NFT platform with better liquidity, AMM solution, and price oracle
+        <p class="text-[rgba(252,255,253,0.8)] text-16px font-600 mt-30px">
+          All-in-one NFT platform with better liquidity,
         </p>
+        <p class="text-[rgba(252,255,253,0.8)] text-16px font-600 mt-10px">
+          AMM solution, and price oracle
+        </p>
+        <ul class="w-150px flex justify-between mb-140px mt-20px">
+        <li v-for="(item, index) in List"
+          :key="index">
+          <a @click="clickListItem(item.url)">
+          <img :src="item.img" height="20" width="20"/>
+          </a>
+        </li>
+        </ul>
       </div>
       <div class="flex relative left-50px">
         <ul v-for="(item, index) in menuList" :key="index">
@@ -46,6 +57,24 @@ export default {
   computed: {},
   data() {
     return {
+      List: [
+        {
+          img: require("@/assets/images/index/discord.png"),
+          url: 'https://twitter.com/',
+        },
+        {
+          img: require("@/assets/images/index/twitter.png"),
+          url: "",
+        },
+        {
+          img: require("@/assets/images/index/telegram.png"),
+          url: "",
+        },
+        {
+          img: require("@/assets/images/index/medium.png"),
+          url: "",
+        },
+      ],
       menuList: [
         {
           title: "Marketplace",
@@ -110,6 +139,10 @@ export default {
     };
   },
   mounted() {},
-  methods: {},
+  methods: {
+    clickListItem(url) {
+      window.location.href = url;
+    },
+  },
 };
 </script>

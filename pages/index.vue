@@ -55,7 +55,6 @@
       rgba(32, 32, 32, 0.5) 15.87%,
       rgba(46, 46, 46, 0) 97.02%
     );
-
     background: linear-gradient(
       180deg,
       rgba(32, 32, 32, 0.8) 17.01%,
@@ -268,12 +267,10 @@
   </div>
 </template>
 <script>
-
 import {
   nft_info,
   initNftInfo
 } from "@/config/collection/nft_info";
-
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/"]);
