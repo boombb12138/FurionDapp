@@ -67,8 +67,8 @@
 </style>
 
 <template>
-  <div class="page pt-10px bg-[#01132E] overflow-hidden">
-    <div class="page-absolute pt-114px">
+  <div class="page pt-20px bg-[#01132E] overflow-hidden">
+    <div class="page-wrap pt-114px">
       <div class="float-bg">
         <img class="w-1/1 h-626px" src="@/assets/images/cover3_float.png">
       </div>
