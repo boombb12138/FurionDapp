@@ -114,8 +114,8 @@
               <p :class="{ 'text-animation1': showAnimation }" class="text">Liquidity</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
-              <p>All-in-one NFT platform for better liquidity,</p>
-              <p>AMM solution, and price oracle</p>
+              <p>All-in-one NFT platform with better liquidity,</p>
+              <p>price oracle, and AMM solutions.</p>
             </div>
             <div class="mt-50px">
               <div class="flex items-center">
@@ -172,7 +172,7 @@
               <a @click="clickDropItem(slotProps.item.twitter)">
                   <img class="w-1/1 h-1/1 object-cover" :src="slotProps.item.img" />
               </a>
-              <div class="info absolute left-0 bottom-20px w-1/1 pl-20px">
+              <div class="info absolute left-0 top-490px w-1/1 pl-20px">
                 <p class="text-20px font-600 text-[#fcfffd] mb-10px">
                   {{ slotProps.item.name }}
                 </p>
