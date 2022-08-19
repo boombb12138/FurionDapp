@@ -66,31 +66,27 @@
 .text {
   -webkit-text-stroke: 2px white;
   color: rgba(0,0,0,0.08);
+  background: url("@/assets/images/arts.png");
+  background-size: 10%;
+  -webkit-background-clip: text;
 }
 .text-animation {
-  background: url("@/assets/images/arts.png");
-  background-size: 120%;
   background-position: 40% 40%;
-  -webkit-background-clip: text;
-  animation: zoomout 6s ease forwards;
+  animation: zoomin 10s ease-in-out forwards;
 }
 .text-animation1 {
-  background: url("@/assets/images/arts.png");
-  background-size: 120%;
   background-position: 60% 60%;
-  -webkit-background-clip: text;
-  color: rgba(0,0,0,0.08);
-  animation: zoomout 6s ease forwards;
+  animation: zoomin 10s ease-in-out forwards;
 }
-@keyframes zoomout {
+@keyframes zoomin {
   0% {
-    background-size: 120%;
+    background-size: 10%;
   }
-  20% {
-    background-size: 120%;
+  5% {
+    background-size: 10%;
   }
   100% {
-    background-size: 40%
+    background-size: 150%
   }
 }
 </style>
@@ -109,9 +105,9 @@
               <img class="mr-13px" src="@/assets/images/index/video.svg" />
               <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
             </div>
-            <div class="text-white font-800 leading-75px text-78px mb-25px">
-              <p :class="{ 'text-animation': showAnimation }" class="text">Unleashing NFT</p>
-              <p :class="{ 'text-animation1': showAnimation }" class="text">Liquidity</p>
+            <div class="text-white font-800 leading-105px text-92px mb-25px">
+              <p :class="{ 'text-animation': showAnimation }" class="text">Unleashing</p>
+              <p :class="{ 'text-animation1': showAnimation }" class="text">NFT Liquidity</p>
             </div>
             <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
               <p>All-in-one NFT platform with better liquidity,</p>
