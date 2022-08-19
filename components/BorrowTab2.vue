@@ -40,28 +40,28 @@
         <div
           class="flex-1 text"
           :class="{ active: value == 1 }"
-          @click="$router.push('/liquidity/borrow_detail')"
+          @click="$router.push('/liquidity/money_market/borrow')"
         >
           Borrow
         </div>
         <div
           class="flex-1 text"
           :class="{ active: value == 2 }"
-          @click="$router.push('/liquidity/borrow_detail_repay')"
+          @click="$router.push('/liquidity/money_market/repay')"
         >
           Repay
         </div>
         <div
           class="flex-1 text"
           :class="{ active: value == 3 }"
-          @click="$router.push('/liquidity/borrow_detail_deposit')"
+          @click="$router.push('/liquidity/money_market/deposit')"
         >
           Deposit
         </div>
         <div
           class="flex-1 text"
           :class="{ active: value == 4 }"
-          @click="$router.push('/liquidity/borrow_detail_withdraw')"
+          @click="$router.push('/liquidity/money_market/withdraw')"
         >
           Withdraw
         </div>

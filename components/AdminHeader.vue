@@ -123,7 +123,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/borrow">Money Market</nuxt-link>
+                  <nuxt-link to="/liquidity/money_market/intro">Money Market</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/liquidity/furion_swap/swap">Furion Swap</nuxt-link>

@@ -95,19 +95,19 @@ export default {
       active: 1,
       list: [
         {
-          Pool: 'USDC.e / WAVAX',
+          Pool: 'USDC / WAVAX',
           Pool_Icon: require('@/assets/images/token.svg'),
         },
         {
-          Pool: 'USDC.e / WAVAX',
+          Pool: 'USDC / WAVAX',
           Pool_Icon: require('@/assets/images/token.svg'),
         },
         {
-          Pool: 'USDC.e / WAVAX',
+          Pool: 'USDC / WAVAX',
           Pool_Icon: require('@/assets/images/token.svg'),
         },
         {
-          Pool: 'USDC.e / WAVAX',
+          Pool: 'USDC / WAVAX',
           Pool_Icon: require('@/assets/images/token.svg'),
         },
       ],
@@ -116,7 +116,7 @@ export default {
   mounted() {},
   methods: {
     cell_click(row) {
-      this.$router.push('/liquidity/borrow_detail');
+      this.$router.push('/liquidity/money_market/borrow');
     },
   },
 };
