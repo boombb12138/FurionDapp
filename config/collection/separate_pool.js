@@ -170,7 +170,14 @@ export const initSeparatePoolFactoryContract = async () => {
 }
 
 export const query_user_holding = async (nft_address, user_address, network) => {
-    const in_pool = (await getNftHoldingInfo(nft_address, user_address.toLowerCase(), network))['data']['data'];
+    let in_pool = [];
+    try{
+        in_pool = (await getNftHoldingInfo(nft_address, user_address.toLowerCase(), network))['data']['data'];
+    }catch(e){
+        console.warn(e);
+        return
+    }
+    
 
     // console.log('User list result', in_pool)
 

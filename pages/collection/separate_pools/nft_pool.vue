@@ -677,7 +677,6 @@ export default {
           await tokenApprove(this.poolContract.address, account, this.poolContract.address);
           stepDialog(this.dialogue_info);
           this.approved_fx = true;
-          return
         }
         catch (e) {
           console.warn(e);
