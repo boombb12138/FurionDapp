@@ -71,6 +71,7 @@ export default {
     '@/assets/scss/element.scss',
     '@/assets/scss/common.scss',
     '@/assets/scss/global.scss',
+    '@/assets/scss/vivify.scss',
   ],
   plugins: [
     { src: '@/plugins/echarts', ssr: false },

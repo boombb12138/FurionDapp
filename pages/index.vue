@@ -296,6 +296,8 @@
     <AdminFooter></AdminFooter>
 
     <CartIcon></CartIcon>
+
+    <Pet></Pet>
   </div>
 </template>
 <script>
@@ -303,13 +305,14 @@ import {
   nft_info,
   initNftInfo
 } from "@/config/collection/nft_info";
+import Pet from "@/components/Pet.vue";
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/"]);
   },
   layout: "blank",
   props: {},
-  components: {},
+  components: { Pet },
   computed: {},
   data() {
     return {
