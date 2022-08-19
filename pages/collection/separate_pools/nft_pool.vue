@@ -583,9 +583,8 @@ export default {
       let multicall_list = [
         this.furContract.contract.methods.allowance(account, this.poolContract.address),
       ];
-      
-      const result = await this.multicall.aggregate(multicall_list); // [fur allowance]
 
+      const result = await this.multicall.aggregate(multicall_list); // [fur allowance]
       if (fromWei(result[0]) < ALLOWANCE_THRESHOLD) {
         this.approved_fur = false;
       }
@@ -663,7 +662,6 @@ export default {
         }
       }
 
-
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
         this.successMessage(tx_result, `Purchase F-TOADZ #${tokenId} succeeded`);
@@ -684,17 +682,29 @@ export default {
         return;
       }
 
-      openDialog(this.dialogue_info, [ProcessInfo.APPROVE_NFT, ProcessInfo.STORE_NFT]);
       const account = this.userInfo.userAddress;
-      try {
-        let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
-        this.successMessage(approve_result, 'Approval succeeded');
-        stepDialog(this.dialogue_info);
-      } catch (e) {
-        console.warn(e);
-        closeDialog(this.dialogue_info);
-        return
+      const approvedForAll = await this.separate_pool_info.nft_contract.methods.isApprovedForAll(account, this.poolContract.address).call();
+
+      // initialize tx window
+      let dialog_list = [];
+      if (!approvedForAll) {
+        dialog_list.push(ProcessInfo.APPROVE_NFT);
       }
+      dialog_list.push(ProcessInfo.STORE_NFT);
+      openDialog(this.dialogue_info, dialog_list);
+      
+      if (!approvedForAll) {
+        try {
+          let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
+          this.successMessage(approve_result, 'Approval succeeded');
+          stepDialog(this.dialogue_info);
+        } catch (e) {
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
+      
       try {
         let tx_result = await this.poolContract.contract.methods.sellBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Store succeeded');
@@ -723,23 +733,42 @@ export default {
       const account = this.userInfo.userAddress;
       const checkFur = await this.hasEnoughFur(account, lockAmount, "lock");
 
-      if (!checkFur[0]) {
+      if (!checkFur) {
         this.errorMessage("Insufficient FUR balance");
         return;
       }
-      if (!checkFur[1]) {
-        this.errorMessage("Insufficient FUR allowance");
-        return;
-      }
 
-      openDialog(this.dialogue_info, [ProcessInfo.LOCK_NFT]);
+      const approvedForAll = await this.separate_pool_info.nft_contract.methods.isApprovedForAll(account, this.poolContract.address).call();
+
+      // initialize tx window
+      let dialog_list = [];
+      if (!approvedForAll) {
+        dialog_list.push(ProcessInfo.APPROVE_NFT);
+      }
+      if (!this.approved_fur) {
+        dialog_list.push(ProcessInfo.APPROVE_FUR);
+      }
+      dialog_list.push(ProcessInfo.LOCK_NFT);
+      openDialog(this.dialogue_info, dialog_list);
+
+      if (!approvedForAll) {
+        try {
+          let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
+          this.successMessage(approve_result, 'Approval succeeded');
+          stepDialog(this.dialogue_info);
+        } catch (e) {
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
 
       try {
         let tx_result = await this.poolContract.contract.methods.lockBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Lock succeeded');
         this.nftToPool = [];
       } catch (e) {
-        this.user_nft('Lock failed');
+        this.errorMessage('Lock failed');
         closeDialog(this.dialogue_info);
         return;
       }
