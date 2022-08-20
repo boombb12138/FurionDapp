@@ -1,6 +1,11 @@
 import Web3 from 'web3';
 import { getProvider, providerFromEther_test, providerFromEther } from './provider';
 
+export const WETH_ADDRESS = {
+  'mainnet': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+  'rinkeby': '0x2005044C4fFf7dc1EfC1960939a6FeFA6abecffe'
+}
+
 export const ETHEREUM_MAINNET_PARAMS = {
   chainId: '0x1',
   chainName: 'Ethereum Mainnet',

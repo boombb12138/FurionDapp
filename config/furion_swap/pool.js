@@ -10,17 +10,26 @@ import {
 import { getContract, fromWei } from "@/utils/common";
 
 import { newMultiCallProvider } from "@/utils/web3/multicall";
-import { getChainId } from "@/utils/web3";
+import { WETH_ADDRESS } from "@/utils/web3";
 
 export const pool_info = {
-    pool_list: [{
-        token_0: 'USDT',
-        token_1: 'FUR',
-        token_0_address: '0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84',
-        token_1_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
-        token_0_image: require("@/assets/images/liquidity/tokens/USDT.png"),
-        token_1_image: require('@/assets/images/liquidity/tokens/FUR.png'),
-    }]
+    pool_list: [
+        {
+            token_0: 'ETH',
+            token_1: 'FUR',
+            token_0_address: '0x',
+            token_1_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
+            token_0_image: require("@/assets/images/liquidity/tokens/ETH.png"),
+            token_1_image: require('@/assets/images/liquidity/tokens/FUR.png'),
+        },
+        {
+            token_0: 'USDT',
+            token_1: 'FUR',
+            token_0_address: '0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84',
+            token_1_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
+            token_0_image: require("@/assets/images/liquidity/tokens/USDT.png"),
+            token_1_image: require('@/assets/images/liquidity/tokens/FUR.png'),
+        }]
 }
 
 export const single_swap_pool = {
@@ -41,7 +50,7 @@ export const single_swap_pool = {
     token_1_balance: 999.99,
     token_0_reserve: 999.99,
     token_1_reserve: 999.99,
-    
+
     router_address: '0x000000000000000000000000000000000000000',
     router_contract: {},
 
@@ -58,20 +67,36 @@ export const single_swap_pool = {
 
 
 export const initSinglePool = async (single_pool, chainId) => {
-
-    // initial token contract and get decimal for these two tokens
-    const token_0_contract = await getContract(await getMockUSDABI(), single_pool.token_0_address);
-    const token_1_contract = await getContract(await getMockUSDABI(), single_pool.token_1_address);
-
     const multicall = newMultiCallProvider(chainId);
-    let multicall_list = [token_0_contract.methods.decimals(), token_1_contract.methods.decimals()];
+    let decimal_result = [];
+    if (single_pool.token_0 == 'ETH') {
+        if(chainId == 4){
+            single_pool.token_0_address = WETH_ADDRESS['rinkeby'];
+        }else if(chainId == 1){
+            single_pool.token_0_address = WETH_ADDRESS['mainnet'];
+        }
+        single_pool.token_0_contract = {};
+        single_pool.token_0_decimal = 18;
+        const token_1_contract = await getContract(await getMockUSDABI(), single_pool.token_1_address);
+        let multicall_list = [token_1_contract.methods.decimals()];
 
-    const decimal_result = await multicall.aggregate(multicall_list);
+        decimal_result = [18, (await multicall.aggregate(multicall_list))[0]];
+        single_pool.token_1_decimal = decimal_result[1];
+        single_pool.token_1_contract = token_1_contract;
+    } else {
+        // initial token contract and get decimal for these two tokens
+        const token_0_contract = await getContract(await getMockUSDABI(), single_pool.token_0_address);
+        const token_1_contract = await getContract(await getMockUSDABI(), single_pool.token_1_address);
 
-    single_pool.token_0_decimal = decimal_result[0];
-    single_pool.token_1_decimal = decimal_result[1];
-    single_pool.token_0_contract = token_0_contract;
-    single_pool.token_1_contract = token_1_contract;
+        let multicall_list = [token_0_contract.methods.decimals(), token_1_contract.methods.decimals()];
+
+        decimal_result = await multicall.aggregate(multicall_list);
+
+        single_pool.token_0_decimal = decimal_result[0];
+        single_pool.token_1_decimal = decimal_result[1];
+        single_pool.token_0_contract = token_0_contract;
+        single_pool.token_1_contract = token_1_contract;
+    }
 
     // initialize furion swap relavent contracts
     const factory = await getContract(await getFurionSwapFactoryABI(), '');

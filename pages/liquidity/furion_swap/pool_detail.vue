@@ -330,7 +330,8 @@
             </div>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <div class="btn_border w-1/2 mt-60px">
-              <el-button type="primary" class="!w-1/1 !h-52x" @click="addLiquidity" :disabled="!valid_add">{{ valid_add ?
+              <el-button type="primary" class="!w-1/1 !h-52x" @click="addLiquidity" :disabled="!valid_add">{{ valid_add
+                  ?
                   "Add liquidity" : "Insufficient"
               }}</el-button>
             </div>
@@ -389,10 +390,10 @@
             <div>
               <p class="label mb-5px">1 {{ single_swap_pool.token_0 }} = {{
                   formatNumber(single_swap_pool.token_1_reserve /
-                    single_swap_pool.token_0_reserve, 2)
+                    single_swap_pool.token_0_reserve, 4)
               }} {{ single_swap_pool.token_1 }}</p>
               <p class="label">1 {{ single_swap_pool.token_1 }} = {{ formatNumber(single_swap_pool.token_0_reserve /
-                  single_swap_pool.token_1_reserve, 2)
+                  single_swap_pool.token_1_reserve, 4)
               }} {{ single_swap_pool.token_0 }}</p>
             </div>
           </div>
@@ -421,7 +422,7 @@
 import { mapState } from 'vuex';
 import { single_swap_pool, initSinglePool } from '@/config/furion_swap/pool';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
-import { fromWei, toWei } from '@/utils/common';
+import { fromWei, getNativeTokenAmount, toWei } from '@/utils/common';
 import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
 import { getTxURL } from '@/utils/common';
 
@@ -441,7 +442,7 @@ export default {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
   },
   props: {},
-  components: {ProceedingDetails},
+  components: { ProceedingDetails },
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
@@ -485,29 +486,44 @@ export default {
     this.checkLiquidityApprove();
   },
   methods: {
+
     async updateUserInfo() {
       let account = this.userInfo.userAddress;
-      // console.log('Account info', account)
-      let token_0_contract = this.single_swap_pool.token_0_contract;
-      let token_1_contract = this.single_swap_pool.token_1_contract;
       try {
-        let multicall_list = [token_0_contract.methods.balanceOf(account), token_1_contract.methods.balanceOf(account)];
-        const balance_results = await this.multicall.aggregate(multicall_list);
-        // console.log('Balance info', balance_results);
-        this.single_swap_pool.token_0_balance = fromWei(balance_results[0], parseInt(this.single_swap_pool.token_0_decimal));
-        this.single_swap_pool.token_1_balance = fromWei(balance_results[1], parseInt(this.single_swap_pool.toke_1_decimal));
+        // console.log('Account info', account)
+        if (this.single_swap_pool.token_0 == 'ETH') {
+          this.single_swap_pool.token_0_balance = await getNativeTokenAmount(account);
+          let token_1_contract = this.single_swap_pool.token_1_contract;
+          this.single_swap_pool.token_1_balance = fromWei((await token_1_contract.methods.balanceOf(account).call()), parseInt(this.single_swap_pool.toke_1_decimal));
+        } else {
+          let token_0_contract = this.single_swap_pool.token_0_contract;
+          let token_1_contract = this.single_swap_pool.token_1_contract;
+
+          let multicall_list = [token_0_contract.methods.balanceOf(account), token_1_contract.methods.balanceOf(account)];
+          const balance_results = await this.multicall.aggregate(multicall_list);
+          // console.log('Balance info', balance_results);
+          this.single_swap_pool.token_0_balance = fromWei(balance_results[0], parseInt(this.single_swap_pool.token_0_decimal));
+          this.single_swap_pool.token_1_balance = fromWei(balance_results[1], parseInt(this.single_swap_pool.toke_1_decimal));
+
+        }
       } catch (e) {
         console.warn('Fail to load balance')
       }
+
 
       let pair_contract = this.single_swap_pool.pair_contract;
       let new_multicall_list = [pair_contract.methods.totalSupply(), pair_contract.methods.balanceOf(account)];
       const pair_results = await this.multicall.aggregate(new_multicall_list);
 
       // console.log('Pair results', pair_results);
-      this.single_swap_pool.pair_liquidity = parseInt(pair_results[0] / 1e10);
-      this.single_swap_pool.user_liquidity = parseInt(pair_results[1] / 1e10);
+      this.single_swap_pool.pair_liquidity = parseInt(pair_results[0] / 1e14);
+      this.single_swap_pool.user_liquidity = parseInt(pair_results[1] / 1e14);
       this.single_swap_pool.user_liquidity_proportion = this.single_swap_pool.user_liquidity / this.single_swap_pool.pair_liquidity;
+      if (this.single_swap_pool.user_liquidity_proportion > 0.9999) {
+        this.single_swap_pool.user_liquidity_proportion = 0.9999;
+        this.single_swap_pool.user_liquidity = this.single_swap_pool.pair_liquidity * 0.9999;
+      }
+
       this.single_swap_pool.token_0_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_0_reserve;
       this.single_swap_pool.token_1_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_1_reserve;
     },
@@ -574,19 +590,29 @@ export default {
     },
     checkApproval() {
       let account = this.userInfo.userAddress;
-      // console.log('Router address', this.single_swap_pool.router_address);
-      let multicall_list = [
-        this.single_swap_pool.token_0_contract.methods.allowance(account, this.single_swap_pool.router_address),
-        this.single_swap_pool.token_1_contract.methods.allowance(account, this.single_swap_pool.router_address)
-      ];
-      this.multicall.aggregate(multicall_list).then((allowance) => {
-        // console.log('Allowance', allowance);
-        this.allowance_0 = allowance[0];
-        this.allowance_1 = allowance[1];
-        if (parseInt(allowance[0]) > ALLOWANCE_THRESHOLD && parseInt(allowance[1]) > ALLOWANCE_THRESHOLD) {
-          this.approved = true;
-        }
-      });
+      if (this.single_swap_pool.token_0 == 'ETH') {
+        this.single_swap_pool.token_1_contract.methods.allowance(account, this.single_swap_pool.router_address).call().then((allowance) => {
+          this.allowance_0 = 10000000000000000000000000000;
+          if (parseInt(allowance) > ALLOWANCE_THRESHOLD) {
+            this.approved = true;
+          }
+        })
+
+      } else {
+        let multicall_list = [
+          this.single_swap_pool.token_0_contract.methods.allowance(account, this.single_swap_pool.router_address),
+          this.single_swap_pool.token_1_contract.methods.allowance(account, this.single_swap_pool.router_address)
+        ];
+        this.multicall.aggregate(multicall_list).then((allowance) => {
+          // console.log('Allowance', allowance);
+          this.allowance_0 = allowance[0];
+          this.allowance_1 = allowance[1];
+          if (parseInt(allowance[0]) > ALLOWANCE_THRESHOLD && parseInt(allowance[1]) > ALLOWANCE_THRESHOLD) {
+            this.approved = true;
+          }
+        });
+      }
+
     },
     checkLiquidityApprove() {
       let account = this.userInfo.userAddress;
@@ -605,17 +631,39 @@ export default {
 
     async approveToken() {
       let account = this.userInfo.userAddress;
-      openDialog(this.dialogue_info, [ProcessInfo.SWAP_APPROVE_TOKEN_1, ProcessInfo.SWAP_APPROVE_TOKEN_2])
+
+      let dialog_list = [];
+      if (this.single_swap_pool.token_0 != 'ETH' && this.allowance_0 < ALLOWANCE_THRESHOLD) {
+        dialog_list.push(ProcessInfo.SWAP_APPROVE_TOKEN_1)
+      }
+      if (this.allowance_1 < ALLOWANCE_THRESHOLD) {
+        dialog_list.push(ProcessInfo.SWAP_APPROVE_TOKEN_2)
+      }
+      openDialog(this.dialogue_info, dialog_list);
+
       // console.log('Ready for approval')
-      if (this.allowance_0 < ALLOWANCE_THRESHOLD) {
-        await tokenApprove(this.single_swap_pool.token_0_address, account, this.single_swap_pool.router_address);
+      if (this.single_swap_pool.token_0 != 'ETH' && this.allowance_0 < ALLOWANCE_THRESHOLD) {
+        try {
+          await tokenApprove(this.single_swap_pool.token_0_address, account, this.single_swap_pool.router_address);
+          stepDialog(this.dialogue_info);
+        } catch (e) {
+          console.warn(e);
+          return
+        }
         // console.log('Approve token', this.single_swap_pool.token_0);
       }
-      stepDialog(this.dialogue_info);
+
       if (this.allowance_1 < ALLOWANCE_THRESHOLD) {
-        await tokenApprove(this.single_swap_pool.token_1_address, account, this.single_swap_pool.router_address);
+        try {
+          await tokenApprove(this.single_swap_pool.token_1_address, account, this.single_swap_pool.router_address);
+        }
+        catch (e) {
+          console.warn(e);
+          return
+        }
         // console.log('Approve token', this.single_swap_pool.token_1);
       }
+      this.approved = true;
       closeDialog(this.dialogue_info);
     },
     async approveLPToken() {
@@ -627,13 +675,14 @@ export default {
         // console.log('Approve token', this.single_swap_pool.token_0);
       }
       closeDialog(this.dialogue_info);
+      this.liquidity_approved = true;
     },
 
     calRemoval() {
       // console.log('Pool liquidity', this.single_swap_pool.pool_liquidity)
-      this.token_0_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_0_reserve).toFixed(4);
-      this.token_1_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_1_reserve).toFixed(4);
-      if(this.remove_amount>single_swap_pool.token_0_pooled * single_swap_pool.token_1_pooled){
+      this.token_0_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_0_reserve).toFixed(18);
+      this.token_1_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_1_reserve).toFixed(18);
+      if (this.token_0_removal > single_swap_pool.token_0_pooled) {
         this.valid_remove = false;
         return
       }
@@ -647,25 +696,51 @@ export default {
       let router_contract = this.single_swap_pool.router_contract;
       let current_time = Date.parse(new Date());
       // console.log(this.single_swap_pool.token_0_decimal, this.single_swap_pool.token_1_decimal);
-      try {
-        let tx_result = await router_contract.methods.addLiquidity(
-          this.single_swap_pool.token_0_address,
-          this.single_swap_pool.token_1_address,
-          toWei(this.token_0_amount, parseInt(this.single_swap_pool.token_0_decimal)),
-          toWei(this.token_1_amount, parseInt(this.single_swap_pool.token_1_decimal)),
-          0, 0,
-          account,
-          current_time + 400).send({ from: account });
-        this.successMessage(tx_result, 'Add Liquidity Successfully');
-      } catch (e) {
-        this.errorMessage('Add Liquidity Error');
-        closeDialog(this.dialogue_info);
-        return
+
+      if (this.single_swap_pool.token_0 == 'ETH') {
+        try {
+          let tx_result = await router_contract.methods.addLiquidityETH(
+            this.single_swap_pool.token_1_address,
+            toWei(this.token_1_amount, parseInt(this.single_swap_pool.token_1_decimal)),
+            0, 0,
+            account,
+            current_time + 400).send({ from: account, value: toWei(this.token_0_amount) });
+          this.successMessage(tx_result, 'Add Liquidity Successfully');
+        } catch (e) {
+          console.warn(e);
+          this.errorMessage('Add Liquidity Error');
+          closeDialog(this.dialogue_info);
+          this.token_0_amount = '';
+          this.token_1_amount = '';
+          return
+        }
+      } else {
+        try {
+          let tx_result = await router_contract.methods.addLiquidity(
+            this.single_swap_pool.token_0_address,
+            this.single_swap_pool.token_1_address,
+            toWei(this.token_0_amount, parseInt(this.single_swap_pool.token_0_decimal)),
+            toWei(this.token_1_amount, parseInt(this.single_swap_pool.token_1_decimal)),
+            0, 0,
+            account,
+            current_time + 400).send({ from: account });
+          this.successMessage(tx_result, 'Add Liquidity Successfully');
+        } catch (e) {
+          this.errorMessage('Add Liquidity Error');
+          closeDialog(this.dialogue_info);
+          this.token_0_amount = '';
+          this.token_1_amount = '';
+          return
+        }
       }
-      this.remove_amount = '';
+
+
+      this.token_0_amount = '';
+      this.token_1_amount = '';
+      closeDialog(this.dialogue_info);
       await this.updatePool();
       await this.updateUserInfo();
-      closeDialog(this.dialogue_info);
+
     },
 
     async removeLiquidity() {
@@ -674,27 +749,53 @@ export default {
       let router_contract = this.single_swap_pool.router_contract;
       let current_time = Date.parse(new Date());
       // console.log(this.single_swap_pool.token_0_decimal, this.single_swap_pool.token_1_decimal);
-      try {
-        let tx_result = await router_contract.methods.removeLiquidity(
-          this.single_swap_pool.token_0_address,
-          this.single_swap_pool.token_1_address,
-          toWei(this.remove_amount / 1e8),
-          0, 0,
-          account,
-          current_time + 400).send({ from: account });
-        this.successMessage(tx_result, 'Remove Liquidity Successfully');
-      } catch (e) {
-        console.warn(e)
-        this.errorMessage('Remove Liquidity Error');
-        closeDialog(this.dialogue_info);
-        return
+
+      if (this.single_swap_pool.token_0 == 'ETH') {
+        try {
+          let tx_result = await router_contract.methods.removeLiquidityETH(
+            this.single_swap_pool.token_1_address,
+            toWei(this.remove_amount / 1e4),
+            0, 0,
+            account,
+            current_time + 400).send({ from: account });
+          this.successMessage(tx_result, 'Remove Liquidity Successfully');
+        } catch (e) {
+          console.warn(e)
+          this.errorMessage('Remove Liquidity Error');
+          this.remove_amount = '';
+          this.token_0_removal = '';
+          this.token_1_removal = '';
+          closeDialog(this.dialogue_info);
+          return
+        }
+      } else {
+        try {
+          let tx_result = await router_contract.methods.removeLiquidity(
+            this.single_swap_pool.token_0_address,
+            this.single_swap_pool.token_1_address,
+            toWei(this.remove_amount / 1e4),
+            0, 0,
+            account,
+            current_time + 400).send({ from: account });
+          this.successMessage(tx_result, 'Remove Liquidity Successfully');
+        } catch (e) {
+          console.warn(e)
+          this.errorMessage('Remove Liquidity Error');
+          this.remove_amount = '';
+          this.token_0_removal = '';
+          this.token_1_removal = '';
+          closeDialog(this.dialogue_info);
+          return
+        }
       }
+
       this.remove_amount = '';
       this.token_0_removal = '';
-      this.token_1_removal = ''
+      this.token_1_removal = '';
+      closeDialog(this.dialogue_info);
       await this.updatePool();
       await this.updateUserInfo();
-      closeDialog(this.dialogue_info);
+
     },
 
     async updatePool() {

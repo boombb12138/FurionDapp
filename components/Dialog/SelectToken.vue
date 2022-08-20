@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { swap_info } from '@/config/furion_swap/swap';
+import { swap_info, token_info } from '@/config/furion_swap/swap';
 export default {
   props: ['DialogVisible', 'DialogClose', 'Token0'],
   data() {
@@ -82,10 +82,7 @@ export default {
       Loading: false,
       text: 'Find a token by searching for its name or symbol, or by pasting its address below.',
       value: '',
-      token_info: [
-        { symbol: 'USDT', address: "0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84", image: require("@/assets/images/liquidity/tokens/USDT.png") },
-        { symbol: 'FUR', address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E', image: require('@/assets/images/liquidity/tokens/FUR.png') }
-      ]
+      token_info: token_info
     };
   },
   methods: {
