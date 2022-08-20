@@ -724,7 +724,7 @@ export const initPooledNftInfo = async (network) => {
 
     for (let i = 0; i < nftsWithPool.length; i++) {
       const nftAddress = nftsWithPool[i].toLowerCase();
-      
+
 
       // Assume collection is found in contract but not in backend
       let temp = {
@@ -768,11 +768,11 @@ export const initPooledNftInfo = async (network) => {
         temp.fXprice = raw_data['reference_price_high'].toFixed(2);
         temp.last7Days = raw_data['week_price'];
         temp.last7Days_type = raw_data['type'];
-        
+
       }catch(e){
-        
+
       }
-      
+
       // Collection is found in contract but not in backend
       final_result.push(temp);
     }

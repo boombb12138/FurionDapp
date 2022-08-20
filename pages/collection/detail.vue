@@ -244,7 +244,7 @@
           <div class="flex justify-between mb-50px">
             <div></div>
             <div class="btn_border">
-              <el-button type="primary" class="!w-284px !h-56px" plain>
+              <el-button type="primary" class="!w-284px !h-56px" @click="addTheComment(html)" plain >
                 <div class="!flex items-center justify-center">
                   <div class="text-19px font-700">Post a comment</div>
                 </div>
@@ -252,7 +252,7 @@
             </div>
           </div>
 
-          <div v-for="(item, index) in comments" :key="index" class="mb-40px">
+          <div v-for="(item, index) in nft_comment.comment_list" :key="index" class="mb-40px">
             <div class="flex justify-between items-start">
               <div class="flex items-center">
                 <img
@@ -260,17 +260,17 @@
                   width="54"
                   class="mr-20px rounded-full"
                 />
-                <div class="font-700 text-24px">Azuki</div>
+                <div class="font-700 text-24px">{{item.from_uid}}</div>
               </div>
-              <div class="text-[#7D8599] text-16px font-700">2022/07/27</div>
+              <div class="text-[#7D8599] text-16px font-700">{{item.created_time}}</div>
             </div>
 
             <div class="pl-73px">
               <div class="text-[#7D8599] font-600 text-20px mb-15px">
-                This is really a great
+                {{item.content}}
               </div>
 
-              <div class="flex items-center mb-5px">
+              <!-- <div class="flex items-center mb-5px">
                 <div
                   class="font-700 text-14px text-[#6F788D] mr-35px cursor-pointer"
                   @click="item.show = true"
@@ -280,10 +280,10 @@
                 <div class="flex items-center cursor-pointer">
                   <img src="@/assets/images/more3.svg" alt="" />
                   <div class="text-[#FA6BE1] ml-5px text-16px font-600">
-                    View 33 replies
+                    View {{item.reply_count}} replies
                   </div>
                 </div>
-              </div>
+              </div> -->
 
               <div class="relative" v-if="item.show">
                 <img
@@ -337,8 +337,13 @@ import {
   stepDialog,
   ProcessInfo,
 } from '~/config/loading_info';
+import {
+  nft_comment,
+  initNftComment,
+  intoNftComment,
+} from "@/config/collection/nft_comment";
+import axios from 'axios'
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
-
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
@@ -358,6 +363,7 @@ export default {
       html: "",
       network: "rinkeby",
       nft_item: nft_item,
+      nft_comment: nft_comment,
       poolContract: {},
       furContract: {},
       editorOption: {
@@ -398,7 +404,6 @@ export default {
           Dates: "2 hours ago",
         },
       ],
-      comments: [{}, {}, {}],
       multicall: multicall,
       dialogue_info: DialogInfo
     };
@@ -406,21 +411,43 @@ export default {
   async mounted() {
     this.nft_item = await initNftItem(this.nft_item, this.$route.query.collection, this.$route.query.token_id, this.network);
 
-    this.comments = this.comments.map((item) => {
-      return {
-        show: false,
-      };
-    });
     // console.log('NFT address', this.nft_item.address);
     this.poolContract = await initSeparatePoolContract(this.nft_item.address);
     this.furContract = await initFurContract();
+    this.nft_comment = await initNftComment(this.network, this.nft_item.address, this.nft_item.token_id);
   },
   methods: {
     toCart() {
       let arr = [...this.cart, 1];
       this.$store.commit("save", ["user.cart", arr, this]);
     },
+    addTheComment(html) {
+      //console.log(html.replace(/<[^>]+>|&[^>]+;/g,"").trim());
+      let text = html.replace(/<[^>]+>|&[^>]+;/g,"").trim();
+      if (text.length > 0) {
+        let data = {
+          network: this.network,
+          address: this.nft_item.address,
+          token_id: this.nft_item.token_id,
+          content: text,
+          from_uid: 'anonymous',
+          from_avatar: 'from_avatar',
+          reply_count: 0,
+        };
+        this.nft_comment.comment_list.push(data);
+        axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
+        const service = axios.create({
+          baseURL: 'http://127.0.0.1:6010',
+          timeout: 6000000,
+        });
 
+        return service({
+          url: "/into_comment",
+          method: "post",
+          params: data,
+        });
+      }
+    },
     /** Balance & allowance checks **/
 
     async hasEnoughFur(account) {
