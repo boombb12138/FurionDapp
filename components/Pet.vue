@@ -1,0 +1,217 @@
+<style lang="scss" scoped>
+.pet {
+  @apply fixed right-120px text-[#C0C7D5] cursor-pointer;
+  ::v-deep {
+    .el-popover {
+      background: #212657;
+      border-color: #212657;
+      color: #c0c7d5;
+      @apply absolute bottom-90px left-60px text-12px;
+      padding: 8px 8px;
+      width: 120px !important;
+      min-width: unset !important;
+      word-break: break-all;
+      line-height: 16px !important;
+    }
+    .el-popper[x-placement^="top"] .popper__arrow {
+      border-color: transparent;
+    }
+    .el-popper[x-placement^="top"] .popper__arrow::after {
+      border-top-color: #212657;
+      bottom: -1px;
+    }
+  }
+}
+
+.box {
+  @apply w-206px h-266px  fixed right-220px  text-[#FCFFFD];
+  background: url("@/assets/images/pet/bg.png");
+}
+
+.box2 {
+  @apply w-248px h-150px  fixed right-220px  text-[#FCFFFD];
+  background: url("@/assets/images/pet/bg2.png");
+}
+
+.lv {
+  width: 21px;
+  height: 21px;
+  background: #343e73;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  position: absolute;
+  left: 24px;
+  bottom: 184px;
+  color: #fa6be1;
+  font-weight: 900;
+  font-size: 15px;
+  @apply flex items-center justify-center;
+}
+
+.exp {
+  background: #343e73;
+  border-radius: 50px;
+  height: 137px;
+  width: 8px;
+  position: absolute;
+  left: 30px;
+  bottom: 40px;
+  overflow: hidden;
+  @apply flex items-end justify-center;
+  .bar {
+    border-radius: 50px;
+    background: linear-gradient(360deg, #fa6be1 0%, #fa6be1 58.85%, #31c2c7 100%);
+    width: 100%;
+  }
+}
+
+.p {
+  font-weight: 700;
+  font-size: 12px;
+  color: #ffd0f7;
+  position: absolute;
+  left: 15px;
+  bottom: 20px;
+}
+
+.msg {
+  top: 77px;
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 10px;
+  text-transform: uppercase;
+  color: #fcfffd;
+  text-shadow: 1px 1px 0 #ffb5f2;
+}
+</style>
+
+<template>
+  <div class="z-1001" :class="{ 'el-dialog__wrapper': show }">
+    <div class="pet center-y mt-100px z-100" @click="show = true">
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end">
+        {{ textList[textIndex] }}
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+
+      <img
+        src="@/assets/images/pet/pointer.png"
+        class="absolute right-10px bottom-0 blink vivify infinite duration-3000"
+        v-if="!show"
+      />
+
+      <img src="@/assets/images/pet/pet.png" alt="" />
+    </div>
+
+    <div class="box relative center-y mt-20px mr-20px" v-if="show && !dialog">
+      <div
+        class="absolute w-10px h-10px right-23px top-25px cursor-pointer"
+        @click="dialog = true"
+      ></div>
+      <div class="pl-24px">
+        <div
+          class="flex items-center pt-20px pb-9px"
+          style="border-bottom: 1px solid #2e305c"
+        >
+          <img src="@/assets/images/pet/Cat.svg" alt="" />
+          <div class="font-600 text-14px mr-4px">Portfolio</div>
+
+          <el-popover
+            placement="bottom"
+            title=""
+            trigger="hover"
+            :visible-arrow="false"
+            popper-class="el-tip"
+          >
+            <div class="text-center text-[#0B1A3B]">
+              <div>text...</div>
+            </div>
+            <img
+              src="@/assets/images/pet/q.svg"
+              class="cursor-pointer mb-3px"
+              slot="reference"
+            />
+          </el-popover>
+        </div>
+      </div>
+
+      <template v-if="!empty">
+        <div class="grid grid-cols-2 absolute right-10px top-60px z-10">
+          <img src="@/assets/images/pet/tag.png" class="" width="30" />
+          <img src="@/assets/images/pet/tag2.png" class="" width="30" />
+          <img src="@/assets/images/pet/tag3.png" class="" width="30" />
+          <img src="@/assets/images/pet/tag.png" class="" width="30" />
+        </div>
+
+        <img src="@/assets/images/pet/pet2.png" class="absolute center-x bottom-45px" />
+
+        <div class="lv">1</div>
+
+        <div class="exp">
+          <div class="bar" :style="{ height: '70%' }"></div>
+        </div>
+
+        <div class="p w-40px text-center">70%</div>
+
+        <div class="flex items-center absolute center-x bottom-20px">
+          <img src="@/assets/images/pet/lock.svg" alt="" />
+          <div class="ml-4px font-600 text-12px">#0001</div>
+        </div>
+      </template>
+
+      <template v-else>
+        <div class="msg absolute center-x">You don't have a cat yet！</div>
+        <img src="@/assets/images/pet/pet0.png" class="absolute center-x bottom-60px" />
+        <div class="absolute center-x w-1/1 flex items-center justify-center bottom-20px">
+          <div class="btn2 mr-14px" @click="empty = false">MINT</div>
+          <div class="btn2">QUIT</div>
+        </div>
+      </template>
+    </div>
+
+    <div v-if="show && dialog" class="box2 relative center-y mt-20px mr-20px">
+      <img src="@/assets/images/pet/tip.png" class="absolute center-x top-12px" />
+      <div class="msg absolute center-x mt-4px !text-14px">ARE YOU SURE?</div>
+      <div class="absolute center-x w-1/1 flex items-center justify-center bottom-20px">
+        <div class="btn2 mr-14px !h-24px" @click="close">YES</div>
+        <div class="btn2 !h-24px" @click="dialog = false">NO</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {},
+  components: {},
+  computed: {},
+  data() {
+    return {
+      textList: ["Hi,I’m ....", "dgfdg fhg fiyuiyi,y,hgfhgvbnf,a dasdhfhgf"],
+      textIndex: 0,
+      timer: null,
+      show: false,
+      empty: true,
+      dialog: false,
+    };
+  },
+  mounted() {
+    setInterval(() => {
+      this.textIndex++;
+      if (this.textIndex >= this.textList.length) {
+        this.textIndex = 0;
+      }
+    }, 3000);
+  },
+  destroyed() {
+    clearInterval(this.timer);
+  },
+  methods: {
+    close() {
+      this.dialog = false;
+      this.show = false;
+    },
+  },
+};
+</script>

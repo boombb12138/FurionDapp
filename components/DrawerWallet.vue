@@ -67,7 +67,7 @@
     <div v-click-outside="hide" class="drawer-wrap" :class="{ isShow }">
       <div class="wrap-bg-top pointer-events-none"></div>
       <div class="wrap-bg-bottom pointer-events-none"></div>
-      <img class="close-btn" src="@/assets/images/drawer/close_active.svg" @click="isShow = false" />
+      <img class="close-btn" src="@/assets/images/drawer/close_active.svg" @click="closeWallet" />
       <div class="drawer-header flex pt-17px cursor-pointer">
         <div class="flex items-center ml-26px">
           <img class="mr-12px" src="@/assets/images/drawer/avatar2.svg" />
@@ -115,9 +115,9 @@
           <!-- <div class="tab-btn text-[rgba(176,183,243,0.4)] bg-[#162548]">Salana</div> -->
         </div>
       </div>
-      <div class="btn_border w-310px mt-26px mx-auto" v-on:click="closeWallet">
-        <el-button type="primary" plain class="!w-304px !h-48px">
-          <span class="text-14px font-700">Close window</span>
+      <div class="btn_border w-310px mt-26px mx-auto">
+        <el-button type="primary" :disabled="!userInfo.isConnect" plain class="!w-304px !h-48px" @click="closeWallet">
+          <span class="text-14px font-700">{{ userInfo.isConnect ? "Close window" : "Please connect wallet" }}</span>
         </el-button>
       </div>
     </div>
@@ -147,7 +147,7 @@ export default {
   async mounted() {
     setTimeout(() => {
       console.log('User connected?', this.userInfo.isConnect)
-      if(this.$route.path.length < 2){
+      if (this.$route.path.length < 2) {
         return
       }
       if (!this.userInfo.isConnect) {
@@ -207,12 +207,24 @@ export default {
       } catch (error) {
         console.log(error);
       }
-      this.isShow = false;
+      setTimeout(() => {
+        if (this.userInfo.isConnect) {
+          this.isShow = false;
+        }
+      }, 2000)
+
+
     },
     toggle() {
+      if (!this.userInfo.isConnect) {
+        this.isShow = true;
+      }
       // this.isShow = !this.isShow;
     },
-    closeWallet(){
+    closeWallet() {
+      if (!this.userInfo.isConnect) {
+        return
+      }
       this.isShow = false;
     },
     hide(e) {

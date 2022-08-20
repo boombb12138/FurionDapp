@@ -16,6 +16,7 @@
     </div>
 
     <CartIcon></CartIcon>
+     <Pet></Pet>
 
     <NetworkInformationDialog :DialogVisible="network_visible" :DialogClose="networkClose" />
   </div>
