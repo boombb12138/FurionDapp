@@ -222,14 +222,15 @@
           </div>
 
         </div>
-        <div class="flex items-center justify-between mt-14px text-center">
+        <div class="flex items-center justify-between mt-14px text-center" v-if="swap_info.token_1 != 'ETH'">
           <p class="cursor-pointer ml-4px ml-100px text-[rgba(204, 204, 204, 0.3)] text-12px font-400 underline mt-10px"
             v-on:click="addToken">Add {{ swap_info.token_1 }} to my wallet</p>
         </div>
       </div>
     </div>
 
-    <SelectToken :DialogVisible="select_token" :DialogClose="closeTokenSelect" :Token0="pick_token0" />
+    <SelectToken :DialogVisible="select_token_visible" :DialogClose="closeTokenSelect" :Token0="pick_token0"
+      :SelectToken="selectToken" />
 
     <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
@@ -242,7 +243,7 @@ import SelectToken from '@/components/Dialog/SelectToken.vue';
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 
 import { newMultiCallProvider } from "@/utils/web3/multicall";
-import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei } from '@/utils/common';
+import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
 import { addToken } from '@/utils/web3/wallet';
 
 import {
@@ -253,6 +254,7 @@ import {
   stepDialog,
   ProcessInfo,
 } from '~/config/loading_info';
+import { WETH_ADDRESS } from '@/utils/web3';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -276,7 +278,7 @@ export default {
       token_0_amount: '',
       token_1_amount: '',
       multicall: multicall,
-      select_token: false,
+      select_token_visible: false,
       pick_token0: true,
       swap_info: swap_info,
       approved: false,
@@ -291,115 +293,42 @@ export default {
     await this.checkApproval();
   },
   methods: {
-    async updateUserInfo() {
-      let account = this.userInfo.userAddress;
-      // console.log('Account info', account)
-      let token_0_contract = this.swap_info.token_0_contract;
-      let token_1_contract = this.swap_info.token_1_contract;
-      try {
-        let multicall_list = [token_0_contract.methods.balanceOf(account), token_1_contract.methods.balanceOf(account)];
-        const balance_results = await this.multicall.aggregate(multicall_list);
-        // console.log('Balance info', balance_results);
-        this.swap_info.token_0_balance = fromWei(balance_results[0], parseInt(this.swap_info.token_0_decimal));
-        this.swap_info.token_1_balance = fromWei(balance_results[1], parseInt(this.swap_info.toke_1_decimal));
-      } catch (e) {
-        console.warn('Fail to load balance')
-        console.warn(e);
-      }
-    },
 
-    formatNumber(value, fixed = 2) {
-      let reserve = value - parseInt(value);
-      let final_result;
-      if (value - reserve < 1) {
-        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
-      } else {
-        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
-      }
-      if (final_result[0] == '-' || final_result[0] == 'N') {
-        final_result = '--'
-      }
-      return final_result
-    },
     onSort(str) {
       this.$refs.sort.doClose();
       this.sort = str;
     },
     pickToken(pick_token_0) {
       this.pick_token0 = pick_token_0;
-      this.select_token = true;
+      this.select_token_visible = true;
     },
     closeTokenSelect() {
-      this.select_token = false;
+      this.select_token_visible = false;
     },
-    async swap() {
-      await openDialog(this.dialogue_info, [ProcessInfo.SWAP_TOKEN]);
-      let account = this.userInfo.userAddress;
-      let router_contract = this.swap_info.router_contract;
-      let current_time = Date.parse(new Date());
-      // console.log(this.single_swap_pool.token_0_decimal, this.single_swap_pool.token_1_decimal);
-      try {
-        let tx_result = await router_contract.methods.swapExactTokensForTokens(
-          toWei(this.token_0_amount, parseInt(this.swap_info.token_0_decimal)),
-          0,
-          [this.swap_info.token_0_address, this.swap_info.token_1_address],
-          account,
-          current_time + 400
-        ).send({ from: account });
-        this.successMessage(tx_result, 'Swap Successfully');
-      } catch (e) {
-        console.warn(e);
-        this.errorMessage('Swap Error');
-        closeDialog(this.dialogue_info);
-        return
-      }
-      this.token_0_amount = '';
-      this.token_1_amount = '';
-      await this.updateUserInfo();
-      closeDialog(this.dialogue_info);
-    },
-    async approveToken() {
-      let account = this.userInfo.userAddress;
-      // console.log('Ready for approval')
-      if (this.allowance_0 < ALLOWANCE_THRESHOLD) {
-        await openDialog(this.dialogue_info, [ProcessInfo.SWAP_APPROVE_TOKEN]);
-        await tokenApprove(this.swap_info.token_0_address, account, this.swap_info.router_address);
-        // console.log('Approve token', this.swap_info.token_0);
-      }
-      closeDialog(this.dialogue_info);
-    },
-    checkApproval() {
-      let account = this.userInfo.userAddress;
-      // console.log('Router address', this.swap_info.router_address);
-      let multicall_list = [
-        this.swap_info.token_0_contract.methods.allowance(account, this.swap_info.router_address)
-      ];
-      this.multicall.aggregate(multicall_list).then((allowance) => {
-        // console.log('Allowance', allowance);
-        this.allowance_0 = allowance[0];
-        if (parseInt(allowance[0]) > ALLOWANCE_THRESHOLD) {
-          this.approved = true;
+    async selectToken(item) {
+      if (this.pick_token0) {
+        if (item.symbol == swap_info.token_1) {
+          this.errorMessage('Identical Address');
+          return
         }
-      });
-    },
-    calToken1Amount() {
-      if (this.swap_info.token_1_reserve * this.swap_info.token_0_reserve < 1) {
-        return
+        swap_info.token_0 = item.symbol;
+        swap_info.token_0_address = item.address;
+        swap_info.token_0_image = item.image;
+        console.log('Update token 0', swap_info)
+      } else {
+        if (item.symbol == swap_info.token_0) {
+          this.errorMessage('Identical Address');
+          return
+        }
+        swap_info.token_1 = item.symbol;
+        swap_info.token_1_address = item.address;
+        swap_info.token_1_image = item.image;
+        console.log('Update token 1', swap_info)
       }
-      const middle_value = this.token_0_amount * (1 - this.swap_info.fee_rate);
-      const token_1_desired = this.swap_info.token_1_reserve * middle_value / (this.swap_info.token_0_reserve + middle_value);
-      this.token_1_amount = token_1_desired.toFixed(4);
+      this.refresh();
+      this.closeTokenSelect();
     },
-    calToken0Amount() {
-      if (this.token_1_amount > this.swap_info.token_1_reserve) {
-        this.token_1_amount = this.swap_info.token_1_reserve;
-      }
-      if (this.swap_info.token_1_reserve * this.swap_info.token_0_reserve < 1) {
-        return
-      }
-      const token_0_desired = this.swap_info.token_0_reserve * this.token_1_amount / (1 - this.swap_info.fee_rate) / (this.swap_info.token_1_reserve - this.token_1_amount);
-      this.token_0_amount = token_0_desired.toFixed(4);
-    },
+
     switchSingle(key) {
       const temp_value = this.swap_info['token_0_' + key];
       this.swap_info['token_0_' + key] = this.swap_info['token_1_' + key];
@@ -430,6 +359,189 @@ export default {
         tokenDecimals: this.swap_info.token_1_decimal,
         tokenImage: this.swap_info.token_1_image,
       })
+    },
+
+    /******************************* Update info *******************************/
+    async refresh() {
+      this.swap_info = await initFurionSwapInfo(this.swap_info, this.chainId);
+      await this.updateUserInfo();
+      // console.log('This is initialized furion swap', this.swap_info);
+      await this.checkApproval();
+    },
+    async updateUserInfo() {
+      let account = this.userInfo.userAddress;
+      // console.log('Account info', account)
+      try {
+        if (this.swap_info.token_0 == 'ETH') {
+          this.swap_info.token_0_balance = await getNativeTokenAmount(account);
+          let token_1_contract = this.swap_info.token_1_contract;
+          this.swap_info.token_1_balance = fromWei((await token_1_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.toke_1_decimal));
+        } else if (this.swap_info.token_1 == 'ETH') {
+          this.swap_info.token_1_balance = await getNativeTokenAmount(account);
+          let token_0_contract = this.swap_info.token_0_contract;
+          this.swap_info.token_0_balance = fromWei((await token_0_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.toke_0_decimal));
+        }
+
+        else {
+          let token_0_contract = this.swap_info.token_0_contract;
+          let token_1_contract = this.swap_info.token_1_contract;
+
+          let multicall_list = [token_0_contract.methods.balanceOf(account), token_1_contract.methods.balanceOf(account)];
+          const balance_results = await this.multicall.aggregate(multicall_list);
+          // console.log('Balance info', balance_results);
+          this.swap_info.token_0_balance = fromWei(balance_results[0], parseInt(this.swap_info.token_0_decimal));
+          this.swap_info.token_1_balance = fromWei(balance_results[1], parseInt(this.swap_info.toke_1_decimal));
+
+        }
+      } catch (e) {
+        console.warn(e);
+        console.warn('Fail to load balance')
+      }
+    },
+
+    checkApproval() {
+      let account = this.userInfo.userAddress;
+      if (this.swap_info.token_0 == 'ETH') {
+        this.allowance_0 = 10000000000000000000000000000;
+        this.approved = true;
+      }
+      else {
+        this.swap_info.token_0_contract.methods.allowance(account, this.swap_info.router_address).call().then((allowance) => {
+          if (parseInt(allowance) > ALLOWANCE_THRESHOLD) {
+            this.approved = true;
+          }
+        })
+      }
+    },
+
+    async approveToken() {
+      let account = this.userInfo.userAddress;
+      if (this.swap_info.token_0 == 'ETH') {
+        return
+      }
+      // console.log('Ready for approval')
+      if (this.allowance_0 < ALLOWANCE_THRESHOLD) {
+        await openDialog(this.dialogue_info, [ProcessInfo.SWAP_APPROVE_TOKEN]);
+        await tokenApprove(this.swap_info.token_0_address, account, this.swap_info.router_address);
+        // console.log('Approve token', this.swap_info.token_0);
+      }
+      closeDialog(this.dialogue_info);
+    },
+
+    /******************************* Contract functions *******************************/
+    async swap() {
+      await openDialog(this.dialogue_info, [ProcessInfo.SWAP_TOKEN]);
+      let account = this.userInfo.userAddress;
+      let router_contract = this.swap_info.router_contract;
+      let current_time = Date.parse(new Date());
+      // console.log(this.swap_info.token_0_decimal, this.swap_info.token_1_decimal);
+
+      // swap ETH for other tokens
+      if (this.swap_info.token_0 == 'ETH') {
+        try {
+          let tx_result = await router_contract.methods.swapExactETHForTokens(
+            0,
+            [this.swap_info.token_0_address, this.swap_info.token_1_address],
+            account,
+            current_time + 400
+          ).send({ from: account, value: toWei(this.token_0_amount) });
+          this.successMessage(tx_result, 'Swap Successfully');
+        } catch (e) {
+          console.warn(e);
+          this.errorMessage('Swap Error');
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
+      // swap for ETH
+      else if (this.swap_info.token_1 == 'ETH') {
+        try {
+          let tx_result = await router_contract.methods.swapExactTokensForETH(
+            toWei(this.token_0_amount, parseInt(this.swap_info.token_0_decimal)),
+            0,
+            [this.swap_info.token_0_address, this.swap_info.token_1_address],
+            account,
+            current_time + 400
+          ).send({ from: account });
+          this.successMessage(tx_result, 'Swap Successfully');
+        } catch (e) {
+          console.warn(e);
+          this.errorMessage('Swap Error');
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
+      
+      // swap between general ERC-20 tokens
+      else {
+        // 
+        let trading_path = [];
+        if (this.swap_info.pair_address.length < 4) {
+          let weth_address;
+          if (this.chainId == 4) {
+            weth_address = WETH_ADDRESS['rinkeby']
+          } else if (this.chainId == 1) {
+            weth_address = WETH_ADDRESS['mainnet'];
+          }
+          trading_path = [this.swap_info.token_0_address, weth_address, this.swap_info.token_1_address]
+        } else {
+          trading_path = [this.swap_info.token_0_address, this.swap_info.token_1_address]
+        }
+        try {
+          let tx_result = await router_contract.methods.swapExactTokensForTokens(
+            toWei(this.token_0_amount, parseInt(this.swap_info.token_0_decimal)),
+            0,
+            trading_path,
+            account,
+            current_time + 400
+          ).send({ from: account });
+          this.successMessage(tx_result, 'Swap Successfully');
+        } catch (e) {
+          console.warn(e);
+          this.errorMessage('Swap Error');
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
+      this.token_0_amount = '';
+      this.token_1_amount = '';
+      await this.updateUserInfo();
+      closeDialog(this.dialogue_info);
+    },
+
+    /******************************* Helper functions *******************************/
+
+    calToken1Amount() {
+      if (this.swap_info.token_1_reserve * this.swap_info.token_0_reserve < 1) {
+        return
+      }
+      const middle_value = this.token_0_amount * (1 - this.swap_info.fee_rate);
+      const token_1_desired = this.swap_info.token_1_reserve * middle_value / (this.swap_info.token_0_reserve + middle_value);
+      this.token_1_amount = token_1_desired.toFixed(4);
+    },
+    calToken0Amount() {
+      if (this.token_1_amount > this.swap_info.token_1_reserve) {
+        this.token_1_amount = this.swap_info.token_1_reserve;
+      }
+      if (this.swap_info.token_1_reserve * this.swap_info.token_0_reserve < 1) {
+        return
+      }
+      const token_0_desired = this.swap_info.token_0_reserve * this.token_1_amount / (1 - this.swap_info.fee_rate) / (this.swap_info.token_1_reserve - this.token_1_amount);
+      this.token_0_amount = token_0_desired.toFixed(4);
+    },
+
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
+      } else {
+        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
+      }
+      if (final_result[0] == '-' || final_result[0] == 'N') {
+        final_result = '--'
+      }
+      return final_result
     },
 
     successMessage(receipt, title) {

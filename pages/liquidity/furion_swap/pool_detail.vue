@@ -519,9 +519,10 @@ export default {
       this.single_swap_pool.pair_liquidity = parseInt(pair_results[0] / 1e14);
       this.single_swap_pool.user_liquidity = parseInt(pair_results[1] / 1e14);
       this.single_swap_pool.user_liquidity_proportion = this.single_swap_pool.user_liquidity / this.single_swap_pool.pair_liquidity;
-      if (this.single_swap_pool.user_liquidity_proportion > 0.9999) {
-        this.single_swap_pool.user_liquidity_proportion = 0.9999;
-        this.single_swap_pool.user_liquidity = this.single_swap_pool.pair_liquidity * 0.9999;
+      const up_threshold = 0.9999;
+      if (this.single_swap_pool.user_liquidity_proportion > up_threshold) {
+        this.single_swap_pool.user_liquidity_proportion = up_threshold;
+        this.single_swap_pool.user_liquidity = this.single_swap_pool.pair_liquidity * up_threshold;
       }
 
       this.single_swap_pool.token_0_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_0_reserve;

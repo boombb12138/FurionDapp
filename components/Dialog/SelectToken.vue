@@ -38,12 +38,11 @@
     background: rgba(51, 53, 114, 0.8) 0%;
   }
 }
-
 </style>
 
 <template>
   <el-dialog title="NFT Contract Address:" :visible.sync="DialogVisible" width="35%" :close-on-click-modal="false"
-     append-to-body custom-class="el-dialog-dark">
+    append-to-body custom-class="el-dialog-dark">
     <div slot="title" class="flex font-800 text-24px">
       <div class="pb-2px">&nbsp;&nbsp;Select a token</div>
       &nbsp;&nbsp;
@@ -59,7 +58,7 @@
     <div class="h-474px mb-35px">
       <el-scrollbar class="h-1/1">
         <div class="list">
-          <div class="item" v-for="item in token_info" v-on:click="selectToken(item)">
+          <div class="item" v-for="item in token_info" v-on:click="SelectToken(item)">
             <div class="items-center flex">
               <img :src="item.image" width="35px" />
               <div class="font-500 text-18px text-[rgba(252,255,253,0.8)]">
@@ -74,9 +73,9 @@
 </template>
 
 <script>
-import { swap_info, token_info } from '@/config/furion_swap/swap';
+import { token_info } from '@/config/furion_swap/swap';
 export default {
-  props: ['DialogVisible', 'DialogClose', 'Token0'],
+  props: ['DialogVisible', 'DialogClose', 'SelectToken'],
   data() {
     return {
       Loading: false,
@@ -85,22 +84,7 @@ export default {
       token_info: token_info
     };
   },
-  methods: {
-    selectToken(item) {
-      if (this.Token0) {
-        swap_info.token_0 = item.symbol;
-        swap_info.token_0_address = item.address;
-        swap_info.token_0_image = item.image;
-        console.log('Update token 0', swap_info)
-      } else {
-        swap_info.token_1 = item.symbol;
-        swap_info.token_1_address = item.address;
-        swap_info.token_1_image = item.image;
-        console.log('Update token 1', swap_info)
-      }
-      this.DialogClose();
-    }
-  },
+  methods: {},
 };
 </script>
 
