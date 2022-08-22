@@ -13,9 +13,9 @@ import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { getChainId, WETH_ADDRESS } from "@/utils/web3";
 
 export const token_info = [
-    { symbol: 'ETH', address: '', image: require("@/assets/images/liquidity/tokens/ETH.png") },
-    { symbol: 'USDT', address: "0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84", image: require("@/assets/images/liquidity/tokens/USDT.png") },
-    { symbol: 'FUR', address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E', image: require('@/assets/images/liquidity/tokens/FUR.png') },
+    { symbol: 'ETH', address: '', market_address: "0xc04609A609af7ED23856a4C26cBbD222C128D2Cb", image: require("@/assets/images/liquidity/tokens/ETH.png") },
+    { symbol: 'USDT', address: "0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84", market_address: "", image: require("@/assets/images/liquidity/tokens/USDT.png") },
+    { symbol: 'FUR', address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E', market_address: "0xFaD887C8fB4Ed00042207d747a590D0bc7b3195e", image: require('@/assets/images/liquidity/tokens/FUR.png') },
 ]
 
 export const swap_info = {

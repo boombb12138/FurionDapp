@@ -95,7 +95,7 @@ export default {
       active: 1,
       list: [
         {
-          symbol: 'USDC',
+          symbol: 'USDT',
           tvl: 1000,
           borrowed: 500,
           supply_apr: 6.5,
