@@ -61,7 +61,7 @@ export const getSeparatePoolABI = async () => {
 
 export const getFEtherABI = async () => {
     let address = getAddress();
-    FEther.address = address['FEther'];
+    FEther.address = address["FEther Proxy"];
     return FEther;
 }
 
