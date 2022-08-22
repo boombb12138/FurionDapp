@@ -23,6 +23,13 @@
     "IncomeSharingVault": "0x381275B627278F7cD3E11bE0Fb0d4D5A3612Aefd",
     "IncomeMaker": "0xf856Bd95D26D1AD159df54bae8Aa49B39c72A9d0",
     "Checker": "0x690bF6AA502CDA5D36F616BD7C5707aE289633c8",
-    "SeparatePoolFactory": "0x0BBd5B3F82B259d6F5901f11D36F36fC8Db68432"
+    "SeparatePoolFactory": "0x0BBd5B3F82B259d6F5901f11D36F36fC8Db68432",
+    /******************************* Money Market *******************************/
+    "Price Oracle": "0x6Eb06fE1A874c167962E4C670fE3DD6470564c5C",
+    "Normal Interest Rate Model": "0x294DB77dfEbD9d7A4dBE72cFf7fD3d4721AcF140",
+    "Risk Manager Proxy": "0x16625d22c9045707de8f90E0c6b22B5aFA4320FF",
+    "Risk Manager Implementation": "0x813AEF8364b7723d41B53f2869488E23Bfec798C",
+    "FEther Proxy": "0xc04609A609af7ED23856a4C26cBbD222C128D2Cb",
+    "FEther Implementation": "0xeac6996b478f2fe1495bb1e0bd8c4209f9f41385"
   }
 }
