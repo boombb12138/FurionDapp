@@ -25,6 +25,11 @@ export const ProcessInfo = {
     detail:
       'To use NFT, you firstly need to approve our contract to spend your token, please wait for a while',
   },
+  APPROVE_TOKEN: {
+    intro: 'Approve token for depositing',
+    detail:
+      'To deposit assets and earn interest, you need to first approve our contract to transfer your tokens to the market, please wait a while',
+  },
   CREATE_SEPARATE_POOL:{
     intro: 'Create Separate Pool for NFT',
     detail:
@@ -79,6 +84,31 @@ export const ProcessInfo = {
     intro: 'Remove liquidity on Furion Swap',
     detail:
       'You are going to remove liquidity on Furion, please sign and wait for the transaction to be done',
+  },
+  DEPOSIT_TOKEN:{
+    intro: 'Deposit token to money market',
+    detail: 
+      'You are just a click away from starting to earn some juicy interest! Please sign and wait for the transaction to complete',
+  },
+  WITHDRAW_TOKEN:{
+    intro: 'Withdraw token and get interest',
+    detail: 
+      'You are just a click away to receive the juicy interest! Please sign and wait for the transaction to complete',
+  },
+  BORROW_TOKEN:{
+    intro: 'Borrow token from money market',
+    detail: 
+      'You are going to borrow tokens from the market, please sign and wait for the transaction to complete',
+  },
+  REPAY_TOKEN:{
+    intro: 'Repay borrowed tokens',
+    detail: 
+      'You are going to repay tokens you borrowed, please sign and wait for the transaction to complete',
+  },
+  ENTER_MARKET:{
+    intro: 'Enter market and use deposited asset as collateral',
+    detail:
+      'You are going to enter a token market which allows you to use the token as colalteral, please sign and wait for the transaction to complete',
   }
 };
 
