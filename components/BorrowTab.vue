@@ -38,21 +38,21 @@
         <div
           class="flex-1 text"
           :class="{ active: value == 1 }"
-          @click="$emit('input', 1)"
+          @click="change(1)"
         >
           A-Class Assets Pool
         </div>
         <div
           class="flex-1 text"
           :class="{ active: value == 2 }"
-          @click="$emit('input', 2)"
+          @click="change(2)"
         >
           B-Class Assets Pool
         </div>
         <div
           class="flex-1 text"
           :class="{ active: value == 3 }"
-          @click="$emit('input', 3)"
+          @click="change(3)"
         >
           C-Class Assets Pool
         </div>
@@ -75,6 +75,21 @@ export default {
     return {};
   },
   mounted() {},
-  methods: {},
+  methods: {
+    change(val) {
+      this.$emit('input', val);
+      
+      switch (val) {
+        case 1:
+          this.$router.push('/liquidity/money_market/list_A');
+          break;
+        case 2:
+          this.$router.push('/liquidity/money_market/list_B');
+          break;
+        case 3:
+          this.$router.push('/liquidity/money_market/list_C');
+      }
+    }
+  },
 };
 </script>
