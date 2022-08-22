@@ -1,6 +1,6 @@
 import { token_info } from "@/config/furion_swap/swap";
 import { getContract } from '@/utils/common';
-import { getMockUSDABI, getFEtherABI, getFErc20ABI } from "@/utils/common/contractABI";
+import { getMockUSDABI, getFEtherABI, getFErc20ABI, getRiskManagerABI } from "@/utils/common/contractABI";
 
 export const initTokenContract = async (symbol) => {
 	let token_contract = {
@@ -43,4 +43,17 @@ export const initMarketContract = async (symbol) => {
 	}
 
 	return market_contract;
+}
+
+export const initManagerContract = async () => {
+	let manager_contract = {
+		address: "",
+		contract: {}
+	};
+
+	const managerABI = await getRiskManagerABI();
+	manager_contract.address = managerABI.address;
+	manager_contract.contract = await getContract(managerABI, '');
+
+	return manager_contract; 
 }
