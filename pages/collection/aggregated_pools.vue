@@ -77,6 +77,7 @@
         style="width: 100%"
         @cell-click="item"
         @cell-mouse-enter="enter"
+        @cell-mouse-leave="leave"
         ref="table"
       >
         <el-table-column prop="Collection" label="Collection" width="320px">
@@ -292,6 +293,9 @@ export default {
     },
     enter(row) {
       this.$refs.table.toggleRowExpansion(row, true);
+    },
+    leave(row) {
+      this.$refs.table.toggleRowExpansion(row, false);
     },
   },
 };

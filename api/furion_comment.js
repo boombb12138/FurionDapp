@@ -20,18 +20,18 @@ export const getNftReply = (network, comment_id) => {
     })
 }
 
-export const postNftComment = (network, nft_address, token_id, content, from_uid, from_avatar, reply_count) => {
+export const postNftComment = (data) => {
     return request({
-        url:"/into_comment",
-        method:"post",
-        data:JSON.stringify({
-            network, nft_address, token_id, content, from_uid, from_avatar, reply_count}),
-        headers:{
-            "Content-Type" : "application/json;charset=utf-8"
-        }
-      }).then(res=>{
-        console.log('响应成功',res)
-      },reject=>{
-        console.log('响应失败',reject)
-      })
+        url: "/into_comment",
+        method: "post",
+        params: data,
+      });
+}
+
+export const postNftReply = (data) => {
+    return request({
+        url: "/into_reply",
+        method: "post",
+        params: data,
+      });
 }

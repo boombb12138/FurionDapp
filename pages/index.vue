@@ -278,11 +278,12 @@
           v-for="(item, index) in categoryList"
           :key="index"
           class="w-376px h-290px rounded-16px overflow-hidden border-3px border-[rgba(255,255,255,0.1)] bg-[rgba(23,37,72,0.8)] relative"
+          @click="clickCategoryList(item.url)"
         >
-          <div class="img-wrap h-220px rounded-16px overflow-hidden relative">
-            <img class="w-1/1 h-1/1 object-cover swiper-img" :src="item.img" />
-            <div class="img-float absolute w-1/1 h-80px left-0 bottom-0"></div>
-          </div>
+            <div class="img-wrap h-220px rounded-16px overflow-hidden relative">
+              <img class="w-1/1 h-1/1 object-cover swiper-img" :src="item.img" />
+              <div class="img-float absolute w-1/1 h-80px left-0 bottom-0"></div>
+            </div>
           <p class="font-500 text-16px text-[#fcfffd] text-center mt-15px">
             {{ item.remark1 }}
           </p>
@@ -402,14 +403,17 @@ export default {
         {
           img: require("@/assets/images/index/category1.jpg"),
           remark1: "The Story of Furion",
+          url: '',
         },
         {
           img: require("@/assets/images/index/category2.jpg"),
           remark1: "Introducing Furion",
+          url: 'https://medium.com/@project.furion/furion-the-first-all-in-one-nft-liquidity-platform-ffa4e3becb60',
         },
         {
           img: require("@/assets/images/index/category3.jpg"),
           remark1: "NFT News of the Week",
+          url: 'https://twitter.com/ProjectFurion/status/1561278693103652864?s=20&t=KMuIrzivXA4M9eemZKK9Jg',
         },
       ],
       collectionList: new Array(4).fill({
@@ -438,7 +442,10 @@ export default {
     },
     clickLearnmoreaboutFurion(){
       window.location.href = 'https://docs.furion.io/';
-    }
+    },
+    clickCategoryList(url){
+      window.location.href = url;
+    },
   },
 };
 </script>

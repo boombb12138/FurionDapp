@@ -24,7 +24,6 @@
     }
   }
 }
-
 .title {
   background: linear-gradient(
     180deg,
@@ -37,14 +36,12 @@
   border-top-right-radius: 12px;
   width: calc(100% + 2px);
 }
-
 ::v-deep {
   .el-table .el-table__header-wrapper {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
 }
-
 .comments {
   background: linear-gradient(
     180deg,
@@ -53,7 +50,6 @@
   );
   border: 0.8px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-
   .head {
     background: linear-gradient(
       180deg,
@@ -66,12 +62,10 @@
     display: flex;
     align-items: center;
   }
-
   .body {
     padding: 52px 66px;
   }
 }
-
 .reply {
   background: transparent;
   border-bottom: 2px solid #2d4682;
@@ -85,7 +79,6 @@
     color: #7d8599;
   }
 }
-
 .post {
   color: #7d8599 !important;
   border-color: #7d8599 !important;
@@ -232,8 +225,8 @@
       </div>
 
       <!-- Comment section -->
-      <div class="comments">
-        <div class="head">
+      <div class="comments" id="head" >
+        <div class="head" >
           <img src="@/assets/images/message.svg" class="mr-12px" />
           <div class="font-800 text-18px">Comments</div>
         </div>
@@ -252,8 +245,8 @@
             </div>
           </div>
 
-          <div v-for="(item, index) in nft_comment.comment_list" :key="index" class="mb-40px">
-            <div class="flex justify-between items-start">
+          <div v-for="(item, index) in nft_comment.comment_list" :key="index" class="mb-40px" :id="index">
+            <div class="flex justify-between items-start" :id='index'>
               <div class="flex items-center">
                 <img
                   src="@/assets/images/avatar.png"
@@ -270,20 +263,41 @@
                 {{item.content}}
               </div>
 
-              <!-- <div class="flex items-center mb-5px">
+              <div class="flex items-center mb-5px">
                 <div
                   class="font-700 text-14px text-[#6F788D] mr-35px cursor-pointer"
-                  @click="item.show = true"
+                  @click="clickReply(item)"
                 >
                   REPLY
                 </div>
                 <div class="flex items-center cursor-pointer">
                   <img src="@/assets/images/more3.svg" alt="" />
-                  <div class="text-[#FA6BE1] ml-5px text-16px font-600">
+                  <div class="text-[#FA6BE1] ml-5px text-16px font-600" @click="clickViewReply(item)">
                     View {{item.reply_count}} replies
                   </div>
                 </div>
-              </div> -->
+              </div>
+              <div v-if="item.show_reply">
+                <div v-for="(item_reply, index_reply) in nft_reply.reply_list" :key="index_reply" class="mb-40px" :id="index">
+                  <div class="flex justify-between items-start" :id='index_reply'>
+                    <div class="flex items-center">
+                      <img
+                        src="@/assets/images/avatar.png"
+                        width="38"
+                        class="mr-15px rounded-full"
+                      />
+                      <div class="font-700 text-14px">{{item_reply.from_uid}}</div>
+                    </div>
+                    <div class="text-[#7D8599] text-10px font-500">{{item_reply.created_time}}</div>
+                  </div>
+
+                  <div class="pl-73px">
+                    <div class="text-[#7D8599] font-400 text-14px mb-15px">
+                      @{{item_reply.to_uid}}   {{item_reply.content}}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div class="relative" v-if="item.show">
                 <img
@@ -293,6 +307,7 @@
                 />
 
                 <input
+                  id="reply_content"
                   type="text"
                   class="block w-full reply mb-5px"
                   placeholder="Add Reply..."
@@ -307,7 +322,7 @@
                       Cancellation
                     </div>
                     <div class="btn_border">
-                      <el-button plain class="!w-100px !h-40px !p-0 post">Post</el-button>
+                      <el-button plain class="!w-100px !h-40px !p-0 post" @click="addTheReply(item)">Post</el-button>
                     </div>
                   </div>
                 </div>
@@ -339,10 +354,12 @@ import {
 } from '~/config/loading_info';
 import {
   nft_comment,
+  nft_reply,
   initNftComment,
+  initNftReply,
   intoNftComment,
+  intoNftReply,
 } from "@/config/collection/nft_comment";
-import axios from 'axios'
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -364,6 +381,7 @@ export default {
       network: "rinkeby",
       nft_item: nft_item,
       nft_comment: nft_comment,
+      nft_reply: nft_reply,
       poolContract: {},
       furContract: {},
       editorOption: {
@@ -404,6 +422,7 @@ export default {
           Dates: "2 hours ago",
         },
       ],
+      //comments: [{}, {}, {}],
       multicall: multicall,
       dialogue_info: DialogInfo
     };
@@ -421,7 +440,7 @@ export default {
       let arr = [...this.cart, 1];
       this.$store.commit("save", ["user.cart", arr, this]);
     },
-    addTheComment(html) {
+    async addTheComment(html) {
       //console.log(html.replace(/<[^>]+>|&[^>]+;/g,"").trim());
       let text = html.replace(/<[^>]+>|&[^>]+;/g,"").trim();
       if (text.length > 0) {
@@ -434,18 +453,50 @@ export default {
           from_avatar: 'from_avatar',
           reply_count: 0,
         };
-        this.nft_comment.comment_list.push(data);
-        axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
-        const service = axios.create({
-          baseURL: 'http://127.0.0.1:6010',
-          timeout: 6000000,
-        });
+        this.html = '';
+        window.location.hash = "#head";
+        let res = intoNftComment(data);
+        await new Promise(r => setTimeout(r, 100));
+        this.nft_comment =await initNftComment(this.network, this.nft_item.address, this.nft_item.token_id);
+      }
+      return;
+    },
+    clickReply(item){
+      for (let i = 0; i < this.nft_comment.comment_list.length; i++) {
+          this.nft_comment.comment_list[i].show = false;
+          this.nft_comment.comment_list[i].show_reply = false;
+      }
+      item.show_reply = false;
+      item.show = true;
+    },
+    async clickViewReply(item){
+      for (let i = 0; i < this.nft_comment.comment_list.length; i++) {
+          this.nft_comment.comment_list[i].show = false;
+          this.nft_comment.comment_list[i].show_reply = false;
+      }
+      item.show_reply = true;
+      this.nft_reply = await initNftReply(this.network, item.id);
+      console.log(this.nft_reply)
 
-        return service({
-          url: "/into_comment",
-          method: "post",
-          params: data,
-        });
+    },
+    async addTheReply(item,reply_type='comment'){
+      let text = document.getElementById("reply_content").value;
+      if (text.length > 0) {
+        let data = {
+          network: this.network,
+          comment_id: item.id,
+          reply_id: item.id,
+          reply_type: reply_type,
+          content: text,
+          from_uid: 'anonymous',
+          from_avatar: 'from_avatar',
+          to_uid: 'anonymous',
+          to_avatar: 'to_avatar',
+        };
+        document.getElementById("reply_content").value = '';
+        item.reply_count++;
+        let res = intoNftReply(data);
+        await this.clickViewReply(item);
       }
     },
     /** Balance & allowance checks **/
