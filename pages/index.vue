@@ -102,8 +102,8 @@
           <div class="pt-0px">
             <div class="flex items-center mb-17px"
             @click="clickLearnmoreaboutFurion()">
-              <img class="mr-13px" src="@/assets/images/index/video.svg" />
-              <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
+              <img class="mr-13px cursor-pointer" src="@/assets/images/index/video.svg" />
+              <p class="text-16px text-[#FF7AE8] font-700 cursor-pointer">Learn more about Furion</p>
             </div>
             <div class="text-white font-800 leading-105px text-92px mb-25px">
               <p :class="{ 'text-animation': showAnimation }" class="text">Unleashing</p>
