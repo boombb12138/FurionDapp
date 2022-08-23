@@ -300,9 +300,9 @@
     </div>
     <AdminFooter></AdminFooter>
 
-    <CartIcon></CartIcon>
+    <!-- <CartIcon></CartIcon> -->
 
-    <Pet></Pet>
+    <!-- <Pet></Pet> -->
   </div>
 </template>
 <script>

@@ -169,7 +169,7 @@
       </div>
     </div>
 
-    <CartIcon></CartIcon>
+    <!-- <CartIcon></CartIcon> -->
   </div>
 </template>
 
