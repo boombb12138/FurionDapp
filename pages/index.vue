@@ -125,6 +125,14 @@
                 </div>
               </div>
             </div>
+              <ul class="w-200px flex mb-20px mt-20px ml-10px " >
+                <li v-for="(item, index) in linkList"
+                  :key="index"
+                  @click="clicklinkListItem(item.url)" class="cursor-pointer mr-30px"
+                  >
+                    <img :src="item.img" />
+                </li>
+              </ul>
           </div>
           <div class="cover-bg">
             <div>
@@ -343,6 +351,20 @@ export default {
           twitter: "SaphireNFT",
         },
       ],
+      linkList: [
+        {
+          img: require("@/assets/images/index/twitter.png"),
+          url: "https://twitter.com/ProjectFurion?s=20&t=ZJNt4qEB9JuLaVMfwyaYbw",
+        },
+        {
+          img: require("@/assets/images/index/medium.png"),
+          url: "https://medium.com/@project.furion",
+        },
+        {
+          img: require("@/assets/images/index/discord.png"),
+          url: "https://t.co/zPliDryypW",
+        },
+      ],
       List: [
         {
           tital: "Instant Liquidity",
@@ -444,6 +466,9 @@ export default {
       window.location.href = 'https://docs.furion.io/';
     },
     clickCategoryList(url){
+      window.location.href = url;
+    },
+    clicklinkListItem(url) {
       window.location.href = url;
     },
   },

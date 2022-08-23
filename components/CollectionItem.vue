@@ -37,8 +37,8 @@
       </div>
     </div>
     <div class="numbers">
-      <p class="text-[#50CD7E] mb-8px text-right text-13px">{{detail._24h}}</p>
-      <div class="flex items-center text-13px text-right">
+      <p class="text-[#50CD7E] mb-8px text-right text-13px mt-2px">{{detail._24h}}</p>
+      <div class="flex items-center text-13px text-right mt-5px">
         <img class="mr-8px" src="@/assets/images/index/price.svg" />
         <p>{{detail.fXprice}}</p>
       </div>
