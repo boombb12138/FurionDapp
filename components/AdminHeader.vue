@@ -123,10 +123,10 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/money_market/intro">Money Market</nuxt-link>
+                  <nuxt-link to="/">Money Market</nuxt-link>
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/liquidity/furion_swap/swap">Furion Swap</nuxt-link>
+                  <nuxt-link to="/">Furion Swap</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>
@@ -141,7 +141,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/mining/token_farming">Token farming</nuxt-link>
+                  <nuxt-link to="/">Token farming</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/">Staking</nuxt-link>
@@ -159,10 +159,10 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/comingsoon">Coming soon</nuxt-link>
+                  <nuxt-link to="/">Coming soon</nuxt-link>
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/governance">Governance</nuxt-link>
+                  <nuxt-link to="/">Governance</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>
@@ -205,8 +205,8 @@
           <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
         </el-input>
 
-        <DrawerAccount></DrawerAccount>
-        <DrawerWallet class="ml-20px"></DrawerWallet>
+        <!-- <DrawerAccount></DrawerAccount>
+        <DrawerWallet class="ml-20px"></DrawerWallet> -->
       </div>
     </div>
   </div>

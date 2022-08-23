@@ -454,7 +454,7 @@ export default {
   },
   methods: {
     clickSwiperItem(collection) {
-      this.$router.push('/collection/separate_pools_item/?collection='+collection);
+      this.$router.push('/');
     },
     clickDropItem(twitter) {
       window.location.href = 'https://twitter.com/'+twitter;

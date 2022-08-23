@@ -33,7 +33,7 @@
             </el-button>
           </div>
 
-          <div class="btn_border" @click="$router.push('/collection/aggregated_pools')">
+          <div class="btn_border" >
             <el-button type="primary" class="!w-265px !h-56px" plain>
               Aggregate pools
             </el-button>
@@ -75,7 +75,7 @@
       </el-dialog>
 
       <!-- Separate pool list -->
-      <el-table :data="nft_info.nft_list" style="width: 100%" @cell-click="viewCollection">
+      <el-table :data="nft_info.nft_list" style="width: 100%" >
         <el-table-column prop="collection" label="Collection" width="320px">
           <template slot-scope="scope">
             <div class="flex font-500 text-16px pl-30px items-center">
@@ -211,12 +211,12 @@ export default {
     };
   },
   async mounted() {
-    this.nft_info = await initPooledNftInfo(this.network);
-    // this.nft_info = await initNftInfo(this.network);
+    // this.nft_info = await initPooledNftInfo(this.network);
+    // // this.nft_info = await initNftInfo(this.network);
 
-    this.ready = true;
+    // this.ready = true;
 
-    this.factoryContract = await initSeparatePoolFactoryContract();
+    // this.factoryContract = await initSeparatePoolFactoryContract();
   },
 
   methods: {
