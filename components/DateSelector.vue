@@ -40,12 +40,11 @@
 
 <template>
   <div class>
-    <div class="w-227px h-32px relative box">
-      <div class="w-227px flex h-32px relative -top-2px -left-2px">
-        <div class="text w-76px" :class="{ active: time == '24H' }" @click="setData('24H')">24H</div>
-        <div class="text w-50px" :class="{ active: time == '1W' }" @click="setData('1W')">1W</div>
-        <div class="text w-50px" :class="{ active: time == '1M' }" @click="setData('1M')">1M</div>
-        <div class="text w-50px" :class="{ active: time == '1Y' }" @click="setData('1Y')">1Y</div>
+    <div class="w-180px h-32px relative box">
+      <div class="w-180px flex h-32px relative -top-2px -left-2px">
+        <div class="text w-60px" :class="{ active: time == '24H' }" @click="setData('24H')">24H</div>
+        <div class="text w-60px" :class="{ active: time == '1W' }" @click="setData('1W')">1W</div>
+        <div class="text w-60px" :class="{ active: time == '1M' }" @click="setData('1M')">1M</div>
       </div>
     </div>
   </div>
@@ -63,7 +62,7 @@ export default {
   },
   data() {
     return {
-      timeList: ['24H', '1W', '1M', '1Y'],
+      timeList: ['24H', '1W', '1M'],
       value: 3,
     };
   },

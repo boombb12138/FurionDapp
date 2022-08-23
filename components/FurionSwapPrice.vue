@@ -2,6 +2,7 @@
 .chart {
   height: 350px;
 }
+
 .chart-title {
   width: 100%;
   color: #202425;
@@ -15,18 +16,17 @@
     <div class="chart-title flex mb-20px">
       <div class="ml-30px">
         <div class="mb-8px">
-          <span class="mr-20px text-[#FCFFFD] text-32px font-700">{{num}}</span>
-          <span class="text-16px font-700 text-[rgba(252,255,253,0.6)]">BNB/CAKE</span>
-          <span class="text-16px font-700 text-[#D35D64]">-0.819(-0.1.15%)</span>
+          <span class="mr-20px text-[#FCFFFD] text-32px font-700">{{ num }}</span>
+          <span class="text-16px font-700 text-[rgba(252,255,253,0.6)]">{{ token_0 }}&nbsp;/&nbsp;{{ token_1 }}</span>
+          <span :class="{
+            'text-[#5DB57D]': change.startsWith('+'),
+            'text-[#D35D64]': change.startsWith('-')
+          }" class="text-16px font-700">&nbsp;{{ change }}({{ change_percentage }}%)</span>
         </div>
-        <p class="text-[rgba(252,255,253,0.8)] text-13px font-600">JUN 22.2022.05:00AM</p>
+        <p class="text-[rgba(252,255,253,0.8)] text-13px font-600">{{ date_str }}</p>
       </div>
-      <Date-Selector
-        class="date-selector"
-        :class="{ '!top-80px': isMobile }"
-        :time.sync="timeBtn"
-        @changeTime="setData"
-      ></Date-Selector>
+      <Date-Selector class="date-selector" :class="{ '!top-80px': isMobile }" :time.sync="timeBtn"
+        @changeTime="setData"></Date-Selector>
     </div>
 
     <v-chart ref="vChart" autoresize class="chart" :option="option" />
@@ -35,29 +35,35 @@
 
 <script>
 import { mapState } from 'vuex';
-import { rowData, xTime } from '@/assets/chartData.js';
+
+import { getPriceInfo } from '@/config/furion_swap/swap';
+
+import moment from "moment";
 
 export default {
-  name: 'BitcioToUSD',
+  name: 'FurionSwapPrice',
   components: {},
   provide: {},
-  props: {},
+  props: ["token_0", "token_1"],
   data() {
     return {
-      num: 71.36,
+      num: 6.8899,
+      date_str: '',
+      change: '+0.01',
+      change_percentage: '+0.01',
+      price_data: [],
       timeBtn: '1W',
       activeBtn2: 'Market Cap',
       dataList: [],
       valueList: [],
-      options1: ['24H', '1W', '1M', '1Y'],
-      options2: ['Price', 'Market Cap', 'TradingView', 'History'],
+      options1: ['24H', '1W', '1M'],
+      price_array: [],
+      date_array: []
     };
   },
   computed: {
     ...mapState('admin', ['isMobile']),
-    dataArr() {
-      return rowData[this.activeBtn2][this.timeBtn];
-    },
+    ...mapState(['chainId']),
     colorMap() {
       return {
         green: {
@@ -106,7 +112,7 @@ export default {
         },
         xAxis: {
           show: true,
-          data: xTime[this.timeBtn],
+          data: this.date_array,
           axisTick: {
             show: false,
           },
@@ -165,13 +171,34 @@ export default {
       };
     },
   },
-  mounted() {
+  async mounted() {
     this.$refs.vChart.clear();
-    this.formatData(this.dataArr);
+    this.getDate();
+
+    await this.initPriceInfo(this.token_0, this.token_1, 2);
+
+    this.formatData(this.price_array);
     this.$refs.vChart.setOption(this.option, true);
   },
   methods: {
+    async initPriceInfo(token_0, token_1, frequency) {
+      // initialize price data and price info
+      this.price_data = await getPriceInfo(token_0, token_1, frequency, 4);
+
+      let old_price = this.price_data[0]['price'];
+      let new_price = this.price_data[this.price_data.length - 1]['price'];
+      if (new_price > old_price) {
+        this.change = '+' + (new_price - old_price).toFixed(4);
+        this.change_percentage = '+' + ((new_price - old_price) / old_price * 100).toFixed(2);
+      } else {
+        this.change = '-' + (old_price - new_price).toFixed(4);
+        this.change_percentage = '-' + ((old_price - new_price) / old_price * 100).toFixed(2);
+      }
+      this.num = new_price.toFixed(8);
+      this.priceToData();
+    },
     formatData(data) {
+      // console.log('Raw data', data)
       this.dateList = data.map(function (item) {
         return item[0];
       });
@@ -186,8 +213,28 @@ export default {
       this.$refs.vChart.setOption(this.option, true);
     },
     getNum(num) {
-      this.num = num;
+      this.num = num.toFixed(8);
     },
+    getDate() {
+      const date_now = moment().format('MMMM Do YYYY, h:mm:ss a');
+      this.date_str = date_now;
+    },
+
+    priceToData() {
+      let raw_data = this.price_data;
+      let result = [];
+      let date_array = [];
+      for (let i = 0; i < raw_data.length; i++) {
+        result.push([raw_data[i]['block_time'], raw_data[i]['price']]);
+        if (this.timeBtn == '1W') {
+          date_array.push(moment(raw_data[i]['block_time']).format('h:mm:ss'));
+        }
+
+      }
+      this.price_array = result;
+      this.date_array = date_array;
+      // console.log('After getting price', this.price_array)
+    }
   },
 };
 </script>

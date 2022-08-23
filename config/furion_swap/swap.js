@@ -7,6 +7,8 @@ import {
     getAddress
 } from "@/utils/common/contractABI";
 
+import { getFurionSwapSummary } from "@/api/furion_swap";
+
 import { getContract, fromWei } from "@/utils/common";
 
 import { newMultiCallProvider } from "@/utils/web3/multicall";
@@ -132,4 +134,16 @@ export const initFurionSwapInfo = async (single_swap, chainId) => {
     single_swap.router_address = await getAddress()['FurionSwapV2Router'];
 
     return single_swap;
+}
+
+export const getPriceInfo = async(token_0, token_1, frequency, chainId) => {
+    let network;
+    if(chainId == 4){
+        network = 'rinkeby';
+    }else if(chainId == 1){
+        network = 'mainnet';
+    }
+    const price_result = await getFurionSwapSummary(token_0, token_1, frequency, network);
+    console.log('Swap price result', price_result);
+    return price_result['data']['data'];
 }

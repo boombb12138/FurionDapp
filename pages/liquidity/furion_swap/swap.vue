@@ -146,7 +146,10 @@
         </div>
         <div class="mt-10px mr-10px">
           <client-only>
-            <BitcioToUSDBlue></BitcioToUSDBlue>
+            <FurionSwapPrice
+            :token_0="swap_info.token_0"
+            :token_1="swap_info.token_1"
+            ></FurionSwapPrice>
           </client-only>
         </div>
       </div>
@@ -172,12 +175,18 @@
             <img class="flex-shrink-0 mr-8px" :src="swap_info.token_0_image" width="28px" />
             <p class="font-600 text-[rgba(252,255,253,0.8)] text-13px">{{ swap_info.token_0 }}&nbsp;&nbsp;</p>
             <img class="flex-shrink-0" src="@/assets/images/liquidity/arrow_down.svg" />
-
-
+            &nbsp;&nbsp;
+            <span class="text-10px text-[rgba(252,255,253,0.4)] font-600">In Pool: {{
+                formatNumber(this.swap_info.token_0_reserve)
+            }}</span>
           </div>
+
           <p class="text-13px text-[rgba(252,255,253,0.8)] font-700">
             Balance: {{ formatNumber(this.swap_info.token_0_balance) }}
+
+
           </p>
+
         </div>
         <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="token_0_amount"
           @input.native="calToken1Amount"></el-input>
@@ -192,9 +201,15 @@
             <p class="font-600 text-[rgba(252,255,253,0.8)] text-13px">{{ swap_info.token_1 }}&nbsp;&nbsp;</p>
 
             <img class="flex-shrink-0" src="@/assets/images/liquidity/arrow_down.svg" />
+            &nbsp;&nbsp;<span class="text-10px text-[rgba(252,255,253,0.4)] font-600">In Pool: {{
+                formatNumber(this.swap_info.token_1_reserve)
+            }}</span>
           </div>
+
           <p class="text-13px text-[rgba(252,255,253,0.8)] font-700">
             Balance: {{ formatNumber(this.swap_info.token_1_balance) }}
+            <!-- <br /> -->
+
           </p>
         </div>
 
@@ -238,13 +253,16 @@
 
 <script>
 import { mapState } from 'vuex';
-import { initFurionSwapInfo, swap_info } from '@/config/furion_swap/swap';
+
+// Components
 import SelectToken from '@/components/Dialog/SelectToken.vue';
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 
+import { initFurionSwapInfo, swap_info } from '@/config/furion_swap/swap';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
 import { addToken } from '@/utils/web3/wallet';
+
 
 import {
   DialogInfo,
@@ -255,13 +273,14 @@ import {
   ProcessInfo,
 } from '~/config/loading_info';
 import { WETH_ADDRESS } from '@/utils/web3';
+import FurionSwapPrice from '../../../components/FurionSwapPrice.vue';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit('update', ['admin.activeMenu', '/liquidity']);
   },
   props: {},
-  components: { SelectToken, ProceedingDetails, ProceedingDetails },
+  components: { SelectToken, ProceedingDetails, ProceedingDetails, FurionSwapPrice },
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
@@ -308,7 +327,7 @@ export default {
     async selectToken(item) {
       if (this.pick_token0) {
         if (item.symbol == swap_info.token_1) {
-          this.errorMessage('Identical Address');
+          this.errorMessage('Identical Token');
           return
         }
         swap_info.token_0 = item.symbol;
@@ -317,7 +336,7 @@ export default {
         console.log('Update token 0', swap_info)
       } else {
         if (item.symbol == swap_info.token_0) {
-          this.errorMessage('Identical Address');
+          this.errorMessage('Identical Token');
           return
         }
         swap_info.token_1 = item.symbol;
@@ -325,6 +344,8 @@ export default {
         swap_info.token_1_image = item.image;
         console.log('Update token 1', swap_info)
       }
+      this.token_0_amount = '';
+      this.token_1_amount = '';
       this.refresh();
       this.closeTokenSelect();
     },
@@ -347,8 +368,9 @@ export default {
       for (let index = 0; index < keys.length; index++) {
         this.switchSingle(keys[index]);
       }
-      this.token_0_amount = '';
-      this.token_1_amount = '';
+      let token_1_amount = this.token_1_amount;
+      this.token_1_amount = this.token_0_amount;
+      this.token_0_amount = token_1_amount;
     },
 
     async addToken() {
@@ -375,11 +397,12 @@ export default {
         if (this.swap_info.token_0 == 'ETH') {
           this.swap_info.token_0_balance = await getNativeTokenAmount(account);
           let token_1_contract = this.swap_info.token_1_contract;
-          this.swap_info.token_1_balance = fromWei((await token_1_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.toke_1_decimal));
+          this.swap_info.token_1_balance = fromWei((await token_1_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.token_1_decimal));
+
         } else if (this.swap_info.token_1 == 'ETH') {
           this.swap_info.token_1_balance = await getNativeTokenAmount(account);
           let token_0_contract = this.swap_info.token_0_contract;
-          this.swap_info.token_0_balance = fromWei((await token_0_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.toke_0_decimal));
+          this.swap_info.token_0_balance = fromWei((await token_0_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.token_0_decimal));
         }
 
         else {
@@ -390,7 +413,7 @@ export default {
           const balance_results = await this.multicall.aggregate(multicall_list);
           // console.log('Balance info', balance_results);
           this.swap_info.token_0_balance = fromWei(balance_results[0], parseInt(this.swap_info.token_0_decimal));
-          this.swap_info.token_1_balance = fromWei(balance_results[1], parseInt(this.swap_info.toke_1_decimal));
+          this.swap_info.token_1_balance = fromWei(balance_results[1], parseInt(this.swap_info.token_1_decimal));
 
         }
       } catch (e) {
@@ -449,6 +472,8 @@ export default {
         } catch (e) {
           console.warn(e);
           this.errorMessage('Swap Error');
+          this.token_0_amount = '';
+          this.token_1_amount = '';
           closeDialog(this.dialogue_info);
           return
         }
@@ -468,10 +493,12 @@ export default {
           console.warn(e);
           this.errorMessage('Swap Error');
           closeDialog(this.dialogue_info);
+          this.token_0_amount = '';
+          this.token_1_amount = '';
           return
         }
       }
-      
+
       // swap between general ERC-20 tokens
       else {
         // 
@@ -499,6 +526,8 @@ export default {
         } catch (e) {
           console.warn(e);
           this.errorMessage('Swap Error');
+          this.token_0_amount = '';
+          this.token_1_amount = '';
           closeDialog(this.dialogue_info);
           return
         }
@@ -513,6 +542,7 @@ export default {
 
     calToken1Amount() {
       if (this.swap_info.token_1_reserve * this.swap_info.token_0_reserve < 1) {
+        this.errorMessage('Not enough liquidity for the pair')
         return
       }
       const middle_value = this.token_0_amount * (1 - this.swap_info.fee_rate);

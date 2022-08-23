@@ -29,6 +29,7 @@
     "eruda": "^2.4.1",
     "fs": "^0.0.1-security",
     "lodash": "^4.17.20",
+    "moment": "^2.29.4",
     "normalize.css": "^8.0.1",
     "nuxt": "^2.15.3",
     "nuxt-windicss": "^2.5.0",

@@ -66,7 +66,7 @@ function createDataArr() {
 }
 
 const typeList = ['Price', 'Market Cap', 'TradingView', 'History'];
-const timeList = ['24H', '1W', '1M', '1Y'];
+const timeList = ['24H', '1W', '1M'];
 
 export const rowData = {};
 
@@ -97,6 +97,7 @@ function getDayData() {
     arr.push(time);
   }
   return arr;
+  
 }
 // console.log(getDayData());
 
