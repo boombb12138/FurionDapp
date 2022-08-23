@@ -1,6 +1,6 @@
 let CONFIG = {
   BASE: '/',
-  PORT: 5002,
+  PORT: 44267,
   HOST: '0.0.0.0',
   DEBUG: true,
   BASE_URL: 'http://127.0.0.1:1001',
