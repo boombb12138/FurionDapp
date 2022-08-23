@@ -116,7 +116,7 @@
             <div class="mt-50px">
               <div class="flex items-center">
                 <div class="btn_border w-190px mr-35px">
-                  <el-button type="primary" class="!w-190px !h-56px">SEE COLLECTIONS</el-button>
+                  <el-button type="primary" class="!w-190px !h-56px">VIEW COLLECTIONS</el-button>
                 </div>
                 <div class="btn_border">
                   <el-button type="primary" plain class="!w-190px !h-56px"
@@ -144,17 +144,9 @@
                   src="@/assets/images/cover3.jpg"
                 />
               </div>
-              <div class="flex justify-between items-center">
-                <div class="flex">
-                  <div class="mt-10px">
-                    <p class="text-white font-600">Welcome to Furion!</p>
-                  </div>
-                </div>
-                <img
-                  class="cursor-pointer mr-18px"
-                  src="@/assets/images/index/about.svg"
-                />
-              </div>
+              <p  style="width: 100%;height: 90px;display: block;line-height: 45px;text-align: center; font-weight: bold;">
+              Welcome to Furion!
+              </p>
             </div>
           </div>
         </div>
@@ -374,7 +366,7 @@ export default {
           docs_url: "furion-pools/furion-separate-pools",
         },
         {
-          tital: "Aggregating liquidity",
+          tital: "Aggregating Liquidity",
           remark1: "Get your market-driven index tokens" ,
           remark2:  "by joining our aggregate pools",
           remark3:  "",
@@ -425,7 +417,7 @@ export default {
         {
           img: require("@/assets/images/index/category1.jpg"),
           remark1: "The Story of Furion",
-          url: '',
+          url: 'https://medium.com/@project.furion/the-nft-fi-trilemma-f1f86b045ed8',
         },
         {
           img: require("@/assets/images/index/category2.jpg"),
