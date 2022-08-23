@@ -2,6 +2,18 @@ import { token_info } from "@/config/furion_swap/swap";
 import { getContract } from '@/utils/common';
 import { getMockUSDABI, getFEtherABI, getFErc20ABI, getRiskManagerABI } from "@/utils/common/contractABI";
 
+export const user_info_default = {
+	token_balance: 0,
+	ftoken_balance: 0,
+	deposited: 0,
+	borrowed: 0
+}
+
+export const market_info_default = {
+	supply_rate: 0,
+	borrow_rate: 0
+}	
+
 export const initTokenContract = async (symbol) => {
 	let token_contract = {
 		address: "",
