@@ -26,9 +26,9 @@ export const ProcessInfo = {
       'To use NFT, you firstly need to approve our contract to spend your token, please wait for a while',
   },
   APPROVE_TOKEN: {
-    intro: 'Approve token for depositing',
+    intro: 'Approve token for contract spending',
     detail:
-      'To deposit assets and earn interest, you need to first approve our contract to transfer your tokens to the market, please wait a while',
+      'You need to first approve our contract to transfer your tokens to the market, please wait a while',
   },
   CREATE_SEPARATE_POOL:{
     intro: 'Create Separate Pool for NFT',
