@@ -82,10 +82,10 @@
     <div v-if="active === 1" class="w-600px mx-auto box py-28px px-15px">
       <div class="flex px-25px mb-27px">
         <div class="flex-1 text-14px leading-18px">
-          <div class="mb-4px">Collateralized</div>
+          <div class="mb-4px">Health</div>
           <div class="font-500 text-16px">
-            <span class="font-600 text-[#FCFFFD]">0</span>
-            WAWAX
+            <span class="font-600 text-[#FCFFFD]">0%</span>
+            <span class="inline-block bg-[#50CD7E] w-10px h-10px rounded-full"></span>
           </div>
         </div>
         <div class="flex-1 text-14px leading-18px text-center">
@@ -96,10 +96,9 @@
           </div>
         </div>
         <div class="flex-1 text-14px leading-18px text-right">
-          <div class="mb-4px">Health</div>
+          <div class="mb-4px">Borrow APR</div>
           <div class="font-500 text-16px">
-            <span class="font-600 text-[#FCFFFD]">0%</span>
-            <span class="inline-block bg-[#50CD7E] w-10px h-10px rounded-full"></span>
+            <span class="font-600 text-[#FCFFFD]">{{ formatNumber(market_info.borrow_rate) }}%</span>
           </div>
         </div>
       </div>
@@ -107,7 +106,7 @@
       <div class="item mb-16px">
         <div class="flex items-center justify-between mb-20px">
           <div class="flex items-center">
-            <img src="@/assets/images/token1.png" class="w-32px mr-18px" />
+            <img src="@/assets/images/liquidity/tokens/FUR.png" class="w-32px mr-10px" />
             <div class="font-600 text-22px">{{ asset }}</div>
           </div>
           <div class="flex items-center">
@@ -132,10 +131,10 @@
 
         <div class="flex justify-between items-end">
           <div class="flex items-end">
-            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="borrow_amount"></el-input>
-            <div class="text-15px text-[rgba(252,255,253,0.6)]">~$15.82</div>
+            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="borrow_amount" type="number"></el-input>
+            <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(borrow_amount)) }}</div>
           </div>
-          <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance:1.02868</div>
+          <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
         </div>
       </div>  
 
@@ -150,7 +149,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" @click="borrow(borrow_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="borrow_amount === ''" @click="borrow(borrow_amount)">
           <span class="font-800 text-20px" style="word-spacing: 5px">Borrow {{ asset }}</span>
         </el-button>
       </div>
@@ -161,10 +160,10 @@
     <div v-if="active === 2" class="w-600px mx-auto box py-28px px-15px">
       <div class="flex px-25px mb-27px">
         <div class="flex-1 text-14px leading-18px">
-          <div class="mb-4px">Collateralized</div>
+          <div class="mb-4px">Health</div>
           <div class="font-500 text-16px">
-            <span class="font-600 text-[#FCFFFD]">0</span>
-            WAWAX
+            <span class="font-600 text-[#FCFFFD]">0%</span>
+            <span class="inline-block bg-[#50CD7E] w-10px h-10px rounded-full"></span>
           </div>
         </div>
         <div class="flex-1 text-14px leading-18px text-center">
@@ -175,10 +174,9 @@
           </div>
         </div>
         <div class="flex-1 text-14px leading-18px text-right">
-          <div class="mb-4px">Health</div>
+          <div class="mb-4px">Borrow APR</div>
           <div class="font-500 text-16px">
-            <span class="font-600 text-[#FCFFFD]">0%</span>
-            <span class="inline-block bg-[#50CD7E] w-10px h-10px rounded-full"></span>
+            <span class="font-600 text-[#FCFFFD]">{{ formatNumber(market_info.borrow_rate) }}%</span>
           </div>
         </div>
       </div>
@@ -186,7 +184,7 @@
       <div class="item mb-16px">
         <div class="flex items-center justify-between mb-20px">
           <div class="flex items-center">
-            <img src="@/assets/images/token3.png" class="w-32px mr-18px" />
+            <img src="@/assets/images/liquidity/tokens/FUR.png" class="w-32px mr-10px" />
             <div class="font-600 text-22px">{{ asset }}</div>
           </div>
           <div class="flex items-center">
@@ -218,10 +216,10 @@
 
         <div class="flex justify-between items-end">
           <div class="flex items-end">
-            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="repay_amount"></el-input>
-            <div class="text-15px text-[rgba(252,255,253,0.6)]">~$15.82</div>
+            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="repay_amount" type="number"></el-input>
+            <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(repay_amount)) }}</div>
           </div>
-          <div class="text-14px text-[rgba(252,255,253,0.6)]">Max Repay:0</div>
+          <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
         </div>
       </div>
 
@@ -231,7 +229,7 @@
           <div class="font-500 text-16px text-[rgba(252,255,253,0.8)] ml-12px mr-16px">
             Close Position
           </div>
-          <el-switch v-model="closed"> </el-switch>
+          <el-switch v-model="close_position" @change="writeRepayAmount()"> </el-switch>
         </div>
         <img src="@/assets/images/liquidity/arrow.svg" />
       </div>
@@ -247,7 +245,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="repay_amount > user_info.token_balance" @click="repay(repay_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="repay_amount > user_info.token_balance || repay_amount === ''" @click="repay(repay_amount)">
           <span class="font-800 text-20px">Repay {{ asset }}</span>
         </el-button>
       </div>
@@ -281,7 +279,7 @@
       <div class="item mb-16px">
         <div class="flex items-center justify-between mb-20px">
           <div class="flex items-center">
-            <img src="@/assets/images/token1.png" class="w-32px mr-18px" />
+            <img src="@/assets/images/liquidity/tokens/FUR.png" class="w-32px mr-10px" />
             <div class="font-600 text-22px">{{ asset }}</div>
           </div>
           <div class="flex items-center">
@@ -309,8 +307,8 @@
 
         <div class="flex justify-between items-end">
           <div class="flex items-end">
-            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="deposit_amount"></el-input>
-            <div class="text-15px text-[rgba(252,255,253,0.6)]">~$15.82</div>
+            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="deposit_amount" type="number"></el-input>
+            <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(deposit_amount)) }}</div>
           </div>
           <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
         </div>
@@ -329,7 +327,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="user_info.token_balance < deposit_amount" @click="deposit(deposit_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="user_info.token_balance < deposit_amount || deposit_amount === ''" @click="deposit(deposit_amount)">
           <span class="font-800 text-20px" style="word-spacing: 5px">DEPOSIT {{ asset }}</span>
         </el-button>
       </div>
@@ -349,13 +347,13 @@
         <div class="flex-1 text-14px leading-18px text-center">
           <div class="mb-4px">Borrowed</div>
           <div class="font-500 text-16px">
-            <span class="font-600 text-[#FCFFFD]">0.452368%</span>
+            <span class="font-600 text-[#FCFFFD]">{{ formatNumber(user_info.borrowed) }}</span> {{ asset }}
           </div>
         </div>
         <div class="flex-1 text-14px leading-18px text-right">
           <div class="mb-4px">Supply APR</div>
           <div class="font-500 text-16px">
-            <span class="font-600 text-[#FCFFFD]">0.00101783%</span>
+            <span class="font-600 text-[#FCFFFD]">{{ formatNumber(market_info.supply_rate) }}%</span>
           </div>
         </div>
       </div>
@@ -363,7 +361,7 @@
       <div class="item mb-16px">
         <div class="flex items-center justify-between mb-20px">
           <div class="flex items-center">
-            <img src="@/assets/images/token1.png" class="w-32px mr-18px" />
+            <img src="@/assets/images/liquidity/tokens/FUR.png" class="w-32px mr-10px" />
             <div class="font-600 text-22px">{{ asset }}</div>
           </div>
           <div class="flex items-center">
@@ -395,10 +393,10 @@
 
         <div class="flex justify-between items-end">
           <div class="flex items-end">
-            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="withdraw_amount"></el-input>
-            <div class="text-15px text-[rgba(252,255,253,0.6)]">~$15.82</div>
+            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="withdraw_amount" type="number"></el-input>
+            <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(withdraw_amount)) }}</div>
           </div>
-          <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.ftoken_balance) }} fToken</div>
+          <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
         </div>
       </div>
 
@@ -415,7 +413,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="withdraw_amount > user_info.ftoken_balance" @click="withdraw(withdraw_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="withdraw_amount > user_info.token_balance || withdraw_amount === ''" @click="withdraw(withdraw_amount)">
           <span class="font-800 text-20px" style="word-spacing: 5px">WITHDRAW {{ asset }}</span>
         </el-button>
       </div>
@@ -428,7 +426,8 @@
 <script>
 import { mapState } from 'vuex';
 import { _formatNumber, getTxURL, toWei, fromWei, tokenApprove } from "@/utils/common";
-import { user_info_default, market_info_default, initTokenContract, initMarketContract, initManagerContract } from "@/config/money_market/market";
+import { user_info_default, market_info_default, initTokenContract, initMarketContract, initManagerContract, initPriceOracle } from "@/config/money_market/market";
+import { newMultiCallProvider } from "@/utils/web3/multicall";
 
 import {
   DialogInfo,
@@ -454,50 +453,83 @@ export default {
     },
   },
   data() {
+    const multicall = newMultiCallProvider(4);
     return {
       active: 1,
       collateralize: false,
-      closed: false,
-      tokenContract: {},
-      marketContract: {},
-      managerContract: {},
+      close_position: false,
+      token: {},
+      market: {},
+      manager: {},
+      priceOracle: {},
       user_info: user_info_default,
       market_info: market_info_default,
       deposit_amount: '',
       withdraw_amount: '',
       borrow_amount: '',
       repay_amount: '',
-      timer: '',
       dialogue_info: DialogInfo,
+      multicall: multicall,
     };
   },
   async mounted() {
-    this.tokenContract = await initTokenContract(this.asset);
-    this.marketContract = await initMarketContract(this.asset);
-    this.managerContract = await initManagerContract();
+    this.token = await initTokenContract(this.asset);
+    this.market = await initMarketContract(this.asset);
+    this.manager = await initManagerContract();
+    this.priceOracle = await initPriceOracle();
 
-    await this.updateUserInfo();
-    await this.updateMarketInfo();
-    //setInterval(this.updateMarketInfo, 15000);
+    await this.updateAll();
+    //setInterval(this.updateAll, 10000);
   },
   methods: {
     async updateUserInfo() {
       const account = this.userInfo.userAddress;
+      const multicall_list = [
+        this.token.contract.methods.balanceOf(account), 
+        this.market.contract.methods.balanceOf(account),
+        this.market.contract.methods.balanceOfUnderlying(account),
+        this.market.contract.methods.borrowBalanceCurrent(account)
+      ];
+      const results = await this.multicall.aggregate(multicall_list);
 
-      this.user_info.token_balance = fromWei(await this.tokenContract.contract.methods.balanceOf(account).call());
-      this.user_info.ftoken_balance = fromWei(await this.marketContract.contract.methods.balanceOf(account).call());
-      this.user_info.deposited = fromWei(await this.marketContract.contract.methods.balanceOfUnderlying(account).call());
-      this.user_info.borrowed = fromWei(await this.marketContract.contract.methods.borrowBalanceCurrent(account).call());
+      this.user_info.token_balance = fromWei(results[0]);
+      this.user_info.ftoken_balance = fromWei(results[1]);
+      this.user_info.deposited = fromWei(results[2]);
+      this.user_info.borrowed = fromWei(results[3]);
     },
     async updateMarketInfo() {
+      const multicall_list = [
+        this.market.contract.methods.supplyRatePerBlock(),
+        this.market.contract.methods.borrowRatePerBlock(),
+        this.priceOracle.contract.methods.getUnderlyingPrice(this.market.address)
+      ];
+      const results = await this.multicall.aggregate(multicall_list);
+
       // Number of blocks assumed per year in interest rate contract: 2102400
-      const supplyRatePerBlock = await this.marketContract.contract.methods.supplyRatePerBlock().call();
+      const supplyRatePerBlock = results[0];
       this.market_info.supply_rate = fromWei(supplyRatePerBlock * 2102400 * 100);
 
-      const borrowRatePerBlock = await this.marketContract.contract.methods.borrowRatePerBlock().call();
+      const borrowRatePerBlock = results[1]
       this.market_info.borrow_rate = fromWei(borrowRatePerBlock * 2102400 * 100);
 
+      this.market_info.token_price = fromWei(results[2]);
+    },
+    async updateAll() {
+      await this.updateUserInfo();
+      await this.updateMarketInfo();
+
       //console.log("updated");
+    },
+    async getBorrowedRaw() {
+      const account = this.userInfo.userAddress;
+      return await this.market.contract.methods.borrowBalanceCurrent(account).call();
+    },
+    writeRepayAmount() {
+      if (this.close_position) {
+        this.repay_amount = this.formatNumber(this.user_info.borrowed);
+      } else {
+        this.repay_amount = "";
+      }
     },
 
     /******************************* Balance & allowance checks *******************************/
@@ -505,34 +537,35 @@ export default {
     async hasEnoughToken(amount) {
       const account = this.userInfo.userAddress;
 
-      const balance = await this.tokenContract.contract.methods.balanceOf(account).call();
+      const balance = await this.token.contract.methods.balanceOf(account).call();
 
-      return balance >= toWei(amount) ? true : false;
+      return balance >= amount ? true : false;
     },
     async approvedEnoughToken(amount) {
       const account = this.userInfo.userAddress;
 
-      const allowance = await this.tokenContract.contract.methods.allowance(account, this.marketContract.address).call();
+      const allowance = await this.token.contract.methods.allowance(account, this.market.address).call();
 
-      return allowance >= toWei(amount) ? true : false;
+      return allowance >= amount ? true : false;
     },
     async hasEnoughFToken(amount) {
       const account = this.userInfo.userAddress;
 
-      const balance = await this.marketContract.contract.methods.balanceOf(account).call();
+      const balance = await this.market.contract.methods.balanceOf(account).call();
 
-      return balance >= toWei(amount) ? true : false;
+      return balance >= amount ? true : false;
     },
 
     /*********************************** Contract functions ***********************************/
 
     async borrow(amount) {
+      const actualAmount = toWei(amount);
       const account = this.userInfo.userAddress;
 
       openDialog(this.dialogue_info, [ProcessInfo.BORROW_TOKEN]);  
 
       try {
-        const tx_result = await this.marketContract.contract.methods.borrow(toWei(amount)).send({ from: accounr });
+        const tx_result = await this.market.contract.methods.borrow(actualAmount).send({ from: account });
         this.successMessage(tx_result, `Borrow ${this.asset} succeeded`);
       } catch (e) {
         this.errorMessage(`Borrow ${this.asset} failed`);
@@ -542,20 +575,16 @@ export default {
 
       closeDialog(this.dialogue_info);
 
-      await this.updateUserInfo();
+      this.borrow_amount = "";
+      await this.updateAll();
     },
     async repay(amount) {
+      const actualAmount = this.close_position ? await this.getBorrowedRaw() : toWei(amount);
       const account = this.userInfo.userAddress;
-      const hasEnoughToken = await this.hasEnoughToken(amount);
-      const approvedEnoughToken = await this.approvedEnoughToken(amount);
-
-      if (!hasEnoughToken) {
-        this.errorMessage(`Repay ${this.asset} failed`);
-        return;
-      }
+      const approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
 
       let dialog_list = [];
-      if(!approvedEnoughToken) {
+      if (!approvedEnoughToken) {
         dialog_list.push(ProcessInfo.APPROVE_TOKEN);
       }
       dialog_list.push(ProcessInfo.REPAY_TOKEN);
@@ -563,7 +592,7 @@ export default {
 
       if (!approvedEnoughToken) {
         try {
-          const approve_result = await tokenApprove(this.tokenContract.address, account, this.marketContract.address);
+          const approve_result = await tokenApprove(this.token.address, account, this.market.address);
           this.successMessage(approve_result, `Approve ${this.asset} succeeded`);
           stepDialog(this.dialogue_info);
         } catch (e) {
@@ -575,7 +604,7 @@ export default {
       }
 
       try {
-        const tx_result = await this.marketContract.contract.methods.repayBorrow(toWei(amount)).send({ from: accounr });
+        const tx_result = await this.market.contract.methods.repayBorrow(actualAmount).send({ from: account });
         this.successMessage(tx_result, `Repay ${this.asset} succeeded`);
       } catch (e) {
         this.errorMessage(`Repay ${this.asset} failed`);
@@ -585,19 +614,15 @@ export default {
 
       closeDialog(this.dialogue_info);
 
-      await this.updateUserInfo();
+      this.repay_amount = "";
+      await this.updateAll();
     },
     async deposit(amount) {
+      const actualAmount = toWei(amount);
       const account = this.userInfo.userAddress;
-      const hasEnoughToken = await this.hasEnoughToken(amount);
-      const approvedEnoughToken = await this.approvedEnoughToken(amount);
+      const approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
       const useAsCollateral = this.collateralize;
-      const isAlreadyCollateral = await this.managerContract.contract.methods.checkMembership(account, this.marketContract.address).call();
-
-      if (!hasEnoughToken) {
-        this.errorMessage(`Repay ${this.asset} failed`);
-        return;
-      }
+      const isAlreadyCollateral = await this.manager.contract.methods.checkMembership(account, this.market.address).call();
 
       let dialog_list = [];
       if (!approvedEnoughToken) {
@@ -611,7 +636,7 @@ export default {
 
       if (!approvedEnoughToken) {
         try {
-          const approve_result = await tokenApprove(this.tokenContract.address, account, this.marketContract.address);
+          const approve_result = await tokenApprove(this.token.address, account, this.market.address);
           this.successMessage(approve_result, `Approve ${this.asset} succeeded`);
           stepDialog(this.dialogue_info);
         } catch (e) {
@@ -624,7 +649,7 @@ export default {
 
       if (useAsCollateral && !isAlreadyCollateral) {
         try {
-          const tx_result = await this.managerContract.contract.methods.enterMarkets([this.marketContract.address]).send({ from: account });
+          const tx_result = await this.manager.contract.methods.enterMarkets([this.market.address]).send({ from: account });
           this.successMessage(tx_result, `Enter ${this.asset} market succeeded`);
           stepDialog(this.dialogue_info);
         } catch (e) {
@@ -635,7 +660,7 @@ export default {
       }
 
       try {
-        const tx_result = await this.marketContract.contract.methods.supply(toWei(amount)).send({ from: account });
+        const tx_result = await this.market.contract.methods.supply(actualAmount).send({ from: account });
         this.successMessage(tx_result, `Deposit ${this.asset} succeeded`);
       }catch (e) {
         this.errorMessage(`Deposit ${this.asset} failed`);
@@ -645,22 +670,17 @@ export default {
 
       closeDialog(this.dialogue_info);
 
-      await this.updateUserInfo();
       this.deposit_amount = "";
+      await this.updateAll();
     },
     async withdraw(amount) {
+      const actualAmount = toWei(amount);
       const account = this.userInfo.userAddress;
-      const hasEnoughFToken = await this.hasEnoughFToken(account);
-
-      if (!hasEnoughFToken) {
-        this.errorMessage(`Withdraw ${this.asset} failed`);
-        return;
-      }
 
       openDialog(this.dialogue_info, [ProcessInfo.WITHDRAW_TOKEN]);
 
       try {
-        const tx_result = await this.marketContract.contract.methods.redeem(toWei(amount)).send({ from: account });
+        const tx_result = await this.market.contract.methods.redeemUnderlying(actualAmount).send({ from: account });
         this.successMessage(tx_result, `Withdraw ${this.asset} succeeded`);
       }catch (e) {
         this.errorMessage(`Withdraw ${this.asset} failed`);
@@ -670,7 +690,8 @@ export default {
 
       closeDialog(this.dialogue_info);
 
-      await this.updateUserInfo();
+      this.withdraw_amount = "";
+      await this.updateAll();
     },
 
     /************************************* Message Handler *************************************/ 
@@ -704,6 +725,10 @@ export default {
         final_result = '--'
       }
       return final_result
+    },
+    approxValue(tokenAmount) {
+      const actualAmount = tokenAmount == '' ? 0 : tokenAmount;
+      return this.market_info.token_price * actualAmount;
     },
   },
 };
