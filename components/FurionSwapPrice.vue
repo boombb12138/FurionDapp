@@ -17,7 +17,9 @@
       <div class="ml-30px">
         <div class="mb-8px">
           <span class="mr-20px text-[#FCFFFD] text-32px font-700">{{ num }}</span>
-          <span class="text-16px font-700 text-[rgba(252,255,253,0.6)]">{{ token_0 }}&nbsp;/&nbsp;{{ token_1 }}</span>
+          <span class="text-16px font-700 text-[rgba(252,255,253,0.6)]">{{ token_0 }}&nbsp;/&nbsp;{{
+              token_1
+          }}</span>
           <span :class="{
             'text-[#5DB57D]': change.startsWith('+'),
             'text-[#D35D64]': change.startsWith('-')
@@ -36,15 +38,15 @@
 <script>
 import { mapState } from 'vuex';
 
-import { getPriceInfo } from '@/config/furion_swap/swap';
+import { getPriceInfo, swap_info } from '@/config/furion_swap/swap';
 
 import moment from "moment";
 
 export default {
   name: 'FurionSwapPrice',
   components: {},
-  provide: {},
   props: ["token_0", "token_1"],
+  provide: {},
   data() {
     return {
       num: 6.8899,
@@ -52,7 +54,7 @@ export default {
       change: '+0.01',
       change_percentage: '+0.01',
       price_data: [],
-      timeBtn: '1W',
+      timeBtn: '24H',
       activeBtn2: 'Market Cap',
       dataList: [],
       valueList: [],
@@ -61,6 +63,16 @@ export default {
       date_array: []
     };
   },
+  watch: {
+    token_0: {
+      handler: 'watchToken0',
+      immediate: true,
+    },
+    token_1: {
+      handler: 'watchToken1',
+      immediate: true,
+    },
+  },
   computed: {
     ...mapState('admin', ['isMobile']),
     ...mapState(['chainId']),
@@ -68,7 +80,7 @@ export default {
       return {
         green: {
           main: '#02AD6C',
-          other: '#FF3E57',
+          other: '#02AD6C',
           deep: '#C1E7D8',
           bottom: 'rgba(236,245,241,0)',
         },
@@ -81,14 +93,20 @@ export default {
       };
     },
     option() {
+      let color_theme;
+      if (this.change.startsWith('+')) {
+        color_theme = 'green';
+      } else {
+        color_theme = 'red';
+      }
       return {
         visualMap: [
           {
             show: false,
             dimension: 1,
             pieces: [
-              { min: 0, max: 100, color: this.colorMap.red.other },
-              { min: 100, max: 400, color: this.colorMap.red.main },
+              { min: 0, max: 100, color: this.colorMap[color_theme].other },
+              { min: 100, max: 400, color: this.colorMap[color_theme].main },
             ],
           },
         ],
@@ -123,7 +141,7 @@ export default {
             interval: 5,
             fontSize: '14px',
             color: 'rgba(252, 255, 253, 0.3)',
-            margin: -14,
+            margin: 0,
             align: 'center',
           },
         },
@@ -156,11 +174,11 @@ export default {
                 colorStops: [
                   {
                     offset: 0,
-                    color: this.colorMap.red.deep, // 0%处的颜色
+                    color: this.colorMap[color_theme].deep, // 0%处的颜色
                   },
                   {
                     offset: 1,
-                    color: this.colorMap.red.bottom, // 100% 处的颜色
+                    color: this.colorMap[color_theme].bottom, // 100% 处的颜色
                   },
                 ],
                 globalCoord: false,
@@ -174,27 +192,71 @@ export default {
   async mounted() {
     this.$refs.vChart.clear();
     this.getDate();
+    setTimeout(() => {
+      try {
+        this.num = (swap_info.token_1_reserve / swap_info.token_0_reserve).toFixed(6);
+      } catch (e) { }
+    }, 3000)
 
-    await this.initPriceInfo(this.token_0, this.token_1, 2);
+    try {
+      await this.initPriceInfo(this.token_0, this.token_1, 0);
 
-    this.formatData(this.price_array);
-    this.$refs.vChart.setOption(this.option, true);
+      this.formatData(this.price_array);
+      this.$refs.vChart.setOption(this.option, true);
+    } catch (e) {
+      console.warn(e);
+      return
+    }
+
+
   },
   methods: {
+    async watchToken0() {
+      console.log('Token 0 changed', this.token_0, this.token_1);
+      setTimeout(() => {
+        try {
+          this.num = (swap_info.token_1_reserve / swap_info.token_0_reserve).toFixed(6);
+        } catch (e) { }
+      }, 3000)
+
+      this.timeBtn = '1W';
+      await this.initPriceInfo(this.token_0, this.token_1, 0);
+
+      this.formatData(this.price_array);
+      // await this.setData(this.timeBtn);
+    },
+    async watchToken1() {
+      console.log('Token 1 changed', this.token_0, this.token_1);
+
+      setTimeout(() => {
+        try {
+          this.num = (swap_info.token_1_reserve / swap_info.token_0_reserve).toFixed(6);
+        } catch (e) { }
+      }, 3000)
+      this.timeBtn = '1W';
+      await this.initPriceInfo(this.token_0, this.token_1, 0);
+
+      this.formatData(this.price_array);
+      // await this.setData(this.timeBtn);
+    },
+
     async initPriceInfo(token_0, token_1, frequency) {
       // initialize price data and price info
       this.price_data = await getPriceInfo(token_0, token_1, frequency, 4);
-
+      if (this.price_data.length < 1) {
+        console.warn('No price data');
+        return
+      }
       let old_price = this.price_data[0]['price'];
       let new_price = this.price_data[this.price_data.length - 1]['price'];
-      if (new_price > old_price) {
+      if (new_price >= old_price) {
         this.change = '+' + (new_price - old_price).toFixed(4);
         this.change_percentage = '+' + ((new_price - old_price) / old_price * 100).toFixed(2);
       } else {
         this.change = '-' + (old_price - new_price).toFixed(4);
         this.change_percentage = '-' + ((old_price - new_price) / old_price * 100).toFixed(2);
       }
-      this.num = new_price.toFixed(8);
+      this.num = new_price.toFixed(6);
       this.priceToData();
     },
     formatData(data) {
@@ -206,14 +268,25 @@ export default {
         return item[1];
       });
     },
-    setData(type) {
+    async setData(type) {
       // this.activeBtn1 = type;
       this.$refs.vChart.clear();
-      this.formatData(this.dataArr);
+      this.timeBtn = type;
+      if (type == '24H') {
+        await this.initPriceInfo(this.token_0, this.token_1, 0)
+      } else if (type == '1W') {
+        await this.initPriceInfo(this.token_0, this.token_1, 1)
+      } else if (type == '1M') {
+        await this.initPriceInfo(this.token_0, this.token_1, 2)
+      }
+      else {
+        return
+      }
+      this.formatData(this.price_array);
       this.$refs.vChart.setOption(this.option, true);
     },
     getNum(num) {
-      this.num = num.toFixed(8);
+      this.num = num.toFixed(6);
     },
     getDate() {
       const date_now = moment().format('MMMM Do YYYY, h:mm:ss a');
@@ -226,10 +299,13 @@ export default {
       let date_array = [];
       for (let i = 0; i < raw_data.length; i++) {
         result.push([raw_data[i]['block_time'], raw_data[i]['price']]);
-        if (this.timeBtn == '1W') {
+        if (this.timeBtn == '24H') {
           date_array.push(moment(raw_data[i]['block_time']).format('h:mm:ss'));
+        } else if (this.timeBtn == '1W') {
+          date_array.push(moment(raw_data[i]['block_time']).format('Do h:mm'));
+        } else {
+          date_array.push(moment(raw_data[i]['block_time']).format('MMM Do'));
         }
-
       }
       this.price_array = result;
       this.date_array = date_array;

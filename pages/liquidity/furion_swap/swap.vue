@@ -137,7 +137,7 @@
             <span>{{ swap_info.token_0 }}</span>
             <span class="mx-5px text-[#FCFFFD]">/</span>
             <span>{{ swap_info.token_1 }}</span>
-            <img class="flex-shrink-0 mr-18px ml-22px cursor-pointer" src="@/assets/images/liquidity/transfer.svg" />
+            <img class="flex-shrink-0 mr-18px ml-22px cursor-pointer" src="@/assets/images/liquidity/transfer.svg" v-on:click="switchToken" />
             <div
               class="tag flex item-center justify-center text-[#34F8FF] h-32px leading-32px w-76px font-800 cursor-pointer">
               Basic</div>

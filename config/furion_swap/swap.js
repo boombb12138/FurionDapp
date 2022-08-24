@@ -144,6 +144,6 @@ export const getPriceInfo = async(token_0, token_1, frequency, chainId) => {
         network = 'mainnet';
     }
     const price_result = await getFurionSwapSummary(token_0, token_1, frequency, network);
-    console.log('Swap price result', price_result);
+    // console.log('Swap price result', price_result);
     return price_result['data']['data'];
 }
