@@ -137,7 +137,8 @@
             <span>{{ swap_info.token_0 }}</span>
             <span class="mx-5px text-[#FCFFFD]">/</span>
             <span>{{ swap_info.token_1 }}</span>
-            <img class="flex-shrink-0 mr-18px ml-22px cursor-pointer" src="@/assets/images/liquidity/transfer.svg" v-on:click="switchToken" />
+            <img class="flex-shrink-0 mr-18px ml-22px cursor-pointer" src="@/assets/images/liquidity/transfer.svg"
+              v-on:click="switchToken" />
             <div
               class="tag flex item-center justify-center text-[#34F8FF] h-32px leading-32px w-76px font-800 cursor-pointer">
               Basic</div>
@@ -146,10 +147,7 @@
         </div>
         <div class="mt-10px mr-10px">
           <client-only>
-            <FurionSwapPrice
-            :token_0="swap_info.token_0"
-            :token_1="swap_info.token_1"
-            ></FurionSwapPrice>
+            <FurionSwapPrice :token_0="swap_info.token_0" :token_1="swap_info.token_1"></FurionSwapPrice>
           </client-only>
         </div>
       </div>
@@ -313,6 +311,7 @@ export default {
   },
   methods: {
 
+    /******************************* Components functions *******************************/
     onSort(str) {
       this.$refs.sort.doClose();
       this.sort = str;

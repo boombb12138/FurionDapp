@@ -1,8 +1,9 @@
 <style lang="scss" scoped>
 .search-section {
   .label {
-    @apply ml-13px text-[rgba(204,204,204,0.4)] text-12px font-500 mb-8px;
+    @apply ml-13px text-[rgba(204, 204, 204, 0.4)] text-12px font-500 mb-8px;
   }
+
   &::v-deep {
     .el-input__inner {
       background: #091a39;
@@ -11,12 +12,14 @@
       border-radius: 8px !important;
       color: rgba(204, 204, 204, 0.8) !important;
       height: 34px;
+
       &::-webkit-input-placeholder {
         color: rgba(204, 204, 204, 0.8);
       }
     }
   }
 }
+
 .sort {
   background: #091a39;
   border: 1px solid #172643 !important;
@@ -25,17 +28,19 @@
   color: rgba(204, 204, 204, 0.8) !important;
   height: 34px;
   @apply px-15px w-154px flex items-center justify-between cursor-pointer;
+
   i {
     margin-left: 10px;
   }
 }
+
 .pool-stripe {
   width: 1154px;
   height: 224px;
-  background: url(@/assets/images/liquidity/pool_stripe.png) -39px -36px /
-    // 1230px 300px no-repeat;
+  background: url(@/assets/images/liquidity/pool_stripe.png) -39px -36px / // 1230px 300px no-repeat;
     1235px 305px no-repeat;
 }
+
 ::v-deep {
   .el-table .el-table__header tr .el-table__cell:first-of-type {
     padding-left: 80px;
@@ -89,26 +94,23 @@
           <div class="flex items-center pl-64px py-7px">
             <div class="flex items-center mr-15px">
               <img class="flex-shrink-0 w-49px h-49px" :src="scope.row.token_0_image" />
-              <img
-                class="flex-shrink-0 w-49px h-49px -ml-11px"
-                :src="scope.row.token_1_image"
-              />
+              <img class="flex-shrink-0 w-49px h-49px -ml-11px" :src="scope.row.token_1_image" />
             </div>
             <div>
               <div class="flex items-center">
-                <span>{{scope.row.token_0}}</span>
+                <span>{{ scope.row.token_0 }}</span>
                 <span class="mx-5px text-[rgba(252,255,253,0.4)]">/</span>
-                <span>{{scope.row.token_1}}</span>
+                <span>{{ scope.row.token_1 }}</span>
               </div>
             </div>
           </div>
         </template>
       </el-table-column>
 
-      <el-table-column label="Liquidity" >
+      <el-table-column label="Liquidity">
         <template slot-scope="scope">
           <div>
-            <span class="font-600 text-16px">$ 1,436</span>
+            <span class="font-600 text-16px">$ {{scope.row.tvl}}</span>
           </div>
         </template>
       </el-table-column>
@@ -116,23 +118,23 @@
       <el-table-column label="Volume (24h)">
         <template slot-scope="scope">
           <div>
-            <span class="font-600 text-16px">$ 28.00</span>
+            <span class="font-600 text-16px">$ {{scope.row.volume}}</span>
           </div>
         </template>
       </el-table-column>
 
       <el-table-column label="Fees (24h)">
         <template slot-scope="scope">
-          <div >
-            <span class="font-600 text-16px">$ 1,436</span>
+          <div>
+            <span class="font-600 text-16px">$ {{scope.row.fees}}</span>
           </div>
         </template>
       </el-table-column>
 
-      <el-table-column label="APR" >
+      <el-table-column label="APR">
         <template slot-scope="scope">
           <div>
-            <span class="font-600 text-16px">37.01%</span>
+            <span class="font-600 text-16px">{{scope.row.apr}}%</span>
           </div>
         </template>
       </el-table-column>
@@ -141,7 +143,7 @@
 </template>
 
 <script>
-import { pool_info, single_swap_pool } from '@/config/furion_swap/pool';
+import { pool_info, single_swap_pool, getPoolSummary } from '@/config/furion_swap/pool';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -152,6 +154,7 @@ export default {
   computed: {},
   data() {
     return {
+      chainId: 4,
       active: 2,
       active2: 1,
       num: 0,
@@ -163,7 +166,12 @@ export default {
       pool_info: pool_info
     };
   },
-  mounted() {},
+  mounted() {
+    for (let index = 0; index < pool_info.pool_list.length; index++) {
+      this.initPoolSummary(this.pool_info.pool_list[index], index);
+    }
+
+  },
   methods: {
     percent_change(n) {
       if (n) {
@@ -177,13 +185,26 @@ export default {
     },
     cell_click(row) {
       // console.log("Row info", row);
-      for(let key in single_swap_pool){
+      for (let key in single_swap_pool) {
         single_swap_pool[key] = row[key];
       }
       single_swap_pool['initialized'] = true;
       // console.log('New single swap pool', single_swap_pool);
       this.$router.push(`/liquidity/furion_swap/pool_detail?token_0=${row.token_0}&token_1=${row.token_1}`);
     },
+
+    initPoolSummary(pool, index) {
+      getPoolSummary(pool.token_0, pool.token_1, this.chainId).then((res) => {
+        // console.log('pool info', res);
+        pool.tvl = res['tvl'].toFixed(3);
+        pool.volume = res['daily_tx'].toFixed(3);
+        pool.fees = res['fee'].toFixed(3);
+        pool.apr = (res['apr'] * 100).toFixed(3);
+        this.pool_info.pool_list[index] = pool;
+        this.$forceUpdate();
+      })
+
+    }
   },
 };
 </script>

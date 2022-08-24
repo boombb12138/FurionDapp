@@ -54,7 +54,7 @@ export default {
       change: '+0.01',
       change_percentage: '+0.01',
       price_data: [],
-      timeBtn: '24H',
+      timeBtn: '1M',
       activeBtn2: 'Market Cap',
       dataList: [],
       valueList: [],
@@ -99,13 +99,25 @@ export default {
       } else {
         color_theme = 'red';
       }
+
+      let max_value = -100000000000;
+      let min_value = 1000000000000;
+      let price_array = this.price_array;
+      for (let index = 0; index < price_array.length; index++) {
+        if (price_array[index][1] > max_value) {
+          max_value = price_array[index][1];
+        }
+        if (price_array[index][1] < min_value) {
+          min_value = price_array[index][1];
+        }
+      }
       return {
         visualMap: [
           {
             show: false,
             dimension: 1,
             pieces: [
-              { min: 0, max: 100, color: this.colorMap[color_theme].other },
+              { min: min_value / 1.5, max: max_value * 1.5, color: this.colorMap[color_theme].other },
               { min: 100, max: 400, color: this.colorMap[color_theme].main },
             ],
           },
@@ -199,7 +211,7 @@ export default {
     }, 3000)
 
     try {
-      await this.initPriceInfo(this.token_0, this.token_1, 0);
+      await this.initPriceInfo(this.token_0, this.token_1, 2);
 
       this.formatData(this.price_array);
       this.$refs.vChart.setOption(this.option, true);
@@ -219,8 +231,8 @@ export default {
         } catch (e) { }
       }, 3000)
 
-      this.timeBtn = '1W';
-      await this.initPriceInfo(this.token_0, this.token_1, 0);
+      this.timeBtn = '1M';
+      await this.initPriceInfo(this.token_0, this.token_1, 2);
 
       this.formatData(this.price_array);
       // await this.setData(this.timeBtn);
@@ -233,8 +245,8 @@ export default {
           this.num = (swap_info.token_1_reserve / swap_info.token_0_reserve).toFixed(6);
         } catch (e) { }
       }, 3000)
-      this.timeBtn = '1W';
-      await this.initPriceInfo(this.token_0, this.token_1, 0);
+      this.timeBtn = '1M';
+      await this.initPriceInfo(this.token_0, this.token_1, 2);
 
       this.formatData(this.price_array);
       // await this.setData(this.timeBtn);
