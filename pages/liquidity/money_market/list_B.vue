@@ -109,7 +109,7 @@ export default {
   mounted() {},
   methods: {
     cell_click(row) {
-      this.$router.push(`/liquidity/money_market/pool_detail?asset=${row.symbol}`);
+      this.$router.push(`/liquidity/money_market/pool_detail?tier=2&asset=${row.symbol}`);
     },
   },
 };

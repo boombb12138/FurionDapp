@@ -7,12 +7,14 @@ export const user_info_default = {
 	ftoken_balance: 0,
 	deposited: 0,
 	borrowed: 0,
+	borrow_quota: 0,
 }
 
 export const market_info_default = {
 	supply_rate: 0,
 	borrow_rate: 0,
 	token_price: 0,
+	cash: 0
 }	
 
 export const initTokenContract = async (symbol) => {

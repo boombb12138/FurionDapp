@@ -81,11 +81,10 @@
 
     <div v-if="active === 1" class="w-600px mx-auto box py-28px px-15px">
       <div class="flex px-25px mb-27px">
-        <div class="flex-1 text-14px leading-18px">
-          <div class="mb-4px">Health</div>
+        <div class="flex-1 text-14px leading-18px text-left">
+          <div class="mb-4px">Borrow Quota</div>
           <div class="font-500 text-16px">
-            <span class="font-600 text-[#FCFFFD]">0%</span>
-            <span class="inline-block bg-[#50CD7E] w-10px h-10px rounded-full"></span>
+            <span class="font-600 text-[#FCFFFD]">{{ formatNumber(user_info.borrow_quota) }}</span> {{ asset }}
           </div>
         </div>
         <div class="flex-1 text-14px leading-18px text-center">
@@ -149,7 +148,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="borrow_amount === ''" @click="borrow(borrow_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="borrow_amount > user_info.borrow_quota || borrow_amount > market_info.cash || borrow_amount === ''" @click="borrow(borrow_amount)">
           <span class="font-800 text-20px" style="word-spacing: 5px">Borrow {{ asset }}</span>
         </el-button>
       </div>
@@ -160,10 +159,9 @@
     <div v-if="active === 2" class="w-600px mx-auto box py-28px px-15px">
       <div class="flex px-25px mb-27px">
         <div class="flex-1 text-14px leading-18px">
-          <div class="mb-4px">Health</div>
+          <div class="mb-4px">Borrow Quota</div>
           <div class="font-500 text-16px">
-            <span class="font-600 text-[#FCFFFD]">0%</span>
-            <span class="inline-block bg-[#50CD7E] w-10px h-10px rounded-full"></span>
+            <span class="font-600 text-[#FCFFFD]">{{ formatNumber(user_info.borrow_quota) }}</span> {{ asset }}
           </div>
         </div>
         <div class="flex-1 text-14px leading-18px text-center">
@@ -216,7 +214,7 @@
 
         <div class="flex justify-between items-end">
           <div class="flex items-end">
-            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="repay_amount" type="number"></el-input>
+            <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="repay_amount" type="number" @focus="close_position = false"></el-input>
             <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(repay_amount)) }}</div>
           </div>
           <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
@@ -327,7 +325,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="user_info.token_balance < deposit_amount || deposit_amount === ''" @click="deposit(deposit_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="deposit_amount > user_info.token_balance || deposit_amount === ''" @click="deposit(deposit_amount)">
           <span class="font-800 text-20px" style="word-spacing: 5px">DEPOSIT {{ asset }}</span>
         </el-button>
       </div>
@@ -451,6 +449,9 @@ export default {
     asset() {
       return this.$route.query.asset;
     },
+    tier() {
+      return this.$route.query.tier;
+    }
   },
   data() {
     const multicall = newMultiCallProvider(4);
@@ -464,6 +465,7 @@ export default {
       priceOracle: {},
       user_info: user_info_default,
       market_info: market_info_default,
+      token_decimal: 18,
       deposit_amount: '',
       withdraw_amount: '',
       borrow_amount: '',
@@ -477,6 +479,7 @@ export default {
     this.market = await initMarketContract(this.asset);
     this.manager = await initManagerContract();
     this.priceOracle = await initPriceOracle();
+    this.token_decimal = parseInt(await this.token.contract.methods.decimals().call());
 
     await this.updateAll();
     //setInterval(this.updateAll, 10000);
@@ -488,35 +491,51 @@ export default {
         this.token.contract.methods.balanceOf(account), 
         this.market.contract.methods.balanceOf(account),
         this.market.contract.methods.balanceOfUnderlying(account),
-        this.market.contract.methods.borrowBalanceCurrent(account)
+        this.market.contract.methods.borrowBalanceCurrent(account),
+        this.manager.contract.methods.getAccountLiquidity(account)
       ];
       const results = await this.multicall.aggregate(multicall_list);
 
-      this.user_info.token_balance = fromWei(results[0]);
+      this.user_info.token_balance = fromWei(results[0], this.token_decimal);
       this.user_info.ftoken_balance = fromWei(results[1]);
-      this.user_info.deposited = fromWei(results[2]);
-      this.user_info.borrowed = fromWei(results[3]);
+      this.user_info.deposited = fromWei(results[2], this.token_decimal);
+      this.user_info.borrowed = fromWei(results[3], this.token_decimal);
+
+      if (results[4]["1"] > 0) { // results[4]["1"]: shortfall
+        this.user_info.borrow_quota = 0;
+      } else {
+        let tempLiquidity = 0;
+
+        console.log(results[4]["0"]);
+        for (let i = 0; i < this.tier; i++) {
+          const liquidityValue = results[4]["0"][i]; // results[4]["0"]: liquidities array
+          const tokenEquivalent = liquidityValue / this.market_info.token_price;
+          tempLiquidity += tokenEquivalent;
+        }
+
+        this.user_info.borrow_quota = fromWei(tempLiquidity, this.token_decimal);
+      }
     },
     async updateMarketInfo() {
       const multicall_list = [
         this.market.contract.methods.supplyRatePerBlock(),
         this.market.contract.methods.borrowRatePerBlock(),
-        this.priceOracle.contract.methods.getUnderlyingPrice(this.market.address)
+        this.priceOracle.contract.methods.getUnderlyingPrice(this.market.address),
+        this.market.contract.methods.totalCash()
       ];
       const results = await this.multicall.aggregate(multicall_list);
 
       // Number of blocks assumed per year in interest rate contract: 2102400
       const supplyRatePerBlock = results[0];
       this.market_info.supply_rate = fromWei(supplyRatePerBlock * 2102400 * 100);
-
       const borrowRatePerBlock = results[1]
       this.market_info.borrow_rate = fromWei(borrowRatePerBlock * 2102400 * 100);
-
       this.market_info.token_price = fromWei(results[2]);
+      this.market_info.cash = fromWei(results[3], this.token_decimal);
     },
     async updateAll() {
-      await this.updateUserInfo();
       await this.updateMarketInfo();
+      await this.updateUserInfo();
 
       //console.log("updated");
     },
@@ -559,8 +578,16 @@ export default {
     /*********************************** Contract functions ***********************************/
 
     async borrow(amount) {
-      const actualAmount = toWei(amount);
+      const actualAmount = toWei(amount, this.token_decimal);
       const account = this.userInfo.userAddress;
+
+      /*
+      const checkLiquidity = await this.manager.contract.methods.getHypotheticalAccountLiquidity(account, this.market.address, 0, actualAmount).call();
+      if (checkLiquidity.shortfall > 0) {
+        this.errorMessage(`Borrow ${this.asset} failed, insufficient collateral`);
+        return;
+      }
+      */
 
       openDialog(this.dialogue_info, [ProcessInfo.BORROW_TOKEN]);  
 
@@ -579,7 +606,7 @@ export default {
       await this.updateAll();
     },
     async repay(amount) {
-      const actualAmount = this.close_position ? await this.getBorrowedRaw() : toWei(amount);
+      const actualAmount = this.close_position ? await this.getBorrowedRaw() : toWei(amount, this.token_decimal);
       const account = this.userInfo.userAddress;
       const approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
 
@@ -618,7 +645,7 @@ export default {
       await this.updateAll();
     },
     async deposit(amount) {
-      const actualAmount = toWei(amount);
+      const actualAmount = toWei(amount, this.token_decimal);
       const account = this.userInfo.userAddress;
       const approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
       const useAsCollateral = this.collateralize;
@@ -671,10 +698,11 @@ export default {
       closeDialog(this.dialogue_info);
 
       this.deposit_amount = "";
+      this.collateralize = false;
       await this.updateAll();
     },
     async withdraw(amount) {
-      const actualAmount = toWei(amount);
+      const actualAmount = toWei(amount, this.token_decimal);
       const account = this.userInfo.userAddress;
 
       openDialog(this.dialogue_info, [ProcessInfo.WITHDRAW_TOKEN]);
