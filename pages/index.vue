@@ -99,8 +99,8 @@
           <div class="pt-0px">
             <div class="flex items-center mb-17px"
             @click="clickLearnmoreaboutFurion()">
-              <img class="mr-13px" src="@/assets/images/index/video.svg" />
-              <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
+              <img class="mr-13px cursor-pointer" src="@/assets/images/index/video.svg" />
+              <p class="text-16px text-[#FF7AE8] font-700 cursor-pointer">Learn more about Furion</p>
             </div>
             <div class="text-white font-900 leading-105px text-92px mb-25px">
               <p :class="{ 'text-animation': showAnimation }" class="text">Unleashing</p>
@@ -113,7 +113,7 @@
             <div class="mt-50px">
               <div class="flex items-center">
                 <div class="btn_border w-190px mr-35px">
-                  <el-button type="primary" class="!w-190px !h-56px">SEE COLLECTIONS</el-button>
+                  <el-button type="primary" class="!w-190px !h-56px">VIEW COLLECTIONS</el-button>
                 </div>
                 <div class="btn_border">
                   <el-button type="primary" plain class="!w-190px !h-56px"
@@ -278,7 +278,7 @@
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Furion</p>
       </div>
 
-      <ul class="category-list w-1300px flex justify-between mb-140px">
+      <ul class="category-list w-1300px flex justify-between mb-140px cursor-pointer">
         <li
           v-for="(item, index) in categoryList"
           :key="index"
@@ -371,7 +371,7 @@ export default {
           docs_url: "furion-pools/furion-separate-pools",
         },
         {
-          tital: "Aggregating liquidity",
+          tital: "Aggregating Liquidity",
           remark1: "Get your market-driven index tokens" ,
           remark2:  "by joining our aggregate pools",
           remark3:  "",
@@ -422,12 +422,12 @@ export default {
         {
           img: require("@/assets/images/index/category1.jpg"),
           remark1: "The Story of Furion",
-          url: '',
+          url: 'https://docs.furion.io',
         },
         {
           img: require("@/assets/images/index/category2.jpg"),
           remark1: "Introducing Furion",
-          url: 'https://medium.com/@project.furion/furion-the-first-all-in-one-nft-liquidity-platform-ffa4e3becb60',
+          url: '',
         },
         {
           img: require("@/assets/images/index/category3.jpg"),
