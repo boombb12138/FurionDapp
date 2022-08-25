@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const service = axios.create({
-  baseURL: 'https://127.0.0.1:6010',
-  // baseURL: 'https://data.furion.io:6010',
+  // baseURL: 'https://127.0.0.1:6010',
+  baseURL: 'https://data.furion.io:6010',
   timeout: 6000000,
 });
 
