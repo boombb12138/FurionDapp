@@ -55,7 +55,7 @@
     &::v-deep {
       .el-input__inner {
         height: 45px;
-        width: 200px;
+        width: 160px;
         background: #011129;
         border: none;
         color: #fcfffd;
@@ -131,7 +131,7 @@
         <div class="flex justify-between items-end">
           <div class="flex items-end">
             <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="borrow_amount" type="number"></el-input>
-            <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(borrow_amount)) }}</div>
+            <div class="text-15px ml-1px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(borrow_amount)) }}</div>
           </div>
           <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
         </div>
@@ -215,7 +215,7 @@
         <div class="flex justify-between items-end">
           <div class="flex items-end">
             <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="repay_amount" type="number" @focus="close_position = false"></el-input>
-            <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(repay_amount)) }}</div>
+            <div class="text-15px ml-1px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(repay_amount)) }}</div>
           </div>
           <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
         </div>
@@ -306,7 +306,7 @@
         <div class="flex justify-between items-end">
           <div class="flex items-end">
             <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="deposit_amount" type="number"></el-input>
-            <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(deposit_amount)) }}</div>
+            <div class="text-15px ml-1px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(deposit_amount)) }}</div>
           </div>
           <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
         </div>
@@ -392,7 +392,7 @@
         <div class="flex justify-between items-end">
           <div class="flex items-end">
             <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="withdraw_amount" type="number"></el-input>
-            <div class="text-15px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(withdraw_amount)) }}</div>
+            <div class="text-15px ml-1px text-[rgba(252,255,253,0.6)]">~${{ formatNumber(approxValue(withdraw_amount)) }}</div>
           </div>
           <div class="text-14px text-[rgba(252,255,253,0.6)]">Balance: {{ formatNumber(user_info.token_balance) }} {{ asset }}</div>
         </div>
@@ -423,7 +423,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { _formatNumber, getTxURL, toWei, fromWei, tokenApprove } from "@/utils/common";
+import { _formatNumber, getTxURL, toWei, fromWei, tokenApprove, getNativeTokenAmount } from "@/utils/common";
 import { user_info_default, market_info_default, initTokenContract, initMarketContract, initManagerContract, initPriceOracle } from "@/config/money_market/market";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 
@@ -466,6 +466,7 @@ export default {
       user_info: user_info_default,
       market_info: market_info_default,
       token_decimal: 18,
+      is_eth: false,
       deposit_amount: '',
       withdraw_amount: '',
       borrow_amount: '',
@@ -475,11 +476,15 @@ export default {
     };
   },
   async mounted() {
-    this.token = await initTokenContract(this.asset);
+    this.is_eth = this.asset === "ETH" ? true : false;
+    
+    this.token = await initTokenContract(this.asset)
     this.market = await initMarketContract(this.asset);
     this.manager = await initManagerContract();
     this.priceOracle = await initPriceOracle();
-    this.token_decimal = parseInt(await this.token.contract.methods.decimals().call());
+    if (!this.is_eth) {
+      this.token_decimal = parseInt(await this.token.contract.methods.decimals().call());
+    }
 
     await this.updateAll();
     //setInterval(this.updateAll, 10000);
@@ -487,33 +492,38 @@ export default {
   methods: {
     async updateUserInfo() {
       const account = this.userInfo.userAddress;
-      const multicall_list = [
-        this.token.contract.methods.balanceOf(account), 
+      let multicall_list = [ 
         this.market.contract.methods.balanceOf(account),
         this.market.contract.methods.balanceOfUnderlying(account),
         this.market.contract.methods.borrowBalanceCurrent(account),
-        this.manager.contract.methods.getAccountLiquidity(account)
-      ];
+        this.manager.contract.methods.getAccountLiquidity(account),
+      ]
+      if (!this.is_eth) {
+        multicall_list.push(this.token.contract.methods.balanceOf(account));
+      }
       const results = await this.multicall.aggregate(multicall_list);
 
-      this.user_info.token_balance = fromWei(results[0], this.token_decimal);
-      this.user_info.ftoken_balance = fromWei(results[1]);
-      this.user_info.deposited = fromWei(results[2], this.token_decimal);
-      this.user_info.borrowed = fromWei(results[3], this.token_decimal);
+      this.user_info.ftoken_balance = fromWei(results[0]);
+      this.user_info.deposited = fromWei(results[1], this.token_decimal);
+      this.user_info.borrowed = fromWei(results[2], this.token_decimal);
+      if (!this.is_eth) {
+        this.user_info.token_balance = fromWei(results[4], this.token_decimal);
+      }else {
+        this.user_info.token_balance = await getNativeTokenAmount(account);
+      }
 
-      if (results[4]["1"] > 0) { // results[4]["1"]: shortfall
+      if (results[3]["1"] > 0) { // results[4]["1"]: shortfall
         this.user_info.borrow_quota = 0;
       } else {
         let tempLiquidity = 0;
 
-        console.log(results[4]["0"]);
         for (let i = 0; i < this.tier; i++) {
-          const liquidityValue = results[4]["0"][i]; // results[4]["0"]: liquidities array
+          const liquidityValue = results[3]["0"][i]; // results[4]["0"]: liquidities array
           const tokenEquivalent = liquidityValue / this.market_info.token_price;
           tempLiquidity += tokenEquivalent;
         }
 
-        this.user_info.borrow_quota = fromWei(tempLiquidity, this.token_decimal);
+        this.user_info.borrow_quota = fromWei(tempLiquidity);
       }
     },
     async updateMarketInfo() {
@@ -530,7 +540,7 @@ export default {
       this.market_info.supply_rate = fromWei(supplyRatePerBlock * 2102400 * 100);
       const borrowRatePerBlock = results[1]
       this.market_info.borrow_rate = fromWei(borrowRatePerBlock * 2102400 * 100);
-      this.market_info.token_price = fromWei(results[2]);
+      this.market_info.token_price = fromWei(results[2][0]);
       this.market_info.cash = fromWei(results[3], this.token_decimal);
     },
     async updateAll() {
@@ -608,30 +618,42 @@ export default {
     async repay(amount) {
       const actualAmount = this.close_position ? await this.getBorrowedRaw() : toWei(amount, this.token_decimal);
       const account = this.userInfo.userAddress;
-      const approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
+      let approvedEnoughToken;
+      if (!this.is_eth) {
+        approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
+      }
 
       let dialog_list = [];
-      if (!approvedEnoughToken) {
-        dialog_list.push(ProcessInfo.APPROVE_TOKEN);
+      if (!this.is_eth) {
+        if (!approvedEnoughToken) {
+          dialog_list.push(ProcessInfo.APPROVE_TOKEN);
+        }
       }
       dialog_list.push(ProcessInfo.REPAY_TOKEN);
       openDialog(this.dialogue_info, dialog_list);
 
-      if (!approvedEnoughToken) {
-        try {
-          const approve_result = await tokenApprove(this.token.address, account, this.market.address);
-          this.successMessage(approve_result, `Approve ${this.asset} succeeded`);
-          stepDialog(this.dialogue_info);
-        } catch (e) {
-          this.errorMessage(`Approve ${this.asset} failed`)
-          console.warn(e);
-          closeDialog(this.dialogue_info);
-          return;
+      if (!this.is_eth) {
+        if (!approvedEnoughToken) {
+          try {
+            const approve_result = await tokenApprove(this.token.address, account, this.market.address);
+            this.successMessage(approve_result, `Approve ${this.asset} succeeded`);
+            stepDialog(this.dialogue_info);
+          } catch (e) {
+            this.errorMessage(`Approve ${this.asset} failed`)
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            return;
+          }
         }
       }
 
       try {
-        const tx_result = await this.market.contract.methods.repayBorrow(actualAmount).send({ from: account });
+        let tx_result;
+        if (!this.is_eth) {
+          tx_result = await this.market.contract.methods.repayBorrow(actualAmount).send({ from: account });
+        } else {
+          tx_result = await this.market.contract.methods.repayBorrow().send({ from: account, value:  actualAmount})
+        }
         this.successMessage(tx_result, `Repay ${this.asset} succeeded`);
       } catch (e) {
         this.errorMessage(`Repay ${this.asset} failed`);
@@ -642,18 +664,24 @@ export default {
       closeDialog(this.dialogue_info);
 
       this.repay_amount = "";
+      this.close_position = false;
       await this.updateAll();
     },
     async deposit(amount) {
       const actualAmount = toWei(amount, this.token_decimal);
       const account = this.userInfo.userAddress;
-      const approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
       const useAsCollateral = this.collateralize;
       const isAlreadyCollateral = await this.manager.contract.methods.checkMembership(account, this.market.address).call();
+      let approvedEnoughToken;
+      if (!this.is_eth) {
+        approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
+      }
 
       let dialog_list = [];
-      if (!approvedEnoughToken) {
-        dialog_list.push(ProcessInfo.APPROVE_TOKEN);
+      if (!this.is_eth) {
+        if (!approvedEnoughToken) {
+          dialog_list.push(ProcessInfo.APPROVE_TOKEN);
+        }
       }
       if (useAsCollateral && !isAlreadyCollateral) {
         dialog_list.push(ProcessInfo.ENTER_MARKET);
@@ -661,19 +689,21 @@ export default {
       dialog_list.push(ProcessInfo.DEPOSIT_TOKEN);
       openDialog(this.dialogue_info, dialog_list);
 
-      if (!approvedEnoughToken) {
-        try {
-          const approve_result = await tokenApprove(this.token.address, account, this.market.address);
-          this.successMessage(approve_result, `Approve ${this.asset} succeeded`);
-          stepDialog(this.dialogue_info);
-        } catch (e) {
-          this.errorMessage(`Approve ${this.asset} failed`)
-          console.warn(e);
-          closeDialog(this.dialogue_info);
-          return;
+      if (!this.is_eth) {
+        if (!approvedEnoughToken) {
+          try {
+            const approve_result = await tokenApprove(this.token.address, account, this.market.address);
+            this.successMessage(approve_result, `Approve ${this.asset} succeeded`);
+            stepDialog(this.dialogue_info);
+          } catch (e) {
+            this.errorMessage(`Approve ${this.asset} failed`)
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            return;
+          }
         }
       }
-
+      
       if (useAsCollateral && !isAlreadyCollateral) {
         try {
           const tx_result = await this.manager.contract.methods.enterMarkets([this.market.address]).send({ from: account });
@@ -687,9 +717,15 @@ export default {
       }
 
       try {
-        const tx_result = await this.market.contract.methods.supply(actualAmount).send({ from: account });
+        let tx_result;
+        if (!this.is_eth) {
+          tx_result = await this.market.contract.methods.supply(actualAmount).send({ from: account });
+        } else {
+          tx_result = await this.market.contract.methods.supply().send({ from: account, value: actualAmount });
+        }
         this.successMessage(tx_result, `Deposit ${this.asset} succeeded`);
       }catch (e) {
+        console.warn(e);
         this.errorMessage(`Deposit ${this.asset} failed`);
         closeDialog(this.dialogue_info);
         return;
