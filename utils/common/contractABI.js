@@ -12,6 +12,8 @@ import SeparatePool from "@/assets/abis/rinkeby/separate-pool/SeparatePool.sol/S
 
 import FEther from "@/assets/abis/rinkeby/money-market/FEther.sol/FEther.json";
 import FErc20 from "@/assets/abis/rinkeby/money-market/FErc20.sol/FErc20.json";
+import RiskManager from "@/assets/abis/rinkeby/money-market/RiskManager.sol/RiskManager.json";
+import SimplePriceOracle from "@/assets/abis/rinkeby/money-market/SimplePriceOracle.sol/SimplePriceOracle.json";
 
 export const getAddress = () => {
     let address = addressStore['rinkeby'];
@@ -61,11 +63,23 @@ export const getSeparatePoolABI = async () => {
 
 export const getFEtherABI = async () => {
     let address = getAddress();
-    FEther.address = address['FEther'];
+    FEther.address = address["FEther Proxy"];
     return FEther;
 }
 
 export const getFErc20ABI = async () => {
     FErc20.address = '';
     return FErc20;
+}
+
+export const getRiskManagerABI = async () => {
+    let address = getAddress();
+    RiskManager.address = address["Risk Manager Proxy"];
+    return RiskManager;
+}
+
+export const getPriceOracleABI = async () => {
+    let address = getAddress();
+    SimplePriceOracle.address = address["Price Oracle"];
+    return SimplePriceOracle;
 }

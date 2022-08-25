@@ -7,15 +7,17 @@ import {
     getAddress
 } from "@/utils/common/contractABI";
 
+import { getFurionSwapSummary } from "@/api/furion_swap";
+
 import { getContract, fromWei } from "@/utils/common";
 
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { getChainId, WETH_ADDRESS } from "@/utils/web3";
 
 export const token_info = [
-    { symbol: 'ETH', address: '', image: require("@/assets/images/liquidity/tokens/ETH.png") },
-    { symbol: 'USDT', address: "0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84", image: require("@/assets/images/liquidity/tokens/USDT.png") },
-    { symbol: 'FUR', address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E', image: require('@/assets/images/liquidity/tokens/FUR.png') },
+    { symbol: 'ETH', address: '', market_address: "0xc04609A609af7ED23856a4C26cBbD222C128D2Cb", image: require("@/assets/images/liquidity/tokens/ETH.png") },
+    { symbol: 'USDT', address: "0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84", market_address: "", image: require("@/assets/images/liquidity/tokens/USDT.png") },
+    { symbol: 'FUR', address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E', market_address: "0xFaD887C8fB4Ed00042207d747a590D0bc7b3195e", image: require('@/assets/images/liquidity/tokens/FUR.png') },
 ]
 
 export const swap_info = {
@@ -132,4 +134,16 @@ export const initFurionSwapInfo = async (single_swap, chainId) => {
     single_swap.router_address = await getAddress()['FurionSwapV2Router'];
 
     return single_swap;
+}
+
+export const getPriceInfo = async(token_0, token_1, frequency, chainId) => {
+    let network;
+    if(chainId == 4){
+        network = 'rinkeby';
+    }else if(chainId == 1){
+        network = 'mainnet';
+    }
+    const price_result = await getFurionSwapSummary(token_0, token_1, frequency, network);
+    // console.log('Swap price result', price_result);
+    return price_result['data']['data'];
 }

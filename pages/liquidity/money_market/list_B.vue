@@ -95,7 +95,7 @@ export default {
       active: 2,
       list: [
         {
-          symbol: 'USDT',
+          symbol: 'ETH',
           tvl: 1000,
           borrowed: 500,
           supply_apr: 6.5,

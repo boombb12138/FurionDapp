@@ -67,26 +67,23 @@
   -webkit-text-stroke: 2px white;
   color: rgba(0,0,0,0.08);
   background: url("@/assets/images/arts.png");
-  background-size: 10%;
+  background-size: 5%;
   -webkit-background-clip: text;
 }
 .text-animation {
-  background-position: 40% 40%;
+  background-position: 30% 30%;
   animation: zoomin 10s ease-in-out forwards;
 }
 .text-animation1 {
-  background-position: 60% 60%;
+  background-position: 70% 70%;
   animation: zoomin 10s ease-in-out forwards;
 }
 @keyframes zoomin {
   0% {
-    background-size: 10%;
-  }
-  5% {
-    background-size: 10%;
+    background-size: 5%;
   }
   100% {
-    background-size: 150%
+    background-size: 70%
   }
 }
 </style>
@@ -105,7 +102,7 @@
               <img class="mr-13px" src="@/assets/images/index/video.svg" />
               <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
             </div>
-            <div class="text-white font-800 leading-105px text-92px mb-25px">
+            <div class="text-white font-900 leading-105px text-92px mb-25px">
               <p :class="{ 'text-animation': showAnimation }" class="text">Unleashing</p>
               <p :class="{ 'text-animation1': showAnimation }" class="text">NFT Liquidity</p>
             </div>
@@ -449,7 +446,7 @@ export default {
   },
   async mounted() {
     this.showAnimation = true;
-    initNftInfo(this.network);
+    this.nft_info = await initNftInfo(this.network);
     this.ready = true;
   },
   methods: {

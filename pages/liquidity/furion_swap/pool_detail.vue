@@ -471,7 +471,7 @@ export default {
       allowance_liquidity: 0,
       valid_add: true,
       valid_remove: true,
-      dialogue_info: DialogInfo
+      dialogue_info: DialogInfo,
     };
   },
   async mounted() {
@@ -480,68 +480,14 @@ export default {
     if (!this.single_swap_pool.initialized) {
       this.$router.push('/liquidity/furion_swap/pool');
     }
+    console.log('This is initialized single pool', this.single_swap_pool);
     await this.updateUserInfo();
-    // console.log('This is initialized single pool', this.single_swap_pool);
+
     this.checkApproval();
     this.checkLiquidityApprove();
   },
   methods: {
-
-    async updateUserInfo() {
-      let account = this.userInfo.userAddress;
-      try {
-        // console.log('Account info', account)
-        if (this.single_swap_pool.token_0 == 'ETH') {
-          this.single_swap_pool.token_0_balance = await getNativeTokenAmount(account);
-          let token_1_contract = this.single_swap_pool.token_1_contract;
-          this.single_swap_pool.token_1_balance = fromWei((await token_1_contract.methods.balanceOf(account).call()), parseInt(this.single_swap_pool.toke_1_decimal));
-        } else {
-          let token_0_contract = this.single_swap_pool.token_0_contract;
-          let token_1_contract = this.single_swap_pool.token_1_contract;
-
-          let multicall_list = [token_0_contract.methods.balanceOf(account), token_1_contract.methods.balanceOf(account)];
-          const balance_results = await this.multicall.aggregate(multicall_list);
-          // console.log('Balance info', balance_results);
-          this.single_swap_pool.token_0_balance = fromWei(balance_results[0], parseInt(this.single_swap_pool.token_0_decimal));
-          this.single_swap_pool.token_1_balance = fromWei(balance_results[1], parseInt(this.single_swap_pool.toke_1_decimal));
-
-        }
-      } catch (e) {
-        console.warn('Fail to load balance')
-      }
-
-
-      let pair_contract = this.single_swap_pool.pair_contract;
-      let new_multicall_list = [pair_contract.methods.totalSupply(), pair_contract.methods.balanceOf(account)];
-      const pair_results = await this.multicall.aggregate(new_multicall_list);
-
-      // console.log('Pair results', pair_results);
-      this.single_swap_pool.pair_liquidity = parseInt(pair_results[0] / 1e14);
-      this.single_swap_pool.user_liquidity = parseInt(pair_results[1] / 1e14);
-      this.single_swap_pool.user_liquidity_proportion = this.single_swap_pool.user_liquidity / this.single_swap_pool.pair_liquidity;
-      const up_threshold = 0.9999;
-      if (this.single_swap_pool.user_liquidity_proportion > up_threshold) {
-        this.single_swap_pool.user_liquidity_proportion = up_threshold;
-        this.single_swap_pool.user_liquidity = this.single_swap_pool.pair_liquidity * up_threshold;
-      }
-
-      this.single_swap_pool.token_0_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_0_reserve;
-      this.single_swap_pool.token_1_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_1_reserve;
-    },
-    formatNumber(value, fixed = 2) {
-      let reserve = value - parseInt(value);
-      let final_result;
-      if (value - reserve < 1) {
-        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
-      } else {
-        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
-      }
-      if (final_result[0] == '-' || final_result[0] == 'N') {
-        final_result = '--'
-      }
-      return final_result
-    },
-
+    /******************************* Components functions *******************************/
     maxAmount0() {
       this.token_0_amount = this.single_swap_pool.token_0_balance;
       this.calAmount1();
@@ -589,6 +535,86 @@ export default {
       }
       this.valid_add = true;
     },
+    calRemoval() {
+      // console.log('Pool liquidity', this.single_swap_pool.pool_liquidity)
+      this.token_0_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_0_reserve).toFixed(18);
+      this.token_1_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_1_reserve).toFixed(18);
+      if (this.token_0_removal > single_swap_pool.token_0_pooled) {
+        this.valid_remove = false;
+        return
+      }
+      this.valid_remove = true;
+      // console.log('Token removal changed', this.token_0_removal, this.token_1_removal);
+    },
+    percent_change(n) {
+      if (n) {
+        this.percent = n;
+      }
+      this.remove_amount = ((this.single_swap_pool.user_liquidity * n) / 100).toFixed(4);
+      this.calRemoval();
+    },
+    onSort(str) {
+      this.$refs.sort.doClose();
+      this.sort = str;
+    },
+    onSelect1(str) {
+      this.$refs.type1.doClose();
+      this.type1 = str;
+    },
+    onSelect2(str) {
+      this.$refs.type2.doClose();
+      this.type2 = str;
+    },
+
+    /******************************* Check & Update info *******************************/
+    async updateUserInfo() {
+      let account = this.userInfo.userAddress;
+      try {
+        // console.log('Account info', account)
+        if (this.single_swap_pool.token_0 == 'ETH') {
+          this.single_swap_pool.token_0_balance = await getNativeTokenAmount(account);
+          let token_1_contract = this.single_swap_pool.token_1_contract;
+          this.single_swap_pool.token_1_balance = fromWei((await token_1_contract.methods.balanceOf(account).call()), parseInt(this.single_swap_pool.token_1_decimal));
+        } else if (this.single_swap_pool.token_1 == 'ETH') {
+          this.single_swap_pool.token_1_balance = await getNativeTokenAmount(account);
+          let token_0_contract = this.single_swap_pool.token_0_contract;
+          this.single_swap_pool.token_0_balance = fromWei((await token_0_contract.methods.balanceOf(account).call()), parseInt(this.single_swap_pool.token_0_decimal));
+        }
+
+        else {
+          let token_0_contract = this.single_swap_pool.token_0_contract;
+          let token_1_contract = this.single_swap_pool.token_1_contract;
+
+          let multicall_list = [token_0_contract.methods.balanceOf(account), token_1_contract.methods.balanceOf(account)];
+          const balance_results = await this.multicall.aggregate(multicall_list);
+          // console.log('Balance info', balance_results);
+          this.single_swap_pool.token_0_balance = fromWei(balance_results[0], parseInt(this.single_swap_pool.token_0_decimal));
+          this.single_swap_pool.token_1_balance = fromWei(balance_results[1], parseInt(this.single_swap_pool.token_1_decimal));
+
+        }
+      } catch (e) {
+        console.warn('Fail to load balance')
+      }
+
+
+      let pair_contract = this.single_swap_pool.pair_contract;
+      let new_multicall_list = [pair_contract.methods.totalSupply(), pair_contract.methods.balanceOf(account)];
+      const pair_results = await this.multicall.aggregate(new_multicall_list);
+
+      // console.log('Pair results', pair_results);
+      this.single_swap_pool.pair_liquidity = parseFloat(pair_results[0] / 1e14);
+      this.single_swap_pool.user_liquidity = parseFloat(pair_results[1] / 1e14);
+      this.single_swap_pool.user_liquidity_proportion = this.single_swap_pool.user_liquidity / this.single_swap_pool.pair_liquidity;
+      const up_threshold = 0.9999;
+      if (this.single_swap_pool.user_liquidity_proportion > up_threshold) {
+        this.single_swap_pool.user_liquidity_proportion = up_threshold;
+        this.single_swap_pool.user_liquidity = this.single_swap_pool.pair_liquidity * up_threshold;
+      }
+
+      this.single_swap_pool.token_0_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_0_reserve;
+      this.single_swap_pool.token_1_pooled = this.single_swap_pool.user_liquidity_proportion * this.single_swap_pool.token_1_reserve;
+    },
+
     checkApproval() {
       let account = this.userInfo.userAddress;
       if (this.single_swap_pool.token_0 == 'ETH') {
@@ -599,7 +625,16 @@ export default {
           }
         })
 
-      } else {
+      } else if (this.single_swap_pool.token_1 == 'ETH') {
+        this.single_swap_pool.token_0_contract.methods.allowance(account, this.single_swap_pool.router_address).call().then((allowance) => {
+          this.allowance_1 = 10000000000000000000000000000;
+          if (parseInt(allowance) > ALLOWANCE_THRESHOLD) {
+            this.approved = true;
+          }
+        })
+
+      }
+      else {
         let multicall_list = [
           this.single_swap_pool.token_0_contract.methods.allowance(account, this.single_swap_pool.router_address),
           this.single_swap_pool.token_1_contract.methods.allowance(account, this.single_swap_pool.router_address)
@@ -613,6 +648,19 @@ export default {
           }
         });
       }
+    },
+    async updatePool() {
+
+      let pair_contract = this.single_swap_pool.pair_contract;
+      const reserves = await pair_contract.methods.getReserves().call();
+      if (this.single_swap_pool.token_0_address < this.single_swap_pool.token_1_address) {
+        this.single_swap_pool.token_0_reserve = fromWei(reserves[0], parseInt(this.single_swap_pool.token_0_decimal));
+        this.single_swap_pool.token_1_reserve = fromWei(reserves[1], parseInt(this.single_swap_pool.token_1_decimal));
+      } else {
+        this.single_swap_pool.token_0_reserve = fromWei(reserves[1], parseInt(this.single_swap_pool.token_0_decimal));
+        this.single_swap_pool.token_1_reserve = fromWei(reserves[0], parseInt(this.single_swap_pool.token_1_decimal));
+      }
+      this.single_swap_pool.pool_liquidity = this.single_swap_pool.token_0_reserve * this.single_swap_pool.token_1_reserve;
 
     },
     checkLiquidityApprove() {
@@ -637,7 +685,7 @@ export default {
       if (this.single_swap_pool.token_0 != 'ETH' && this.allowance_0 < ALLOWANCE_THRESHOLD) {
         dialog_list.push(ProcessInfo.SWAP_APPROVE_TOKEN_1)
       }
-      if (this.allowance_1 < ALLOWANCE_THRESHOLD) {
+      if (this.single_swap_pool.token_1 != 'ETH' && this.allowance_1 < ALLOWANCE_THRESHOLD) {
         dialog_list.push(ProcessInfo.SWAP_APPROVE_TOKEN_2)
       }
       openDialog(this.dialogue_info, dialog_list);
@@ -654,7 +702,7 @@ export default {
         // console.log('Approve token', this.single_swap_pool.token_0);
       }
 
-      if (this.allowance_1 < ALLOWANCE_THRESHOLD) {
+      if (this.single_swap_pool.token_1 != 'ETH' && this.allowance_1 < ALLOWANCE_THRESHOLD) {
         try {
           await tokenApprove(this.single_swap_pool.token_1_address, account, this.single_swap_pool.router_address);
         }
@@ -679,17 +727,7 @@ export default {
       this.liquidity_approved = true;
     },
 
-    calRemoval() {
-      // console.log('Pool liquidity', this.single_swap_pool.pool_liquidity)
-      this.token_0_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_0_reserve).toFixed(18);
-      this.token_1_removal = (this.remove_amount / this.single_swap_pool.pair_liquidity * this.single_swap_pool.token_1_reserve).toFixed(18);
-      if (this.token_0_removal > single_swap_pool.token_0_pooled) {
-        this.valid_remove = false;
-        return
-      }
-      this.valid_remove = true;
-      // console.log('Token removal changed', this.token_0_removal, this.token_1_removal);
-    },
+    /******************************* Contract functions *******************************/
 
     async addLiquidity() {
       await openDialog(this.dialogue_info, [ProcessInfo.SWAP_ADD_LIQUIDITY]);
@@ -715,7 +753,25 @@ export default {
           this.token_1_amount = '';
           return
         }
-      } else {
+      } else if (this.single_swap_pool.token_1 == 'ETH') {
+        try {
+          let tx_result = await router_contract.methods.addLiquidityETH(
+            this.single_swap_pool.token_0_address,
+            toWei(this.token_0_amount, parseInt(this.single_swap_pool.token_0_decimal)),
+            0, 0,
+            account,
+            current_time + 400).send({ from: account, value: toWei(this.token_1_amount) });
+          this.successMessage(tx_result, 'Add Liquidity Successfully');
+        } catch (e) {
+          console.warn(e);
+          this.errorMessage('Add Liquidity Error');
+          closeDialog(this.dialogue_info);
+          this.token_0_amount = '';
+          this.token_1_amount = '';
+          return
+        }
+      }
+      else {
         try {
           let tx_result = await router_contract.methods.addLiquidity(
             this.single_swap_pool.token_0_address,
@@ -769,7 +825,26 @@ export default {
           closeDialog(this.dialogue_info);
           return
         }
-      } else {
+      } else if (this.single_swap_pool.token_1 == 'ETH') {
+        try {
+          let tx_result = await router_contract.methods.removeLiquidityETH(
+            this.single_swap_pool.token_0_address,
+            toWei(this.remove_amount / 1e4),
+            0, 0,
+            account,
+            current_time + 400).send({ from: account });
+          this.successMessage(tx_result, 'Remove Liquidity Successfully');
+        } catch (e) {
+          console.warn(e)
+          this.errorMessage('Remove Liquidity Error');
+          this.remove_amount = '';
+          this.token_0_removal = '';
+          this.token_1_removal = '';
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
+      else {
         try {
           let tx_result = await router_contract.methods.removeLiquidity(
             this.single_swap_pool.token_0_address,
@@ -799,39 +874,21 @@ export default {
 
     },
 
-    async updatePool() {
 
-      let pair_contract = this.single_swap_pool.pair_contract;
-      const reserves = await pair_contract.methods.getReserves().call();
-      if (this.single_swap_pool.token_0_address < this.single_swap_pool.token_1_address) {
-        this.single_swap_pool.token_0_reserve = fromWei(reserves[0], parseInt(this.single_swap_pool.token_0_decimal));
-        this.single_swap_pool.token_1_reserve = fromWei(reserves[1], parseInt(this.single_swap_pool.token_1_decimal));
+    /******************************* Helper functions *******************************/
+
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
       } else {
-        this.single_swap_pool.token_0_reserve = fromWei(reserves[1], parseInt(this.single_swap_pool.token_0_decimal));
-        this.single_swap_pool.token_1_reserve = fromWei(reserves[0], parseInt(this.single_swap_pool.token_1_decimal));
+        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
       }
-      this.single_swap_pool.pool_liquidity = this.single_swap_pool.token_0_reserve * this.single_swap_pool.token_1_reserve;
-
-    },
-
-    percent_change(n) {
-      if (n) {
-        this.percent = n;
+      if (final_result[0] == '-' || final_result[0] == 'N') {
+        final_result = '--'
       }
-      this.remove_amount = ((this.single_swap_pool.user_liquidity * n) / 100).toFixed(4);
-      this.calRemoval();
-    },
-    onSort(str) {
-      this.$refs.sort.doClose();
-      this.sort = str;
-    },
-    onSelect1(str) {
-      this.$refs.type1.doClose();
-      this.type1 = str;
-    },
-    onSelect2(str) {
-      this.$refs.type2.doClose();
-      this.type2 = str;
+      return final_result
     },
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);
