@@ -15,7 +15,7 @@
       <nuxt class="min-h-100vh w-1280px relative pt-80px mx-auto" />
     </div>
 
-    <!-- <CartIcon></CartIcon> -->
+    <CartIcon></CartIcon>
      <!-- <Pet></Pet> -->
 
     <NetworkInformationDialog :DialogVisible="network_visible" :DialogClose="networkClose" />

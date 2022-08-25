@@ -99,8 +99,8 @@
           <div class="pt-0px">
             <div class="flex items-center mb-17px"
             @click="clickLearnmoreaboutFurion()">
-              <img class="mr-13px cursor-pointer" src="@/assets/images/index/video.svg" />
-              <p class="text-16px text-[#FF7AE8] font-700 cursor-pointer">Learn more about Furion</p>
+              <img class="mr-13px" src="@/assets/images/index/video.svg" />
+              <p class="text-16px text-[#FF7AE8] font-700">Learn more about Furion</p>
             </div>
             <div class="text-white font-900 leading-105px text-92px mb-25px">
               <p :class="{ 'text-animation': showAnimation }" class="text">Unleashing</p>
@@ -110,10 +110,10 @@
               <p>All-in-one NFT platform with better liquidity,</p>
               <p>price oracle, and AMM solutions.</p>
             </div>
-            <div class="mt-64px">
+            <div class="mt-50px">
               <div class="flex items-center">
                 <div class="btn_border w-190px mr-35px">
-                  <el-button type="primary" class="!w-210px !h-56px">VIEW COLLECTIONS</el-button>
+                  <el-button type="primary" class="!w-190px !h-56px">SEE COLLECTIONS</el-button>
                 </div>
                 <div class="btn_border">
                   <el-button type="primary" plain class="!w-190px !h-56px"
@@ -141,9 +141,17 @@
                   src="@/assets/images/cover3.jpg"
                 />
               </div>
-              <p  style="width: 100%;height: 90px;display: block;line-height: 45px;text-align: center; font-weight: bold;">
-              Welcome to Furion!
-              </p>
+              <div class="flex justify-between items-center">
+                <div class="flex">
+                  <div class="mt-10px">
+                    <p class="text-white font-600">Welcome to Furion!</p>
+                  </div>
+                </div>
+                <img
+                  class="cursor-pointer mr-18px"
+                  src="@/assets/images/index/about.svg"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -289,9 +297,9 @@
     </div>
     <AdminFooter></AdminFooter>
 
-    <!-- <CartIcon></CartIcon> -->
+    <CartIcon></CartIcon>
 
-    <!-- <Pet></Pet> -->
+    <Pet></Pet>
   </div>
 </template>
 <script>
@@ -363,7 +371,7 @@ export default {
           docs_url: "furion-pools/furion-separate-pools",
         },
         {
-          tital: "Aggregating Liquidity",
+          tital: "Aggregating liquidity",
           remark1: "Get your market-driven index tokens" ,
           remark2:  "by joining our aggregate pools",
           remark3:  "",
@@ -414,7 +422,7 @@ export default {
         {
           img: require("@/assets/images/index/category1.jpg"),
           remark1: "The Story of Furion",
-          url: 'https://medium.com/@project.furion/the-nft-fi-trilemma-f1f86b045ed8',
+          url: '',
         },
         {
           img: require("@/assets/images/index/category2.jpg"),
@@ -443,7 +451,7 @@ export default {
   },
   methods: {
     clickSwiperItem(collection) {
-      this.$router.push('/');
+      this.$router.push('/collection/separate_pools_item/?collection='+collection);
     },
     clickDropItem(twitter) {
       window.location.href = 'https://twitter.com/'+twitter;
