@@ -138,7 +138,7 @@
               >
                 <img
                   class="cover-img w-1/1 h-1/1 -ml-1px"
-                  src="@/assets/images/cover3.jpg"
+                  src="@/assets/images/cover3.gif"
                 />
               </div>
               <div class="flex justify-between items-center">

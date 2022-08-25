@@ -297,8 +297,8 @@
         </div>
 
         <!-- grid for NFT items -->
-        <div class="pb-150px grid grid-cols-4 mt-20px">
-          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index" @click="clickItem(item)">
+        <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length>0">
+          <div class="item"  v-for="(item, index) in separate_pool_info.in_pool" :key="index" @click="clickItem(item)">
             <!-- NFT image -->
             <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
               <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
@@ -354,6 +354,10 @@
             </div>
           </div>
         </div>
+        <div class="font-700 text-24px text-center" v-else>
+        <br />
+        Empty
+        </div>
       </div>
     </div>
 
@@ -366,9 +370,9 @@
         <el-popover placement="bottom" title="" trigger="hover" :visible-arrow="false" popper-class="el-tip">
           <div class="text-center text-[#0B1A3B]">
             <div class="text-20px font-600 mb-30px">
-              By {locking/storing} (X} (AZUKI), you get
+              Store to get 1000 and lock for 500.
             </div>
-            <div class="font-900 text-36px">1000 F-AZUKI</div>
+            <div class="font-900 text-20px">1000 F-{{separate_pool_info.symbol}}</div>
           </div>
           <img src="@/assets/images/q.svg" class="ml-14px cursor-pointer -mt-3px" slot="reference" />
         </el-popover>
@@ -383,7 +387,7 @@
               :key="index" />
           </div>
           -->
-          <div class="grid grid-cols-4 mt-10px mr-20px">
+          <div class="grid grid-cols-4 mt-10px mr-20px" v-if="user_nft.length>0">
             <div class="item-wallet text-center" v-for="(item, index) in user_nft" :key="index"
               :class="{ selectedBorder: applySelectedStyle[index] }" @click="toList(item.token_id, index)">
               <!-- NFT image -->
@@ -403,6 +407,7 @@
               </div>
             </div>
           </div>
+          <div v-else><br />Empty</div>
         </el-scrollbar>
       </div>
 
