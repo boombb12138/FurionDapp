@@ -16,7 +16,7 @@ import { getChainId, WETH_ADDRESS } from "@/utils/web3";
 
 export const token_info = [
     { symbol: 'ETH', address: '', market_address: "0xc04609A609af7ED23856a4C26cBbD222C128D2Cb", image: require("@/assets/images/liquidity/tokens/ETH.png") },
-    { symbol: 'USDT', address: "0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84", market_address: "", image: require("@/assets/images/liquidity/tokens/USDT.png") },
+    { symbol: 'USDT', address: "0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84", market_address: "0xF566e3D960c0a6c257c36Ee4777195F0aDB7FA3f", image: require("@/assets/images/liquidity/tokens/USDT.png") },
     { symbol: 'FUR', address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E', market_address: "0xFaD887C8fB4Ed00042207d747a590D0bc7b3195e", image: require('@/assets/images/liquidity/tokens/FUR.png') },
 ]
 
