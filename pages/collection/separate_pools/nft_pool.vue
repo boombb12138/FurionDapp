@@ -155,7 +155,7 @@
               class="w-142px rounded-full avatar" />
             <div class="pt-10px pl-20px relative">
               <div class="font-700 text-24px mb-5px mr-5px">{{ formatString(separate_pool_info.collection, 20) }}</div>
-              <div class="mr-10px text-14px mt-10px">
+              <div class="text-14px mt-10px">
                 Created by
                 <span class="text-[#34F8FF] font-600"> <a :href="separate_pool_info.external_link" target="_blank">{{
                     separate_pool_info.symbol
@@ -278,7 +278,7 @@
             <div class="el-sort-item" @click="onSort('Most favorited')">
               Most favorited
             </div>
-            <div class="el-sort-item" @click="onSort('oldest')">oldest</div>
+            <div class="el-sort-item" @click="onSort('oldest')">Oldest</div>
 
             <div class="sort" slot="reference">
               <div>{{ sort }}</div>
@@ -697,7 +697,7 @@ export default {
       }
       dialog_list.push(ProcessInfo.STORE_NFT);
       openDialog(this.dialogue_info, dialog_list);
-      
+
       if (!approvedForAll) {
         try {
           let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
@@ -709,7 +709,7 @@ export default {
           return
         }
       }
-      
+
       try {
         let tx_result = await this.poolContract.contract.methods.sellBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Store succeeded');

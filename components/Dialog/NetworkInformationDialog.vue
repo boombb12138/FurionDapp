@@ -1,15 +1,15 @@
 <template>
   <el-dialog title="You Must Change Networks" footer append-to-body custom-class="el-dialog-dark"
     :close-on-click-modal="false" :visible.sync="DialogVisible" @close="DialogClose">
-    <div class="network_dialog_body text-[rgba(252,255,253,0.6)] font-400 leading-30px text-18px">
+    <div class="network_dialog_body text-[rgba(252,255,253,0.6)] font-400 leading-30px text-15px">
       <br />
       <p>
         Please switch your wallet's network to Rinkeby Testnet for using this Dapp.
       </p>
-      <p>* Some wallets may not support changing networks, then you may consider<br />doing that manually.
+      <p>* Some wallets may not support changing networks, then you may consider doing that manually.
       </p>
     </div>
-    <div slot="footer" class="network_dialog_footer">
+    <div slot="footer" class="network_dialog_footer mt-20px">
       <el-button type="primary" :loading="Loading" @click="handleClickChangeNetwork()">Switch Network</el-button>
     </div>
   </el-dialog>

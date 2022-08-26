@@ -222,7 +222,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="To" label="To"> </el-table-column>
-          <el-table-column prop="Dates" label="Dates"> </el-table-column>
+          <el-table-column prop="Dates" label="Date"> </el-table-column>
         </el-table>
       </div>
 
