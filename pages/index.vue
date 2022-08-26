@@ -248,10 +248,10 @@
         <li class="flex flex-col items-center flex-1" v-for="(item, index) in List"
           :key="index">
           <a @click="clickListItem(item.docs_url)">
-          <img :src="require(`@/assets/images/index/pool${index+1}.png`)" height="240" width="240"/>
+          <img :src="require(`@/assets/images/index/pool${index+1}.png`)" class="cursor-pointer" height="240" width="240"/>
           </a>
           <a @click="clickListItem(item.docs_url)">
-          <p class="text-16px font-700 text-[#fcfffd] mt-5px mb-14px">{{item.tital}}</p>
+          <p class="text-16px font-700 text-[#fcfffd] mt-5px mb-14px cursor-pointer">{{item.tital}}</p>
           </a>
           <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
             {{item.remark1}}
