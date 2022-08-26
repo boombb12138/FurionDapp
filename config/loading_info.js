@@ -85,6 +85,21 @@ export const ProcessInfo = {
     detail:
       'You are going to remove liquidity on Furion, please sign and wait for the transaction to be done',
   },
+  FARM_ADD_LIQUIDITY:{
+    intro: 'Remove Liquidity on Furion Farm',
+    detail:
+    'You are going to add liquidity to Furion, please sign and wait for the transaction to be done',
+  },
+  FARM_REMOVE_LIQUIDITY: {
+    intro: 'Remove liquidity on Furion Farm',
+    detail:
+      'You are going to remove liquidity on Furion, please sign and wait for the transaction to be done',
+  },
+  FARM_HARVEST_REWARD: {
+    intro: 'Harvest Reward on Furion Farm',
+    detail:
+    'You are going to redeem your farming reward on Furion, please sign and wait for the transaction to be done'
+  },
   DEPOSIT_TOKEN:{
     intro: 'Deposit token to money market',
     detail: 
