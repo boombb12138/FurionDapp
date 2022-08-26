@@ -41,7 +41,7 @@ export const getFarmingPool = async (
         user_stake: '999.99',
         user_reward: '999.99',
 
-        allowance_liquidity: '',
+        allowance_liquidity: 0,
         liquidity_approved: false,
 
         amt: 0.0000,

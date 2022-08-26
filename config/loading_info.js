@@ -86,7 +86,7 @@ export const ProcessInfo = {
       'You are going to remove liquidity on Furion, please sign and wait for the transaction to be done',
   },
   FARM_ADD_LIQUIDITY:{
-    intro: 'Remove Liquidity on Furion Farm',
+    intro: 'Add Liquidity on Furion Farm',
     detail:
     'You are going to add liquidity to Furion, please sign and wait for the transaction to be done',
   },
