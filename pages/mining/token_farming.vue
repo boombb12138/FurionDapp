@@ -324,7 +324,7 @@ export default {
 
     for(let i = 0; i < pools.length; i++) {
       // update user_balance, user_stake, user_reward
-      console.log('[Mounted] Updating user info ');
+      //console.log('[Mounted] Updating user info ');
       await this.updateUserInfo(pools[i]);
       // check if enough allowance has been allowed to farming address by a user
       this.checkLPApproval(pools[i]);
@@ -335,17 +335,17 @@ export default {
 
     async updateUserInfo(pool) {
       let account = this.userInfo.userAddress;
-      console.log('[Token Farming] [User Update] user account ', account);
+      //console.log('[Token Farming] [User Update] user account ', account);
       if (account == null) {
         // account is not initialized;
-        console.log('[Token Farming] [User Update] account not init')
+        //console.log('[Token Farming] [User Update] account not init')
         return;
       }
 
       try {
         const balance = await pool.lp_token_contract.methods.balanceOf(account).call();
         pool.user_balance = fromWei(balance, parseInt(pool.lp_token_decimal)).toFixed(4);
-        console.log('[Token Farming] [User Update]user balance ', pool.user_balance);
+        //console.log('[Token Farming] [User Update]user balance ', pool.user_balance);
 
         // update user stake and pending reward
         const pool_id = pool.pool_Id; 
@@ -358,30 +358,30 @@ export default {
           //]
           //let results = await this.multicall.aggregate(multicall_list);
           pool.user_stake = fromWei(user_stake, parseInt(pool.lp_token_decimal)).toFixed(4);
-          console.log('[Token Farming] [User Update] user stake ', pool.user_stake);
+          //console.log('[Token Farming] [User Update] user stake ', pool.user_stake);
           // the reward is in FUR
           pool.user_reward = fromWei(user_reward, 18).toFixed(4);
-          console.log('[Token Farming] [User Update] user reward ', pool.user_reward);
+          //console.log('[Token Farming] [User Update] user reward ', pool.user_reward);
 
           this.pools[pool.index] = pool;
 
       } catch (e) {
-        console.warn('[Token Farming] [user Update] Failed to update user info');
+        console.warn('[Token Farming] [user Update] Failed to update user info ', e);
         console.log(e);
       }
     },
 
     percent_change(pool, n) {
-      console.log('[Token Farming] [Amt Percent] calculating...')
+      //console.log('[Token Farming] [Amt Percent] calculating...')
       const type = pool.type;
       pool.percent = n;
       if (type == '1') {
         // add liquidity option, fix amt according to user lp token balance
-        console.log('[Token Farming] Adding Liquidity');
+        //console.log('[Token Farming] Adding Liquidity');
         const lp_token_bal = parseFloat(pool.user_balance);
         pool.amt = parseFloat((( (lp_token_bal * n) / 100 ))).toFixed(8);
       } else if (type == '2') {
-        console.log('[Token Farming] Removing Liquidity');
+        //console.log('[Token Farming] Removing Liquidity');
         const user_stake = parseFloat(pool.user_stake);
         pool.amt = parseFloat(( (user_stake * n) / 100 )).toFixed(8);
       }
@@ -429,7 +429,7 @@ export default {
       await pool.lp_token_contract.methods.allowance(account, pool.farming_address).call()
       .then(res => {
         const allowance = fromWei(res, parseInt(pool.lp_token_decimal));
-        console.log('[Allowance] ', allowance);
+        //console.log('[Allowance] ', allowance);
         if (allowance > ALLOWANCE_THRESHOLD) {
           pool.allowance_liquidity = allowance;
           pool.liquidity_approved = true;
@@ -440,9 +440,9 @@ export default {
     },
 
     async harvestReward(pool) {
-      console.log('[Token Farming] [Harvest] harvesting...')
+      //console.log('[Token Farming] [Harvest] harvesting...')
       if (parseFloat(pool.user_reward) <= 0) {
-        console.log('[Token Farming] [Harvest] Insufficient reward amt');
+        //console.log('[Token Farming] [Harvest] Insufficient reward amt');
         this.errorMessage('Insufficient rewards');
         return; 
       }
@@ -454,9 +454,9 @@ export default {
         let tx_result = await farming_contract.methods
                         .harvest(pool_id, account)
                         .send({from: account});
-        console.log('[Token Farming] [Harvest Reward] ', tx_result);
+        //console.log('[Token Farming] [Harvest Reward] ', tx_result);
       } catch(e) {
-        console.log('[Token Farming] [Harvest] Error harvesting!!');
+        //console.log('[Token Farming] [Harvest] Error harvesting!!');
         console.warn(e);
         closeDialog(this.dialogue_info);
         this.errorMessage('Error Harvesting Reward');
@@ -469,10 +469,10 @@ export default {
     },
 
     async handleAmt(pool) {
-      console.log('[Token Farming] [Amt Handle] handling amt...');
+      //console.log('[Token Farming] [Amt Handle] handling amt...');
       if (pool.amt <= 0) {
         this.errorMessage('Please Enter Some Amount')
-        console.log('[Token Farming] [Amt Handle] You must enter some amt');
+        //console.log('[Token Farming] [Amt Handle] You must enter some amt');
         return;
       }
       let account = this.userInfo.userAddress;
@@ -482,10 +482,10 @@ export default {
 
       // add liquidity
       if (pool.type == '1') {
-        console.log('[Token Farming] [Amt Handle] Adding liquidity')
+        //console.log('[Token Farming] [Amt Handle] Adding liquidity')
         try {
           if (pool.amt > parseFloat(pool.user_balance)) {
-            console.log('[Token Farming] [Handle Amt] Insufficient LP Token Balance');
+            //console.log('[Token Farming] [Handle Amt] Insufficient LP Token Balance');
             this.errorMessage('Insufficient LP token Balance');
             return;
           }
@@ -494,14 +494,14 @@ export default {
           if (!pool.liquidity_approved || pool.allowance_liquidity < pool.amt) {
               // approve liquidity token first
               await this.approveLPToken(pool);
-              console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
+              //console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
               if (pool.allowance_liquidity < pool.amt) {
-                console.log('[Token Farming] [Handle amt] Insufficient approval of tokens by a user');
+                //console.log('[Token Farming] [Handle amt] Insufficient approval of tokens by a user');
                 this.errorMessage('Insufficient approval of tokens to farming contract');
                 return;
               }
           }
-          console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
+          //console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
           await openDialog(this.dialogue_info, [ProcessInfo.FARM_ADD_LIQUIDITY]); 
             let tx_result = await farming_contract.methods
             .stake(pool_id, amount)
@@ -523,7 +523,7 @@ export default {
       else if (pool.type == '2') {
         try {
           if (pool.amt > parseFloat(pool.user_stake)) {
-            console.log('[Token Farming] [Handle Amt] Amt must be less than equal to the liquidity into the farming pool');
+            //console.log('[Token Farming] [Handle Amt] Amt must be less than equal to the liquidity into the farming pool');
             this.errorMessage('Insufficient liquidity into the pool');
             return;
           }
