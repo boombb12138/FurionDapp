@@ -414,12 +414,12 @@ export default {
         {
           img: require("@/assets/images/index/category1.jpg"),
           remark1: "The Story of Furion",
-          url: 'https://docs.furion.io',
+          url: 'https://medium.com/@project.furion/the-nft-fi-trilemma-f1f86b045ed8',
         },
         {
           img: require("@/assets/images/index/category2.jpg"),
           remark1: "Introducing Furion",
-          url: '',
+          url: 'https://docs.furion.io',
         },
         {
           img: require("@/assets/images/index/category3.jpg"),
@@ -446,19 +446,19 @@ export default {
       this.$router.push('/collection/separate_pools_item/?collection='+collection);
     },
     clickDropItem(twitter) {
-      window.location.href = 'https://twitter.com/'+twitter;
+      window.open('https://twitter.com/'+twitter,'_blank');
     },
     clickListItem(url) {
-      window.location.href = 'https://docs.furion.io/function/'+url;
+      window.open('https://docs.furion.io/function/'+url,'_blank')
     },
     clickLearnmoreaboutFurion(){
-      window.location.href = 'https://docs.furion.io/';
+      window.open('https://docs.furion.io/','_blank')
     },
     clickCategoryList(url){
-      window.location.href = url;
+      window.open(url,'_blank')
     },
     clicklinkListItem(url) {
-      window.location.href = url;
+      window.open(url,'_blank')
     },
   },
 };
