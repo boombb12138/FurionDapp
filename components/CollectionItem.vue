@@ -67,7 +67,7 @@ export default {
   mounted() {},
   methods: {
     clickCollectionItem(collection) {
-        this.$router.push('/collection/separate_pools_item/?collection='+collection);
+        this.$router.push(`/collection/separate_pools/nft_pool?collection=${collection}`);
     }
   },
 };

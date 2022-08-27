@@ -113,7 +113,7 @@
             <div class="mt-50px">
               <div class="flex items-center">
                 <div class="btn_border w-190px mr-35px">
-                  <el-button type="primary" class="!w-190px !h-56px">VIEW COLLECTIONS</el-button>
+                  <el-button type="primary" class="!w-210px !h-56px">VIEW COLLECTIONS</el-button>
                 </div>
                 <div class="btn_border">
                   <el-button type="primary" plain class="!w-190px !h-56px"
@@ -141,17 +141,9 @@
                   src="@/assets/images/cover3.gif"
                 />
               </div>
-              <div class="flex justify-between items-center">
-                <div class="flex">
-                  <div class="mt-10px">
-                    <p class="text-white font-600">Welcome to Furion!</p>
-                  </div>
-                </div>
-                <img
-                  class="cursor-pointer mr-18px"
-                  src="@/assets/images/index/about.svg"
-                />
-              </div>
+              <p  style="width: 100%;height: 90px;display: block;line-height: 45px;text-align: center; font-weight: bold;">
+              Welcome to Furion!
+              </p>
             </div>
           </div>
         </div>
@@ -256,10 +248,10 @@
         <li class="flex flex-col items-center flex-1" v-for="(item, index) in List"
           :key="index">
           <a @click="clickListItem(item.docs_url)">
-          <img :src="require(`@/assets/images/index/pool${index+1}.png`)" height="240" width="240"/>
+          <img :src="require(`@/assets/images/index/pool${index+1}.png`)" class="cursor-pointer" height="240" width="240"/>
           </a>
           <a @click="clickListItem(item.docs_url)">
-          <p class="text-16px font-700 text-[#fcfffd] mt-5px mb-14px">{{item.tital}}</p>
+          <p class="text-16px font-700 text-[#fcfffd] mt-5px mb-14px cursor-pointer">{{item.tital}}</p>
           </a>
           <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
             {{item.remark1}}
