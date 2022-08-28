@@ -216,7 +216,7 @@
               <div class="mr-15px">
                 <img src="@/assets/images/mining/token.png" />
               </div>
-              <div class="text-13px font-300">{{formatNumber(scope.row.reward_per_day)}}</div>
+              <div class="text-13px font-300">{{formatNumber(scope.row.reward_per_day)}} PER/DAY</div>
             </div>
           </template>
         </el-table-column>
@@ -410,18 +410,12 @@ export default {
 
     async approveLPToken(pool) {
       let account = this.userInfo.userAddress;
-      openDialog(this.dialogue_info, [ProcessInfo.APPROVE_LIQUIDITY_TOKEN])
-      //if (pool.allowance_liquidity < ALLOWANCE_THRESHOLD) {
-        try {
-          await tokenApprove(pool.lp_token_address, account, pool.farming_address);
-        }
-        catch (e) {
+      try {
+        await tokenApprove(pool.lp_token_address, account, pool.farming_address);
+      } catch (e) {
           console.warn(e);
-          console.log('[Token Farming] [Approve LP Token] Error approving lp token');
-          closeDialog(this.dialogue_info);
-          this.errorMessage('Error approve token');
           return;
-        }
+      }
         
       await pool.lp_token_contract.methods.allowance(account, pool.farming_address).call()
       .then(res => {
@@ -433,7 +427,6 @@ export default {
         }
       })
       this.pools[pool.index] = pool;
-      closeDialog(this.dialogue_info);
     },
 
     async harvestReward(pool) {
@@ -469,7 +462,7 @@ export default {
       //console.log('[Token Farming] [Amt Handle] handling amt...');
       const amt = parseFloat(pool.amt);
       if (amt <= 0.0) {
-        this.errorMessage('Please Enter Some Amount');
+        this.errorMessage('You must enter amount greater than 0');
         //console.log('[Token Farming] [Amt Handle] You must enter some amt');
         return;
       }
@@ -489,46 +482,62 @@ export default {
       const pool_id = pool.pool_Id;
       const amount = toWei(pool.amt, parseInt(pool.lp_token_decimal));
 
-      try {
-        if (parseFloat(pool.amt) > parseFloat(pool.user_balance)) {
-          //console.log('[Token Farming] [Handle Amt] Insufficient LP Token Balance');
-          this.errorMessage('Insufficient LP token Balance');
-          await this.refresh(pool);
-          return;
-        }
+      if (parseFloat(pool.amt) > parseFloat(pool.user_balance)) {
+        //console.log('[Token Farming] [Handle Amt] Insufficient LP Token Balance');
+        this.errorMessage('Insufficient LP token Balance');
+        await this.refresh(pool);
+        return;
+      }
 
-        // approve liquidity token
-        if (!pool.liquidity_approved || pool.allowance_liquidity < parseFloat(pool.amt)) {
-            // approve liquidity token first
+      if (!pool.liquidity_approved || pool.allowance_liquidity < parseFloat(pool.amt)) {
+        //approve liquidity token && add liquidity in a single dialogue
+        try {
+
+          await openDialog(
+            this.dialogue_info, 
+            [ProcessInfo.APPROVE_LIQUIDITY_TOKEN, ProcessInfo.FARM_ADD_LIQUIDITY]);
+            
             await this.approveLPToken(pool);
-            // add liquidity
-            // do it single tx
-            /*
-            //console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
-            if (pool.allowance_liquidity < amt) {
-              //console.log('[Token Farming] [Handle amt] Insufficient approval of tokens by a user');
-              this.errorMessage('Insufficient approval of tokens to farming contract');
+            if (!pool.liquidity_approved || pool.allowance_liquidity < parseFloat(pool.amt)) {
+              closeDialog(this.dialogue_info);
+              this.errorMessage('Approve token error');
+              await this.refresh(pool);
               return;
             }
-            */
-          closeDialog(this.dialogue_info);
-          this.successMessage(tx_result, 'Add Liquidity Successfully');
-          } else {
-            await openDialog(this.dialogue_info, [ProcessInfo.FARM_ADD_LIQUIDITY]); 
+
+            stepDialog(this.dialogue_info);
             let tx_result = await farming_contract.methods
                             .stake(pool_id, amount)
                             .send({from: account});
             closeDialog(this.dialogue_info);
-            this.successMessage(tx_result, 'Add Liquidity Successfully');
-          }
+            this.successMessage(tx_result, 'Liquidity Added');
+        } catch(e) {
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            this.errorMessage('Error adding liquidity');
+            await this.refresh(pool);
+            return;
+        }
+      } else { 
+          try {
+            await openDialog(this.dialogue_info, [ProcessInfo.FARM_ADD_LIQUIDITY]);
+            let tx_result = await farming_contract.methods
+                            .stake(pool_id, amount)
+                            .send({from: account});
+            closeDialog(this.dialogue_info);
+            this.successMessage(tx_result, 'Liquidity Added');
 
-      } catch(e) {
-        console.warn(e);
-        closeDialog(this.dialogue_info);
-        this.errorMessage('Add Liquidity Failed');
-      }
-      await this.refresh(pool);
+          } catch(e) {
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            this.errorMessage('Error adding liquidity');
+            await this.refresh(pool);
+            return;
+          }
+        }
+        await this.refresh(pool);
     },
+        
 
     async removeLiquidity(pool) {
       let account = this.userInfo.userAddress;
@@ -552,6 +561,7 @@ export default {
             console.warn(e);
             closeDialog(this.dialogue_info);
             this.errorMessage('Remove Liquidity Error');
+            await this.refresh(pool);
           }
       await this.refresh(pool);
     },
@@ -576,6 +586,12 @@ export default {
     },
 
     formatNumber(value, fixed = 2) {
+      const val = parseFloat(value);
+      //console.log('[Format Number] ', value, val);
+      // return the value if greater than 2 significant decimals
+      if (val * 100 < 1) {
+        return value;
+      }
       let reserve = value - parseInt(value);
       let final_result;
       if (value - reserve < 1) {

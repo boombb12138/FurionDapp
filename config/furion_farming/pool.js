@@ -107,6 +107,7 @@ const initPool = async (pool, chainId) => {
 }
 
 export const InitPoolSummary = async (pool, chainId) => {
+    try {
     let network = '';
     if (chainId == 4) {
         network = 'rinkeby';
@@ -146,6 +147,9 @@ export const InitPoolSummary = async (pool, chainId) => {
     const apr = (parseFloat(pool.reward_per_day) * parseFloat(pool.fur_price)) / (365 * parseFloat(pool.tvl));
     pool.apr = apr.toFixed(4);
     //console.log('[APR] ', pool.apr)
+    } catch(e) {
+        console.warn(e);
+    }
 
     return pool;
 }
