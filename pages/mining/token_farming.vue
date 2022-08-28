@@ -80,8 +80,8 @@
                   Manage Position
                 </div>
                 <div class="flex text-13px font-600">
-                  <div class="mr-50px">My Liquidity: {{scope.row.user_stake}}</div>
-                  <div>Rewards: {{scope.row.user_reward}}</div>
+                  <div class="mr-50px">My Liquidity: {{formatNumber(scope.row.user_stake)}}</div>
+                  <div>Rewards: {{formatNumber(scope.row.user_reward)}}</div>
                 </div>
               </div>
 
@@ -158,10 +158,9 @@
               <div class="relative mb-24px">
                 <el-input-number
                   v-model="scope.row.amt"
-                  :precision="8"
                   :controls="false"
                   class="custom !w-1/1"
-                  placeholder="0.0000"
+                  placeholder="0.0"
                 ></el-input-number>
                 <div
                   class="absolute right-0 center-y font-400 text-13px text-right leading-16px pr-24px"
@@ -204,23 +203,27 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="TVL" label="TVL" align="center"> </el-table-column>
+        <el-table-column prop="TVL" label="TVL" align="center">
+          <template slot-scope="scope">
+            <div class="mb-5px">
+              <span class="font-600 mr-6px">{{formatNumber(scope.row.tvl)}}</span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="Rewards" label="Rewards" align="center">
           <template slot-scope="scope">
             <div class="flex items-center justify-center">
               <div class="mr-15px">
                 <img src="@/assets/images/mining/token.png" />
               </div>
-              <div class="text-13px font-300">
-                {{ scope.row.REWARD_PER_DAY }}
-              </div>
+              <div class="text-13px font-300">{{formatNumber(scope.row.reward_per_day)}}</div>
             </div>
           </template>
         </el-table-column>
         <el-table-column prop="APR" label="APR" align="center" width="200">
           <template slot-scope="scope">
             <div class="mb-5px">
-              <span class="font-600 mr-6px">{{ scope.row.APR }}</span>
+              <span class="font-600 mr-6px">{{formatNumber(scope.row.apr)}}</span>
               <el-popover
                 placement="bottom"
                 title=""
@@ -250,7 +253,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { getFarmingPool } from '@/config/furion_farming/pool';
+import { getFarmingPool, InitPoolSummary } from '@/config/furion_farming/pool';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
@@ -288,7 +291,8 @@ export default {
       multicall: multicall,
       dialogue_info: DialogInfo,
       pools: [],
-      index: 0 // count the number of pool and mark index of every newly added pool
+      index: 0, // count the number of pool and mark index of every newly added pool
+      amount: ''
     };
   },
 
@@ -300,11 +304,11 @@ export default {
     let fur_eth_pool = await getFarmingPool(
     'FUR', token_0_img,
     'ETH', token_1_img,
-    '0x7a01B3fDDA5046B66B3DBc561Ab33bA23017Fe70'
+    '0x7a01B3fDDA5046B66B3DBc561Ab33bA23017Fe70', 4
     );
     fur_eth_pool.index = index;
     pools[index] = fur_eth_pool;
-    console.log(fur_eth_pool);
+    //console.log(fur_eth_pool);
 
     index += 1;
 
@@ -312,21 +316,18 @@ export default {
     let fur_usdt_pool = await getFarmingPool(
     'FUR', token_0_img,
     'USDT', token_1_img,
-    '0x3dFDc7821edCc79c92890E5404687D1B1C96D494'
+    '0x3dFDc7821edCc79c92890E5404687D1B1C96D494', 4
     );
     fur_usdt_pool.index = index;
     pools[index] = fur_usdt_pool;
-    console.log(fur_usdt_pool);
+    //console.log(fur_usdt_pool);
 
     index += 1;
     this.index = index;
     this.pools = pools;
 
     for(let i = 0; i < pools.length; i++) {
-      // update user_balance, user_stake, user_reward
-      //console.log('[Mounted] Updating user info ');
       await this.updateUserInfo(pools[i]);
-      // check if enough allowance has been allowed to farming address by a user
       this.checkLPApproval(pools[i]);
     }
   },
@@ -352,47 +353,43 @@ export default {
         const user_stake = await pool.farming_contract.methods.getUserBalance(pool_id, account).call();
         const user_reward = await pool.farming_contract.methods.pendingFurion(pool_id, account).call();
         
-        //let multicall_list = [
-          //pool.farming_contract.methods.getUserBalance(pool_id, account).call(),
-          //pool.farming_contract.methods.pendingFurion(pool_id, account).call()
-          //]
-          //let results = await this.multicall.aggregate(multicall_list);
-          pool.user_stake = fromWei(user_stake, parseInt(pool.lp_token_decimal)).toFixed(4);
+       
+        pool.user_stake = fromWei(user_stake, parseInt(pool.lp_token_decimal)).toFixed(4);
           //console.log('[Token Farming] [User Update] user stake ', pool.user_stake);
-          // the reward is in FUR
-          pool.user_reward = fromWei(user_reward, 18).toFixed(4);
+        pool.user_reward = fromWei(user_reward, 18).toFixed(4);
           //console.log('[Token Farming] [User Update] user reward ', pool.user_reward);
 
-          this.pools[pool.index] = pool;
+        this.pools[pool.index] = pool;
 
       } catch (e) {
         console.warn('[Token Farming] [user Update] Failed to update user info ', e);
-        console.log(e);
+        //console.log(e);
       }
     },
 
     percent_change(pool, n) {
       //console.log('[Token Farming] [Amt Percent] calculating...')
       const type = pool.type;
+      let amt;
       pool.percent = n;
+
       if (type == '1') {
-        // add liquidity option, fix amt according to user lp token balance
         //console.log('[Token Farming] Adding Liquidity');
         const lp_token_bal = parseFloat(pool.user_balance);
-        pool.amt = parseFloat((( (lp_token_bal * n) / 100 ))).toFixed(8);
-      } else if (type == '2') {
-        //console.log('[Token Farming] Removing Liquidity');
-        const user_stake = parseFloat(pool.user_stake);
-        pool.amt = parseFloat(( (user_stake * n) / 100 )).toFixed(8);
-      }
-      this.pools[pool.index] = pool;
-    },
+        amt = parseFloat(( (lp_token_bal * n) / 100 ));
 
-    cell_click(row) {
-      this.$refs.table.toggleRowExpansion(row);
-    },
-    expandChange(row, rows) {
-      this.expanded = rows.length;
+      } else if (type == '2') {
+        const user_stake = parseFloat(pool.user_stake);
+        amt = parseFloat( ((user_stake * n) / 100 ) )
+      }
+
+      if (amt <= 0.0) {
+        amt = '';
+      } else {
+        amt = amt.toString();
+      }
+      pool.amt = amt;
+      this.pools[pool.index] = pool;
     },
 
     checkLPApproval(pool) {
@@ -455,6 +452,8 @@ export default {
                         .harvest(pool_id, account)
                         .send({from: account});
         //console.log('[Token Farming] [Harvest Reward] ', tx_result);
+         closeDialog(this.dialogue_info);
+         this.successMessage(tx_result, 'Successfully harvested rewards')
       } catch(e) {
         //console.log('[Token Farming] [Harvest] Error harvesting!!');
         console.warn(e);
@@ -462,69 +461,85 @@ export default {
         this.errorMessage('Error Harvesting Reward');
         return;
       }
-      // end harvest reward dialog
-      //await this.refresh(pool);
-      closeDialog(this.dialogue_info);
-      await this.updateUserInfo(pool);
+
+      await this.refresh(pool);
     },
 
     async handleAmt(pool) {
       //console.log('[Token Farming] [Amt Handle] handling amt...');
-      if (pool.amt <= 0) {
-        this.errorMessage('Please Enter Some Amount')
+      const amt = parseFloat(pool.amt);
+      if (amt <= 0.0) {
+        this.errorMessage('Please Enter Some Amount');
         //console.log('[Token Farming] [Amt Handle] You must enter some amt');
         return;
       }
+
+      // add liquidity
+      if (pool.type == '1') {
+        //console.log('[Token Farming] [Amt Handle] Adding liquidity')
+        await this.addLiquidity(pool)
+      } else if (pool.type == '2') {
+        await this.removeLiquidity(pool);
+      }
+    },
+
+    async addLiquidity(pool) {
       let account = this.userInfo.userAddress;
       const farming_contract = pool.farming_contract;
       const pool_id = pool.pool_Id;
       const amount = toWei(pool.amt, parseInt(pool.lp_token_decimal));
 
-      // add liquidity
-      if (pool.type == '1') {
-        //console.log('[Token Farming] [Amt Handle] Adding liquidity')
-        try {
-          if (pool.amt > parseFloat(pool.user_balance)) {
-            //console.log('[Token Farming] [Handle Amt] Insufficient LP Token Balance');
-            this.errorMessage('Insufficient LP token Balance');
-            return;
-          }
-          
-          // approve liquidity token
-          if (!pool.liquidity_approved || pool.allowance_liquidity < pool.amt) {
-              // approve liquidity token first
-              await this.approveLPToken(pool);
-              //console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
-              if (pool.allowance_liquidity < pool.amt) {
-                //console.log('[Token Farming] [Handle amt] Insufficient approval of tokens by a user');
-                this.errorMessage('Insufficient approval of tokens to farming contract');
-                return;
-              }
-          }
-          //console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
-          await openDialog(this.dialogue_info, [ProcessInfo.FARM_ADD_LIQUIDITY]); 
+      try {
+        if (parseFloat(pool.amt) > parseFloat(pool.user_balance)) {
+          //console.log('[Token Farming] [Handle Amt] Insufficient LP Token Balance');
+          this.errorMessage('Insufficient LP token Balance');
+          await this.refresh(pool);
+          return;
+        }
+
+        // approve liquidity token
+        if (!pool.liquidity_approved || pool.allowance_liquidity < parseFloat(pool.amt)) {
+            // approve liquidity token first
+            await this.approveLPToken(pool);
+            // add liquidity
+            // do it single tx
+            /*
+            //console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
+            if (pool.allowance_liquidity < amt) {
+              //console.log('[Token Farming] [Handle amt] Insufficient approval of tokens by a user');
+              this.errorMessage('Insufficient approval of tokens to farming contract');
+              return;
+            }
+            */
+          closeDialog(this.dialogue_info);
+          this.successMessage(tx_result, 'Add Liquidity Successfully');
+          } else {
+            await openDialog(this.dialogue_info, [ProcessInfo.FARM_ADD_LIQUIDITY]); 
             let tx_result = await farming_contract.methods
-            .stake(pool_id, amount)
-            .send({from: account})
-            this.successMessage(tx_result, 'Add Liquidity Successfully');
-          
-          } catch(e) {
-            console.warn(e);
-            this.errorMessage('Add Liquidity Error');
-            pool.amt = 0.000;
-            pool.percent = 0;
-            pool.type = '1';
+                            .stake(pool_id, amount)
+                            .send({from: account});
             closeDialog(this.dialogue_info);
-            this.pools[pool.index] = pool;
-            return
+            this.successMessage(tx_result, 'Add Liquidity Successfully');
           }
-      } 
-      // else remove liquidity
-      else if (pool.type == '2') {
-        try {
-          if (pool.amt > parseFloat(pool.user_stake)) {
+
+      } catch(e) {
+        console.warn(e);
+        closeDialog(this.dialogue_info);
+        this.errorMessage('Add Liquidity Failed');
+      }
+      await this.refresh(pool);
+    },
+
+    async removeLiquidity(pool) {
+      let account = this.userInfo.userAddress;
+      const farming_contract = pool.farming_contract;
+      const pool_id = pool.pool_Id;
+      const amount = toWei(pool.amt, parseInt(pool.lp_token_decimal));
+      try {
+          if (parseFloat(pool.amt) > parseFloat(pool.user_stake)) {
             //console.log('[Token Farming] [Handle Amt] Amt must be less than equal to the liquidity into the farming pool');
             this.errorMessage('Insufficient liquidity into the pool');
+            await this.refresh(pool);
             return;
           }
           await openDialog(this.dialogue_info, [ProcessInfo.FARM_REMOVE_LIQUIDITY]);
@@ -535,29 +550,51 @@ export default {
           
           } catch(e) {
             console.warn(e);
-            this.errorMessage('Remove Liquidity Error');
-            pool.amt = 0.000;
-            pool.percent = 0;
-            pool.type = '1';
             closeDialog(this.dialogue_info);
-            this.pools[pool.index] = pool;
-            return;
+            this.errorMessage('Remove Liquidity Error');
           }
-        }
-        pool.amt = 0.000;
-        pool.percent = 0;
-        pool.type = '1';
-        closeDialog(this.dialogue_info);
-        await this.updateUserInfo(pool);
-        this.pools[pool.index] = pool;
-      },
-
-    async refresh() {
-      // update all  the pools user info
+      await this.refresh(pool);
     },
 
-    async calLpTokenValue() {
+    async refresh(pool) {
+      // update user and pool info 
+      pool.amt = '';
+      pool.percent = 0;
+      pool.type = '1';
+      this.pools[pool.index] = await this.updateUserInfo(pool);
+      this.pools[pool.index] = await this.updatePool(pool);
+    },
+
+    async updatePool(pool) {
+      // update pool summary
+      this.pools[pool.index] = await InitPoolSummary(pool, this.chainId);
+    },
+
+    async calLpTokenValue(pool) {
       // calculate value of lp token based on user input amt
+
+    },
+
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
+      } else {
+        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
+      }
+      if (final_result[0] == '-' || final_result[0] == 'N') {
+        final_result = '--'
+      }
+      return final_result
+    },
+
+    cell_click(row) {
+      this.$refs.table.toggleRowExpansion(row);
+    },
+
+    expandChange(row, rows) {
+      this.expanded = rows.length;
     },
 
     onSort(str) {
