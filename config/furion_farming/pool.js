@@ -68,12 +68,12 @@ const initPool = async (pool) => {
     pool.lp_token_contract = lp_token_contract;
     pool.lp_token_decimal = lp_token_decimal.toString();
 
-    console.log('[Token Farming] [Init] Lp token contract ', pool.lp_token_contract);
+    //console.log('[Token Farming] [Init] Lp token contract ', pool.lp_token_contract);
     
      // set up farming and router contract
      const farming_contract = await getContract(await getFarmingPoolUpgradeableABI(), pool.farming_address);
      pool.farming_contract = farming_contract;
-     console.log('[Token Farming] [Init] Farming contract ', pool.farming_contract);
+     //console.log('[Token Farming] [Init] Farming contract ', pool.farming_contract);
  
      // set up pool Id
      const poolList = await farming_contract.methods.getPoolList().call();
@@ -86,6 +86,7 @@ const initPool = async (pool) => {
      }
      
     } catch (e) {
+        console.warn(e);
         console.log(e);
     }
     pool.initialized = true;
