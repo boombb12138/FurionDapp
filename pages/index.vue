@@ -320,10 +320,10 @@ export default {
       dropList: [
         {
           img: require("@/assets/images/index/drop1.jpg"),
-          name: "Mad Dragons",
-          description: "No promises, no roadmap, just good vibes!",
+          name: "Thunderbrawl Royalty",
+          description: "Thunder Brawl is a P2E economy revolves around $THB, and Royalty NFTs!",
           description2: "      ",
-          twitter: "MadDragonsNFT",
+          twitter: "THB_crypto",
         },
         {
           img: require("@/assets/images/index/drop2.jpg"),

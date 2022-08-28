@@ -195,12 +195,12 @@
           <img src="@/assets/images/icon_item.svg" class="mr-10px" />
           <div class="font-800 text-18px">Item Activity</div>
         </div>
-        <el-table :data="list" style="width: 100%">
+        <el-table :data="nft_activity.activity_list" style="width: 100%">
           <el-table-column prop="Event" label="Event">
             <template slot-scope="scope">
               <div class="flex items-center pl-30px py-12px">
                 <img src="@/assets/images/icon_hand.svg" class="mr-10px" />
-                <div class="text-16px font-600">{{ scope.row.Event }}</div>
+                <div class="text-16px font-600">{{ scope.row.event }}</div>
               </div>
             </template>
           </el-table-column>
@@ -208,19 +208,34 @@
             <template slot-scope="scope">
               <div class="flex items-center">
                 <img src="@/assets/images/icon_eth.svg" class="mr-5px" />
-                <div class="text-16px font-600">{{ scope.row.Price }}</div>
+                <div class="text-16px font-600">{{ scope.row.eth_price }}</div>
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="From" label="From">
             <template slot-scope="scope">
               <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer">
-                {{ scope.row.From }}
+                {{ scope.row.from_user.substring(0,9) }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="To" label="To"> </el-table-column>
-          <el-table-column prop="Dates" label="Date"> </el-table-column>
+          <el-table-column prop="To" label="To">
+            <template slot-scope="scope">
+              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" v-if="scope.row.to_user.length>12">
+                {{ scope.row.to_user.substring(0,10) }}...
+              </div>
+              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" v-else>
+                {{ scope.row.to_user }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="Dates" label="Date">
+            <template slot-scope="scope">
+              <div class="text-16px font-600">
+                {{ scope.row.date }}
+              </div>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -253,7 +268,8 @@
                   width="54"
                   class="mr-20px rounded-full"
                 />
-                <div class="font-700 text-24px">{{item.from_uid}}</div>
+                <div class="font-700 text-24px" v-if="item.from_uid.length>15">{{item.from_uid.substring(0,12)}}...</div>
+                <div class="font-700 text-24px" v-else>{{item.from_uid}}</div>
               </div>
               <div class="text-[#7D8599] text-16px font-700">{{item.created_time}}</div>
             </div>
@@ -344,6 +360,7 @@ import { initSeparatePoolContract, initFurContract } from "@/config/collection/s
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { getTxURL, toWei } from '@/utils/common';
 
+
 import {
   DialogInfo,
   initDialog,
@@ -360,6 +377,11 @@ import {
   intoNftComment,
   intoNftReply,
 } from "@/config/collection/nft_comment";
+import {
+  nft_activity,
+  initNftActivity,
+  intoNftActivity,
+} from "@/config/collection/nft_activity";
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -382,6 +404,7 @@ export default {
       nft_item: nft_item,
       nft_comment: nft_comment,
       nft_reply: nft_reply,
+      nft_activity: nft_activity,
       poolContract: {},
       furContract: {},
       editorOption: {
@@ -406,22 +429,6 @@ export default {
           },
         },
       },
-      list: [
-        {
-          Event: "Bid",
-          Price: "6.4838",
-          From: "CICCBF",
-          To: "",
-          Dates: "an hour ago",
-        },
-        {
-          Event: "Bid",
-          Price: "6.4838",
-          From: "CB11E2",
-          To: "",
-          Dates: "2 hours ago",
-        },
-      ],
       //comments: [{}, {}, {}],
       multicall: multicall,
       dialogue_info: DialogInfo
@@ -429,11 +436,12 @@ export default {
   },
   async mounted() {
     this.nft_item = await initNftItem(this.nft_item, this.$route.query.collection, this.$route.query.token_id, this.network);
-
     // console.log('NFT address', this.nft_item.address);
     this.poolContract = await initSeparatePoolContract(this.nft_item.address);
     this.furContract = await initFurContract();
     this.nft_comment = await initNftComment(this.network, this.nft_item.address, this.nft_item.token_id);
+    this.nft_activity = await initNftActivity(this.network, this.nft_item.address, this.nft_item.token_id);
+    // console.log(nft_activity);
   },
   methods: {
     toCart() {
@@ -449,7 +457,7 @@ export default {
           address: this.nft_item.address,
           token_id: this.nft_item.token_id,
           content: text,
-          from_uid: 'anonymous',
+          from_uid: this.userInfo.userAddress,
           from_avatar: 'from_avatar',
           reply_count: 0,
         };
@@ -562,6 +570,17 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.buy(this.nft_item.token_id).send({ from: account });
         this.successMessage(tx_result, `Purchase F-TOADZ #${this.nft_item.token_id} succeeded`);
+        //put the message into the database when buy succeed
+        let data = {
+          project: this.nft_item.collection,
+          token_id: this.nft_item.token_id,
+          token_id: this.nft_item.address,
+          event: 'Bid',
+          event_type: 'success',
+          eth_price: account,
+          from_user: this.userInfo.userAddress,
+          to_user: 'to_user',
+        };
       } catch(e) {
         this.errorMessage(`Purchase F-TOADZ #${this.nft_item.token_id} failed`);
         closeDialog(this.dialogue_info);
@@ -569,6 +588,7 @@ export default {
       }
 
       closeDialog(this.dialogue_info);
+      return intoNftActivity(data)
     },
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);
