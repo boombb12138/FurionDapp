@@ -70,7 +70,20 @@
         }
       }
     }
+}
+
+.pulse-text {
+  animation: pulseText 1.2s ease-in-out infinite alternate; 
+}
+
+@keyframes pulseText {
+  from {
+    text-shadow: 0 0 0 #f181de;
   }
+  to {
+    text-shadow: 0 0 8px #f181de;
+  }
+}
 </style>
 
 <template>
@@ -186,12 +199,12 @@
             <div class="font-600 text-22px">{{ asset }}</div>
           </div>
           <div class="flex items-center">
-            <div class="text-16px text-[rgba(252,255,253,0.8)] mr-16px">Deposit from</div>
+            <!--div class="text-16px text-[rgba(252,255,253,0.8)] mr-16px">Deposit from</div>
             <div class="btn_border !rounded-full mr-16px">
               <el-button type="primary" plain round class="!w-70px !h-32px !p-0">
                 <span class="text-14px font-800 normal-case">Wallet</span>
               </el-button>
-            </div>
+            </div-->
 
             <el-popover
               placement="bottom"
@@ -281,7 +294,7 @@
             <div class="font-600 text-22px">{{ asset }}</div>
           </div>
           <div class="flex items-center">
-            <div class="text-16px text-[rgba(252,255,253,0.8)] mr-15px">Use as collateral</div>
+            <div class="text-17px text-[#f181de] mr-13px font-500 pulse-text" style="letter-spacing: 1px">Use as collateral?</div>
             <el-switch v-model="collateralize" class="mr-15px"> </el-switch>
 
             <el-popover
@@ -329,6 +342,8 @@
           <span class="font-800 text-20px" style="word-spacing: 5px">DEPOSIT {{ asset }}</span>
         </el-button>
       </div>
+
+      <p class="mt-20px" style="line-height: 22px">Note: Don't forget to toggle the <span class="text-[#f181de]">use as collateral</span> switch if you plan to use the asset as collateral</p>
     </div>
 
     <!------------------------------------ Withdraw ------------------------------------>
@@ -363,12 +378,12 @@
             <div class="font-600 text-22px">{{ asset }}</div>
           </div>
           <div class="flex items-center">
-            <div class="text-16px text-[rgba(252,255,253,0.8)] mr-16px">Receive to</div>
+            <!--div class="text-16px text-[rgba(252,255,253,0.8)] mr-16px">Receive to</div>
             <div class="btn_border !rounded-full mr-16px">
               <el-button type="primary" plain round class="!w-70px !h-32px !p-0">
                 <span class="text-14px font-800 normal-case">Wallet</span>
               </el-button>
-            </div>
+            </div-->
 
             <el-popover
               placement="bottom"
@@ -457,6 +472,7 @@ export default {
     const multicall = newMultiCallProvider(4);
     return {
       active: 1,
+      is_collateral: false,
       collateralize: false,
       close_position: false,
       token: {},
@@ -485,6 +501,8 @@ export default {
     if (!this.is_eth) {
       this.token_decimal = parseInt(await this.token.contract.methods.decimals().call());
     }
+
+    this.is_collateral = await this.manager.contract.methods.checkMembership(this.userInfo.userAddress, this.market.address).call();
 
     await this.updateAll();
     //setInterval(this.updateAll, 10000);
@@ -523,7 +541,7 @@ export default {
           tempLiquidity += tokenEquivalent;
         }
 
-        this.user_info.borrow_quota = fromWei(tempLiquidity);
+        this.user_info.borrow_quota = fromWei(tempLiquidity) > this.market_info.cash ? this.market_info.cash : fromWei(tempLiquidity);
       }
     },
     async updateMarketInfo() {
@@ -670,8 +688,6 @@ export default {
     async deposit(amount) {
       const actualAmount = toWei(amount, this.token_decimal);
       const account = this.userInfo.userAddress;
-      const useAsCollateral = this.collateralize;
-      const isAlreadyCollateral = await this.manager.contract.methods.checkMembership(account, this.market.address).call();
       let approvedEnoughToken;
       if (!this.is_eth) {
         approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
@@ -683,7 +699,7 @@ export default {
           dialog_list.push(ProcessInfo.APPROVE_TOKEN);
         }
       }
-      if (useAsCollateral && !isAlreadyCollateral) {
+      if (this.collateralize && !this.is_collateral) {
         dialog_list.push(ProcessInfo.ENTER_MARKET);
       }
       dialog_list.push(ProcessInfo.DEPOSIT_TOKEN);
@@ -704,7 +720,7 @@ export default {
         }
       }
       
-      if (useAsCollateral && !isAlreadyCollateral) {
+      if (this.collateralize && !this.is_collateral) {
         try {
           const tx_result = await this.manager.contract.methods.enterMarkets([this.market.address]).send({ from: account });
           this.successMessage(tx_result, `Enter ${this.asset} market succeeded`);
