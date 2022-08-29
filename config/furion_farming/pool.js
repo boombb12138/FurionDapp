@@ -62,11 +62,12 @@ export const getFarmingPool = async (
 
         initialized: false,
     }
-    pool = await initPool(pool, chainId);
-    return pool;
+    let final_pool = await initPool(pool, chainId);
+    return final_pool;
 }
 
-const initPool = async (pool, chainId) => {
+const initPool = async (initial_pool, chainId) => {
+    let pool = initial_pool;
     try {
     const lp_token_contract = await getContract(await getMockUSDABI(), pool.lp_token_address);
     const lp_token_decimal = parseInt(await lp_token_contract.methods.decimals().call());
@@ -95,63 +96,69 @@ const initPool = async (pool, chainId) => {
     //console.log('[Reward Per Day] ', pool.reward_per_day);
 
     // init tvl and apr
-    pool = await InitPoolSummary(pool, chainId);
+    let summary = await getPoolSummary(pool, chainId);
+    pool.tvl = summary['tvl'];
+    pool.apr = summary['apr'];
      
     } catch (e) {
         console.warn(e);
         console.log(e);
     }
+
     pool.initialized = true;
-    
     return pool;
 }
 
-export const InitPoolSummary = async (pool, chainId) => {
-    try {
-    let network = '';
-    if (chainId == 4) {
-        network = 'rinkeby';
-    } else if (chainId == 1) {
-        network = 'mainnet';
+export const getPoolSummary = async (pool, chainId) => {
+    let summary = {
+        'tvl': '',
+        'apr': '',
     }
 
-    const lp_token_decimal = parseInt(pool.lp_token_decimal);
-    const lp_token_contract = pool.lp_token_contract;
+    try {
+        let network = '';
+        if (chainId == 4) {
+            network = 'rinkeby';
+        } else if (chainId == 1) {
+            network = 'mainnet';
+        }
 
-    const lp_added = fromWei(
-                        await lp_token_contract.methods.balanceOf(pool.farming_address).call(), 
-                        lp_token_decimal).toFixed(4);
+        const lp_token_decimal = parseInt(pool.lp_token_decimal);
+        const lp_token_contract = pool.lp_token_contract;
 
-    const lp_total = fromWei(
-                        await lp_token_contract.methods.totalSupply().call(), 
-                        lp_token_decimal).toFixed(4);
-    pool.lp_added = lp_added;
-    pool.lp_total = lp_total;
+        const lp_added = fromWei(
+                            await lp_token_contract.methods.balanceOf(pool.farming_address).call(), 
+                            lp_token_decimal).toFixed(4);
+
+        const lp_total = fromWei(
+                            await lp_token_contract.methods.totalSupply().call(), 
+                            lp_token_decimal).toFixed(4);
 
 
-    const price_result = await getLatestSummary(pool.token_0, pool.token_1, network);
-    let data = price_result['data'];
-    pool.tvl = parseFloat(data['tvl'].toFixed(4)) * (parseFloat(pool.lp_added) / parseFloat(pool.lp_total));
-    //console.log('[TVL] ', pool.tvl);
+        const price_result = await getLatestSummary(pool.token_0, pool.token_1, network);
+        let data = price_result['data'];
+        const tvl = parseFloat(data['tvl'].toFixed(4)) * (parseFloat(lp_added) / parseFloat(lp_total));
+        summary['tvl'] = tvl.toFixed(4);
+        //console.log('[TVL] ', pool.tvl);
 
   
-    /**
-     * APR calculation:
-     * pool.reward_per_data * price of fur / (365 * pool.tvl)
-     * Get price of 1 FUR in USDT
-     */
-  
-    pool.fur_price = await getPrice ('FUR', network);
-    //console.log('[Price] ', pool.fur_price);
+        /**
+         * APR calculation:
+         * pool.reward_per_data * price of fur / (365 * pool.tvl)
+         * Get price of 1 FUR
+        */
 
-    const apr = (parseFloat(pool.reward_per_day) * parseFloat(pool.fur_price)) / (365 * parseFloat(pool.tvl));
-    pool.apr = apr.toFixed(4);
-    //console.log('[APR] ', pool.apr)
+        const fur_price = await getPrice ('FUR', network);
+        const apr = (parseFloat(pool.reward_per_day) * parseFloat(fur_price)) / (365 * tvl);
+        summary['apr'] = apr.toFixed(4);
+        //console.log('[APR] ', pool.apr)
+
     } catch(e) {
         console.warn(e);
+        console.log('[Pool Summary] Error');
     }
 
-    return pool;
+    return summary;
 }
 
 const getPrice = async(token, network) => {
