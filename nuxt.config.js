@@ -82,6 +82,7 @@ export default {
       src: '@/plugins/swiper.js',
       ssr: false,
     },
+    { src: '@plugins/typer', ssr: false}
   ],
   buildModules: [
     'nuxt-windicss',
