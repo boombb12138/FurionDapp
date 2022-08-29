@@ -9,6 +9,45 @@ import { getLatestSummary } from "@/api/furion_swap";
 import { getTokenPrice } from "@/api/furion_farming";
 
 const SECONDS_PER_DAY = 24 * 60 * 60;
+const token_0_img = require('@/assets/images/liquidity/tokens/FUR.png');
+const token_1_img = require('@/assets/images/liquidity/tokens/ETH.png');
+const token_2_img = require('@/assets/images/liquidity/tokens/USDT.png');
+
+export const InitialPoolList = [
+        {   
+            pool_name: 'FUR/ETH',
+            token_0_symbol: 'FUR',
+            token_1_symbol: 'ETH',
+            token_0_image: token_0_img,
+            token_1_image: token_1_img,
+
+            tvl: '0.0000',
+            apr: '0.0000',
+            reward_per_day: '0.0000',
+
+            user_balance: '0.0000',
+            user_stake: '0.0000',
+            user_reward: '0.0000',
+
+        },
+
+        {
+            pool_name: 'FUR/USDT',
+            token_0_symbol: 'FUR',
+            token_1_symbol: 'USDT',
+            token_0_image: token_0_img,
+            token_1_image: token_2_img,
+
+            tvl: '0.0000',
+            apr: '0.0000',
+            reward_per_day: '0.0000',
+
+            user_balance: '0.0000',
+            user_stake: '0.0000',
+            user_reward: '0.0000',
+        }
+
+    ];
 
 
 export const getFarmingPool = async (
@@ -32,12 +71,9 @@ export const getFarmingPool = async (
         lp_token_contract: {},
         lp_token_decimal: '18',
         lp_token_price: '',
-        lp_total: '',
-        lp_added: '',
 
         reward_token: 'FUR',
         reward_token_decimal: '18',
-        fur_price_usdt: '',
 
         farming_address: '0xf4E1Ab751e8f7687Fe65b6e33eEcAd7c0bA8C808',
         farming_contract: {},

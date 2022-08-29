@@ -254,7 +254,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { getFarmingPool, getPoolSummary } from '@/config/furion_farming/pool';
+import { InitialPoolList, getFarmingPool, getPoolSummary } from '@/config/furion_farming/pool';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
@@ -291,7 +291,7 @@ export default {
       active: 1,
       multicall: multicall,
       dialogue_info: DialogInfo,
-      pools: [],
+      pools: InitialPoolList,
       index: 0, // count the number of pool and mark index of every newly added pool
     };
   },
