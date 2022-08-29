@@ -669,9 +669,9 @@ export default {
 
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
-        this.successMessage(tx_result, `Purchase F-TOADZ #${tokenId} succeeded`);
+        this.successMessage(tx_result, `Purchase F-${this.separate_pool_info.symbol} #${tokenId} succeeded`);
       } catch (e) {
-        this.errorMessage(`Purchase F-TOADZ #${tokenId} failed`);
+        this.errorMessage(`Purchase F-${this.separate_pool_info.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);
         return;
       }

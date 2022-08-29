@@ -553,7 +553,7 @@ export default {
 
 
       if(!checkFx) {
-        this.errorMessage(`Insufficient F-${nft_item.symbol} balance`);
+        this.errorMessage(`Insufficient F-${this.nft_item.symbol} balance`);
         return;
       }
       if(!checkFur[0]) {
@@ -569,7 +569,7 @@ export default {
 
       try {
         let tx_result = await this.poolContract.contract.methods.buy(this.nft_item.token_id).send({ from: account });
-        this.successMessage(tx_result, `Purchase F-TOADZ #${this.nft_item.token_id} succeeded`);
+        this.successMessage(tx_result, `Purchase F-${this.nft_item.symbol} #${this.nft_item.token_id} succeeded`);
         //put the message into the database when buy succeed
         let data = {
           project: this.nft_item.collection,
@@ -582,7 +582,7 @@ export default {
           to_user: 'to_user',
         };
       } catch(e) {
-        this.errorMessage(`Purchase F-TOADZ #${this.nft_item.token_id} failed`);
+        this.errorMessage(`Purchase F-${this.nft_item.symbol} #${this.nft_item.token_id} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
