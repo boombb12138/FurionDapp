@@ -3,18 +3,18 @@ import { getContract } from '@/utils/common';
 import { getMockUSDABI, getFEtherABI, getFErc20ABI, getRiskManagerABI, getPriceOracleABI } from "@/utils/common/contractABI";
 
 export const user_info_default = {
-	token_balance: '--',
-	ftoken_balance: '--',
-	deposited: '--',
-	borrowed: '--',
-	borrow_quota: '--',
+	token_balance: 0,
+	ftoken_balance: 0,
+	deposited: 0,
+	borrowed: 0,
+	borrow_quota: 0,
 }
 
 export const market_info_default = {
-	supply_rate: '--',
-	borrow_rate: '--',
-	token_price: '--',
-	cash: '--'
+	supply_rate: 0,
+	borrow_rate: 0,
+	token_price: 0,
+	cash: 0
 }	
 
 export const initTokenContract = async (symbol) => {
