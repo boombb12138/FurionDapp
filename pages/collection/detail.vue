@@ -537,7 +537,7 @@ export default {
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
 
       const requiredAmount = toWei(1000);
-      if(result[0] > requiredAmount) {
+      if(result[0] >= requiredAmount) {
         hasEnough = true;
       }
 
