@@ -8,6 +8,7 @@ export const user_info_default = {
 	deposited: 0,
 	borrowed: 0,
 	borrow_quota: 0,
+	withdraw_quota: 0
 }
 
 export const market_info_default = {
