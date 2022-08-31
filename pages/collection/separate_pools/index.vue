@@ -171,6 +171,7 @@ import {
   initNftInfo,
   initPooledNftInfo
 } from "@/config/collection/nft_info";
+
 import { initSeparatePoolFactoryContract } from "@/config/collection/separate_pool";
 import { mapState } from 'vuex';
 import { getNftWeekPrice } from "@/api/nft_info";

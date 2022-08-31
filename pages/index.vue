@@ -98,7 +98,7 @@
             </div>
             <p class="text-44px font-500 mb-10px">At Furion, you can...</p>
             <div class="mb-25px w-540px">
-                <vue-typer 
+                <vue-typer
                   :text='["Buy NFT","Sell NFT","Explore NFT", "Unleash NFTLiquidity."]'
                   :shuffle='false'
                   :repeat='0'
@@ -446,7 +446,7 @@ export default {
   },
   methods: {
     clickSwiperItem(collection) {
-      this.$router.push('/collection/separate_pools_item/?collection='+collection);
+      this.$router.push('/collection/separate_pools/nft_pool?collection='+collection);
     },
     clickDropItem(twitter) {
       window.open('https://twitter.com/'+twitter,'_blank');

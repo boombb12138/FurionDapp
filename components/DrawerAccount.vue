@@ -131,6 +131,49 @@
     @apply mx-auto;
   }
 }
+.type_box {
+  background: transparent;
+  border-bottom: 2px solid #2d4682;
+  padding: 4px 0;
+  font-weight: 500;
+  font-size: 14px;
+  color: #7d8599;
+  &::placeholder {
+    font-weight: 500;
+    font-size: 16px;
+    color: #7d8599;
+  }
+}
+.btnn2 {
+  border-radius: 10px;
+
+  @apply flex justify-center items-center cursor-pointer;
+
+  .icon {
+    display: block;
+  }
+
+  .icon2 {
+    display: none;
+  }
+
+  &:hover {
+    color: #02193a;
+    background: #fa6be1;
+    border: none;
+    text-shadow: none;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1),
+      inset 0px -1px 1px rgba(0, 0, 0, 0.4), inset 0px 1px 0.6px #ffb7f3;
+
+    .icon {
+      display: none;
+    }
+
+    .icon2 {
+      display: block;
+    }
+  }
+}
 </style>
 
 <template>
@@ -209,17 +252,56 @@
                   </div>
                   <div class="form-item" v-if="!type_email">
                     <p class="label" >E-mail 123@furion.com</p>
-                    <img src="@/assets/images/drawer/pencil.png" class="cursor-pointer ml-8px" @click="type_email=true"/>
+                    <div class="icon-wrap" @click="click_email(true)">
+                      <img id="type" src="@/assets/images/drawer/pencil.png" />
+                    </div>
                   </div>
-                  <div class="body" v-if="type_email">
+                  <div class="form-item" v-if="type_email">
+                    <input
+                        id="content"
+                        type="email"
+                        class="block type_box mb-5px"
+                        placeholder="Add your Email..."
+                      />
+                    <div class="btnn2 ml-6px" @click="click_email(false)">
+                      <img  id="type" src="@/assets/images/drawer/confirm_dark.svg" width="40" class="icon"/>
+                      <img  id="type" src="@/assets/images/drawer/confirm_light.svg" width="40" class="icon2"/>
+                    </div>
+                    <div class="btnn2 ml-6px" @click="click_email(false)">
+                      <img  id="type" src="@/assets/images/drawer/cancel_dark.svg" width="40" class="icon"/>
+                      <img  id="type" src="@/assets/images/drawer/cancel_light.svg" width="40" class="icon2"/>
+                    </div>
+                  </div>
+                </div>
+
+
+
+                <div class="form-item mb-22px">
+                  <div class="icon-wrap">
+                    <img src="@/assets/images/drawer/nick_name.svg" />
+                  </div>
+                  <div class="form-item" v-if="!type_nick_name">
+                    <p class="label" >anonymous</p>
+                    <div class="icon-wrap" @click="click_nick_name(true)">
+                      <img id="type" src="@/assets/images/drawer/pencil.png" />
+                    </div>
+                  </div>
+                  <div class="form-item" v-if="type_nick_name">
                     <input
                       id="content"
-                      type="type_email"
-                      class="block w-full reply mb-5px"
-                      placeholder="Add Reply..."
+                      type="text"
+                      class="block type_box mb-5px"
+                      placeholder="Add a Nick Name..."
                     />
+                    <div class="btnn2 ml-6px" @click="click_nick_name(false)">
+                      <img  id="type" src="@/assets/images/drawer/confirm_dark.svg" width="40" class="icon"/>
+                      <img  id="type" src="@/assets/images/drawer/confirm_light.svg" width="40" class="icon2"/>
+                    </div>
+                    <div class="btnn2 ml-6px" @click="click_nick_name(false)">
+                      <img  id="type" src="@/assets/images/drawer/cancel_dark.svg" width="40" class="icon"/>
+                      <img  id="type" src="@/assets/images/drawer/cancel_light.svg" width="40" class="icon2"/>
+                    </div>
                   </div>
-
                 </div>
 
 
@@ -471,6 +553,13 @@ export default {
       }
       return final_result
     },
+    click_email(flag){
+      this.type_email = flag;
+    },
+    click_nick_name(flag){
+      this.type_nick_name = flag;
+      this.isShow = true;
+    },
     showUserAddress() {
       return _showUserAddressText(this.userInfo);
     },
@@ -509,6 +598,8 @@ export default {
     hide(e) {
       if (e.target.id === "avatar-icon") {
         this.isShow = !this.isShow;
+      }else if(e.target.id ==="type"){
+        this.isShow = true;
       }else{
         this.isShow = false;
       }
