@@ -24,21 +24,32 @@
 }
 
 .item {
-  width: 266px;
-  height: 392px;
+  width: 350px;
+  height: 475px;
   background: rgba(23, 37, 72, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  cursor: pointer;
+  //cursor: pointer;
   box-sizing: border-box;
-  margin-right: 12px;
   margin-bottom: 15px;
   position: relative;
 
-  &:hover .el-image {
-    transition: all 0.3s;
-    transform: translateY(-4px) scale(1.05);
+  
+  &:hover {
+    transform: scale(1.05);
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+
+    /*
+    .el-image {
+      transition: all 0.3s;
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    */
+    .staked-data {
+      font-size: 17px;
+      opacity: 0.7;
+    }
   }
 
   .icon {
@@ -127,6 +138,157 @@
     }
   }
 }
+
+.collection-name {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  font-weight: 600;
+  font-size: 20px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  width: 70px;
+  height: 252px;
+  padding-top: 8px;
+  letter-spacing: 1.5px; 
+  color: white;
+  position: relative;
+}
+
+.collection-symbol {
+  font-size: 21px;
+  font-weight: 800;
+  margin-right: 6px;
+  color: #f181de !important;
+}
+
+.staked-data {
+   margin-top: 20px;
+   margin-bottom: 18px;
+   font-size: 16px;
+   line-height: 20px;
+   font-weight: 500;
+   opacity: 0.5;
+}
+
+@mixin btn-style {
+  font-size: 14px;
+  font-weight: 500;
+  text-shadow: 0 1px 0px rgb(1, 19, 46, 0.8);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  line-height: 40px;
+  height: 40px;
+  text-align: center;
+  width: 320px;
+  cursor: pointer;
+  transition: all 0.5s;
+  position: relative;
+}
+@mixin psuedo-style {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+.custom-btn {
+  @include btn-style;
+  color: #f181de;
+
+  &::before {
+    @include psuedo-style;
+    background-color: rgba(241, 129, 222, 0.1);
+  }
+
+  &:hover::before {
+    opacity: 0 ;
+    transform: scale(0.3,0.3);
+  }
+
+  &::after {
+    @include psuedo-style;
+    opacity: 0;
+    border: 2px solid rgba(241, 129, 222, 0.8);
+    transform: scale(1.2,1.2);
+  }
+
+  &:hover::after {
+    opacity: 1;
+    transform: scale(1,1);
+  }
+}
+
+.input-window {
+  background: #011129;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fcfffd;
+  @apply p-25px pr-30px pl-30px relative;
+}
+.box-input {
+    &::v-deep {
+      .el-input__inner {
+        height: 45px;
+        width: 220px;
+        background: #011129;
+        border: none;
+        color: #fcfffd;
+        font-size: 32px;
+        font-weight: 500;
+        text-align: left;
+        padding: 0px;
+        margin-right: 15px;
+
+        &::-webkit-input-placeholder {
+          color: rgba(252,255,253,0.6) !important;
+        }
+      }
+    }
+}
+::v-deep {
+  .el-switch {
+    height: 26px;
+    line-height: 26px;
+  }
+  .el-switch .el-switch__core::after {
+    height: 21px;
+    width: 21px;
+    top: 3px;
+    color: rgba(5, 27, 61, 0.6);
+    @apply flex items-center justify-center;
+    background-image: url("~@/assets/images/switch.png");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .el-switch .el-switch__core {
+    width: 48px !important;
+  }
+  .el-switch.is-checked .el-switch__core::after {
+    left: calc(100% - 24px) !important;
+    margin-left: 0 !important;
+    background-image: none;
+  }
+}
+.pulse-text {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #f181de;
+  margin-right: 13px;
+  animation: pulseText 1.2s ease-in-out infinite alternate; 
+}
+@keyframes pulseText {
+  from {
+    text-shadow: 0 0 0 #f181de;
+  }
+  to {
+    text-shadow: 0 0 8px #f181de;
+  }
+}
 </style>
 
 <template>
@@ -143,15 +305,7 @@
           <div class="pl-8px flex">
             <img src="@/assets/images/avatar.png" class="w-142px rounded-full avatar" />
             <div class="pt-10px pl-20px flex relative">
-              <div class="font-700 text-28px mb-5px mr-5px">Azuki</div>
-
-              <div class="mr-10px text-14px mt-10px">
-                Created by
-                <span class="text-[#34F8FF] font-600">TeamAzuki</span>
-              </div>
-              <div class="pt-15px">
-                <img src="@/assets/images/icon_badge.png" alt="" />
-              </div>
+              <div class="font-700 text-28px mb-5px mr-5px">{{ poolName }}</div>
 
               <div class="absolute left-0 top-50px left-20px">
                 <div class="tag">
@@ -167,22 +321,22 @@
             </div>
           </div>
           <div class="flex items-center h-94px">
-            <div>
+            <!--div>
               <a href="/" class="block link flex items-center mr-42px">
                 <img src="@/assets/images/icon_link.png" class="mr-10px" />
                 <div class="text-13px mr-5px">AzukiZen</div>
                 <div class="text-13px opacity-60">Linked</div>
               </a>
-            </div>
+            </div-->
 
             <div class="text-center px-15px">
-              <div class="font-600 mb-4px">10.0K</div>
-              <div class="opacity-40 text-12px">items</div>
+              <div class="font-600 mb-4px">3</div>
+              <div class="opacity-40 text-12px">Collections</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
               <div class="font-600 mb-4px">10.0K</div>
-              <div class="opacity-40 text-12px">owners</div>
+              <div class="opacity-40 text-12px">Owners</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
@@ -190,7 +344,7 @@
                 <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
                 10.0K
               </div>
-              <div class="opacity-40 text-12px">floor price</div>
+              <div class="opacity-40 text-12px">Floor Price</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
@@ -198,7 +352,7 @@
                 <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
                 115.0K
               </div>
-              <div class="opacity-40 text-12px">volume traded</div>
+              <div class="opacity-40 text-12px">Volume Traded</div>
             </div>
           </div>
         </div>
@@ -215,7 +369,7 @@
           >
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
-          <div class="btn_border">
+          <!--div class="btn_border">
             <el-button
               type="primary"
               class="!w-170px !h-48px"
@@ -226,7 +380,7 @@
                 ADD ASSET
               </div>
             </el-button>
-          </div>
+          </div-->
         </div>
 
         <div class="flex items-center justify-between">
@@ -282,52 +436,32 @@
             </div>
           </div>
         </transition>
-        <div class="pb-150px grid grid-cols-4 mt-20px">
+
+        <!-- Collections in pool -->
+
+        <div class="pb-150px grid grid-cols-3 mt-20px">
           <div
             class="item"
-            v-for="(item, index) in list"
+            v-for="(item, index) in pool_info.collections"
             :key="index"
-            @click="$router.push('/collection/detail?id=' + item.id)"
-          >
-            <el-image
-              :src="item.cover"
-              class="w-252px h-252px rounded-12px m-6px mb-16px"
-              lazy
-            >
-              <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
-            </el-image>
+          > 
+            <div class="flex justify-between w-350px px-15px pt-15px">
+              <el-image
+                :src="item.image_url"
+                class="w-252px h-252px rounded-12px"
+                lazy
+              >
+                <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
+              </el-image>
+
+              <div class="collection-name">
+                <span>{{ item.name }}</span><span class="collection-symbol">F-{{ item.symbol }}</span>
+              </div>
+            </div>
             <div class="px-15px">
-              <div class="flex justify-between items-center mb-10px">
-                <div
-                  class="opacity-40 text-13px w-180px line-clamp-1 overflow-ellipsis !block"
-                >
-                  {{ item.name }}
-                </div>
-                <div class="text-13px">
-                  <img src="@/assets/images/icon_eth.svg" />
-                  <span class="font-600">13.6</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between text-13px">
-                <div class="font-600 flex-1 mr-10px flex w-110px">
-                  <span class="line-clamp-1 overflow-ellipsis !block mr-4px">
-                    {{ item.name }}
-                  </span>
-                  <span class="flex-shrink-0">#{{ item.id }}</span>
-                </div>
-
-                <div class="btn2 mr-5px" @click.stop="toCart(item)">
-                  <img src="@/assets/images/cart.png" class="icon mr-5px -mt-1px" />
-                  <img src="@/assets/images/cart2.png" class="icon2 mr-5px -mt-1px" />
-                  CART
-                </div>
-
-                <div class="btn2">
-                  <img src="@/assets/images/buy.png" class="icon mr-5px" />
-                  <img src="@/assets/images/buy2.png" class="icon2 mr-5px" />
-                  BUY
-                </div>
-              </div>
+              <div class="staked-data">In pool: 1234 F-{{ item.symbol }}</div>
+              <div class="custom-btn mb-18px" @click="dialogVisible = true; ftoken_to_interact = item; action='STAKE'">STAKE</div>
+              <div class="custom-btn" @click="dialogVisible = true; ftoken_to_interact = item; action='UNSTAKE'">UNSTAKE</div>
             </div>
 
             <div
@@ -352,50 +486,42 @@
     <el-dialog
       title="NFT Contract Address:"
       :visible.sync="dialogVisible"
-      width="850px"
-      :close-on-click-modal="false"
+      width="720px"
+      :close-on-click-modal="true"
       append-to-body
       custom-class="el-dialog-dark"
     >
       <div slot="title" class="flex font-800 text-20px">
-        <div class="pb-2px" style="border-bottom: 2px solid #fff">ADD ASSET</div>
-
-        <el-popover
-          placement="bottom"
-          title=""
-          trigger="hover"
-          :visible-arrow="false"
-          popper-class="el-tip"
-        >
-          <div class="text-center text-[#0B1A3B]">
-            <div class="text-20px font-600 mb-30px">
-              By {locking/storing} (X} (AZUKI), you get
-            </div>
-            <div class="font-900 text-36px">1000 F-AZUKI</div>
-          </div>
-          <img
-            src="@/assets/images/q.svg"
-            class="ml-14px cursor-pointer -mt-3px"
-            slot="reference"
-          />
-        </el-popover>
+        <div class="pb-2px" style="border-bottom: 2px solid #fff; word-spacing: 10px;">{{ action }} F-{{ ftoken_to_interact.symbol }}</div>
       </div>
 
-      <div class="h-474px mb-35px">
-        <el-scrollbar class="h-1/1">
-          <div class="grid grid-cols-3 gap-y-38px">
-            <img
-              src="@/assets/images/cover.png"
-              class="w-218px h-218px rounded-12px"
-              v-for="(item, index) in 9"
-              :key="index"
-            />
+      <div class="input-window mb-25px">
+        <div class="flex items-center justify-between mb-20px">
+          <div class="flex items-center">
+            <img :src="ftoken_to_interact.image_url" class="w-40px mr-15px rounded-full" />
+            <div class="font-600 text-22px">F-{{ftoken_to_interact.symbol}}</div>
           </div>
-        </el-scrollbar>
+          <div class="flex items-center">
+            <div class="pulse-text">{{ action }} ALL</div>
+            <el-switch v-model="all" class="mr-15px"> </el-switch>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-end">
+          <div class="flex items-end">
+            <el-input class="box-input" placeholder="0.0" v-model="ftoken_amount" type="number"></el-input>
+          </div>
+          <div class="text-16px text-[rgba(252,255,253,0.6)]">Balance: 1000 F-{{ftoken_to_interact.symbol}}</div>
+        </div>
       </div>
 
-      <div class="flex justify-between items-center pr-44px">
-        <div></div>
+      <div class="btn_border">
+        <el-button type="primary" class="!w-full !h-60px">
+          <span class="font-800 text-20px" style="word-spacing: 5px">{{ action }} F-{{ ftoken_to_interact.symbol }}</span>
+        </el-button>
+      </div>
+
+      <!--div class="flex justify-between items-center pr-44px">
         <div class="flex">
           <div class="btn_border mr-15px">
             <el-button plain class="!w-124px !h-38px !p-0">LOCK</el-button>
@@ -404,12 +530,14 @@
             <el-button type="primary" class="!w-124px !h-38px !p-0">STORE</el-button>
           </div>
         </div>
-      </div>
+      </div-->
     </el-dialog>
   </div>
 </template>
 
 <script>
+import { pool_info_default, initPoolInfo, initPoolContract, initFurContract } from '@/config/collection/aggregate_pools';
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
@@ -420,35 +548,34 @@ export default {
     cart() {
       return this.$store.state.user.cart;
     },
+    poolName() {
+      return this.$route.query.name;
+    },
   },
   data() {
-    let list = [];
-    list.length = 4;
-    list.fill({
-      id: "3957",
-      name: "Azuki",
-      cover: require("@/assets/images/cover.png"),
-      eth: "13.6",
-      like: "13",
-    });
-    list.unshift({
-      id: "2222",
-      name: "Azuki",
-      cover: require("@/assets/images/cover2.png"),
-      eth: "23.6",
-      like: "23",
-    });
     return {
       dialogVisible: false,
-      list,
       checkList: [],
       searchKey: "",
       sort: "Price low to high",
       filter: [],
       showFilter: false,
+      pool_info: pool_info_default,
+      poolContract: {},
+      furContract: {},
+      ftoken_to_interact: {},
+      action: '',
+      ftoken_amount: '',
+      all: false,
     };
   },
-  mounted() {},
+  async mounted() {
+    this.pool_info = await initPoolInfo(this.poolName);
+    /*
+    this.poolContract = await this.initPoolContract(this.pool_info.address);
+    this.furContract = await this.initFurContract();
+    */
+  },
   methods: {
     search() {
       console.log(this.searchKey);
@@ -456,10 +583,6 @@ export default {
     onSort(str) {
       this.$refs.sort.doClose();
       this.sort = str;
-    },
-    toCart(item) {
-      let arr = [...this.cart, item.id];
-      this.$store.commit("save", ["user.cart", arr, this]);
     },
     add(n) {
       let i = this.filter.findIndex((item) => item == n);
