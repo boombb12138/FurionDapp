@@ -144,7 +144,7 @@
                   <nuxt-link to="/mining/token_farming">Token farming</nuxt-link>
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/">Staking</nuxt-link>
+                  <nuxt-link to="/mining/staking">Staking</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>
