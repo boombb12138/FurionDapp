@@ -169,6 +169,7 @@
    line-height: 20px;
    font-weight: 500;
    opacity: 0.5;
+   transition: all 0.5s;
 }
 
 @mixin btn-style {
