@@ -565,7 +565,7 @@ export default {
       nft_item.image = item.image_url;
 
       // console.log('NFT item', nft_item);
-      this.$router.push('/collection/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id);
+      this.$router.push('/collection/separate_pools/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id);
     },
     toList(tokenId, tokenIndex) {
       const index = this.nftToPool.indexOf(tokenId);
