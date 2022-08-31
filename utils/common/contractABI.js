@@ -9,6 +9,8 @@ import FurionSwapPair from "@/assets/abis/rinkeby/furion-swap/FurionSwapPair.sol
 
 import SeparatePoolFactory from "@/assets/abis/rinkeby/separate-pool/SeparatePoolFactory.sol/SeparatePoolFactory.json";
 import SeparatePool from "@/assets/abis/rinkeby/separate-pool/SeparatePool.sol/SeparatePool.json";
+import AggregatePoolFactory from "@/assets/abis/rinkeby/aggregate-pool/AggregatePoolFactory.sol/AggregatePoolFactory.json";
+import AggregatePool from "@/assets/abis/rinkeby/aggregate-pool/AggregatePool.sol/AggregatePool.json";
 
 import FEther from "@/assets/abis/rinkeby/money-market/FEther.sol/FEther.json";
 import FErc20 from "@/assets/abis/rinkeby/money-market/FErc20.sol/FErc20.json";
@@ -61,6 +63,17 @@ export const getSeparatePoolFactoryABI = async () => {
 export const getSeparatePoolABI = async () => {
     SeparatePool.address = '';
     return SeparatePool;
+}
+
+export const getAggregateatePoolFactoryABI = async () => {
+    let address = getAddress();
+    AggregatePoolFactory.address = address['AggregatePoolFactory'];
+    return AggregatePoolFactory;
+}
+
+export const getAggregatePoolABI = async () => {
+    AggregatePool.address = '';
+    return AggregatePool;
 }
 
 export const getFEtherABI = async () => {
