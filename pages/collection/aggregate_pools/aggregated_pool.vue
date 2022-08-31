@@ -158,7 +158,6 @@
 .collection-symbol {
   font-size: 21px;
   font-weight: 800;
-  margin-right: 6px;
   color: #f181de !important;
 }
 
