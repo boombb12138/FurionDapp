@@ -33,7 +33,7 @@
             </el-button>
           </div>
 
-          <div class="btn_border" @click="$router.push('/collection/aggregated_pools')">
+          <div class="btn_border" @click="$router.push('/collection/aggregate_pools/')">
             <el-button type="primary" class="!w-265px !h-56px" plain>
               Aggregate pools
             </el-button>

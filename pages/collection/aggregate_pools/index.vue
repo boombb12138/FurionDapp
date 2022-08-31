@@ -235,7 +235,7 @@ export default {
       list: [
         {
           id: 1,
-          name: "Mix (FFT-A)",
+          name: "Mixed",
           avatar: require("@/assets/images/avatar.png"),
           volume: "28,919,65",
           _24h: "+2.94%",
@@ -305,7 +305,7 @@ export default {
         },
         {
           id: 1,
-          name: "Mix (FFT-B)",
+          name: "The Animals",
           avatar: require("@/assets/images/avatar.png"),
           volume: "28,919,65",
           _24h: "+2.94%",
@@ -348,8 +348,8 @@ export default {
               staked: "1500"
             },
             { 
-              name: "World Of Women",
-              symbol: "F-WOW",
+              name: "PudgyPenguins",
+              symbol: "F-PPG",
               avatar: require("@/assets/images/avatar.png"),
               staked: "2000"
             },
@@ -373,7 +373,7 @@ export default {
 
   methods: {
     item(row) {
-      this.$router.push(`/collection/aggregate_pools/aggregated_pool?id=${row.id}`);
+      this.$router.push(`/collection/aggregate_pools/aggregated_pool?name=${row.name}`);
     },
     enter(row) {
       this.$refs.table.toggleRowExpansion(row, true);
