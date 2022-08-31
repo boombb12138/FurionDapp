@@ -1,4 +1,5 @@
 import { getNftActivity, postNftActivity} from "@/api/furion_activity";
+import axios from 'axios'
 
 export const nft_activity = {
     init: false,
@@ -49,11 +50,12 @@ export const initNftActivity = async (network,nft_address,token_id) => {
             address: nft_address,
             event: raw_data[i][3],
             event_type: raw_data[i][4],
-            eth_price: raw_data[i][5],
+            eth_price: Number(raw_data[i][5].toString().match(/^\d+(?:\.\d{0,2})?/)),
             from_user: raw_data[i][6],
             to_user: raw_data[i][7],
             date: raw_data[i][8].substring(0,10),
         };
+        // console.log(raw_data[i][5].toString().match(/^\d+(?:\.\d{0,2})?/))
         final_result.push(temp);
     }
 

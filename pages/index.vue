@@ -113,7 +113,7 @@
             <div class="mt-50px">
               <div class="flex items-center">
                 <div class="btn_border w-190px mr-35px">
-                  <el-button type="primary" class="!w-210px !h-56px">VIEW COLLECTIONS</el-button>
+                  <el-button type="primary" class="!w-210px !h-56px" @click="$router.push('/collection/separate_pools')">VIEW COLLECTIONS</el-button>
                 </div>
                 <div class="btn_border">
                   <el-button type="primary" plain class="!w-190px !h-56px"
@@ -288,10 +288,6 @@
       </ul>
     </div>
     <AdminFooter></AdminFooter>
-
-    <CartIcon></CartIcon>
-
-    <Pet></Pet>
   </div>
 </template>
 <script>

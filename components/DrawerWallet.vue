@@ -112,7 +112,7 @@
             <img class="mr-16px" src="@/assets/images/connect_wallet/fortmatic.png" width="29px" />
             <p>Fortmatic</p>
           </div>
-          <!-- <div class="tab-btn text-[rgba(176,183,243,0.4)] bg-[#162548]">Salana</div> -->
+          <!-- <div class="tab-btn text-[rgba(176,183,243,0.4)] bg-[#162548]">Solana</div> -->
         </div>
       </div>
       <div class="btn_border w-310px mt-26px mx-auto">

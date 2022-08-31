@@ -43,7 +43,7 @@
         <div class="flex-1 text disabled" :class="{ active: value == 3 }">
           <div>
             <p class="text-center">Derivative</p>
-            <p class="text-center text-13px">-coming soon-</p>
+            <p class="text-center text-13px">-Coming Soon-</p>
           </div>
         </div>
       </div>

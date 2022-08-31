@@ -1,5 +1,6 @@
 <style lang="scss" scoped>
 .drawer-wrap {
+  border: 0.8px solid rgba(255, 255, 255, 0.1);
   width: 420px;
   // height: 943px;
   height: calc(100vh - 80px);
@@ -12,7 +13,6 @@
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
   border-radius: 12px;
   overflow: hidden;
-
   &.isShow {
     transform: translateX(0);
   }
@@ -174,25 +174,55 @@
                 </div>
                 <img class="cursor-pointer" src="@/assets/images/drawer/copy.svg" @click="copy" />
               </div>
-              <!-- <div class="flex justify-between items-center font-500 text-13px">
-                <p class="text-[#ff88eb] cursor-pointer leading-28px"></p>
-                <p class="text-[rgba(252,255,253,0.4)] leading-28px">
-                  Connected with MetaMask
-                </p>
-
-              </div> -->
+              <div>
+                <div style="float:left"
+                class="text-[rgba(252,255,253,0.4)] font-500 text-13px"
+                >Connected with MetaMask</div>
+                <div style="float:right"
+                class="text-[#FF7AE8] font-500 text-13px"
+                >Change provider</div>
+                </div>
             </div>
+            <!-- <div>
+              <div style="float:left"
+              class="text-[rgba(252,255,253,0.4)] font-500 text-13px"
+              >Connected with MetaMask</div>
+              <div style="float:right"
+              class="text-[#FF7AE8] font-500 text-13px"
+              @click="changeProvider()"
+              >Change provider</div>
+              </div>
+            </div> -->
 
             <!-- my profile -->
             <div class="section mb-15px" v-show="isShowProfile">
               <p class="section-title mb-20px">My profile</p>
               <div class="ml-16px">
+
+
+
+
+
                 <div class="form-item mb-22px">
                   <div class="icon-wrap">
                     <img src="@/assets/images/drawer/email.svg" />
                   </div>
-                  <p class="label">E-mail 123@furion.com</p>
+                  <div class="form-item" v-if="!type_email">
+                    <p class="label" >E-mail 123@furion.com</p>
+                    <img src="@/assets/images/drawer/pencil.png" class="cursor-pointer ml-8px" @click="type_email=true"/>
+                  </div>
+                  <div class="body" v-if="type_email">
+                    <input
+                      id="content"
+                      type="type_email"
+                      class="block w-full reply mb-5px"
+                      placeholder="Add Reply..."
+                    />
+                  </div>
+
                 </div>
+
+
                 <div class="form-item mb-22px">
                   <div class="icon-wrap">
                     <img src="@/assets/images/drawer/bell2.svg" />
@@ -284,7 +314,7 @@
                     <div class="icon-wrap">
                       <img src="@/assets/images/drawer/farming.svg" />
                     </div>
-                    <p class="label">Token farming</p>
+                    <p class="label">Token Farming</p>
                   </div>
                   <div class="form-item flex-1">
                     <div class="icon-wrap">
@@ -385,10 +415,12 @@ export default {
   data() {
     return {
       isShow: false,
-      isShowProfile: false,
+      isShowProfile: true,
       tab: "account", // account notification
       fur_balance: 0,
       eth_balance: 0,
+      type_email: false,
+      type_nick_name: false,
       notifications: [
         {
           title: "Connected wallet",
@@ -419,11 +451,11 @@ export default {
   directives: {
     ClickOutside,
   },
-  async mounted() { 
+  async mounted() {
     setTimeout(()=>{
  this.getBalance();
     }, 500)
-   
+
   },
   methods: {
     formatNumber(value, fixed = 2) {
@@ -441,6 +473,12 @@ export default {
     },
     showUserAddress() {
       return _showUserAddressText(this.userInfo);
+    },
+    showWalletType() {
+      return this.walletType
+    },
+    changeProvider() {
+      console.log('changeProvider')
     },
     more() {
       this.notifications = [

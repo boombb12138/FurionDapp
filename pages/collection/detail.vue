@@ -164,7 +164,7 @@
           </div>
           <!-- NFT price and user functions box -->
           <div class="bg flex-1 p-30px">
-            <div class="mb-15px opacity-60 font-500 text-20px">F&nbsp;-&nbsp;{{nft_item.symbol}}</div>
+            <div class="mb-15px opacity-60 font-500 text-20px">1000 F&nbsp;-&nbsp;{{nft_item.symbol}}=</div>
             <div class="flex items-center mb-55px">
               <img src="@/assets/images/icon_eth.svg" class="w-24px mr-10px" />
               <div class="font-700 text-32px">{{nft_item.fXprice.toFixed(2)}}</div>
@@ -496,7 +496,7 @@ export default {
           reply_id: item.id,
           reply_type: reply_type,
           content: text,
-          from_uid: 'anonymous',
+          from_uid: this.userInfo.userAddress,
           from_avatar: 'from_avatar',
           to_uid: 'anonymous',
           to_avatar: 'to_avatar',
@@ -537,7 +537,7 @@ export default {
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
 
       const requiredAmount = toWei(1000);
-      if(result[0] > requiredAmount) {
+      if(result[0] >= requiredAmount) {
         hasEnough = true;
       }
 
@@ -570,17 +570,22 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.buy(this.nft_item.token_id).send({ from: account });
         this.successMessage(tx_result, `Purchase F-TOADZ #${this.nft_item.token_id} succeeded`);
+        console.log('succeed')
         //put the message into the database when buy succeed
         let data = {
+          network: this.network,
           project: this.nft_item.collection,
           token_id: this.nft_item.token_id,
-          token_id: this.nft_item.address,
+          address: this.nft_item.address,
           event: 'Bid',
           event_type: 'success',
           eth_price: account,
           from_user: this.userInfo.userAddress,
           to_user: 'to_user',
         };
+        intoNftActivity(data);
+        await new Promise(r => setTimeout(r, 100));
+        this.nft_activity = await initNftActivity(this.network, this.nft_item.address, this.nft_item.token_id);
       } catch(e) {
         this.errorMessage(`Purchase F-TOADZ #${this.nft_item.token_id} failed`);
         closeDialog(this.dialogue_info);
@@ -588,7 +593,7 @@ export default {
       }
 
       closeDialog(this.dialogue_info);
-      return intoNftActivity(data)
+
     },
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);

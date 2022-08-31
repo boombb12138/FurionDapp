@@ -50,7 +50,7 @@
           <template slot-scope="scope">
             <div class="flex items-center py-10px">
               <div class="relative pl-15px flex-shrink-0">
-                <img 
+                <img
                   class="w-46px"
                   :src="scope.row.token_0_image"
                 />
@@ -79,9 +79,25 @@
                 <div class="w-1/2 font-700 text-18px flex items-center py-22px">
                   Manage Position
                 </div>
-                <div class="flex text-13px font-600">
-                  <div class="mr-50px">My Liquidity: {{scope.row.user_stake}}</div>
-                  <div>Rewards: {{scope.row.user_reward}}</div>
+                <div class="flex text-15px font-500">
+                  <img
+                    src="@/assets/images/mining/myliquidity.jpg"
+                    width="23"
+                    class="mb-20px"
+                  />
+                  <div class="mr-40px mt-5px ml-4px">My Liquidity: {{scope.row.user_stake}}</div>
+                  <img
+                    src="@/assets/images/mining/reward.jpg"
+                    width="23"
+                    class="mb-20px"
+                  />
+                  <div class="mr-40px mt-5px ml-4px">Rewards: {{scope.row.user_reward}}</div>
+                  <img
+                    src="@/assets/images/mining/stake.jpg"
+                    width="23"
+                    class="mb-20px"
+                  />
+                  <div class="mt-5px ml-4px">Stake: xxxx.xx</div>
                 </div>
               </div>
 
@@ -348,10 +364,10 @@ export default {
         //console.log('[Token Farming] [User Update]user balance ', pool.user_balance);
 
         // update user stake and pending reward
-        const pool_id = pool.pool_Id; 
+        const pool_id = pool.pool_Id;
         const user_stake = await pool.farming_contract.methods.getUserBalance(pool_id, account).call();
         const user_reward = await pool.farming_contract.methods.pendingFurion(pool_id, account).call();
-        
+
         //let multicall_list = [
           //pool.farming_contract.methods.getUserBalance(pool_id, account).call(),
           //pool.farming_contract.methods.pendingFurion(pool_id, account).call()
@@ -400,7 +416,7 @@ export default {
       const lp_token_contract = pool.lp_token_contract;
       let multicall_list = [
         lp_token_contract.methods.allowance(account, pool.farming_address)
-      ]; 
+      ];
       this.multicall.aggregate(multicall_list).then((allowance) => {
         // console.log('Allowance', allowance);
         pool.allowance_liquidity = allowance[0];
@@ -425,7 +441,7 @@ export default {
           this.errorMessage('Error approve token');
           return;
         }
-        
+
       await pool.lp_token_contract.methods.allowance(account, pool.farming_address).call()
       .then(res => {
         const allowance = fromWei(res, parseInt(pool.lp_token_decimal));
@@ -444,13 +460,13 @@ export default {
       if (parseFloat(pool.user_reward) <= 0) {
         //console.log('[Token Farming] [Harvest] Insufficient reward amt');
         this.errorMessage('Insufficient rewards');
-        return; 
+        return;
       }
       await openDialog(this.dialogue_info, [ProcessInfo.FARM_HARVEST_REWARD]);
       let account = this.userInfo.userAddress;
       const farming_contract = pool.farming_contract;
       const pool_id = pool.pool_Id;
-      try { 
+      try {
         let tx_result = await farming_contract.methods
                         .harvest(pool_id, account)
                         .send({from: account});
@@ -489,7 +505,7 @@ export default {
             this.errorMessage('Insufficient LP token Balance');
             return;
           }
-          
+
           // approve liquidity token
           if (!pool.liquidity_approved || pool.allowance_liquidity < pool.amt) {
               // approve liquidity token first
@@ -502,12 +518,12 @@ export default {
               }
           }
           //console.log('[Token Farming] [Add Liquidity] Amt: ', amount, ', allowance: ', pool.allowance_liquidity);
-          await openDialog(this.dialogue_info, [ProcessInfo.FARM_ADD_LIQUIDITY]); 
+          await openDialog(this.dialogue_info, [ProcessInfo.FARM_ADD_LIQUIDITY]);
             let tx_result = await farming_contract.methods
             .stake(pool_id, amount)
             .send({from: account})
             this.successMessage(tx_result, 'Add Liquidity Successfully');
-          
+
           } catch(e) {
             console.warn(e);
             this.errorMessage('Add Liquidity Error');
@@ -518,7 +534,7 @@ export default {
             this.pools[pool.index] = pool;
             return
           }
-      } 
+      }
       // else remove liquidity
       else if (pool.type == '2') {
         try {
@@ -532,7 +548,7 @@ export default {
           .withdraw(pool_id, amount)
           .send({from: account})
           this.successMessage(tx_result, 'Remove Liquidity Successfully');
-          
+
           } catch(e) {
             console.warn(e);
             this.errorMessage('Remove Liquidity Error');

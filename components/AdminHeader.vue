@@ -141,10 +141,10 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/mining/token_farming">Token farming</nuxt-link>
+                  <nuxt-link to="/mining/token_farming">Token Farming</nuxt-link>
                 </li>
                 <li class="submenu-item">
-                  <nuxt-link to="/">Staking</nuxt-link>
+                  <nuxt-link to="/staking">Staking</nuxt-link>
                 </li>
               </ul>
               <div class="shadow-top"></div>
@@ -159,7 +159,7 @@
             <div class="submenu-list-wrap">
               <ul class="submenu-list">
                 <li class="submenu-item">
-                  <nuxt-link to="/comingsoon">Coming soon</nuxt-link>
+                  <nuxt-link to="/comingsoon">Coming Soon</nuxt-link>
                 </li>
                 <li class="submenu-item">
                   <nuxt-link to="/governance">Governance</nuxt-link>
@@ -205,8 +205,9 @@
           <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
         </el-input>
 
+        <CartIcon></CartIcon>
         <DrawerAccount></DrawerAccount>
-        <DrawerWallet class="ml-20px"></DrawerWallet>
+        <DrawerWallet class="ml-20px mt-5px"></DrawerWallet>
       </div>
     </div>
   </div>
@@ -223,7 +224,7 @@ export default {
       );
     },
     showLongSearch() {
-      return ["/liquidity/borrow_list"].includes(this.$route.path);
+      return ["/liquidity/borrow_list", "/myWallet"].includes(this.$route.path);
     },
     showLongSearch2() {
       return ["/mining/token_farming"].includes(this.$route.path);
@@ -234,6 +235,7 @@ export default {
   },
   data() {
     return {
+      showCart: true,
       searchKey: "",
     };
   },
