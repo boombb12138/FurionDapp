@@ -85,6 +85,11 @@ export const ProcessInfo = {
     detail:
       'You are going to remove liquidity on Furion, please sign and wait for the transaction to be done',
   },
+  FARM_APPROVE_TOKEN: {
+    intro: 'Approval for liquidity token',
+    detail:
+      'Approve our contract to spend your liquidity token',
+  },
   FARM_ADD_LIQUIDITY:{
     intro: 'Add Liquidity on Furion Farm',
     detail:

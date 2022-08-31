@@ -63,27 +63,21 @@
     transform: matrix(1, 0, 0, -1, 0, 0);
   }
 }
-.text {
-  -webkit-text-stroke: 2px white;
-  color: rgba(0,0,0,0.08);
-  background: url("@/assets/images/arts.png");
-  background-size: 5%;
-  -webkit-background-clip: text;
-}
-.text-animation {
-  background-position: 30% 30%;
-  animation: zoomin 10s ease-in-out forwards;
-}
-.text-animation1 {
-  background-position: 70% 70%;
-  animation: zoomin 10s ease-in-out forwards;
-}
-@keyframes zoomin {
-  0% {
-    background-size: 5%;
+
+.vue-typer {
+  font-weight: 800;
+  font-size: 85px;
+  line-height: 85px;
+  -webkit-text-stroke: 2.5px white;
+
+  ::v-deep .custom.char {
+    color: rgba(0,0,0,0.08);
   }
-  100% {
-    background-size: 70%
+
+  ::v-deep .custom.caret {
+    background-color: white !important;
+    width: 2px;
+    margin-left: 5px;
   }
 }
 </style>
@@ -102,15 +96,28 @@
               <img class="mr-13px cursor-pointer" src="@/assets/images/index/video.svg" />
               <p class="text-16px text-[#FF7AE8] font-700 cursor-pointer">Learn more about Furion</p>
             </div>
-            <div class="text-white font-900 leading-105px text-92px mb-25px">
-              <p :class="{ 'text-animation': showAnimation }" class="text">Unleashing</p>
-              <p :class="{ 'text-animation1': showAnimation }" class="text">NFT Liquidity</p>
+            <p class="text-44px font-500 mb-10px">At Furion, you can...</p>
+            <div class="mb-25px w-540px">
+                <vue-typer 
+                  :text='["Buy NFT","Sell NFT","Explore NFT", "Unleash NFTLiquidity."]'
+                  :shuffle='false'
+                  :repeat='0'
+                  initial-action='typing'
+                  :pre-type-delay='100'
+                  :type-delay='100'
+                  :pre-erase-delay='1800'
+                  :erase-delay='80'
+                  erase-style='backspace'
+                  :erase-on-complete='false'
+                  caret-animation='blink'
+                  v-if="ready"
+                ></vue-typer>
             </div>
-            <div class="text-[rgba(252,255,253,0.6)] font-400 leading-34px text-22px">
+            <div class="text-[rgba(252,255,253,0.6)] font-400 leading-32px text-20px">
               <p>All-in-one NFT platform with better liquidity,</p>
               <p>price oracle, and AMM solutions.</p>
             </div>
-            <div class="mt-50px">
+            <div class="mt-35px">
               <div class="flex items-center">
                 <div class="btn_border w-190px mr-35px">
                   <el-button type="primary" class="!w-210px !h-56px" @click="$router.push('/collection/separate_pools')">VIEW COLLECTIONS</el-button>

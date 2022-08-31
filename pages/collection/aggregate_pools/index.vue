@@ -14,6 +14,63 @@
     border: 2px solid #55e7ec;
   }
 }
+
+@mixin btn-style {
+  font-size: 16px;
+  font-weight: 700;
+  text-shadow: 0 1px 0px rgb(1, 19, 46, 0.8);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  line-height: 62px;
+  height: 62px;
+  text-align: center;
+  width: 180px;
+  cursor: pointer;
+  transition: all 0.5s;
+  position: relative;
+}
+@mixin psuedo-style {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+.selected {
+  @include btn-style;
+  color: #02193a;
+  background-color: #f182de;
+  border-radius: 10px;
+}
+.custom-btn {
+  @include btn-style;
+  color: #f181de;
+
+  &::before {
+    @include psuedo-style;
+    background-color: rgba(241, 129, 222, 0.1);
+  }
+
+  &:hover::before {
+    opacity: 0 ;
+    transform: scale(0.3,0.3);
+  }
+
+  &::after {
+    @include psuedo-style;
+    opacity: 0;
+    border: 2px solid rgba(241, 129, 222, 0.8);
+    transform: scale(1.2,1.2);
+  }
+
+  &:hover::after {
+    opacity: 1;
+    transform: scale(1,1);
+  }
+}
 </style>
 
 <template>
@@ -21,7 +78,9 @@
     <div class="pt-45px pb-100px">
       <div class="flex justify-between mb-45px">
         <div class="flex">
-          <div
+          <div class="custom-btn !w-270px mr-30px"  @click="$router.push('/collection/separate_pools')">SEPARATE POOLS</div>
+          <div class="selected !w-270px">AGGREGATE POOLS</div>
+          <!--div
             class="btn_border mr-30px"
             @click="$router.push('/collection/separate_pools')"
           >
@@ -34,43 +93,11 @@
             <el-button type="primary" class="!w-265px !h-56px">
               Aggregate pools
             </el-button>
-          </div>
-        </div>
-        <div class="btn_border">
-          <el-button
-            type="primary"
-            class="!w-170px !h-56px"
-            @click="dialogVisible = true"
-          >
-            <div class="relative -top-2px">
-              <span class="text-20px">+</span>
-              ADD ASSET
-            </div>
-          </el-button>
+          </div-->
         </div>
       </div>
 
-      <el-dialog
-        title="NFT Contract Address:"
-        :visible.sync="dialogVisible"
-        width="600px"
-        :close-on-click-modal="false"
-        append-to-body
-      >
-        <div class="text-[#FCFFFD] absolute -top-240px text-center center-x">
-          <div class="text-28px font-800 mb-30px">CREATE A POOL</div>
-          <div class="text-18px whitespace-nowrap">
-            Paste the address of the NFT contract and pay the TX fee, it will
-            automatically create a pool to tokenize your NFTs.
-          </div>
-        </div>
-
-        <el-input
-          v-model="asset"
-          placeholder="Paste Contract address"
-          class="asset"
-        ></el-input>
-      </el-dialog>
+      <!-- Pool list -->
 
       <el-table
         :data="list"
@@ -80,13 +107,13 @@
         @cell-mouse-leave="leave"
         ref="table"
       >
-        <el-table-column prop="Collection" label="Collection" width="320px">
+        <el-table-column prop="name" label="Pool Name" width="320px">
           <template slot-scope="scope">
             <div class="flex font-500 text-16px pl-30px items-center">
               <div class="w-30px">{{ scope.$index + 1 }}</div>
               <img
-                :src="scope.row.Avatar"
-                v-if="scope.row.Avatar"
+                :src="scope.row.avatar"
+                v-if="scope.row.avatar"
                 class="w-52px rounded-full"
               />
               <img src="@/assets/images/avatar0.png" v-else class="w-52px rounded-full" />
@@ -94,7 +121,7 @@
               <Search-keyword
                 class="w-170px line-clamp-1 ml-10px"
                 :keyword="$route.query.key"
-                :text="scope.row.Collection"
+                :text="scope.row.name"
               ></Search-keyword>
             </div>
           </template>
@@ -102,31 +129,27 @@
 
         <el-table-column type="expand" width="-1">
           <template slot-scope="props">
-            <div class="px-40px pb-20px text-[#CCCCCC] font-700 text-16px">
-              <div class="flex mb-20px">
-                <div class="mr-30px">Number of collections:</div>
-                <div class="mr-120px">Count</div>
-                <div class="mr-30px">Number of NFTs:</div>
-                <div class="mr-60px">Count</div>
-                <div class="mr-30px">(Locked: 23</div>
-                <div>Store: 46)</div>
-              </div>
-              <div class="flex">
-                <div v-for="n in 8" class="flex items-center mr-30px">
-                  <img :src="$holder(40)" width="40" class="mr-15px rounded-full" />
-                  <div>Count</div>
+            <div class="px-20px py-8px text-[#CCCCCC]">
+              <!--div class="flex mb-24px text-18px font-500">Collections:</div-->
+
+              <div class="flex justify-evenly">
+                <div v-for="item in props.row.collections" class="flex items-center mr-40px">
+                  <img :src="item.avatar" class="mr-15px rounded-full w-50px" />
+                  <div class="text-center leading-22px font-400  text-16px">
+                    {{ item.staked }}<br><span class="!font-700">{{ item.symbol }}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="Volume" label="Volume" sortable width="150px">
+        <el-table-column prop="volume" label="Volume" sortable width="150px">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
-                {{ scope.row.Volume }}
+                {{ scope.row.volume }}
               </div>
             </div>
           </template>
@@ -155,31 +178,31 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="FloorPrice " label="Floor Price">
+        <el-table-column prop="floor_price" label="Floor Price">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
-                {{ scope.row.FloorPrice }}
+                {{ scope.row.floor_price }}
               </div>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="Owners" label="Owners"> </el-table-column>
-        <el-table-column prop="ltems" label="ltems"> </el-table-column>
+        <el-table-column prop="owners" label="Owners"> </el-table-column>
+        <el-table-column prop="items" label="Items"> </el-table-column>
 
-        <el-table-column prop="FXprice " label="F-X price">
+        <el-table-column prop="fx_price " label="F-X price">
           <template slot-scope="scope">
             <div class="flex items-center">
               <img src="@/assets/images/icon_eth.svg" />
               <div class="ml-5px">
-                {{ scope.row.FXprice }}
+                {{ scope.row.fx_price }}
               </div>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="Last7Days" label="Last 7 Days" width="150px">
+        <el-table-column prop="last_7d" label="Last 7 Days" width="150px">
           <template slot-scope="scope">
             <div>
               <client-only>
@@ -195,6 +218,7 @@
 
 <script>
 import getCharts from "@/utils/getCharts";
+import { initAvatars } from '@/config/collection/aggregate_pools';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -205,21 +229,22 @@ export default {
   computed: {},
   data() {
     return {
+      network: 'rinkeby',
       dialogVisible: false,
       asset: "default text",
       list: [
         {
           id: 1,
-          Collection: "Azuki",
-          Avatar: require("@/assets/images/avatar.png"),
-          Volume: "28,919,65",
+          name: "Mix (FFT-A)",
+          avatar: require("@/assets/images/avatar.png"),
+          volume: "28,919,65",
           _24h: "+2.94%",
           _7d: "-47.56%",
-          FloorPrice: "11.44",
-          Owners: "5.4K",
-          ltems: "10.0K",
-          FXprice: "7.28",
-          Last7Days: [
+          floor_price: "11.44",
+          owners: "5.4K",
+          items: "10.0K",
+          fx_price: "7.28",
+          last_7d: [
             "10",
             "22",
             "50",
@@ -238,20 +263,58 @@ export default {
             "0",
             "22",
           ],
-          Last7Days_type: 1,
+          last_7d_type: 1,
+          collections: [
+            {
+              name: "Cryptoadz",
+              symbol: "F-TOADZ",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "1000" 
+            },
+            {
+              name: "Cool Cats",
+              symbol: "F-COOL",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "1500"
+            },
+            { 
+              name: "World Of Women",
+              symbol: "F-WOW",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "2000"
+            },
+            {
+              name: "PudgyPenguins",
+              symbol: "F-PPG",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "2500"
+            },
+            {
+              name: "Invisible Friends",
+              symbol: "F-INVSBLE",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "3000"
+            },
+            {
+              name: "CryptoDickbutts S3",
+              symbol: "F-CDB",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "3500"
+            },
+          ]
         },
         {
-          id: 2,
-          Collection: "CLONEX-XTAKASHI11111",
-          Avatar: "",
-          Volume: "28,919,64",
+          id: 1,
+          name: "Mix (FFT-B)",
+          avatar: require("@/assets/images/avatar.png"),
+          volume: "28,919,65",
           _24h: "+2.94%",
           _7d: "-47.56%",
-          FloorPrice: "11.44",
-          Owners: "5.4K",
-          ltems: "10.0K",
-          FXprice: "7.28",
-          Last7Days: [
+          floor_price: "11.44",
+          owners: "5.4K",
+          items: "10.0K",
+          fx_price: "7.28",
+          last_7d: [
             "10",
             "22",
             "50",
@@ -270,7 +333,27 @@ export default {
             "0",
             "22",
           ],
-          Last7Days_type: 2,
+          last_7d_type: 1,
+          collections: [
+            {
+              name: "Cryptoadz",
+              symbol: "F-TOADZ",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "1000" 
+            },
+            {
+              name: "Cool Cats",
+              symbol: "F-COOL",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "1500"
+            },
+            { 
+              name: "World Of Women",
+              symbol: "F-WOW",
+              avatar: require("@/assets/images/avatar.png"),
+              staked: "2000"
+            },
+          ]
         },
       ],
       option: {},
@@ -281,15 +364,16 @@ export default {
     this.list = this.list.map((item) => {
       return {
         ...item,
-        option: getCharts(item.Last7Days, item.Last7Days_type),
+        option: getCharts(item.last_7d, item.last_7d_type),
       };
     });
+    await initAvatars(this.list, this.network);
     this.ready = true;
   },
 
   methods: {
     item(row) {
-      this.$router.push(`/collection/aggregated_pools_item?id=${row.id}`);
+      this.$router.push(`/collection/aggregate_pools/aggregated_pool?id=${row.id}`);
     },
     enter(row) {
       this.$refs.table.toggleRowExpansion(row, true);

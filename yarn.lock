@@ -7460,6 +7460,11 @@
   "resolved" "https://registry.nlark.com/lodash.memoize/download/lodash.memoize-4.1.2.tgz"
   "version" "4.1.2"
 
+"lodash.split@^4.4.2":
+  "integrity" "sha512-kn1IDX0aHfg0FsnPIyxCHTamZXt3YK3aExRH1LW8YhzP6+sCldTm8+E4aIg+nSmM6R4eqdWGrXWtfYI961bwIw=="
+  "resolved" "https://registry.npmjs.org/lodash.split/-/lodash.split-4.4.2.tgz"
+  "version" "4.4.2"
+
 "lodash.template@^4.5.0":
   "integrity" "sha1-+XYZXPPzR9DV9SSDVp/oAxzM6Ks="
   "resolved" "https://registry.npm.taobao.org/lodash.template/download/lodash.template-4.5.0.tgz"
@@ -11816,6 +11821,13 @@
   "integrity" "sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU="
   "resolved" "https://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
+
+"vue-typer@^1.2.0":
+  "integrity" "sha512-o0n2F9yOnbdQak1OiPFbZonIzysL5jiS1OPgaEX0KnMlKqXRKi808QHRdoMuqw44oYQM/vtxCt3AaNb9OzKH1Q=="
+  "resolved" "https://registry.npmjs.org/vue-typer/-/vue-typer-1.2.0.tgz"
+  "version" "1.2.0"
+  dependencies:
+    "lodash.split" "^4.4.2"
 
 "vue@^2", "vue@^2.0.0", "vue@^2.2.6", "vue@^2.5.17", "vue@^2.6.12", "vue@^2.6.12 || ^3.1.1", "vue@^3.0.0-0 || ^2.6.0", "vue@>= 2.5 < 3", "vue@2.x":
   "integrity" "sha512-x2284lgYvjOMj3Za7kqzRcUSxBboHqtgRE2zlos1qWaOye5yUmHn42LB1250NJBLRwEcdrB0JRwyPTEPhfQjiQ=="
