@@ -330,10 +330,11 @@
             </div>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <div class="btn_border w-1/2 mt-60px">
-              <el-button type="primary" class="!w-1/1 !h-52x" @click="addLiquidity" :disabled="!valid_add">{{ valid_add
-                  ?
-                  "Add liquidity" : "Insufficient"
-              }}</el-button>
+              <el-button type="primary" class="!w-1/1 !h-52x" @click="addLiquidity" :disabled="!valid_add || !approved">
+                {{ !approved ? "Approve first" : valid_add
+                    ?
+                    "Add liquidity" : "Insufficient"
+                }}</el-button>
             </div>
           </div>
 
@@ -405,8 +406,11 @@
               </el-button>
             </div>
             <div class="btn_border w-162px">
-              <el-button type="primary" class="!w-1/1 !h-52x" @click="removeLiquidity" :disabled="!valid_remove">
-                <span class="-ml-5px">{{ valid_remove ? "Withdraw" : "Insufficient" }}</span>
+              <el-button type="primary" class="!w-1/1 !h-52x" @click="removeLiquidity"
+                :disabled="!valid_remove || !liquidity_approved">
+                <span class="-ml-5px">{{
+                    !liquidity_approved ? "Approve first" : valid_remove ? "Withdraw" : "Insufficient"
+                }}</span>
               </el-button>
             </div>
           </div>

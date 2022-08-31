@@ -535,11 +535,16 @@ export default {
       this.token_1_amount = '';
       await this.updateUserInfo();
       closeDialog(this.dialogue_info);
+      await this.refresh();
     },
 
     /******************************* Helper functions *******************************/
 
     calToken1Amount() {
+      if (this.token_0_amount > this.swap_info.token_0_balance) {
+        this.valid_swap = false;
+        return
+      }
       if (this.swap_info.token_1_reserve * this.swap_info.token_0_reserve < 1) {
         this.errorMessage('Not enough liquidity for the pair')
         return
@@ -547,8 +552,13 @@ export default {
       const middle_value = this.token_0_amount * (1 - this.swap_info.fee_rate);
       const token_1_desired = this.swap_info.token_1_reserve * middle_value / (this.swap_info.token_0_reserve + middle_value);
       this.token_1_amount = token_1_desired.toFixed(4);
+      this.valid_swap = true;
     },
     calToken0Amount() {
+      if (this.token_1_amount > this.swap_info.token_1_balance) {
+        this.valid_swap = false;
+        return
+      }
       if (this.token_1_amount > this.swap_info.token_1_reserve) {
         this.token_1_amount = this.swap_info.token_1_reserve;
       }
@@ -557,6 +567,8 @@ export default {
       }
       const token_0_desired = this.swap_info.token_0_reserve * this.token_1_amount / (1 - this.swap_info.fee_rate) / (this.swap_info.token_1_reserve - this.token_1_amount);
       this.token_0_amount = token_0_desired.toFixed(4);
+
+      this.valid_swap = true;
     },
 
     formatNumber(value, fixed = 2) {
