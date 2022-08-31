@@ -304,7 +304,7 @@
       <div class="px-20px">
         <div class="flex justify-between">
           <div class="pl-8px flex">
-            <img src="@/assets/images/avatar.png" class="w-142px rounded-full avatar" />
+            <img :src="pool_info.avatar" class="w-142px rounded-full avatar" />
             <div class="pt-10px pl-20px flex relative">
               <div class="font-700 text-28px mb-5px mr-5px">{{ poolName }}</div>
 

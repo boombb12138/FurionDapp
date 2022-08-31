@@ -236,7 +236,7 @@ export default {
         {
           id: 1,
           name: "Mixed",
-          avatar: require("@/assets/images/avatar.png"),
+          avatar: require("@/assets/images/merged.gif"),
           volume: "28,919,65",
           _24h: "+2.94%",
           _7d: "-47.56%",
@@ -306,7 +306,7 @@ export default {
         {
           id: 1,
           name: "The Animals",
-          avatar: require("@/assets/images/avatar.png"),
+          avatar: require("@/assets/images/merged.gif"),
           volume: "28,919,65",
           _24h: "+2.94%",
           _7d: "-47.56%",

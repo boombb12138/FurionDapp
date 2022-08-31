@@ -7,7 +7,7 @@ export const pool_info_default = {
     id: 1,
     address: '0x',
     symbol: 'Furion',
-    avatar: require("@/assets/images/avatar.png"),
+    avatar: require("@/assets/images/merged.gif"),
     banner_url: require("@/assets/images/item.png"),
     description: '',
     volume: 9999,
