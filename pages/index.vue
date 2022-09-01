@@ -416,7 +416,7 @@ export default {
       categoryList: [
         {
           img: require("@/assets/images/index/category1.jpg"),
-          remark1: "The Story of Furion",
+          remark1: "NFT-Fi Trilemma",
           url: 'https://medium.com/@project.furion/the-nft-fi-trilemma-f1f86b045ed8',
         },
         {

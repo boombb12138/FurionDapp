@@ -251,19 +251,19 @@
                     <img src="@/assets/images/drawer/email.svg" />
                   </div>
                   <div class="form-item" v-if="!type_email">
-                    <p class="label" >E-mail 123@furion.com</p>
+                    <p class="label" >{{this.user_info.info_list.email}}</p>
                     <div class="icon-wrap" @click="click_email(true)">
                       <img id="type" src="@/assets/images/drawer/pencil.png" />
                     </div>
                   </div>
                   <div class="form-item" v-if="type_email">
                     <input
-                        id="content"
+                        id="content_email"
                         type="email"
                         class="block type_box mb-5px"
                         placeholder="Add your Email..."
                       />
-                    <div class="btnn2 ml-6px" @click="click_email(false)">
+                    <div class="btnn2 ml-6px" @click="email_confirm()">
                       <img  id="type" src="@/assets/images/drawer/confirm_dark.svg" width="40" class="icon"/>
                       <img  id="type" src="@/assets/images/drawer/confirm_light.svg" width="40" class="icon2"/>
                     </div>
@@ -281,19 +281,19 @@
                     <img src="@/assets/images/drawer/nick_name.svg" />
                   </div>
                   <div class="form-item" v-if="!type_nick_name">
-                    <p class="label" >anonymous</p>
+                    <p class="label" >{{this.user_info.info_list.nick_name}}</p>
                     <div class="icon-wrap" @click="click_nick_name(true)">
                       <img id="type" src="@/assets/images/drawer/pencil.png" />
                     </div>
                   </div>
                   <div class="form-item" v-if="type_nick_name">
                     <input
-                      id="content"
+                      id="content_nick_name"
                       type="text"
                       class="block type_box mb-5px"
                       placeholder="Add a Nick Name..."
                     />
-                    <div class="btnn2 ml-6px" @click="click_nick_name(false)">
+                    <div class="btnn2 ml-6px" @click="nick_name_confirm()">
                       <img  id="type" src="@/assets/images/drawer/confirm_dark.svg" width="40" class="icon"/>
                       <img  id="type" src="@/assets/images/drawer/confirm_light.svg" width="40" class="icon2"/>
                     </div>
@@ -312,25 +312,25 @@
                   <p class="label">Notification Preferences</p>
                 </div>
                 <div class="flex mb-22px">
-                  <div class="form-item flex-1" @click="profile.comment = !profile.comment">
+                  <div class="form-item flex-1" @click="comment_alert()">
                     <div class="icon-wrap">
-                      <img v-if="profile.comment" src="@/assets/images/drawer/checkbox_checked.svg" />
+                      <img v-if="this.user_info.info_list.comment" src="@/assets/images/drawer/checkbox_checked.svg" />
                       <img v-else src="@/assets/images/drawer/checkbox_empty.svg" />
                     </div>
                     <p class="label">Comment</p>
                   </div>
-                  <div class="form-item flex-1" @click="profile.alert = !profile.alert">
+                  <div class="form-item flex-1" @click="liquidation_alert_alert()">
                     <div class="icon-wrap">
-                      <img v-if="profile.alert" src="@/assets/images/drawer/checkbox_checked.svg" />
+                      <img v-if="this.user_info.info_list.liquidation_alert" src="@/assets/images/drawer/checkbox_checked.svg" />
                       <img v-else src="@/assets/images/drawer/checkbox_empty.svg" />
                     </div>
                     <p class="label">Liquidation alert</p>
                   </div>
                 </div>
                 <div class="flex mb-22px">
-                  <div class="form-item flex-1" @click="profile.news = !profile.news">
+                  <div class="form-item flex-1" @click="hot_news_alert()">
                     <div class="icon-wrap">
-                      <img v-if="profile.news" src="@/assets/images/drawer/checkbox_checked.svg" />
+                      <img v-if="this.user_info.info_list.hot_news" src="@/assets/images/drawer/checkbox_checked.svg" />
                       <img v-else src="@/assets/images/drawer/checkbox_empty.svg" />
                     </div>
                     <p class="label">Hot News</p>
@@ -480,7 +480,15 @@ import ClickOutside from "vue-click-outside";
 import { mapState } from 'vuex';
 import { fromWei, _showUserAddressText, _formatNumber, getNativeTokenAmount } from "@/utils/common";
 import { getContract } from "@/utils/common";
-
+import {
+  user_info,
+  inituserinfo,
+  renew_user_email,
+  renew_user_nick_name,
+  renew_user_comment,
+  renew_user_liquidation_alert,
+  renew_user_hot_news
+} from "@/config/user_info/profile";
 import Vue from "vue";
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard);
@@ -500,6 +508,8 @@ export default {
       isShowProfile: true,
       tab: "account", // account notification
       fur_balance: 0,
+      logdata: true,
+      user_info: user_info,
       eth_balance: 0,
       type_email: false,
       type_nick_name: false,
@@ -525,8 +535,8 @@ export default {
       ],
       profile: {
         comment: true,
-        alert: false,
-        news: false,
+        alert: true,
+        news: true,
       },
     };
   },
@@ -535,9 +545,8 @@ export default {
   },
   async mounted() {
     setTimeout(()=>{
- this.getBalance();
+      this.getBalance();
     }, 500)
-
   },
   methods: {
     formatNumber(value, fixed = 2) {
@@ -552,6 +561,28 @@ export default {
         final_result = '--'
       }
       return final_result
+    },
+    async comment_alert() {
+      this.user_info.info_list.comment = !this.user_info.info_list.comment
+      this.user_info = await renew_user_comment(this.network,this.userInfo.userAddress,this.user_info.info_list.comment);
+    },
+    async liquidation_alert_alert() {
+      this.user_info.info_list.liquidation_alert = !this.user_info.info_list.liquidation_alert
+      this.user_info = await renew_user_liquidation_alert(this.network,this.userInfo.userAddress,this.user_info.info_list.liquidation_alert);
+    },
+    async hot_news_alert() {
+      this.user_info.info_list.hot_news = !this.user_info.info_list.hot_news
+      this.user_info = await renew_user_hot_news(this.network,this.userInfo.userAddress,this.user_info.info_list.hot_news);
+    },
+    async email_confirm() {
+      this.type_email = false;
+      let text = document.getElementById("content_email").value;
+      this.user_info = await renew_user_email(this.network,this.userInfo.userAddress,text);
+    },
+    async nick_name_confirm() {
+      this.type_nick_name = false;
+      let text = document.getElementById("content_nick_name").value;
+      this.user_info = await renew_user_nick_name(this.network,this.userInfo.userAddress,text);
     },
     click_email(flag){
       this.type_email = flag;
@@ -592,11 +623,18 @@ export default {
         },
       ];
     },
-    toggle() {
-      // this.isShow = !this.isShow;
+    async toggle() {
+        if(this.userInfo.isConnect){
+          if(this.logdata){
+          this.user_info = await inituserinfo(this.network,this.userInfo.userAddress);
+          this.logdata = false;
+        }else{
+          return;
+        }
+      }
     },
     hide(e) {
-      if (e.target.id === "avatar-icon") {
+      if (e.target.id === "avatar-icon"&this.userInfo.isConnect) {
         this.isShow = !this.isShow;
       }else if(e.target.id ==="type"){
         this.isShow = true;

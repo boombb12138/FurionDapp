@@ -147,11 +147,11 @@ export default {
   async mounted() {
     setTimeout(() => {
       console.log('User connected?', this.userInfo.isConnect)
-      if (this.$route.path.length < 2) {
-        return
-      }
       if (!this.userInfo.isConnect) {
         this.isShow = true;
+      }
+      if (this.$route.path.length < 2) {
+        return
       }
     }, 200)
 
@@ -188,6 +188,8 @@ export default {
             // console.log('user address:', this.userInfo.userAddress);
             await this.getAlreadyConnectAccount();
             this.$store.commit('update', ['admin.connectStatus', 'connected']);
+
+
           } catch (error) {
             console.log(error);
           }
