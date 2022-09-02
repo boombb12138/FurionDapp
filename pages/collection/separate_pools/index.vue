@@ -95,14 +95,7 @@
           </div> -->
         </div>
         <!-- Create pool button -->
-        <div class="btn_border">
-          <el-button type="primary" class="!w-170px !h-56px" @click="dialogVisible = true">
-            <div class="relative -top-2px">
-              <span class="text-20px">+</span>
-              ADD ASSET
-            </div>
-          </el-button>
-        </div>
+        <div class="custom-btn !w-170px "  @click="dialogVisible = true">+ ADD ASSET</div>
       </div>
 
       <!-- Modal box for creating separate pool -->
