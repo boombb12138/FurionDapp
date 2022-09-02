@@ -34,7 +34,7 @@
   margin-bottom: 15px;
   position: relative;
   transition: all 0.5s;
-  
+
   &:hover {
     transform: scale(1.05);
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
@@ -150,7 +150,7 @@
   width: 70px;
   height: 252px;
   padding-top: 8px;
-  letter-spacing: 1.5px; 
+  letter-spacing: 1.5px;
   color: white;
   position: relative;
 }
@@ -279,7 +279,7 @@
   letter-spacing: 1px;
   color: #f181de;
   margin-right: 13px;
-  animation: pulseText 1.2s ease-in-out infinite alternate; 
+  animation: pulseText 1.2s ease-in-out infinite alternate;
 }
 @keyframes pulseText {
   from {
@@ -386,8 +386,6 @@
         <div class="flex items-center justify-between">
           <el-checkbox-group v-model="checkList">
             <el-checkbox label="ALL"></el-checkbox>
-            <el-checkbox label="STORED"></el-checkbox>
-            <el-checkbox label="LOCKED"></el-checkbox>
           </el-checkbox-group>
 
           <div class="pr-5px">
@@ -444,7 +442,7 @@
             class="item"
             v-for="(item, index) in pool_info.collections"
             :key="index"
-          > 
+          >
             <div class="flex justify-between w-350px px-15px pt-15px">
               <el-image
                 :src="item.image_url"
@@ -454,7 +452,7 @@
                 <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
               </el-image>
 
-              <div class="collection-name">
+              <div class="collection-name cursor-pointer">
                 <span>{{ item.name }}</span><span class="collection-symbol">F-{{ item.symbol }}</span>
               </div>
             </div>

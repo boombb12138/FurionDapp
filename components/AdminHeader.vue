@@ -219,7 +219,7 @@ export default {
   components: {},
   computed: {
     showShotSearch() {
-      return ["/collection/separate_pools", "/collection/aggregated_pools"].includes(
+      return ["/collection/separate_pools", "/collection/aggregate_pools"].includes(
         this.$route.path
       );
     },
