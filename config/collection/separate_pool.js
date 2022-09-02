@@ -14,7 +14,7 @@ export const default_pool_info = {
     external_link: '',
     twitter_name: 'furion',
     twitter_link: 'https://twitter.com/furion',
-    volume: 9999,
+    volume: 999,
     owners: 999,
     floor_price: 9.99,
     fXprice: 9.99,
@@ -177,7 +177,7 @@ export const query_user_holding = async (nft_address, user_address, network) => 
         console.warn(e);
         return
     }
-    
+
 
     // console.log('User list result', in_pool)
 

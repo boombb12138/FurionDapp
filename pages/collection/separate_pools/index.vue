@@ -1,24 +1,76 @@
 <style lang="scss" scoped>
-.asset ::v-deep .el-input__inner {
-  background: rgba(237, 242, 255, 0.6);
-  box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.1), inset 0px -2px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 16px;
-  text-align: center;
-  color: rgba(11, 26, 59, 0.8);
-  height: 60px;
-  line-height: 60px;
-  font-size: 18px;
-  font-weight: 500;
-
-  &:focus {
-    background: #edf2ff;
-    border: 2px solid #55e7ec;
+  .asset ::v-deep .el-input__inner {
+    background: rgba(237, 242, 255, 0.6);
+    box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.1), inset 0px -2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    text-align: center;
+    color: rgba(11, 26, 59, 0.8);
+    height: 60px;
+    line-height: 60px;
+    font-size: 18px;
+    font-weight: 500;
+    &:focus {
+      background: #edf2ff;
+      border: 2px solid #55e7ec;
+    }
   }
-}
 
-.create-pool-button {
-  text-align: center;
-}
+  @mixin btn-style {
+    font-size: 16px;
+    font-weight: 700;
+    text-shadow: 0 1px 0px rgb(1, 19, 46, 0.8);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    line-height: 62px;
+    height: 62px;
+    text-align: center;
+    width: 180px;
+    cursor: pointer;
+    transition: all 0.5s;
+    position: relative;
+  }
+  @mixin psuedo-style {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    border-radius: 10px;
+    transition: all 0.3s;
+  }
+  .selected {
+    @include btn-style;
+    color: #02193a;
+    background-color: #f182de;
+    border-radius: 10px;
+  }
+  .custom-btn {
+    @include btn-style;
+    color: #f181de;
+
+    &::before {
+      @include psuedo-style;
+      background-color: rgba(241, 129, 222, 0.1);
+    }
+
+    &:hover::before {
+      opacity: 0 ;
+      transform: scale(0.3,0.3);
+    }
+
+    &::after {
+      @include psuedo-style;
+      opacity: 0;
+      border: 2px solid rgba(241, 129, 222, 0.8);
+      transform: scale(1.2,1.2);
+    }
+
+    &:hover::after {
+      opacity: 1;
+      transform: scale(1,1);
+    }
+  }
 </style>
 
 <template>
@@ -27,7 +79,10 @@
       <div class="flex justify-between mb-45px">
         <!-- Toggle pool types -->
         <div class="flex">
-          <div class="btn_border mr-30px">
+          <div class="selected !w-270px mr-30px">SEPARATE POOLS</div>
+          <div class="custom-btn !w-270px "  @click="$router.push('/collection/aggregate_pools')">AGGREGATE POOLS</div>
+
+          <!-- <div class="btn_border mr-30px">
             <el-button type="primary" class="!w-265px !h-56px">
               Separate pools
             </el-button>
@@ -37,17 +92,10 @@
             <el-button type="primary" class="!w-265px !h-56px" plain>
               Aggregate pools
             </el-button>
-          </div>
+          </div> -->
         </div>
         <!-- Create pool button -->
-        <div class="btn_border">
-          <el-button type="primary" class="!w-170px !h-56px" @click="dialogVisible = true">
-            <div class="relative -top-2px">
-              <span class="text-20px">+</span>
-              ADD ASSET
-            </div>
-          </el-button>
-        </div>
+        <div class="custom-btn !w-170px "  @click="dialogVisible = true">+ ADD ASSET</div>
       </div>
 
       <!-- Modal box for creating separate pool -->

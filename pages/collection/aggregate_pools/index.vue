@@ -119,7 +119,7 @@
               <img src="@/assets/images/avatar0.png" v-else class="w-52px rounded-full" />
 
               <Search-keyword
-                class="w-170px line-clamp-1 ml-10px"
+                class="w-170px line-clamp-1 ml-10px cursor-pointer"
                 :keyword="$route.query.key"
                 :text="scope.row.name"
               ></Search-keyword>
@@ -269,7 +269,7 @@ export default {
               name: "Cryptoadz",
               symbol: "F-TOADZ",
               avatar: require("@/assets/images/avatar.png"),
-              staked: "1000" 
+              staked: "1000"
             },
             {
               name: "Cool Cats",
@@ -277,7 +277,7 @@ export default {
               avatar: require("@/assets/images/avatar.png"),
               staked: "1500"
             },
-            { 
+            {
               name: "World Of Women",
               symbol: "F-WOW",
               avatar: require("@/assets/images/avatar.png"),
@@ -306,7 +306,7 @@ export default {
         {
           id: 1,
           name: "The Animals",
-          avatar: require("@/assets/images/merged.gif"),
+          avatar: require("@/assets/images/animals.gif"),
           volume: "28,919,65",
           _24h: "+2.94%",
           _7d: "-47.56%",
@@ -339,7 +339,7 @@ export default {
               name: "Cryptoadz",
               symbol: "F-TOADZ",
               avatar: require("@/assets/images/avatar.png"),
-              staked: "1000" 
+              staked: "1000"
             },
             {
               name: "Cool Cats",
@@ -347,7 +347,7 @@ export default {
               avatar: require("@/assets/images/avatar.png"),
               staked: "1500"
             },
-            { 
+            {
               name: "PudgyPenguins",
               symbol: "F-PPG",
               avatar: require("@/assets/images/avatar.png"),

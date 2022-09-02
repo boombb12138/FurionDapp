@@ -4,7 +4,7 @@
   <div class="!w-1150px">
     <BorrowTab v-model="active"></BorrowTab>
 
-    <el-table :data="list" ref="table" @cell-click="cell_click" class="custom w-1/1">
+    <el-table :data="list[active - 1]" ref="table" @cell-click="cell_click" class="custom w-1/1">
       <el-table-column prop="symbol" label="Symbol" sortable width="200px">
         <template slot-scope="scope">
           <div class="flex items-center py-10px">
@@ -15,7 +15,7 @@
               <img src="@/assets/images/token2.png" class="w-46px" />
             </div>
             <div>
-              <Search-keyword :keyword="query.key" :text="scope.row.symbol"></Search-keyword>
+              <Search-keyword :text="scope.row.symbol"></Search-keyword>
               <!-- div class="text-13px font-300 mt-10px text-[rgba(252,255,253,0.6)]">ZH9875</div -->
             </div>
           </div>
@@ -85,31 +85,54 @@ export default {
   },
   props: {},
   components: {},
-  computed: {
-    query() {
-      return this.$route.query;
-    },
-  },
+  computed: {},
   data() {
     return {
-      active: 2,
+      active: 1,
       list: [
-        {
-          symbol: 'ETH',
-          tvl: 1000,
-          borrowed: 500,
-          supply_apr: 6.5,
-          available: 500,
-          borrow_apr: 13,
-          icon: require('@/assets/images/token.svg'),
-        }
+        // Tier 1 list
+        [ 
+          {
+            symbol: 'USDT',
+            tvl: 1000,
+            borrowed: 500,
+            supply_apr: 6.5,
+            available: 500,
+            borrow_apr: 13,
+            icon: require('@/assets/images/token.svg'),
+          }
+        ],
+        // Tier 2 list
+        [
+          {
+            symbol: 'ETH',
+            tvl: 1000,
+            borrowed: 500,
+            supply_apr: 6.5,
+            available: 500,
+            borrow_apr: 13,
+            icon: require('@/assets/images/token.svg'),
+          }
+        ],
+        // Tier 3 list
+        [
+          {
+            symbol: 'FUR',
+            tvl: 1000,
+            borrowed: 500,
+            supply_apr: 6.5,
+            available: 500,
+            borrow_apr: 13,
+            icon: require('@/assets/images/token.svg'),
+          }
+        ],
       ],
     };
   },
   mounted() {},
   methods: {
     cell_click(row) {
-      this.$router.push(`/liquidity/money_market/pool_detail?tier=2&asset=${row.symbol}`);
+      this.$router.push(`/liquidity/money_market/pool_detail?tier=${this.active}&asset=${row.symbol}`);
     },
   },
 };
