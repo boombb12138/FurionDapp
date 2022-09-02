@@ -14,7 +14,7 @@
 
       <div
         class="btn_border inline-block"
-        @click="$router.push('/liquidity/money_market/list_A')"
+        @click="$router.push('/liquidity/money_market/lists')"
       >
         <el-button type="success" class="!w-354px !h-56px !p-0"
           >Start Borrowing & Lending</el-button
