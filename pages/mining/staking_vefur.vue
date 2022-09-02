@@ -142,7 +142,7 @@
       </div>
     </div>
 
-    <div class="flex mx-auto w-1160px">
+    <div class="flex mx-auto w-1160px" :data="user">
       <div class="card1 px-32px">
         <div>
           <div class="font-700 text-32px pt-24px leading-38px mb-16px">Overview</div>
@@ -150,11 +150,11 @@
         <div class="flex justify-between mb-35px">
           <div class="box w-341px h-128px pt-36px">
             <div class="text-[#83899A] font-500 text-20px mb-6px">Total Staked (FUR)</div>
-            <div class="text-[#D9D9D9] font-500 text-30px">$42,842,552</div>
+            <div class="text-[#D9D9D9] font-500 text-30px">$ {{this.user.total_fur_stake}}</div>
           </div>
           <div class="box w-341px h-128px pt-36px">
             <div class="text-[#83899A] font-500 text-20px mb-6px">Total veFUR Supply</div>
-            <div class="text-[#D9D9D9] font-500 text-30px">224,432 veFUR</div>
+            <div class="text-[#D9D9D9] font-500 text-30px">{{this.user.total_veFur_supply}} veFUR</div>
           </div>
         </div>
         <div class="box h-198px pt-30px">
@@ -204,7 +204,7 @@
         <div class="box pt-26px h-230px mb-20px !px-17px">
           <div class="flex justify-between mb-27px">
             <div class="text-[#8B93A2] font-500 text-14px">Balance</div>
-            <div class="text-white font-500 text-16px">0 veFUR</div>
+            <div class="text-white font-500 text-16px">{{this.user.current_fur_balance}} FUR</div>
           </div>
 
           <div class="relative mb-20px">
@@ -222,7 +222,7 @@
                 MAX
               </div>
               <div class="mx-9px w-2px h-17px bg-[#F181DE]"></div>
-              <div class="font-500 text-13px text-[#D9D9D9]">veFUR</div>
+              <div class="font-500 text-13px text-[#D9D9D9]">FUR</div>
             </div>
           </div>
 
@@ -239,12 +239,12 @@
           <div class="flex mb-20px">
             <div class="flex-1">
               <div class="font-500 text-16px text-[#8B93A2] mb-5px">Staked</div>
-              <div class="font-700 text-24px">0 FUR</div>
+              <div class="font-700 text-24px">{{this.user.current_fur_stake}} FUR</div>
               <div class="text-[#FA6BE1] font-500 text-16px mt-9px">$0</div>
             </div>
             <div class="flex-1">
               <div class="font-500 text-16px text-[#8B93A2] mb-5px">Pending Rewards</div>
-              <div class="font-700 text-24px">0 veFUR</div>
+              <div class="font-700 text-24px">{{this.user.pending_veFur_reward}} veFUR</div>
               <div
                 class="cursor-pointer font-500 text-12px text-white bg-[rgba(250,107,225,0.64)] rounded-20px py-4px px-12px mt-7px"
               >
@@ -262,22 +262,50 @@
 </template>
 
 <script>
-export default {
-  async asyncData({ store, $axios, app, query }) {
-    store.commit("update", ["admin.activeMenu", "/mining"]);
-  },
-  props: {},
-  components: {},
-  computed: {},
-  data() {
-    return {
-      type: 1,
-      stake: 1,
-      num: undefined,
-      connected: false,
-    };
-  },
-  mounted() {},
-  methods: {},
-};
+  import { mapState } from 'vuex';
+  import { User, InitUserInfo, UpdateUserInfo } from '@/config/furion_staking/user_info';
+
+
+  export default {
+    async asyncData({ store, $axios, app, query }) {
+      store.commit("update", ["admin.activeMenu", "/mining"]);
+    },
+
+    props: {},
+
+    components: {},
+
+    computed: {
+      ...mapState('admin', ['connectStatus']),
+      ...mapState(['userInfo']),
+    },
+
+    data() {
+      return {
+        type: 1,
+        stake: 1,
+        num: undefined,
+        connected: false,
+        user: User,
+      };
+    },
+
+    async mounted() {
+      this.user = await InitUserInfo(this.user);
+      await this.UpdateUserInfo();
+    },
+
+    methods: {
+      async UpdateUserInfo() {
+        let account =  this.userInfo.userAddress;
+        if (account == null) {
+          return;
+        }
+        this.user = await UpdateUserInfo(this.user, account);
+      },
+
+    },
+
+  };
+
 </script>

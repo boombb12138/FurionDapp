@@ -84,23 +84,23 @@
           </div>
           <div class="info">
             <div class="key">Total Staked (FUR)</div>
-            <div class="value">4,169.03 FUR</div>
+            <div class="value">{{this.user.total_fur_stake}} FUR</div>
           </div>
           <div class="info">
             <div class="key">Total veFUR Supply</div>
-            <div class="value">0.00 veFUR</div>
+            <div class="value">{{this.user.total_veFur_supply}} veFUR</div>
           </div>
           <div class="info">
             <div class="key">Your Stake (FUR)</div>
-            <div class="value">0.00 FUR</div>
+            <div class="value">{{this.user.current_fur_stake}} FUR</div>
           </div>
           <div class="info">
             <div class="key">Wallet Balance (FUR)</div>
-            <div class="value">0.00 FUR</div>
+            <div class="value">{{this.user.current_fur_balance}} FUR</div>
           </div>
           <div class="info">
             <div class="key">Claimable veFUR</div>
-            <div class="value">0.00 veFUR</div>
+            <div class="value">{{this.user.pending_veFur_reward}} veFUR</div>
           </div>
           <div class="btn" @click="$router.push('/mining/staking_vefur')">Earn veFUR</div>
         </div>
@@ -159,17 +159,38 @@
 </template>
 
 <script>
-export default {
-  async asyncData({ store, $axios, app, query }) {
-    store.commit("update", ["admin.activeMenu", "/mining"]);
-  },
-  props: {},
-  components: {},
-  computed: {},
-  data() {
-    return {};
-  },
-  mounted() {},
-  methods: {},
-};
+  import { mapState } from 'vuex';
+  import { User, InitUserInfo, UpdateUserInfo } from '@/config/furion_staking/user_info';
+
+  export default {
+    async asyncData({ store, $axios, app, query }) {
+      store.commit("update", ["admin.activeMenu", "/mining"]);
+    },
+    props: {},
+    components: {},
+    computed: {
+      ...mapState('admin', ['connectStatus']),
+      ...mapState(['userInfo']),
+    },
+    data() {
+      return {
+        user: User,
+      };
+    },
+    async mounted() {
+      this.user = await InitUserInfo(this.user);
+      await this.UpdateUserInfo();
+    },
+
+    methods: {
+      async UpdateUserInfo() {
+        let account =  this.userInfo.userAddress;
+        if (account == null) {
+          return;
+        }
+        this.user = await UpdateUserInfo(this.user, account);
+      },
+
+    },
+  };
 </script>
