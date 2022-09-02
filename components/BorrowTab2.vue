@@ -3,6 +3,7 @@
   background: rgba(79, 68, 148, 0.6);
   border: 5px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
+  z-index: 1;
 
   .text {
     font-weight: 600;
@@ -13,11 +14,25 @@
     cursor: pointer;
     color: #86898c;
     border-radius: 12px;
-    color: rgba(252, 255, 253, 0.6);
+    z-index: 3;
+    transition: all 0.3s;
+
+    &:hover {
+      color: rgba(252, 255, 253);
+    }
   }
 
   .active {
     font-weight: 800;
+    color: #fff;
+    z-index: 3;
+  }
+
+  .glider {
+    --pos: '0';
+    position: absolute;
+    height: 38px;
+    width: 123px;
     background: linear-gradient(
       262.19deg,
       #67d6f5 -22.52%,
@@ -28,7 +43,9 @@
     box-shadow: inset 0px -2px 2px rgba(0, 0, 0, 0.12),
       inset 0px 1px 1px rgba(245, 230, 255, 0.6);
     border-radius: 9px;
-    color: #fff;
+    z-index: 2;
+    transform: translateX(var(--pos));
+    transition: 0.25s ease;
   }
 }
 </style>
@@ -65,6 +82,7 @@
         >
           Withdraw
         </div>
+        <span class="glider" :style="`--pos: ${translateTo}`"></span>
       </div>
     </div>
   </div>
@@ -79,7 +97,22 @@ export default {
     },
   },
   components: {},
-  computed: {},
+  computed: {
+    translateTo() {
+      switch (this.value) {
+        case 1:
+          return '0';
+        case 2:
+          return '100%';
+        case 3:
+          return '200%';
+        case 4:
+          return '300%';
+        default:
+          return '0';
+      }
+    }
+  },
   data() {
     return {};
   },
