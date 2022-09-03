@@ -31,7 +31,6 @@
   border-radius: 12px;
   //cursor: pointer;
   box-sizing: border-box;
-  margin-bottom: 15px;
   position: relative;
   transition: all 0.5s;
 
@@ -219,6 +218,33 @@
   &:hover::after {
     opacity: 1;
     transform: scale(1,1);
+  }
+}
+
+.line {
+  display: inline-block;
+  position: relative;
+  color: rgba(255, 255, 253, 0.9);
+
+  
+  &:before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: rgba(255, 255, 253, 0.9);
+    visibility: hidden;
+    transform: scaleX(0);
+    animation: expand 0.4s ease-out 0.25s forwards; 
+    //transition: all .5s ease-out;
+  }
+}
+@keyframes expand {
+  to {
+    visibility: visible;
+    transform: scaleX(1);
   }
 }
 
@@ -437,7 +463,7 @@
 
         <!-- Collections in pool -->
 
-        <div class="pb-150px grid grid-cols-3 mt-20px">
+        <div class="pb-150px grid grid-cols-3 gap-30px mt-20px">
           <div
             class="item"
             v-for="(item, index) in pool_info.collections"
@@ -468,7 +494,7 @@
               <img src="@/assets/images/icon_eth.svg" />
               <div class="flex items-center">
                 <div
-                  class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon"
+                  class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon cursor-pointer"
                 >
                   <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
                   <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
@@ -489,8 +515,8 @@
       append-to-body
       custom-class="el-dialog-dark"
     >
-      <div slot="title" class="flex font-800 text-20px">
-        <div class="pb-2px" style="border-bottom: 2px solid #fff; word-spacing: 10px;">{{ action }} F-{{ ftoken_to_interact.symbol }}</div>
+      <div slot="title" class="flex font-800 text-28px">
+        <div class="pb-2px line" style="word-spacing: 10px;">{{ action }} F-{{ ftoken_to_interact.symbol }}</div>
       </div>
 
       <div class="input-window mb-25px">
