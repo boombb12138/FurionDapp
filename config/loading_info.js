@@ -105,6 +105,16 @@ export const ProcessInfo = {
     detail:
     'You are going to redeem your farming reward on Furion, please sign and wait for the transaction to be done'
   },
+  STAKE_FUR: {
+    intro: 'Stake FUR on Furion Stake',
+    detail: 
+    'You are going to stake FUR to Furion, please sign and wait for the transaction to be done',
+  },
+  STAKE_LOCK_FUR: {
+    intro: 'Stake and Lock FUR on Furion Stake',
+    detail: 
+    'You are going to stake and lock FUR to Furion, please sign and wait for the transaction to be done',
+  },
   DEPOSIT_TOKEN:{
     intro: 'Deposit token to money market',
     detail: 

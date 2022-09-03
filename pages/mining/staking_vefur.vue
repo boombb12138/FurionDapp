@@ -218,6 +218,7 @@
             <div class="flex absolute center-y right-12px items-center">
               <div
                 class="cursor-pointer font-500 text-13px text-white bg-[rgba(250,107,225,0.64)] rounded-20px py-2px px-8px"
+                @click="setAmountMax"
               >
                 MAX
               </div>
@@ -227,8 +228,8 @@
           </div>
 
           <div class="flex items-center justify-between">
-            <div class="btn1" @click="stake = 1" :class="{ grey: stake != 1 }">Stake</div>
-            <div class="btn1" @click="stake = 2" :class="{ grey: stake != 2 }">
+            <div class="btn1" @click="stake = 1; stakeAmt()" :class="{ grey: stake != 1 }">Stake</div>
+            <div class="btn1" @click="stake = 2; stakeAndLock()" :class="{ grey: stake != 2 }">
               Stake & Lock
             </div>
           </div>
@@ -258,12 +259,24 @@
         </div>
       </div>
     </div>
+    <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
 </template>
 
 <script>
   import { mapState } from 'vuex';
   import { User, InitUserInfo, UpdateUserInfo } from '@/config/furion_staking/user_info';
+  import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
+  import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
+  
+  import {
+    DialogInfo,
+    initDialog,
+    closeDialog,
+    openDialog,
+    stepDialog,
+    ProcessInfo,
+  } from '~/config/loading_info';
 
 
   export default {
@@ -273,7 +286,7 @@
 
     props: {},
 
-    components: {},
+    components: {ProceedingDetails},
 
     computed: {
       ...mapState('admin', ['connectStatus']),
@@ -287,21 +300,212 @@
         num: undefined,
         connected: false,
         user: User,
+        approved: false,
+        allowance: 0.0,
+        dialogue_info: DialogInfo,
       };
     },
 
     async mounted() {
       this.user = await InitUserInfo(this.user);
-      await this.UpdateUserInfo();
+      await this.updateUserInfo();
+      await this.checkFURApproval();
     },
 
     methods: {
-      async UpdateUserInfo() {
+      async updateUserInfo() {
         let account =  this.userInfo.userAddress;
         if (account == null) {
           return;
         }
         this.user = await UpdateUserInfo(this.user, account);
+      },
+
+      async setAmountMax() {
+        this.num = parseFloat(this.user.current_fur_balance);
+      },
+
+      async checkFURApproval() {
+        const account = this.userInfo.userAddress;
+        const fur_contract = this.user.fur_contract;
+        try {
+          const allowance = await fur_contract.methods.allowance(account, this.user.veFur_address).call();
+          if (allowance > 0) {
+            this.approved = true;
+            this.allowance = allowance;
+            return;
+          }
+          this.approved = false;
+          allowance = 0.0;
+
+        } catch(e) {
+          console.warn(e);
+          return;
+        }
+      },
+
+      async approveFURToken() {
+        const account = this.userInfo.userAddress;
+        try {
+          await tokenApprove(this.user.fur_address, account, this.user.veFur_address);
+          await this.checkFURApproval();
+
+        } catch(e) {
+          console.warn(e);
+          return;
+        }
+      },
+
+      async stakeAmt() {
+        const account = this.userInfo.userAddress;
+        const res = await this.validateAmount();
+        
+        if (res) {
+            try {
+              // check token approval and then add
+              const veFur_contract = this.user.veFur_contract;
+              const amount = toWei(this.num.toString(), 18);
+              if (!this.approved || this.allowance < amount) {
+                // approve and stake
+                await openDialog(
+                this.dialogue_info, 
+                [ProcessInfo.APPROVE_FUR, ProcessInfo.STAKE_FUR]);
+                await this.approveFURToken();
+                if (!this.approved || this.allowance < amount) {
+                  closeDialog(this.dialogue_info);
+                  this.errorMessage('Approve token error');
+                  return;
+                }
+  
+                stepDialog(this.dialogue_info);
+                const gas = await veFur_contract.methods.deposit(amount).estimateGas({from: account});
+                const tx_result = await veFur_contract.methods.deposit(amount).send({
+                  from: account,
+                  gas: gas
+                });
+                //close the dialog
+                closeDialog(this.dialogue_info);
+                this.successMessage(tx_result, 'Successfully staked FUR');
+
+              } else {
+                await openDialog(this.dialogue_info, [ProcessInfo.STAKE_FUR]);
+                const gas = await veFur_contract.methods.deposit(amount).estimateGas({from: account});
+                const tx_result = await veFur_contract.methods.deposit(amount).send({
+                  from: account,
+                  gas: gas
+                });
+                //close the dialog
+                closeDialog(this.dialogue_info);
+                this.successMessage(tx_result, 'Successfully staked FUR');
+              }
+
+            } catch(e) {
+              console.warn(e);
+              return;
+            }
+
+        } else {
+          this.num = undefined;
+          return;
+        }
+        await this.updateUserInfo();
+        this.num = undefined;
+      },
+
+      // same logic, call deposit with lock
+      async stakeAndLock() {
+        const account = this.userInfo.userAddress;
+        const res = await this.validateAmount();
+        
+        if (res) {
+            try {
+              const veFur_contract = this.user.veFur_contract;
+              const amount = toWei(this.num.toString(), 18);
+              if (!this.approved || this.allowance < amount) {
+                // approve and stake with lock
+                await openDialog(
+                this.dialogue_info, 
+                [ProcessInfo.APPROVE_FUR, ProcessInfo.STAKE_LOCK_FUR]);
+              
+                await this.approveFURToken();
+                if (!this.approved || this.allowance < amount) {
+                  closeDialog(this.dialogue_info);
+                  this.errorMessage('Approve token error');
+                  return;
+                }
+  
+                stepDialog(this.dialogue_info);
+                const gas = await veFur_contract.methods.depositMaxTime(amount).estimateGas({from: account});
+                const tx_result = await veFur_contract.methods.depositMaxTime(amount).send({
+                  from: account,
+                  gas: gas
+                });
+                //close the dialog
+                closeDialog(this.dialogue_info);
+                this.successMessage(tx_result, 'Successfully staked FUR');
+
+              } else {
+                await openDialog(this.dialogue_info, [ProcessInfo.STAKE_LOCK_FUR]);
+                const gas = await veFur_contract.methods.depositMaxTime(amount).estimateGas({from: account});
+                const tx_result = await veFur_contract.methods.depositMaxTime(amount).send({
+                  from: account,
+                  gas: gas
+                });
+                //close the dialog
+                closeDialog(this.dialogue_info);
+                this.successMessage(tx_result, 'Successfully staked FUR');
+              }
+
+            } catch(e) {
+              console.warn(e);
+              return;
+            }
+
+        } else {
+          this.num = undefined;
+          return;
+        }
+        await this.updateUserInfo();
+        this.num = undefined;
+      },
+
+      async validateAmount() {
+        const num = this.num;
+        const user_balance = parseFloat(this.user.current_fur_balance);
+        try {
+          if (num == undefined) {
+            this.errorMessage('Enter amount');
+            return false;
+          } else if (num <= 0.0) {
+            this.errorMessage('Amount should be greater than 0');
+            return false;
+          } else if (num > user_balance) {
+            this.errorMessage('Insufficient Balance');
+            return false;
+          } 
+          return true;
+
+        } catch(e) {
+          console.warn(e); 
+        }
+      },
+
+      successMessage(receipt, title) {
+        const txURL = getTxURL(receipt.transactionHash);
+        this.$notify({
+          title: title,
+          dangerouslyUseHTMLString: true,
+          message: txURL,
+          type: 'success',
+        });
+      },
+  
+      errorMessage(title) {
+        this.$notify.error({
+          title: title,
+          message: '',
+          dangerouslyUseHTMLString: true,
+        });
       },
 
     },
