@@ -583,7 +583,6 @@ export default {
       } else {
         this.nftToPool.push(tokenId);
       }
-
       this.$set(this.applySelectedStyle, tokenIndex, !this.applySelectedStyle[tokenIndex]);
 
       // console.log(this.applySelectedStyle);
@@ -679,6 +678,19 @@ export default {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
         this.successMessage(tx_result, `Purchase F-${this.separate_pool_info.symbol} #${tokenId} succeeded`);
         //put the message into the database when buy succeed
+        let data = {
+          network: this.network,
+          project: this.separate_pool_info.collection,
+          token_id: tokenId,
+          address: separate_pool_info.nft_address,
+          event: 'Redeem',
+          event_type: 'success',
+          eth_price: separate_pool_info.fXprice,
+          from_user: this.poolContract.address,
+          to_user: account,
+        };
+        // console.log(data);
+        intoNftActivity(data);
 
       } catch (e) {
         this.errorMessage(`Purchase F-${this.separate_pool_info.symbol} #${tokenId} failed`);
@@ -724,19 +736,22 @@ export default {
         let tx_result = await this.poolContract.contract.methods.sellBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Store succeeded');
         this.nftToPool = [];
-        let data = {
-          network: this.network,
-          project: this.separate_pool_info.collection,
-          token_id: tokenId,
-          address: separate_pool_info.nft_address,
-          event: 'Bid',
-          event_type: 'success',
-          eth_price: separate_pool_info.fXprice,
-          from_user: account,
-          to_user: this.userInfo.userAddress,
-        };
-        console.log(data);
-        intoNftActivity(data);
+        // let data = {};
+        // data.push({
+        //   network: this.network,
+        //   project: this.separate_pool_info.collection,
+        //   token_id: tokenId,
+        //   address: separate_pool_info.nft_address,
+        //   event: 'Store',
+        //   event_type: 'success',
+        //   eth_price: separate_pool_info.fXprice,
+        //   from_user: account,
+        //   to_user: this.poolContract.address,
+        // });
+        // // console.log(data);
+        // intoNftActivity(data);
+
+
       } catch (e) {
         console.warn(e);
         this.errorMessage('Store failed');

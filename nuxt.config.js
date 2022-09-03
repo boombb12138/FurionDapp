@@ -72,6 +72,7 @@ export default {
     '@/assets/scss/common.scss',
     '@/assets/scss/global.scss',
     '@/assets/scss/vivify.scss',
+    '@/assets/scss/la-ball-running-dots.scss',
   ],
   plugins: [
     { src: '@/plugins/echarts', ssr: false },
@@ -82,7 +83,7 @@ export default {
       src: '@/plugins/swiper.js',
       ssr: false,
     },
-    { src: '@plugins/typer', ssr: false}
+    { src: '@plugins/typer', ssr: false},
   ],
   buildModules: [
     'nuxt-windicss',

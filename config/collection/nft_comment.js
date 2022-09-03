@@ -42,7 +42,7 @@ export const initNftComment = async (network,nft_address,token_id) => {
     // console.log('NFT info request', result);
     let raw_data = result['data']['data'];
     let final_result = [];
-    console.log(raw_data)
+    // console.log(raw_data)
 
     for (let i = raw_data.length-1; i >= 0; i--) {
         let temp = {
