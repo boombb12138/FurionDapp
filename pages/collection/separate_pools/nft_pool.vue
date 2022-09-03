@@ -333,7 +333,7 @@
                 </div>
 
                 <!-- Buy button -->
-                <div class="btn2" @click.stop="buy(item.token_id)">
+                <div class="btn2" @click.stop="buy(item)">
                   <img src="@/assets/images/buy.png" class="icon mr-5px" />
                   <img src="@/assets/images/buy2.png" class="icon2 mr-5px" />
                   BUY
@@ -448,7 +448,11 @@ import {
 import { nft_item } from '@/config/collection/nft_item';
 import { getTxURL, toWei, fromWei, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
-
+import {
+  nft_activity,
+  initNftActivity,
+  intoNftActivity,
+} from "@/config/collection/nft_activity";
 import {
   DialogInfo,
   initDialog,
@@ -635,11 +639,11 @@ export default {
     /*********************************** Contract functions ***********************************/
 
     /****************************************** Buy ******************************************/
-    async buy(tokenId) {
+    async buy(item) {
       const account = this.userInfo.userAddress;
       const checkFx = await this.hasEnoughFx(account);
       const checkFur = await this.hasEnoughFur(account, 1, "buy");
-
+      let tokenId = item.token_id;
       if (!checkFx) {
         this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
         return;
@@ -674,6 +678,8 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
         this.successMessage(tx_result, `Purchase F-${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+        //put the message into the database when buy succeed
+
       } catch (e) {
         this.errorMessage(`Purchase F-${this.separate_pool_info.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);
@@ -718,6 +724,19 @@ export default {
         let tx_result = await this.poolContract.contract.methods.sellBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Store succeeded');
         this.nftToPool = [];
+        let data = {
+          network: this.network,
+          project: this.separate_pool_info.collection,
+          token_id: tokenId,
+          address: separate_pool_info.nft_address,
+          event: 'Bid',
+          event_type: 'success',
+          eth_price: separate_pool_info.fXprice,
+          from_user: account,
+          to_user: this.userInfo.userAddress,
+        };
+        console.log(data);
+        intoNftActivity(data);
       } catch (e) {
         this.errorMessage('Store failed');
         closeDialog(this.dialogue_info);

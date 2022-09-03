@@ -92,6 +92,7 @@ export default {
   router: {
     base: env[process.env.MODE].BASE,
     middleware: ['cookies'],
+    meta:{index:0},
   },
   build: {
     transpile: [/^element-ui/],

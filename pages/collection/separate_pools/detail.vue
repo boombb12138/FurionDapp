@@ -517,7 +517,6 @@ export default {
         this.furContract.contract.methods.allowance(account, this.poolContract.address)
       ];
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
-
       const requiredAmount = toWei(100);
       if(result[0] > requiredAmount) {
         hasEnough[0] = true;
@@ -578,9 +577,9 @@ export default {
           address: this.nft_item.address,
           event: 'Bid',
           event_type: 'success',
-          eth_price: account,
+          eth_price: this.nft_item.fXprice.toFixed(2),
           from_user: this.userInfo.userAddress,
-          to_user: 'to_user',
+          to_user: account,
         };
         intoNftActivity(data);
         await new Promise(r => setTimeout(r, 100));
