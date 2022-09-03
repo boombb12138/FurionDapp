@@ -131,7 +131,7 @@
 
       <div class="w-240px fixed center-x top-150px bottom-40px aside -ml-550px">
         <div class="text-center mb-110px">
-          <img src="@/assets/images/logo_big.png" class="mb-15px" />
+          <img src="@/assets/images/logo_big.png" class="mb-15px cursor-pointer" @click="$router.push('/')"/>
           <div class="text-13px font-500 text-[#9AA3AD] mb-35px">
             <span class="font-600 text-[#B9C5D2]">250</span>
             members

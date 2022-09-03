@@ -84,6 +84,15 @@
 
 <template>
   <div class="page pt-80px bg-[#01132E] overflow-hidden">
+    <!-- <div class="loading-wrapper" id="loading-wrapper">
+      <div class="loading la-ball-running-dots">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div> -->
     <div class="page-wrap pt-0px">
       <div class="float-bg">
         <img class="w-1/1 h-626px" src="@/assets/images/cover3_float.png" />
@@ -318,7 +327,6 @@ export default {
       asset: "default text",
       nft_info: nft_info,
       option: {},
-      ready: false,
       showAnimation: false,
       dropList: [
         {
@@ -442,7 +450,6 @@ export default {
   async mounted() {
     this.showAnimation = true;
     this.nft_info = await initNftInfo(this.network);
-    this.ready = true;
   },
   methods: {
     clickSwiperItem(collection) {
@@ -465,4 +472,5 @@ export default {
     },
   },
 };
+
 </script>

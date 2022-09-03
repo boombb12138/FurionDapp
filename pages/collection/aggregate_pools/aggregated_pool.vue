@@ -293,7 +293,7 @@
 
 <template>
   <div class="!w-1/1 pt-0">
-    <img src="@/assets/images/item.png" class="w-1/1 h-280px object-cover" />
+    <img src="@/assets/images/mixed_back.jpg" class="w-1/1 h-280px object-cover" />
     <img
       src="@/assets/images/icon_back.svg"
       class="absolute left-60px cursor-pointer top-100px hover:opacity-80"

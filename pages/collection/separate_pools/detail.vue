@@ -214,14 +214,14 @@
           </el-table-column>
           <el-table-column prop="From" label="From">
             <template slot-scope="scope">
-              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer">
-                {{ scope.row.from_user.substring(0,9) }}
+              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" @click="clickaddress(scope.row.from_user)">
+                Furion Pool
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="To" label="To">
             <template slot-scope="scope">
-              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" v-if="scope.row.to_user.length>12">
+              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" v-if="scope.row.to_user.length>12" @click="clickaddress(scope.row.to_user)">
                 {{ scope.row.to_user.substring(0,10) }}...
               </div>
               <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" v-else>
@@ -444,6 +444,9 @@ export default {
     // console.log(nft_activity);
   },
   methods: {
+    clickaddress(address) {
+      window.open('https://etherscan.io/address/'+address);
+    },
     toCart() {
       let arr = [...this.cart, 1];
       this.$store.commit("save", ["user.cart", arr, this]);
@@ -484,7 +487,7 @@ export default {
       }
       item.show_reply = true;
       this.nft_reply = await initNftReply(this.network, item.id);
-      console.log(this.nft_reply)
+      // console.log(this.nft_reply)
 
     },
     async addTheReply(item,reply_type='comment'){
@@ -517,7 +520,6 @@ export default {
         this.furContract.contract.methods.allowance(account, this.poolContract.address)
       ];
       const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
-
       const requiredAmount = toWei(100);
       if(result[0] > requiredAmount) {
         hasEnough[0] = true;
@@ -576,11 +578,11 @@ export default {
           project: this.nft_item.collection,
           token_id: this.nft_item.token_id,
           address: this.nft_item.address,
-          event: 'Bid',
+          event: 'Redeem',
           event_type: 'success',
-          eth_price: account,
-          from_user: this.userInfo.userAddress,
-          to_user: 'to_user',
+          eth_price: this.nft_item.fXprice.toFixed(2),
+          from_user: this.poolContract.address,
+          to_user: account,
         };
         intoNftActivity(data);
         await new Promise(r => setTimeout(r, 100));
