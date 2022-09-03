@@ -612,7 +612,7 @@ export default {
       const result = await this.multicall.aggregate(multicall_list); // [balance]
 
       const requiredAmount = type === "buy" ? toWei(100 * nftAmount) : toWei(150 * nftAmount);
-      if (result[0] >= requiredAmount) {
+      if (fromWei(result[0]) >= fromWei(requiredAmount)) {
         hasEnough = true;
       }
 
@@ -738,9 +738,8 @@ export default {
         console.log(data);
         intoNftActivity(data);
       } catch (e) {
+        console.warn(e);
         this.errorMessage('Store failed');
-        closeDialog(this.dialogue_info);
-        return
       }
 
       closeDialog(this.dialogue_info);
@@ -803,6 +802,7 @@ export default {
 
       closeDialog(this.dialogue_info);
       this.dialogVisible = false;
+      setTimeout(() => this.refreshPool(), 3000);
     },
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);
