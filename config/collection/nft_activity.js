@@ -1,4 +1,4 @@
-import { getNftActivity, postNftActivity} from "@/api/furion_activity";
+import { getNftActivity, postNftActivity, postNftActivityByArray} from "@/api/furion_activity";
 import axios from 'axios'
 
 export const nft_activity = {
@@ -70,5 +70,12 @@ export const initNftActivity = async (network,nft_address,token_id) => {
 export const intoNftActivity = async (data) => {
     axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
         let res = await postNftActivity(data);
+        return res;
+}
+
+export const intoNftActivityByArray = async (network, data) => {
+    let result = JSON.stringify(data);
+    axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
+        let res = await postNftActivityByArray(network, result);
         return res;
 }

@@ -452,6 +452,7 @@ import {
   nft_activity,
   initNftActivity,
   intoNftActivity,
+  intoNftActivityByArray,
 } from "@/config/collection/nft_activity";
 import {
   DialogInfo,
@@ -461,6 +462,15 @@ import {
   stepDialog,
   ProcessInfo,
 } from '~/config/loading_info';
+import {
+  user_info,
+  inituserinfo,
+  renew_user_email,
+  renew_user_nick_name,
+  renew_user_comment,
+  renew_user_liquidation_alert,
+  renew_user_hot_news
+} from "@/config/user_info/profile";
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 
 export default {
@@ -486,6 +496,7 @@ export default {
       separate_pool_info: separate_pool_info,
       default_pool_info: default_pool_info,
       checkList: [],
+      user_info,
       searchKey: "",
       nft_item: nft_item,
       user_nft: [],
@@ -510,7 +521,7 @@ export default {
     this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address);
     this.furContract = await initFurContract();
     await this.initUserInfo();
-
+    this.user_info = await inituserinfo(this.network,this.userInfo.userAddress);
     await this.checkApproval();
     this.ready = true;
   },
@@ -708,7 +719,6 @@ export default {
         this.errorMessage("No NFTs selected");
         return;
       }
-
       const account = this.userInfo.userAddress;
       const approvedForAll = await this.separate_pool_info.nft_contract.methods.isApprovedForAll(account, this.poolContract.address).call();
 
@@ -735,21 +745,22 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.sellBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Store succeeded');
+        // data into database
+        let data = [];
+        for (let i = 0; i < this.nftToPool.length; i++){
+            data.push({
+            project: this.separate_pool_info.collection,
+            token_id: this.nftToPool[i],
+            address: separate_pool_info.nft_address,
+            event: 'Store',
+            event_type: 'success',
+            eth_price: separate_pool_info.fXprice,
+            from_user: account,
+            to_user: this.poolContract.address,
+          });
+        }
+        intoNftActivityByArray(this.network,data);
         this.nftToPool = [];
-        // let data = {};
-        // data.push({
-        //   network: this.network,
-        //   project: this.separate_pool_info.collection,
-        //   token_id: tokenId,
-        //   address: separate_pool_info.nft_address,
-        //   event: 'Store',
-        //   event_type: 'success',
-        //   eth_price: separate_pool_info.fXprice,
-        //   from_user: account,
-        //   to_user: this.poolContract.address,
-        // });
-        // // console.log(data);
-        // intoNftActivity(data);
 
 
       } catch (e) {
@@ -797,6 +808,7 @@ export default {
         try {
           let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
           this.successMessage(approve_result, 'Approval succeeded');
+
           stepDialog(this.dialogue_info);
         } catch (e) {
           console.warn(e);
@@ -808,6 +820,21 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.lockBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Lock succeeded');
+        // data into database
+        let data = [];
+        for (let i = 0; i < this.nftToPool.length; i++){
+            data.push({
+            project: this.separate_pool_info.collection,
+            token_id: this.nftToPool[i],
+            address: separate_pool_info.nft_address,
+            event: 'Lock',
+            event_type: 'success',
+            eth_price: separate_pool_info.fXprice,
+            from_user: account,
+            to_user: this.poolContract.address,
+          });
+        }
+        intoNftActivityByArray(this.network,data);
         this.nftToPool = [];
       } catch (e) {
         this.errorMessage('Lock failed');

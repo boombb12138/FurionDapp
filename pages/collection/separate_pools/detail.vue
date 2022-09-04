@@ -215,17 +215,14 @@
           <el-table-column prop="From" label="From">
             <template slot-scope="scope">
               <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" @click="clickaddress(scope.row.from_user)">
-                Furion Pool
+                {{ show(scope.row.from_user) }}
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="To" label="To">
             <template slot-scope="scope">
-              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" v-if="scope.row.to_user.length>12" @click="clickaddress(scope.row.to_user)">
-                {{ scope.row.to_user.substring(0,10) }}...
-              </div>
-              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" v-else>
-                {{ scope.row.to_user }}
+              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" >
+                {{ show(scope.row.to_user) }}
               </div>
             </template>
           </el-table-column>
@@ -268,8 +265,8 @@
                   width="54"
                   class="mr-20px rounded-full"
                 />
-                <div class="font-700 text-24px" v-if="item.from_uid.length>15">{{item.from_uid.substring(0,12)}}...</div>
-                <div class="font-700 text-24px" v-else>{{item.from_uid}}</div>
+                <div class="font-700 text-24px" @click="clickaddress(item.from_uid)" v-if="item.from_user.length>15">{{item.from_user.substring(0,12)}}...</div>
+                <div class="font-700 text-24px" @click="clickaddress(item.from_uid)" v-else >{{item.from_user}}</div>
               </div>
               <div class="text-[#7D8599] text-16px font-700">{{item.created_time}}</div>
             </div>
@@ -302,14 +299,17 @@
                         width="38"
                         class="mr-15px rounded-full"
                       />
-                      <div class="font-700 text-14px">{{item_reply.from_uid}}</div>
+                      <div class="font-700 text-14px" @click="clickaddress(item_reply.from_uid)">{{item_reply.from_user}}</div>
                     </div>
                     <div class="text-[#7D8599] text-10px font-500">{{item_reply.created_time}}</div>
                   </div>
 
-                  <div class="pl-73px">
-                    <div class="text-[#7D8599] font-400 text-14px mb-15px">
-                      @{{item_reply.to_uid}}   {{item_reply.content}}
+                  <div class="text-[#7D8599] font-400 text-14px mb-15px flex">
+                    <div @click="clickaddress(item_reply_uid)">
+                      @{{item_reply.to_user}}
+                    </div>
+                    <div class="ml-10px">
+                      {{ item_reply.content }}
                     </div>
                   </div>
                 </div>
@@ -378,6 +378,15 @@ import {
   intoNftReply,
 } from "@/config/collection/nft_comment";
 import {
+  user_info,
+  inituserinfo,
+  renew_user_email,
+  renew_user_nick_name,
+  renew_user_comment,
+  renew_user_liquidation_alert,
+  renew_user_hot_news
+} from "@/config/user_info/profile";
+import {
   nft_activity,
   initNftActivity,
   intoNftActivity,
@@ -441,9 +450,18 @@ export default {
     this.furContract = await initFurContract();
     this.nft_comment = await initNftComment(this.network, this.nft_item.address, this.nft_item.token_id);
     this.nft_activity = await initNftActivity(this.network, this.nft_item.address, this.nft_item.token_id);
+    this.user_info = await inituserinfo(this.network,this.userInfo.userAddress);
     // console.log(nft_activity);
   },
   methods: {
+    show(text){
+      if(text == this.poolContract.address)
+        return 'Furion pool';
+      else if (text == this.userInfo.userAddress)
+        return 'You';
+      else
+        return text.substring(0,12)+'...';
+    },
     clickaddress(address) {
       window.open('https://etherscan.io/address/'+address);
     },
@@ -461,6 +479,7 @@ export default {
           token_id: this.nft_item.token_id,
           content: text,
           from_uid: this.userInfo.userAddress,
+          from_user: this.user_info.info_list.nick_name,
           from_avatar: 'from_avatar',
           reply_count: 0,
         };
@@ -500,8 +519,10 @@ export default {
           reply_type: reply_type,
           content: text,
           from_uid: this.userInfo.userAddress,
+          from_user: this.user_info.info_list.nick_name,
           from_avatar: 'from_avatar',
           to_uid: 'anonymous',
+          to_user: item.from_user,
           to_avatar: 'to_avatar',
         };
         document.getElementById("reply_content").value = '';
