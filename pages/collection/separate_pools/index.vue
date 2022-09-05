@@ -1,86 +1,105 @@
 <style lang="scss" scoped>
-  .asset ::v-deep .el-input__inner {
-    background: rgba(237, 242, 255, 0.6);
-    box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.1), inset 0px -2px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 16px;
-    text-align: center;
-    color: rgba(11, 26, 59, 0.8);
-    height: 60px;
-    line-height: 60px;
-    font-size: 18px;
-    font-weight: 500;
-    &:focus {
-      background: #edf2ff;
-      border: 2px solid #55e7ec;
-    }
+.asset ::v-deep .el-input__inner {
+  background: rgba(237, 242, 255, 0.6);
+  box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.1), inset 0px -2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  text-align: center;
+  color: rgba(11, 26, 59, 0.8);
+  height: 60px;
+  line-height: 60px;
+  font-size: 18px;
+  font-weight: 500;
+
+  &:focus {
+    background: #edf2ff;
+    border: 2px solid #55e7ec;
+  }
+}
+
+@mixin btn-style {
+  font-size: 16px;
+  font-weight: 700;
+  text-shadow: 0 1px 0px rgb(1, 19, 46, 0.8);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  line-height: 62px;
+  height: 62px;
+  text-align: center;
+  width: 180px;
+  cursor: pointer;
+  transition: all 0.5s;
+  position: relative;
+}
+
+@mixin psuedo-style {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.selected {
+  @include btn-style;
+  color: #02193a;
+  background-color: #f182de;
+  border-radius: 10px;
+}
+
+.custom-btn {
+  @include btn-style;
+  color: #f181de;
+
+  &::before {
+    @include psuedo-style;
+    background-color: rgba(241, 129, 222, 0.1);
   }
 
-  @mixin btn-style {
-    font-size: 16px;
-    font-weight: 700;
-    text-shadow: 0 1px 0px rgb(1, 19, 46, 0.8);
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
-    line-height: 62px;
-    height: 62px;
-    text-align: center;
-    width: 180px;
-    cursor: pointer;
-    transition: all 0.5s;
-    position: relative;
+  &:hover::before {
+    opacity: 0;
+    transform: scale(0.3, 0.3);
   }
-  @mixin psuedo-style {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    border-radius: 10px;
-    transition: all 0.3s;
+
+  &::after {
+    @include psuedo-style;
+    opacity: 0;
+    border: 2px solid rgba(241, 129, 222, 0.8);
+    transform: scale(1.2, 1.2);
   }
-  .selected {
-    @include btn-style;
-    color: #02193a;
-    background-color: #f182de;
-    border-radius: 10px;
+
+  &:hover::after {
+    opacity: 1;
+    transform: scale(1, 1);
   }
-  .custom-btn {
-    @include btn-style;
-    color: #f181de;
+}
 
-    &::before {
-      @include psuedo-style;
-      background-color: rgba(241, 129, 222, 0.1);
-    }
+.create-pool-button {
+  text-align: center;
+}
 
-    &:hover::before {
-      opacity: 0 ;
-      transform: scale(0.3,0.3);
-    }
-
-    &::after {
-      @include psuedo-style;
-      opacity: 0;
-      border: 2px solid rgba(241, 129, 222, 0.8);
-      transform: scale(1.2,1.2);
-    }
-
-    &:hover::after {
-      opacity: 1;
-      transform: scale(1,1);
-    }
-  }
+.tip {
+  width: 600px;
+  height: 35px;
+  background: #36375e;
+  opacity: 0.75;
+  border-radius: 3px;
+  @apply flex items-center justify-center;
+}
 </style>
 
 <template>
   <div>
     <div class="pt-45px pb-100px">
+
       <div class="flex justify-between mb-45px">
+
         <!-- Toggle pool types -->
         <div class="flex">
           <div class="selected !w-270px mr-30px">SEPARATE POOLS</div>
-          <div class="custom-btn !w-270px "  @click="$router.push('/collection/aggregate_pools')">AGGREGATE POOLS</div>
+          <div class="custom-btn !w-270px " @click="$router.push('/collection/aggregate_pools')">AGGREGATE POOLS</div>
 
           <!-- <div class="btn_border mr-30px">
             <el-button type="primary" class="!w-265px !h-56px">
@@ -95,8 +114,12 @@
           </div> -->
         </div>
         <!-- Create pool button -->
-        <div class="custom-btn !w-170px "  @click="dialogVisible = true">+ ADD ASSET</div>
+        <div class="custom-btn !w-170px " @click="dialogVisible = true">+ ADD ASSET</div>
       </div>
+
+      <div class="absolute center-x tip font-500">NOTE: Only Cool Cat Available for Test Due to Some Technical Issues
+      </div>
+      <br /><br /><br />
 
       <!-- Modal box for creating separate pool -->
       <el-dialog title="NFT Contract Address:" :visible.sync="dialogVisible" width="600px" :close-on-click-modal="false"
@@ -177,7 +200,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="owners" label="Owners" align="center"> <template slot-scope="scope">{{
-            formatNumber(scope.row.owners)
+        formatNumber(scope.row.owners)
         }}
           </template></el-table-column>
         <el-table-column prop="items" label="ltems" align="center">

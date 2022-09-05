@@ -332,7 +332,7 @@ export default {
         swap_info.token_0 = item.symbol;
         swap_info.token_0_address = item.address;
         swap_info.token_0_image = item.image;
-        console.log('Update token 0', swap_info)
+        // console.log('Update token 0', swap_info)
       } else {
         if (item.symbol == swap_info.token_0) {
           this.errorMessage('Identical Token');
@@ -341,7 +341,7 @@ export default {
         swap_info.token_1 = item.symbol;
         swap_info.token_1_address = item.address;
         swap_info.token_1_image = item.image;
-        console.log('Update token 1', swap_info)
+        // console.log('Update token 1', swap_info)
       }
       this.token_0_amount = '';
       this.token_1_amount = '';
