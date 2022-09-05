@@ -211,7 +211,7 @@
               <div class="flex items-center justify-between mb-25px">
                 <div class="flex items-center">
                   <img class="mr-15px" src="@/assets/images/drawer/case.svg" />
-                  <p class="text-[rgba(252,255,253,0.9)] font-600 text-16px">
+                  <p class="text-[rgba(252,255,253,0.9)] font-600 text-16px" @click="clickaddress(showUserAddress())">
                     {{ showUserAddress() }}
                   </p>
                 </div>
@@ -264,7 +264,7 @@
                         maxLength="64"
                         placeholder="Add your Email..."
                       />
-                    <div type="submit" class="btnn2 ml-6px" @click="email_confirm()">
+                    <div class="btnn2 ml-6px" @click="email_confirm()">
                       <img  id="type" src="@/assets/images/drawer/confirm_dark.svg" width="40" class="icon"/>
                       <img  id="type" src="@/assets/images/drawer/confirm_light.svg" width="40" class="icon2"/>
                     </div>
@@ -550,6 +550,9 @@ export default {
     }, 500)
   },
   methods: {
+    clickaddress(address){
+      window.open('https://etherscan.io/address/'+address);
+    },
     formatNumber(value, fixed = 2) {
       let reserve = value - parseInt(value);
       let final_result;
