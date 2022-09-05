@@ -261,9 +261,10 @@
                         id="content_email"
                         type="email"
                         class="block type_box mb-5px"
+                        maxLength="64"
                         placeholder="Add your Email..."
                       />
-                    <div class="btnn2 ml-6px" @click="email_confirm()">
+                    <div type="submit" class="btnn2 ml-6px" @click="email_confirm()">
                       <img  id="type" src="@/assets/images/drawer/confirm_dark.svg" width="40" class="icon"/>
                       <img  id="type" src="@/assets/images/drawer/confirm_light.svg" width="40" class="icon2"/>
                     </div>
@@ -575,8 +576,15 @@ export default {
       this.user_info = await renew_user_hot_news(this.network,this.userInfo.userAddress,this.user_info.info_list.hot_news);
     },
     async email_confirm() {
-      this.type_email = false;
       let text = document.getElementById("content_email").value;
+      if(text.indexOf('@') == -1){
+        this.$message({
+          message: 'Please enter a valid email address',
+          type: 'error'
+        });
+        return
+      }
+      this.type_email = false;
       this.user_info = await renew_user_email(this.network,this.userInfo.userAddress,text);
     },
     async nick_name_confirm() {
