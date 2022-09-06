@@ -88,7 +88,8 @@
     </div>
     <SwapTab2 v-model="active2" class="mb-24px"></SwapTab2>
 
-    <el-table :data="pool_info.pool_list" ref="table" @cell-click="cell_click" class="custom w-1/1 pb-100px">
+    <el-table :data="active2==1? pool_info.pool_list: my_pool" ref="table" @cell-click="cell_click"
+      class="custom w-1/1 pb-100px">
       <el-table-column label="Name" width="374px">
         <template slot-scope="scope">
           <div class="flex items-center pl-64px py-7px">
@@ -143,7 +144,8 @@
 </template>
 
 <script>
-import { pool_info, single_swap_pool, getPoolSummary } from '@/config/furion_swap/pool';
+import { pool_info, single_swap_pool, getPoolSummary, initSinglePool } from '@/config/furion_swap/pool';
+import { mapState } from 'vuex';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -151,7 +153,10 @@ export default {
   },
   props: {},
   components: {},
-  computed: {},
+  computed: {
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
+  },
   data() {
     return {
       chainId: 4,
@@ -163,13 +168,17 @@ export default {
       searchKey: '',
       number1: '',
       number2: '',
-      pool_info: pool_info
+      pool_info: pool_info,
+      my_pool: [],
     };
   },
   mounted() {
-    for (let index = 0; index < pool_info.pool_list.length; index++) {
-      this.initPoolSummary(this.pool_info.pool_list[index], index);
-    }
+    setTimeout(() => {
+      for (let index = 0; index < pool_info.pool_list.length; index++) {
+        this.initPoolSummary(this.pool_info.pool_list[index], index);
+      }
+    }, 200)
+
 
   },
   methods: {
@@ -202,7 +211,17 @@ export default {
         pool.apr = (res['apr'] * 100).toFixed(3);
         this.pool_info.pool_list[index] = pool;
         this.$forceUpdate();
-      })
+      });
+
+      // filter out my pools
+      let account = this.userInfo.userAddress;
+      initSinglePool(pool, this.chainId).then((res) => {
+        res.pair_contract.methods.balanceOf(account).call().then((balance) => {
+          if (parseFloat(balance) > 0) {
+            this.my_pool.push(pool);
+          }
+        })
+      });
 
     }
   },
