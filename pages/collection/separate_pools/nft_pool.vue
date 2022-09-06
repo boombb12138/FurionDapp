@@ -444,6 +444,7 @@ import { getNftHoldingInfo } from '@/api/nft_info';
 import {
   _formatString,
   _formatNumber,
+  _compareInt
 } from "@/utils/common";
 import { nft_item } from '@/config/collection/nft_item';
 import { getTxURL, toWei, fromWei, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
@@ -608,7 +609,7 @@ export default {
       ];
 
       const result = await this.multicall.aggregate(multicall_list); // [fur allowance]
-      if (fromWei(result[0]) < ALLOWANCE_THRESHOLD) {
+      if (_compareInt(result[0], toWei(ALLOWANCE_THRESHOLD)) == "smaller") {
         this.approved_fur = false;
       }
     },
@@ -622,7 +623,7 @@ export default {
       const result = await this.multicall.aggregate(multicall_list); // [balance]
 
       const requiredAmount = type === "buy" ? toWei(100 * nftAmount) : toWei(150 * nftAmount);
-      if (fromWei(result[0]) >= fromWei(requiredAmount)) {
+      if (_compareInt(result[0], requiredAmount) != "smaller") {
         hasEnough = true;
       }
 
@@ -639,7 +640,7 @@ export default {
       // console.log('F-X balance', result);
 
       const requiredAmount = toWei(1000);
-      if (result[0] >= requiredAmount) {
+      if (_compareInt(result[0], requiredAmount) != "smaller") {
         hasEnough = true;
       }
 

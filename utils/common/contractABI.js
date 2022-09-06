@@ -58,7 +58,7 @@ export const getFurionSwapPairABI = async () => {
 
 export const getSeparatePoolFactoryABI = async () => {
     let address = getAddress();
-    SeparatePoolFactory.address = address['SeparatePoolFactory'];
+    SeparatePoolFactory.address = address['Separate Pool Factory'];
     return SeparatePoolFactory;
 }
 
@@ -69,7 +69,7 @@ export const getSeparatePoolABI = async () => {
 
 export const getAggregateatePoolFactoryABI = async () => {
     let address = getAddress();
-    AggregatePoolFactory.address = address['AggregatePoolFactory'];
+    AggregatePoolFactory.address = address['Aggregate Pool Factory'];
     return AggregatePoolFactory;
 }
 

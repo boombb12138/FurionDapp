@@ -110,6 +110,16 @@ export const ProcessInfo = {
     detail: 
     'You are going to stake FUR to Furion, please sign and wait for the transaction to be done',
   },
+  UNSTAKE_FUR: {
+    intro: 'Unstake FUR on Furion Stake',
+    detail: 
+    'You are going to remove your FUR stake on Furion Stake, please sign and wait for the transaction to be done',
+  },
+  UNSTAKE_LOCKED_FUR: {
+    intro: 'Unstake Locked FUR on Furion Stake',
+    detail:
+    'You are going to remove your Locked FUR stake on Furion Stake, please sign and wait for the transaction to be done', 
+  },
   STAKE_LOCK_FUR: {
     intro: 'Stake and Lock FUR on Furion Stake',
     detail: 
@@ -139,7 +149,17 @@ export const ProcessInfo = {
     intro: 'Enter market and use deposited asset as collateral',
     detail:
       'You are going to enter a token market which allows you to use the token as colalteral, please sign and wait for the transaction to complete',
-  }
+  },
+  STAKE_FX: {
+    intro: 'Stake F-X tokens to get FFT',
+    detail: 
+      'You are going to stake F-X tokens into an aggregate pool and get FFT, please sign and wait for the transaction to complete.',
+  },
+  UNSTAKE_FX: {
+    intro: 'Unstake F-X tokens by burning FFT',
+    detail: 
+      'You are going to burn the provided FFT and unstake F-X tokens from an aggregate pool, please sign and wait for the transaction to complete.',
+  },
 };
 
 export const initDialog = DialogInfo => {
