@@ -259,7 +259,7 @@
 
           <div v-for="(item, index) in nft_comment.comment_list" :key="index" class="mb-40px" :id="index">
             <div class="flex justify-between items-start" :id='index'>
-              <div class="flex items-center">
+              <div class="flex items-center mb-12px">
                 <img
                   src="@/assets/images/avatar.png"
                   width="54"
@@ -272,13 +272,13 @@
             </div>
 
             <div class="pl-73px">
-              <div class="text-[#7D8599] font-600 text-20px mb-15px">
+              <div class="text-[#7D8599] font-600 text-24px mb-20px">
                 {{item.content}}
               </div>
 
               <div class="flex items-center mb-5px">
                 <div
-                  class="font-700 text-14px text-[#6F788D] mr-35px cursor-pointer"
+                  class="font-700 text-20px text-[#6F788D] mr-35px mt-10px mb-8px cursor-pointer"
                   @click="clickReply(item)"
                 >
                   REPLY
@@ -292,7 +292,7 @@
               </div>
               <div v-if="item.show_reply">
                 <div v-for="(item_reply, index_reply) in nft_reply.reply_list" :key="index_reply" class="mb-40px" :id="index">
-                  <div class="flex justify-between items-start" :id='index_reply'>
+                  <div class="flex justify-between items-start mb-10px" :id='index_reply'>
                     <div class="flex items-center">
                       <img
                         src="@/assets/images/avatar.png"
@@ -304,7 +304,7 @@
                     <div class="text-[#7D8599] text-10px font-500">{{item_reply.created_time}}</div>
                   </div>
 
-                  <div class="text-[#7D8599] font-400 text-14px mb-15px flex">
+                  <div class="text-[#7D8599] font-600 text-16px mb-15px flex ml-50px">
                     <div @click="clickaddress(item_reply_uid)">
                       @{{item_reply.to_user}}
                     </div>
@@ -417,8 +417,7 @@ export default {
       poolContract: {},
       furContract: {},
       editorOption: {
-        placeholder:
-          "Share how you feel about the creation or even ask the creator a question.",
+        placeholder: "Share how you feel about the creation or even ask the creator a question.",
         modules: {
           toolbar: [
             [

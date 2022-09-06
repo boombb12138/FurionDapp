@@ -289,7 +289,7 @@
   overflow: initial;
 
   &.process {
-    
+
     .el-table__body-wrapper {
       overflow: initial;
     }
@@ -1006,6 +1006,7 @@
   .ql-container {
     height: 140px;
     border: none !important;
+    font-size: 18px !important;
   }
 
   .ql-snow.ql-toolbar button:hover,
@@ -1039,7 +1040,7 @@
   color: #303c62 !important;
   font-style: normal !important;
   font-weight: 500 !important;
-  font-size: 14px !important;
+  font-size: 18px !important;
 }
 
 .ql-snow.ql-toolbar button:hover .ql-stroke,
