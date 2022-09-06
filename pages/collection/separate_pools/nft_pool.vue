@@ -698,6 +698,7 @@ export default {
           event_type: 'success',
           eth_price: separate_pool_info.fXprice,
           from_user: this.poolContract.address,
+          tx_hash: tx_result.transactionHash,
           to_user: account,
         };
         // console.log(data);
@@ -756,6 +757,7 @@ export default {
             event_type: 'success',
             eth_price: separate_pool_info.fXprice,
             from_user: account,
+            tx_hash: tx_result.transactionHash,
             to_user: this.poolContract.address,
           });
         }
@@ -831,6 +833,7 @@ export default {
             event_type: 'success',
             eth_price: separate_pool_info.fXprice,
             from_user: account,
+            tx_hash: tx_result.transactionHash,
             to_user: this.poolContract.address,
           });
         }

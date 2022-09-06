@@ -71,11 +71,11 @@
   border-bottom: 2px solid #2d4682;
   padding: 4px 0;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 20px;
   color: #7d8599;
   &::placeholder {
     font-weight: 500;
-    font-size: 16px;
+    font-size: 20px;
     color: #7d8599;
   }
 }
@@ -164,7 +164,7 @@
           </div>
           <!-- NFT price and user functions box -->
           <div class="bg flex-1 p-30px">
-            <div class="mb-15px opacity-60 font-500 text-20px">1000 F&nbsp;-&nbsp;{{nft_item.symbol}}=</div>
+            <div class="mb-15px opacity-60 font-500 text-20px">1000 F&nbsp;-&nbsp;{{ nft_item.symbol }}</div>
             <div class="flex items-center mb-55px">
               <img src="@/assets/images/icon_eth.svg" class="w-24px mr-10px" />
               <div class="font-700 text-32px">{{nft_item.fXprice.toFixed(2)}}</div>
@@ -192,12 +192,11 @@
       <!-- Transaction activity log -->
       <div class="mb-53px">
         <div class="flex items-center pl-44px h-76px title">
-          <img src="@/assets/images/icon_item.svg" class="mr-10px" />
           <div class="font-800 text-18px">Item Activity</div>
         </div>
-        <el-table :data="nft_activity.activity_list" style="width: 100%">
+        <el-table :data="nft_activity.activity_list" style="width: 100%" @row-click="clicktx">
           <el-table-column prop="Event" label="Event">
-            <template slot-scope="scope">
+            <template slot-scope="scope" >
               <div class="flex items-center pl-30px py-12px">
                 <img src="@/assets/images/icon_hand.svg" class="mr-10px" />
                 <div class="text-16px font-600">{{ scope.row.event }}</div>
@@ -221,7 +220,7 @@
           </el-table-column>
           <el-table-column prop="To" label="To">
             <template slot-scope="scope">
-              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" >
+              <div class="text-16px font-600 text-[#40BAFF] underline cursor-pointer" @click="clickaddress(scope.row.from_user)">
                 {{ show(scope.row.to_user) }}
               </div>
             </template>
@@ -262,7 +261,7 @@
               <div class="flex items-center mb-12px">
                 <img
                   src="@/assets/images/avatar.png"
-                  width="54"
+                  width="80"
                   class="mr-20px rounded-full"
                 />
                 <div class="font-700 text-24px" @click="clickaddress(item.from_uid)" v-if="item.from_user.length>15">{{item.from_user.substring(0,12)}}...</div>
@@ -276,9 +275,9 @@
                 {{item.content}}
               </div>
 
-              <div class="flex items-center mb-5px">
+              <div class="flex items-center mb-30px">
                 <div
-                  class="font-700 text-20px text-[#6F788D] mr-35px mt-10px mb-8px cursor-pointer"
+                  class="font-700 text-20px text-[#6F788D] mr-35px mt-15px mb-8px cursor-pointer"
                   @click="clickReply(item)"
                 >
                   REPLY
@@ -292,19 +291,19 @@
               </div>
               <div v-if="item.show_reply">
                 <div v-for="(item_reply, index_reply) in nft_reply.reply_list" :key="index_reply" class="mb-40px" :id="index">
-                  <div class="flex justify-between items-start mb-10px" :id='index_reply'>
+                  <div class="flex justify-between items-start mb-16px" :id='index_reply'>
                     <div class="flex items-center">
                       <img
                         src="@/assets/images/avatar.png"
-                        width="38"
+                        width="54"
                         class="mr-15px rounded-full"
                       />
-                      <div class="font-700 text-14px" @click="clickaddress(item_reply.from_uid)">{{item_reply.from_user}}</div>
+                      <div class="font-700 text-20px" @click="clickaddress(item_reply.from_uid)">{{item_reply.from_user}}</div>
                     </div>
-                    <div class="text-[#7D8599] text-10px font-500">{{item_reply.created_time}}</div>
+                    <div class="text-[#7D8599] text-16px font-600">{{item_reply.created_time}}</div>
                   </div>
 
-                  <div class="text-[#7D8599] font-600 text-16px mb-15px flex ml-50px">
+                  <div class="text-[#7D8599] font-600 text-20px mb-30px flex ml-50px">
                     <div @click="clickaddress(item_reply_uid)">
                       @{{item_reply.to_user}}
                     </div>
@@ -318,27 +317,27 @@
               <div class="relative" v-if="item.show">
                 <img
                   src="@/assets/images/avatar.png"
-                  width="30"
-                  class="absolute -left-40px top-0 rounded-full"
+                  width="60"
+                  class="absolute -left-60px top-0 rounded-full"
                 />
 
                 <input
                   id="reply_content"
                   type="text"
-                  class="block w-full reply mb-5px"
+                  class="block w-full reply mb-10px text-20px ml-10px"
                   placeholder="Add Reply..."
                 />
                 <div class="flex justify-between items-center">
-                  <img src="@/assets/images/emoji.svg" class="cursor-pointer" />
+                  <img src="@/assets/images/emoji.svg" class="cursor-pointer ml-10px" />
                   <div class="flex items-center">
                     <div
-                      class="text-[#6F778D] font-700 text-12px cursor-pointer mr-30px"
+                      class="text-[#6F778D] font-700 text-18px cursor-pointer mr-30px"
                       @click="item.show = false"
                     >
                       Cancellation
                     </div>
                     <div class="btn_border">
-                      <el-button plain class="!w-100px !h-40px !p-0 post" @click="addTheReply(item)">Post</el-button>
+                      <el-button plain class="!w-100px !h-50px !p-0 post" @click="addTheReply(item)">Post</el-button>
                     </div>
                   </div>
                 </div>
@@ -460,6 +459,9 @@ export default {
         return 'You';
       else
         return text.substring(0,12)+'...';
+    },
+    clicktx(row){
+      window.open('https://rinkeby.etherscan.io/tx/'+row.tx_hash);
     },
     clickaddress(address) {
       window.open('https://rinkeby.etherscan.io/address/'+address);
@@ -602,6 +604,7 @@ export default {
           event_type: 'success',
           eth_price: this.nft_item.fXprice.toFixed(2),
           from_user: this.poolContract.address,
+          tx_hash: tx_result.transactionHash,
           to_user: account,
         };
         intoNftActivity(data);

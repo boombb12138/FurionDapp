@@ -13,6 +13,7 @@ export const nft_activity = {
             'eth_price': 99.99,
             'from_user': 'user_loading',
             'to_user': 'user_loading',
+            'tx_hash': '0x',
             'date': "now",
         },
         {
@@ -24,17 +25,12 @@ export const nft_activity = {
             'eth_price': 99.99,
             'from_user': 'user_loading',
             'to_user': 'user_loading',
+            'tx_hash': '0x',
             'date': 'now',
         }
     ],
 };
 
-export const dateoperation = (date) => {
-
-
-
-return
-}
 export const initNftActivity = async (network,nft_address,token_id) => {
     let activity_info = { activity_init: false, activity_list: [] };
     let result = await getNftActivity(network,nft_address,token_id);
@@ -53,7 +49,8 @@ export const initNftActivity = async (network,nft_address,token_id) => {
             eth_price: Number(raw_data[i][5].toString().match(/^\d+(?:\.\d{0,2})?/)),
             from_user: raw_data[i][6],
             to_user: raw_data[i][7],
-            date: raw_data[i][8].substring(0,10),
+            tx_hash : raw_data[i][8],
+            date: raw_data[i][9].substring(0,10),
         };
         // console.log(raw_data[i][5].toString().match(/^\d+(?:\.\d{0,2})?/))
         final_result.push(temp);
