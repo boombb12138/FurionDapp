@@ -327,6 +327,7 @@ export default {
       asset: "default text",
       nft_info: nft_info,
       option: {},
+      ready: false,
       showAnimation: false,
       dropList: [
         {
@@ -390,7 +391,7 @@ export default {
         {
           tital: "Borrowing & Lending",
           remark1: "Borrow & lend your ERC-20 tokens and",
-          remark2: "NFTs via peer-to-pool pools",
+          remark2: "NFTs via peer-to-pool methods",
           remark3: "",
           docs_url: "furion-money-market",
         },
@@ -450,6 +451,7 @@ export default {
   async mounted() {
     this.showAnimation = true;
     this.nft_info = await initNftInfo(this.network);
+    this.ready = true;
   },
   methods: {
     clickSwiperItem(collection) {

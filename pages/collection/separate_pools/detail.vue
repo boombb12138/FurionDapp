@@ -462,7 +462,7 @@ export default {
         return text.substring(0,12)+'...';
     },
     clickaddress(address) {
-      window.open('https://etherscan.io/address/'+address);
+      window.open('https://rinkeby.etherscan.io/address/'+address);
     },
     toCart() {
       let arr = [...this.cart, 1];

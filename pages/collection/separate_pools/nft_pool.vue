@@ -247,7 +247,7 @@
 
         <!-- search bar and item sorting -->
         <div class="flex justify-between items-center mb-12px">
-          <el-input placeholder="Search by name or attribute" v-model="searchKey" class="search !w-858px" clearable
+          <el-input placeholder="Search by token ID" v-model="searchKey" class="search !w-858px" clearable
             @input="search">
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
@@ -373,7 +373,7 @@
             <div class="text-20px font-600 mb-30px">
               Store to get 1000 and lock for 500.
             </div>
-            <div class="font-900 text-20px">1000 F-{{ separate_pool_info.symbol }}</div>
+            <div class="font-900 text-20px">F-{{ separate_pool_info.symbol }} Token</div>
           </div>
           <img src="@/assets/images/q.svg" class="ml-14px cursor-pointer -mt-3px" slot="reference" />
         </el-popover>
