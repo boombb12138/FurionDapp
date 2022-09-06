@@ -182,9 +182,9 @@
   
   <script>
   import { mapState } from 'vuex';
-  import { InitialPoolList, getFarmingPool, getPoolSummary } from '@/config/furion_farming/pool';
-  import { newMultiCallProvider } from "@/utils/web3/multicall";
-  import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
+  import { InitialPoolList, InitFarmingPool, getPoolSummary } from '@/config/furion_farming/pool';
+  import { newMultiCallProvider } from "@/local/utils/web3/multicall";
+  import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/local/utils/common';
   import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
   
   import {
@@ -220,57 +220,15 @@
         multicall: multicall,
         dialogue_info: DialogInfo,
         pools: InitialPoolList,
-        index: 0, // count the number of pool and mark index of every newly added pool
       };
     },
   
     async mounted() {
-      let pools = [];
-      let index = this.index;
-  
-  
-      // get fur/eth pool
-      let fur_eth_pool = await getFarmingPool('FUR', 'ETH', '0x7a01B3fDDA5046B66B3DBc561Ab33bA23017Fe70', 4);
-      fur_eth_pool.index = index;
-      pools[index] = fur_eth_pool;
-      //console.log(fur_eth_pool);
-  
-      index += 1;
-  
-      
-      // get fur/usdt pool
-      let fur_usdt_pool = await getFarmingPool('FUR', 'USDT', '0x3dFDc7821edCc79c92890E5404687D1B1C96D494', 4);
-      fur_usdt_pool.index = index;
-      pools[index] = fur_usdt_pool;
-      //console.log(fur_usdt_pool);
-  
-      index += 1;
-  
-  
-      /**
-       * Testing with fur/fur pool as the pending furion for previous pools, fur/eth and fur/usdt,
-       *  exceeded the supply limit of furion token.
-       */
-  
-      /**
-       * FUR/FUR pool, where lp token is same as FUR. Users can stake FUR token and earn rewards
-       * in FUR.
-       */
-  
-      // get fur/fur pool
-      let fur_fur_pool = await getFarmingPool('FUR', 'FUR', "0x175940b39014cD3a9c87cd6b1d7616a097db958E", 4);
-      fur_fur_pool.index = index;
-      pools[index] = fur_fur_pool;
-  
-      index += 1;
-      
-      // mount index and pool list
-      this.index = index;
-      this.pools = pools;
-  
-      for(let i = 0; i < pools.length; i++) {
-        await this.updateUserInfo(pools[i].index);
-        this.checkLPApproval(pools[i].index);
+      let index = 0;
+      for (; index < this.pools.length; index ++) {
+        this.pools[index] = await InitFarmingPool(this.pools[index], index, this.chainId);
+        await this.updateUserInfo(index);
+        this.checkLPApproval(index);
       }
     },
   
@@ -279,16 +237,13 @@
       async updateUserInfo(index) {
         let pool = this.pools[index];
         let account = this.userInfo.userAddress;
-        //console.log('[Token Farming] [User Update] user account ', account);
         if (account == null) {
-          //console.log('[Token Farming] [User Update] account not init')
           return;
         }
   
         try {
           const balance = await pool.lp_token_contract.methods.balanceOf(account).call();
-          pool.user_balance = fromWei(balance, parseInt(pool.lp_token_decimal)).toFixed(4);
-          //console.log('[Token Farming] [User Update]user balance ', pool.user_balance);
+          pool.user_balance = fromWei(balance, parseInt(pool.lp_token_decimal));
   
           // update user stake and pending reward
           const pool_id = pool.pool_Id; 
@@ -296,8 +251,8 @@
           const user_reward = await pool.farming_contract.methods.pendingFurion(pool_id, account).call();
           
          
-          pool.user_stake = fromWei(user_stake, parseInt(pool.lp_token_decimal)).toFixed(4);
-          pool.user_reward = fromWei(user_reward, 18).toFixed(4);
+          pool.user_stake = fromWei(user_stake, parseInt(pool.lp_token_decimal));
+          pool.user_reward = fromWei(user_reward, 18);
           this.pools[pool.index] = pool;
   
         } catch (e) {
@@ -337,22 +292,25 @@
       },
   
       checkLPApproval(index) {
-        let pool = this.pools[index];
-        let account = this.userInfo.userAddress;
-        const lp_token_contract = pool.lp_token_contract;
-        let multicall_list = [
-          lp_token_contract.methods.allowance(account, pool.farming_address)
-        ]; 
-        this.multicall.aggregate(multicall_list).then((allowance) => {
-          // console.log('Allowance', allowance);
-          pool.allowance_liquidity = allowance[0];
-          if (parseInt(allowance[0]) > ALLOWANCE_THRESHOLD) {
-            pool.liquidity_approved = true;
-          }
-        });
-  
-        this.pools[pool.index] = pool;
-  
+        try {
+          let pool = this.pools[index];
+          let account = this.userInfo.userAddress;
+          const lp_token_contract = pool.lp_token_contract;
+          let multicall_list = [
+            lp_token_contract.methods.allowance(account, pool.farming_address)
+          ]; 
+          this.multicall.aggregate(multicall_list).then((allowance) => {
+            // console.log('Allowance', allowance);
+            pool.allowance_liquidity = allowance[0];
+            if (parseInt(allowance[0]) > ALLOWANCE_THRESHOLD) {
+              pool.liquidity_approved = true;
+            }
+          });
+          this.pools[pool.index] = pool;
+
+        } catch(e) {
+          console.warn(e);
+        }
       },
   
       async approveLPToken(index) {
@@ -381,9 +339,7 @@
   
       async harvestReward(index) {
         let pool = this.pools[index];
-        //console.log('[Token Farming] [Harvest] harvesting...')
         if (parseFloat(pool.user_reward) <= 0) {
-          //console.log('[Token Farming] [Harvest] Insufficient reward amt');
           this.errorMessage('Insufficient rewards');
           await this.refresh(pool);
           return; 
@@ -563,7 +519,6 @@
   
       async refresh(index) {
         // update user and pool info 
-        //console.log('[Token Farming] Refreshing Pool ...');
         try {
           await this.updateUserInfo(index);
           let summary = await getPoolSummary(this.pools[index], this.chainId);

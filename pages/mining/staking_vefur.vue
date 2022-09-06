@@ -266,7 +266,7 @@
 <script>
   import { mapState } from 'vuex';
   import { User, InitUserInfo, UpdateUserInfo } from '@/config/furion_staking/user_info';
-  import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
+  import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/local/utils/common';
   import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
   
   import {
