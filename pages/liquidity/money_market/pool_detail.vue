@@ -140,7 +140,7 @@
 </style>
 
 <template>
-  <div class="!w-1150px">
+  <div class="!w-1150px pb-100px">
     <div class="absolute pt-70px flex justify-between items-center w-200px">
       <img src="@/assets/images/icon_back.svg" class="cursor-pointer hover:opacity-80"
         @click="$router.go(-1)" />
@@ -221,7 +221,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="compareFormat(borrow_amount, token_decimal) > parseInt(user_info.borrow_quota) || compareFormat(borrow_amount, token_decimal) > parseInt(market_info.cash) || borrow_amount === ''" @click="borrow(borrow_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="compareInt(compareFormat(borrow_amount, token_decimal), user_info.borrow_quota) == 'larger' || compareInt(compareFormat(borrow_amount, token_decimal), market_info.cash) == 'larger' || borrow_amount === ''" @click="borrow(borrow_amount)">
           <span class="font-800 text-20px" style="word-spacing: 5px">Borrow {{ asset }}</span>
         </el-button>
       </div>
@@ -318,7 +318,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="compareFormat(repay_amount, token_decimal) > parseInt(user_info.token_balance) || repay_amount === ''" @click="repay(repay_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="compareInt(compareFormat(repay_amount, token_decimal), user_info.token_balance) == 'larger' || repay_amount === ''" @click="repay(repay_amount)">
           <span class="font-800 text-20px">Repay {{ asset }}</span>
         </el-button>
       </div>
@@ -401,7 +401,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="compareFormat(deposit_amount, token_decimal) > parseInt(user_info.token_balance) || deposit_amount === ''" @click="deposit(deposit_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="compareInt(compareFormat(deposit_amount, token_decimal), user_info.token_balance) == 'larger' || deposit_amount === ''" @click="deposit(deposit_amount)">
           <span class="font-800 text-20px" style="word-spacing: 5px">DEPOSIT {{ asset }}</span>
         </el-button>
       </div>
@@ -490,7 +490,7 @@
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px" :disabled="compareFormat(withdraw_amount, token_decimal) > parseInt(user_info.withdraw_quota) || compareFormat(withdraw_amount, token_decimal) > parseInt(user_info.deposited) || withdraw_amount === ''" @click="withdraw(withdraw_amount)">
+        <el-button type="primary" class="!w-full !h-60px" :disabled="compareInt(compareFormat(withdraw_amount, token_decimal), user_info.withdraw_quota) == 'larger' || compareInt(compareFormat(withdraw_amount, token_decimal), user_info.deposited) == 'larger' || withdraw_amount === ''" @click="withdraw(withdraw_amount)">
           <span class="font-800 text-20px" style="word-spacing: 5px">WITHDRAW {{ asset }}</span>
         </el-button>
       </div>
@@ -504,7 +504,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { _formatNumber, getTxURL, toWei, fromWei, tokenApprove, getNativeTokenAmount } from "@/utils/common";
+import { _formatNumber, _compareInt, getTxURL, toWei, fromWei, tokenApprove, getNativeTokenAmount } from "@/utils/common";
 import { user_info_default, market_info_default, initTokenContract, initMarketContract, initManagerContract, initPriceOracle } from "@/config/money_market/market";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 
@@ -687,7 +687,7 @@ export default {
 
       const allowance = await this.token.contract.methods.allowance(account, this.market.address).call();
 
-      return parseInt(allowance) >= parseInt(amount) ? true : false;
+      return _compareInt(allowance, amount) != "smaller" ? true : false;
     },
     async hasEnoughFToken(amount) {
       const account = this.userInfo.userAddress;
@@ -886,6 +886,9 @@ export default {
         dangerouslyUseHTMLString: true,
       });
     },
+    compareInt(a, b) {
+      return _compareInt(a, b);
+    },
     formatNumber(value, fixed = 2) {
       let reserve = value - parseInt(value);
       let final_result;
@@ -908,7 +911,7 @@ export default {
     },
     compareFormat(amount, decimal) {
       const actualAmount = amount == '' ? 0 : parseFloat(amount);
-      return parseInt(toWei(actualAmount, decimal));
+      return toWei(actualAmount, decimal);
     }
   },
 };
