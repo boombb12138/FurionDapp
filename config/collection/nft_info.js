@@ -723,58 +723,60 @@ export const initPooledNftInfo = async (network) => {
     let final_result = [];
 
     for (let i = 0; i < nftsWithPool.length; i++) {
-      const nftAddress = nftsWithPool[i].toLowerCase();
+        const nftAddress = nftsWithPool[i].toLowerCase();
 
+        if (nftAddress != '0x1D788A3D8133F79a7D8cf2517c4b3C00C8DBbf82'.toLowerCase()) {
+            continue
+        }
+        // Assume collection is found in contract but not in backend
+        let temp = {
+            id: i,
+            collection: "--",
+            address: nftAddress,
+            symbol: "--",
+            avatar: "--",
+            banner_url: "--",
+            description: "--",
+            external_link: "--",
+            twitter_link: "--",
 
-      // Assume collection is found in contract but not in backend
-      let temp = {
-          id: i,
-          collection: "--",
-          address: nftAddress,
-          symbol: "--",
-          avatar: "--",
-          banner_url: "--",
-          description: "--",
-          external_link: "--",
-          twitter_link: "--",
+            volume: "--",
+            _24h: "--",
+            _7d: "--",
+            floor_price: "--",
+            owners: "--",
+            items: "--",
+            fXprice: "--",
+            last7Days: "--",
+            last7Days_type: "--",
+        };
+        try {
+            let raw_data = (await getNftInfoByAddress(nftAddress, network))['data']['data'];
+            // console.log('Single record', raw_data);
+            temp.collection = raw_data['project'];
+            temp.symbol = raw_data['symbol'];
+            temp.avatar = raw_data['image_url'];
+            temp.banner_url = raw_data['banner_url'];
+            temp.description = raw_data['description'];
+            temp.external_link = raw_data['external_link'];
+            temp.twitter_link = raw_data['twitter_link'];
 
-          volume: "--",
-          _24h: "--",
-          _7d: "--",
-          floor_price: "--",
-          owners: "--",
-          items: "--",
-          fXprice: "--",
-          last7Days: "--",
-          last7Days_type: "--",
-      };
-      try{
-        let raw_data = (await getNftInfoByAddress(nftAddress, network))['data']['data'];
-        // console.log('Single record', raw_data);
-        temp.collection = raw_data['project'];
-        temp.symbol = raw_data['symbol'];
-        temp.avatar = raw_data['image_url'];
-        temp.banner_url = raw_data['banner_url'];
-        temp.description = raw_data['description'];
-        temp.external_link = raw_data['external_link'];
-        temp.twitter_link = raw_data['twitter_link'];
+            temp.volume = raw_data['volume'];
+            temp._24h = `${(raw_data['_24hs'] < 0 ? "" : "+") + (raw_data['_24hs'] * 100).toFixed(2)}%`;
+            temp._7d = `${(raw_data['_7ds'] < 0 ? "" : "+") + (raw_data['_7ds'] * 100).toFixed(2)}%`;
+            temp.floor_price = raw_data['floor_price'].toFixed(2);
+            temp.owners = raw_data['owners'];
+            temp.items = raw_data['total_supply'];
+            temp.fXprice = raw_data['reference_price_high'].toFixed(2);
+            temp.last7Days = raw_data['week_price'];
+            temp.last7Days_type = raw_data['type'];
 
-        temp.volume = raw_data['volume'];
-        temp._24h = `${(raw_data['_24hs'] < 0 ? "" : "+") + (raw_data['_24hs'] * 100).toFixed(2)}%`;
-        temp._7d = `${(raw_data['_7ds'] < 0 ? "" : "+") + (raw_data['_7ds'] * 100).toFixed(2)}%`;
-        temp.floor_price = raw_data['floor_price'].toFixed(2);
-        temp.owners = raw_data['owners'];
-        temp.items = raw_data['total_supply'];
-        temp.fXprice = raw_data['reference_price_high'].toFixed(2);
-        temp.last7Days = raw_data['week_price'];
-        temp.last7Days_type = raw_data['type'];
+        } catch (e) {
 
-      }catch(e){
+        }
 
-      }
-
-      // Collection is found in contract but not in backend
-      final_result.push(temp);
+        // Collection is found in contract but not in backend
+        final_result.push(temp);
     }
 
     final_result = final_result.map((item) => {

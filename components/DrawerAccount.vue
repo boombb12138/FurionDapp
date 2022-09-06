@@ -211,7 +211,7 @@
               <div class="flex items-center justify-between mb-25px">
                 <div class="flex items-center">
                   <img class="mr-15px" src="@/assets/images/drawer/case.svg" />
-                  <p class="text-[rgba(252,255,253,0.9)] font-600 text-16px">
+                  <p class="text-[rgba(252,255,253,0.9)] font-600 text-16px" @click="clickaddress(showUserAddress())">
                     {{ showUserAddress() }}
                   </p>
                 </div>
@@ -261,6 +261,7 @@
                         id="content_email"
                         type="email"
                         class="block type_box mb-5px"
+                        maxLength="64"
                         placeholder="Add your Email..."
                       />
                     <div class="btnn2 ml-6px" @click="email_confirm()">
@@ -549,6 +550,9 @@ export default {
     }, 500)
   },
   methods: {
+    clickaddress(address){
+      window.open('https://etherscan.io/address/'+address);
+    },
     formatNumber(value, fixed = 2) {
       let reserve = value - parseInt(value);
       let final_result;
@@ -575,8 +579,15 @@ export default {
       this.user_info = await renew_user_hot_news(this.network,this.userInfo.userAddress,this.user_info.info_list.hot_news);
     },
     async email_confirm() {
-      this.type_email = false;
       let text = document.getElementById("content_email").value;
+      if(text.indexOf('@') == -1){
+        this.$message({
+          message: 'Please enter a valid email address',
+          type: 'error'
+        });
+        return
+      }
+      this.type_email = false;
       this.user_info = await renew_user_email(this.network,this.userInfo.userAddress,text);
     },
     async nick_name_confirm() {

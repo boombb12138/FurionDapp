@@ -17,3 +17,11 @@ export const postNftActivity = (data) => {
         params: data,
       });
 }
+
+export const postNftActivityByArray = (network, data) => {
+    return request({
+        url: "/into_activity_by_array",
+        method: "post",
+        params: { network, data },
+      });
+}

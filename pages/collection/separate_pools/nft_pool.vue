@@ -247,7 +247,7 @@
 
         <!-- search bar and item sorting -->
         <div class="flex justify-between items-center mb-12px">
-          <el-input placeholder="Search by name or attribute" v-model="searchKey" class="search !w-858px" clearable
+          <el-input placeholder="Search by token ID" v-model="searchKey" class="search !w-858px" clearable
             @input="search">
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
@@ -373,7 +373,7 @@
             <div class="text-20px font-600 mb-30px">
               Store to get 1000 and lock for 500.
             </div>
-            <div class="font-900 text-20px">1000 F-{{ separate_pool_info.symbol }}</div>
+            <div class="font-900 text-20px">F-{{ separate_pool_info.symbol }} Token</div>
           </div>
           <img src="@/assets/images/q.svg" class="ml-14px cursor-pointer -mt-3px" slot="reference" />
         </el-popover>
@@ -444,6 +444,7 @@ import { getNftHoldingInfo } from '@/api/nft_info';
 import {
   _formatString,
   _formatNumber,
+  _compareInt
 } from "@/utils/common";
 import { nft_item } from '@/config/collection/nft_item';
 import { getTxURL, toWei, fromWei, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
@@ -452,6 +453,7 @@ import {
   nft_activity,
   initNftActivity,
   intoNftActivity,
+  intoNftActivityByArray,
 } from "@/config/collection/nft_activity";
 import {
   DialogInfo,
@@ -461,6 +463,15 @@ import {
   stepDialog,
   ProcessInfo,
 } from '~/config/loading_info';
+import {
+  user_info,
+  inituserinfo,
+  renew_user_email,
+  renew_user_nick_name,
+  renew_user_comment,
+  renew_user_liquidation_alert,
+  renew_user_hot_news
+} from "@/config/user_info/profile";
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 
 export default {
@@ -486,6 +497,7 @@ export default {
       separate_pool_info: separate_pool_info,
       default_pool_info: default_pool_info,
       checkList: [],
+      user_info,
       searchKey: "",
       nft_item: nft_item,
       user_nft: [],
@@ -510,7 +522,7 @@ export default {
     this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address);
     this.furContract = await initFurContract();
     await this.initUserInfo();
-
+    this.user_info = await inituserinfo(this.network,this.userInfo.userAddress);
     await this.checkApproval();
     this.ready = true;
   },
@@ -597,7 +609,7 @@ export default {
       ];
 
       const result = await this.multicall.aggregate(multicall_list); // [fur allowance]
-      if (fromWei(result[0]) < ALLOWANCE_THRESHOLD) {
+      if (_compareInt(result[0], toWei(ALLOWANCE_THRESHOLD)) == "smaller") {
         this.approved_fur = false;
       }
     },
@@ -611,7 +623,7 @@ export default {
       const result = await this.multicall.aggregate(multicall_list); // [balance]
 
       const requiredAmount = type === "buy" ? toWei(100 * nftAmount) : toWei(150 * nftAmount);
-      if (fromWei(result[0]) >= fromWei(requiredAmount)) {
+      if (_compareInt(result[0], requiredAmount) != "smaller") {
         hasEnough = true;
       }
 
@@ -628,7 +640,7 @@ export default {
       // console.log('F-X balance', result);
 
       const requiredAmount = toWei(1000);
-      if (result[0] >= requiredAmount) {
+      if (_compareInt(result[0], requiredAmount) != "smaller") {
         hasEnough = true;
       }
 
@@ -708,7 +720,6 @@ export default {
         this.errorMessage("No NFTs selected");
         return;
       }
-
       const account = this.userInfo.userAddress;
       const approvedForAll = await this.separate_pool_info.nft_contract.methods.isApprovedForAll(account, this.poolContract.address).call();
 
@@ -735,21 +746,22 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.sellBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Store succeeded');
+        // data into database
+        let data = [];
+        for (let i = 0; i < this.nftToPool.length; i++){
+            data.push({
+            project: this.separate_pool_info.collection,
+            token_id: this.nftToPool[i],
+            address: separate_pool_info.nft_address,
+            event: 'Store',
+            event_type: 'success',
+            eth_price: separate_pool_info.fXprice,
+            from_user: account,
+            to_user: this.poolContract.address,
+          });
+        }
+        intoNftActivityByArray(this.network,data);
         this.nftToPool = [];
-        // let data = {};
-        // data.push({
-        //   network: this.network,
-        //   project: this.separate_pool_info.collection,
-        //   token_id: tokenId,
-        //   address: separate_pool_info.nft_address,
-        //   event: 'Store',
-        //   event_type: 'success',
-        //   eth_price: separate_pool_info.fXprice,
-        //   from_user: account,
-        //   to_user: this.poolContract.address,
-        // });
-        // // console.log(data);
-        // intoNftActivity(data);
 
 
       } catch (e) {
@@ -797,6 +809,7 @@ export default {
         try {
           let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
           this.successMessage(approve_result, 'Approval succeeded');
+
           stepDialog(this.dialogue_info);
         } catch (e) {
           console.warn(e);
@@ -808,6 +821,21 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.lockBatch(this.nftToPool).send({ from: account });
         this.successMessage(tx_result, 'Lock succeeded');
+        // data into database
+        let data = [];
+        for (let i = 0; i < this.nftToPool.length; i++){
+            data.push({
+            project: this.separate_pool_info.collection,
+            token_id: this.nftToPool[i],
+            address: separate_pool_info.nft_address,
+            event: 'Lock',
+            event_type: 'success',
+            eth_price: separate_pool_info.fXprice,
+            from_user: account,
+            to_user: this.poolContract.address,
+          });
+        }
+        intoNftActivityByArray(this.network,data);
         this.nftToPool = [];
       } catch (e) {
         this.errorMessage('Lock failed');

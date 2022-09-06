@@ -31,7 +31,6 @@
   border-radius: 12px;
   //cursor: pointer;
   box-sizing: border-box;
-  margin-bottom: 15px;
   position: relative;
   transition: all 0.5s;
 
@@ -219,6 +218,33 @@
   &:hover::after {
     opacity: 1;
     transform: scale(1,1);
+  }
+}
+
+.line {
+  display: inline-block;
+  position: relative;
+  color: rgba(255, 255, 253, 0.9);
+
+  
+  &:before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: rgba(255, 255, 253, 0.9);
+    visibility: hidden;
+    transform: scaleX(0);
+    animation: expand 0.4s ease-out 0.25s forwards; 
+    //transition: all .5s ease-out;
+  }
+}
+@keyframes expand {
+  to {
+    visibility: visible;
+    transform: scaleX(1);
   }
 }
 
@@ -437,7 +463,7 @@
 
         <!-- Collections in pool -->
 
-        <div class="pb-150px grid grid-cols-3 mt-20px">
+        <div class="pb-150px grid grid-cols-3 gap-30px mt-20px">
           <div
             class="item"
             v-for="(item, index) in pool_info.collections"
@@ -457,9 +483,9 @@
               </div>
             </div>
             <div class="px-15px">
-              <div class="staked-data">In pool: 1234 F-{{ item.symbol }}</div>
-              <div class="custom-btn mb-18px" @click="dialogVisible = true; ftoken_to_interact = item; action='STAKE'">STAKE</div>
-              <div class="custom-btn" @click="dialogVisible = true; ftoken_to_interact = item; action='UNSTAKE'">UNSTAKE</div>
+              <div class="staked-data">In pool: {{ pool_info.in_pool.length == 0 ? "0.00" : displayFormat(pool_info.in_pool[index], 18, 0) }} F-{{ item.symbol }}</div>
+              <div class="custom-btn mb-18px" @click="dialogVisible = true; collection_to_interact = item; action='STAKE'">STAKE</div>
+              <div class="custom-btn" @click="dialogVisible = true; collection_to_interact = item; action='UNSTAKE'">UNSTAKE</div>
             </div>
 
             <div
@@ -468,7 +494,7 @@
               <img src="@/assets/images/icon_eth.svg" />
               <div class="flex items-center">
                 <div
-                  class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon"
+                  class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon cursor-pointer"
                 >
                   <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
                   <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
@@ -488,69 +514,105 @@
       :close-on-click-modal="true"
       append-to-body
       custom-class="el-dialog-dark"
+      @close="stake_unstake_amount = ''; max_amount = false;"
     >
-      <div slot="title" class="flex font-800 text-20px">
-        <div class="pb-2px" style="border-bottom: 2px solid #fff; word-spacing: 10px;">{{ action }} F-{{ ftoken_to_interact.symbol }}</div>
+      <div slot="title" class="flex font-800 text-28px">
+        <div class="pb-2px line" style="word-spacing: 10px;">{{ action }} F-{{ collection_to_interact.symbol }}</div>
       </div>
 
       <div class="input-window mb-25px">
         <div class="flex items-center justify-between mb-20px">
           <div class="flex items-center">
-            <img :src="ftoken_to_interact.image_url" class="w-40px mr-15px rounded-full" />
-            <div class="font-600 text-22px">F-{{ftoken_to_interact.symbol}}</div>
+            <img :src="collection_to_interact.image_url" class="w-40px mr-15px rounded-full" />
+            <div class="font-600 text-22px">F-{{ collection_to_interact.symbol }}</div>
           </div>
           <div class="flex items-center">
             <div class="pulse-text">{{ action }} ALL</div>
-            <el-switch v-model="all" class="mr-15px"> </el-switch>
+            <el-switch v-model="max_amount" class="mr-15px" @change="writeMaxAmount()"> </el-switch>
           </div>
         </div>
 
         <div class="flex justify-between items-end">
           <div class="flex items-end">
-            <el-input class="box-input" placeholder="0.0" v-model="ftoken_amount" type="number"></el-input>
+            <el-input class="box-input" placeholder="0.0" v-model="stake_unstake_amount" type="number"></el-input>
           </div>
-          <div class="text-16px text-[rgba(252,255,253,0.6)]">Balance: 1000 F-{{ftoken_to_interact.symbol}}</div>
+          <div class="text-16px text-[rgba(252,255,253,0.6)]">Balance: {{ getBalance() }}</div>
         </div>
       </div>
 
       <div class="btn_border">
-        <el-button type="primary" class="!w-full !h-60px">
-          <span class="font-800 text-20px" style="word-spacing: 5px">{{ action }} F-{{ ftoken_to_interact.symbol }}</span>
+        <el-button type="primary" class="!w-full !h-60px" @click="action === 'STAKE' ? stake(stake_unstake_amount) : unstake(stake_unstake_amount)" :disabled="disableBtn">
+          <span class="font-800 text-20px" style="word-spacing: 5px">{{ action }} F-{{ collection_to_interact.symbol }}</span>
         </el-button>
       </div>
-
-      <!--div class="flex justify-between items-center pr-44px">
-        <div class="flex">
-          <div class="btn_border mr-15px">
-            <el-button plain class="!w-124px !h-38px !p-0">LOCK</el-button>
-          </div>
-          <div class="btn_border">
-            <el-button type="primary" class="!w-124px !h-38px !p-0">STORE</el-button>
-          </div>
-        </div>
-      </div-->
     </el-dialog>
+
+    <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
 </template>
 
 <script>
-import { pool_info_default, initPoolInfo, initPoolContract, initFurContract } from '@/config/collection/aggregate_pools';
+import { mapState } from 'vuex';
+import { _formatNumber, _compareInt, getTxURL, toWei, fromWei, tokenApprove } from "@/utils/common";
+import { user_info_default, pool_info_default, initPoolInfo, initAPoolContract, initFurContract } from '@/config/collection/aggregate_pools';
+import { newMultiCallProvider } from "@/utils/web3/multicall";
+
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from '~/config/loading_info';
+import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
   },
   props: {},
-  components: {},
+  components: { ProceedingDetails },
   computed: {
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
     cart() {
       return this.$store.state.user.cart;
     },
     poolName() {
       return this.$route.query.name;
     },
+    disableBtn() { // Disable button by default
+      if (this.stake_unstake_amount === "") {
+        return true;
+      }
+
+      const amount = toWei(parseFloat(this.stake_unstake_amount).toString());
+      const index = this.collection_to_interact.id;
+
+      if (this.action === "STAKE") {
+        if (
+          _compareInt(this.user_info.ftoken_balance[index], amount) != "smaller" && 
+          _compareInt(this.user_info.fur_balance, this.pool_info.stake_fee) != "smaller"
+        ) {
+          return false;
+        }
+      }
+
+      if (this.action === "UNSTAKE") {
+        if (
+          _compareInt(this.user_info.fft_balance, amount) != "smaller" &&
+          _compareInt(this.user_info.fur_balance, this.pool_info.unstake_fee) != "smaller"
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    },
   },
   data() {
+    const multicall = newMultiCallProvider(4);
     return {
       dialogVisible: false,
       checkList: [],
@@ -559,22 +621,44 @@ export default {
       filter: [],
       showFilter: false,
       pool_info: pool_info_default,
-      poolContract: {},
-      furContract: {},
-      ftoken_to_interact: {},
+      user_info: user_info_default,
+      pool: {}, // Aggregate pool contract
+      fur: {}, // FUR contract instance and address
+      collection_to_interact: {}, // Collection object to interact with
       action: '',
-      ftoken_amount: '',
-      all: false,
+      stake_unstake_amount: '',
+      max_amount: false,
+      multicall: multicall,
+      dialogue_info: DialogInfo,
     };
   },
   async mounted() {
     this.pool_info = await initPoolInfo(this.poolName);
-    /*
-    this.poolContract = await this.initPoolContract(this.pool_info.address);
-    this.furContract = await this.initFurContract();
-    */
+    this.pool = await initAPoolContract(this.pool_info.address);
+    this.fur = await initFurContract();
+
+    await this.updateUserInfo();
+    await this.poolInfoFromContract();
   },
   methods: {
+    /********************************** Utils **********************************/
+
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
+      } else {
+        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
+      }
+      if (final_result[0] == '-' || final_result[0] == 'N') {
+        final_result = '--'
+      }
+      return final_result
+    },
+    displayFormat(amount, decimal = 18, fixed = 2) {
+      return this.formatNumber(fromWei(amount, decimal), fixed);
+    },
     search() {
       console.log(this.searchKey);
     },
@@ -589,6 +673,217 @@ export default {
       } else {
         this.filter.splice(i, 1);
       }
+    },
+    getBalance() {
+      const account = this.userInfo.userAddress;
+      const index = this.collection_to_interact.id;
+      let balance;
+
+      if (this.action === "STAKE") {
+        balance = this.displayFormat(this.user_info.ftoken_balance[index]);
+        return balance + ` F-${this.collection_to_interact.symbol}`;
+      }
+
+      if (this.action === "UNSTAKE") {
+        balance = this.displayFormat(this.user_info.fft_balance);
+        return balance + ` FFT-${this.pool_info.symbol}`;
+      }
+
+      return "0.00";
+    },
+    async writeMaxAmount() {
+      if (this.max_amount) {        
+        await this.updateAll();
+        const account = this.userInfo.userAddress;
+        const index = this.collection_to_interact.id;
+        const balance = this.action === "STAKE" ? this.user_info.ftoken_balance[index] : this.user_info.fft_balance;
+
+        if (balance == 0) {
+          this.errorMessage("Zero balance");
+          this.max_amount = false;
+        } else {
+          this.stake_unstake_amount = fromWei(balance);
+        }
+      } else {
+        this.stake_unstake_amount = "";
+      }
+    },
+
+    /************************** Init & update states **************************/
+
+    async updateUserInfo() {
+      const account = this.userInfo.userAddress;
+      let multicall_list = [
+        this.fur.contract.methods.balanceOf(account),
+        this.pool.contract.methods.balanceOf(account),
+      ];
+      for (let collection of this.pool_info.collections) {
+        multicall_list.push(collection.contract.methods.balanceOf(account));
+      }
+      const results = await this.multicall.aggregate(multicall_list);
+
+      this.user_info.fur_balance = results[0];
+      this.user_info.fft_balance = results[1];
+      this.user_info.ftoken_balance = results.slice(2);
+    },
+
+    async poolInfoFromContract() {
+      let multicall_list = [
+        this.pool.contract.methods.stakeFee(),
+        this.pool.contract.methods.unstakeFee(),
+      ];
+      for (let collection of this.pool_info.collections) {
+        multicall_list.push(collection.contract.methods.balanceOf(this.pool.address));
+      }
+      const results = await this.multicall.aggregate(multicall_list);
+
+      this.pool_info.stake_fee = results[0];
+      this.pool_info.unstake_fee = results[1];
+      this.pool_info.in_pool = results.slice(2);
+    },
+    async updateAll() {
+      await this.updateUserInfo();
+      await this.poolInfoFromContract();
+    },
+
+    /**************************** Allowance checks ****************************/
+
+    async approvedFur() {
+      const account = this.userInfo.userAddress;
+
+      const allowance = await this.fur.contract.methods.allowance(account, this.pool.address).call();
+
+      return _compareInt(allowance, this.pool_info.stake_fee) != "smaller" ? true : false;
+    },
+    async approvedFToken(amount) {
+      const account = this.userInfo.userAddress;
+
+      const allowance = await this.collection_to_interact.contract.methods.allowance(account, this.pool_info.address).call();
+
+      return _compareInt(allowance, amount) != "smaller" ? true : false;
+    },
+
+    /**************************** Contract functions ***************************/
+    
+    async stake(amount) {
+      const account = this.userInfo.userAddress;
+      const actualAmount = toWei(parseFloat(amount).toString());
+      const approvedEnoughFur = await this.approvedFur();
+      const approvedEnoughFToken = await this.approvedFToken(actualAmount);
+
+      let dialog_list = [];
+      if (!approvedEnoughFur) {
+        dialog_list.push(ProcessInfo.APPROVE_FUR);
+      }
+      if (!approvedEnoughFToken) {
+        dialog_list.push(ProcessInfo.APPROVE_FX);
+      }
+      dialog_list.push(ProcessInfo.STAKE_FX);
+      openDialog(this.dialogue_info, dialog_list);
+
+      if (!approvedEnoughFur) {
+        try {
+          const approve_result = await tokenApprove(this.fur.address, account, this.pool.address);
+          this.successMessage(approve_result, `Approve FUR succeeded`);
+          stepDialog(this.dialogue_info);
+        } catch (e) {
+          this.errorMessage(`Approve FUR failed`)
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return;
+        }
+      }
+
+      if(!approvedEnoughFToken) {
+        try {
+          const approve_result = await tokenApprove(this.collection_to_interact.ftoken_address, account, this.pool.address);
+          this.successMessage(approve_result, `Approve F-${this.collection_to_interact.symbol} succeeded`);
+          stepDialog(this.dialogue_info);
+        } catch (e) {
+          this.errorMessage(`Approve F-${this.collection_to_interact.symbol} failed`)
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return;
+        }
+      }
+      
+      try {
+        const tx_result = await this.pool.contract.methods.stake(this.collection_to_interact.ftoken_address, actualAmount).send({ from: account });
+        this.successMessage(tx_result, `Stake F-${this.collection_to_interact.symbol} succeeded`);
+      }catch (e) {
+        console.warn(e);
+        this.errorMessage(`Stake F-${this.collection_to_interact.symbol} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+
+      closeDialog(this.dialogue_info);
+      this.dialogVisible = false;
+      this.collection_to_interact = {};
+      this.action = '';
+      this.stake_unstake_amount = '';
+      await this.updateAll();
+    },
+    async unstake(amount) {
+      const account = this.userInfo.userAddress;
+      const actualAmount = toWei(amount);
+      const approvedEnoughFur = this.approvedFur();
+
+      let dialog_list = [];
+      if (!approvedEnoughFur) {
+        dialog_list.push(ProcessInfo.APPROVE_FUR);
+      }
+      dialog_list.push(ProcessInfo.UNSTAKE_FX);
+      openDialog(this.dialogue_info, dialog_list);
+
+      if (!approvedEnoughFur) {
+        try {
+          const approve_result = await tokenApprove(this.fur.address, account, this.pool.address);
+          this.successMessage(approve_result, `Approve FUR succeeded`);
+          stepDialog(this.dialogue_info);
+        } catch (e) {
+          this.errorMessage(`Approve FUR failed`)
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return;
+        }
+      }
+
+      try {
+        const tx_result = await this.pool.contract.methods.unstake(this.collection_to_interact.ftoken_address, actualAmount).send({ from: account });
+        this.successMessage(tx_result, `Unstake F-${this.collection_to_interact.symbol} succeeded`);
+      }catch (e) {
+        console.warn(e);
+        this.errorMessage(`Unsstake F-${this.collection_to_interact.symbol} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+
+      closeDialog(this.dialogue_info);
+      this.dialogVisible = false;
+      this.collection_to_interact = {};
+      this.action = '';
+      this.stake_unstake_amount = '';
+      await this.updateAll();
+    },
+    
+    /******************************** Tx handler *******************************/
+
+    successMessage(receipt, title) {
+      const txURL = getTxURL(receipt.transactionHash);
+      this.$notify({
+        title: title,
+        dangerouslyUseHTMLString: true,
+        message: txURL,
+        type: 'success',
+      });
+    },
+    errorMessage(title) {
+      this.$notify.error({
+        title: title,
+        message: '',
+        dangerouslyUseHTMLString: true,
+      });
     },
   },
 };
