@@ -110,6 +110,16 @@ export const ProcessInfo = {
     detail: 
     'You are going to stake FUR to Furion, please sign and wait for the transaction to be done',
   },
+  UNSTAKE_FUR: {
+    intro: 'Unstake FUR on Furion Stake',
+    detail: 
+    'You are going to remove your FUR stake on Furion Stake, please sign and wait for the transaction to be done',
+  },
+  UNSTAKE_LOCKED_FUR: {
+    intro: 'Unstake Locked FUR on Furion Stake',
+    detail:
+    'You are going to remove your Locked FUR stake on Furion Stake, please sign and wait for the transaction to be done', 
+  },
   STAKE_LOCK_FUR: {
     intro: 'Stake and Lock FUR on Furion Stake',
     detail: 

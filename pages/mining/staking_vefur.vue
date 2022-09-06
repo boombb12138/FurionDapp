@@ -228,9 +228,9 @@
           </div>
 
           <div class="flex items-center justify-between">
-            <div class="btn1" @click="stake = 1; stakeAmt()" :class="{ grey: stake != 1 }">Stake</div>
-            <div class="btn1" @click="stake = 2; stakeAndLock()" :class="{ grey: stake != 2 }">
-              Stake & Lock
+            <div class="btn1" @click="stake = 1; handleAmt()" :class="{ grey: stake != 1 }">{{this.checkValue(1)}}</div>
+            <div class="btn1" @click="stake = 2; handleAmt()" :class="{ grey: stake != 2 }">
+              {{this.checkValue(2)}}
             </div>
           </div>
         </div>
@@ -321,8 +321,50 @@
         this.user = await UpdateUserInfo(this.user, account);
       },
 
+      checkValue(flag) {
+        const type = this.type;
+        if (flag == 1) {
+          if (type == 1) {
+            return 'Stake'
+          } else if (type == 2) {
+            return 'Unstake';
+          }
+        } else if (flag == 2) {
+          if (type == 1) {
+            return 'Stake & Lock';
+          } else if (type == 2) {
+            return 'Unstake Locked';
+          }
+        } 
+        return '';
+      },
+
       async setAmountMax() {
         this.num = parseFloat(this.user.current_fur_balance);
+      },
+
+      async handleAmt() {
+        const type = this.type;
+        const choice = this.stake;
+        if (type == 1) {
+          // stake
+          if (choice == 1) {
+            // normal stake
+            await this.stakeAmt();
+          } else if (choice == 2) {
+            // stake with lock 
+            await this.stakeAndLock();
+          }
+        } else if (type == 2) {
+          // unstake
+          if (choice == 1) {
+            // normal unstake
+            await this.unstakeAmt();
+          } else if (choice == 2) {
+            // unstake locked amt
+            await this.unstakeLocked();
+          }
+        }
       },
 
       async checkFURApproval() {
@@ -357,6 +399,10 @@
       },
 
       async stakeAmt() {
+        if (this.type != 1) {
+          return;
+        }
+
         const account = this.userInfo.userAddress;
         const res = await this.validateAmount();
         
@@ -400,20 +446,26 @@
               }
 
             } catch(e) {
+              console.log('[Error staking] error logged at 449');
               console.warn(e);
+              closeDialog(this.dialogue_info);
+              this.num = undefined;
               return;
             }
-
+          await this.updateUserInfo();
+          this.num = undefined;
         } else {
           this.num = undefined;
           return;
         }
-        await this.updateUserInfo();
-        this.num = undefined;
       },
 
       // same logic, call deposit with lock
       async stakeAndLock() {
+        if (this.type != 1) {
+          return;
+        }
+
         const account = this.userInfo.userAddress;
         const res = await this.validateAmount();
         
@@ -458,20 +510,23 @@
 
             } catch(e) {
               console.warn(e);
+              closeDialog(this.dialogue_info);
+              this.num = undefined;
               return;
             }
+          await this.updateUserInfo();
+          this.num = undefined;
 
         } else {
           this.num = undefined;
           return;
         }
-        await this.updateUserInfo();
-        this.num = undefined;
       },
 
       async validateAmount() {
         const num = this.num;
         const user_balance = parseFloat(this.user.current_fur_balance);
+        const user_stake = parseFloat(this.user.current_fur_stake);
         try {
           if (num == undefined) {
             this.errorMessage('Enter amount');
@@ -479,14 +534,87 @@
           } else if (num <= 0.0) {
             this.errorMessage('Amount should be greater than 0');
             return false;
-          } else if (num > user_balance) {
+          } else if (num > user_balance && this.type == 1) {
             this.errorMessage('Insufficient Balance');
             return false;
-          } 
+          } else if(num > user_stake && this.type == 2) {
+            this.errorMessage('Insufficient Stake');
+            return false;
+          }
           return true;
 
         } catch(e) {
           console.warn(e); 
+        }
+      },
+
+      async unstakeAmt() {
+        if (this.type != 2) {
+          return;
+        }
+
+        const account = this.userInfo.userAddress;
+        const res = await this.validateAmount();
+        
+        if (res) {
+          try {
+            const veFur_contract = this.user.veFur_contract;
+            const amount = toWei(this.num.toString(), 18);
+            await openDialog(this.dialogue_info, [ProcessInfo.UNSTAKE_FUR]);
+            const gas = await veFur_contract.methods.withdraw(amount).estimateGas({from: account});
+            const tx_result = await veFur_contract.methods.withdraw(amount).send({
+                              from: account,
+                              gas: gas
+                            });
+            //close the dialog
+            closeDialog(this.dialogue_info);
+            this.successMessage(tx_result, 'Successfully Unstaked FUR');
+
+          } catch(e) {
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            this.errorMessage('Error Unstaking on Furion');
+            this.num = undefined;
+          }
+
+        } else {
+          this.num = undefined;
+          return;
+        }
+      },
+
+      async unstakeLocked() {
+        if (this.type != 2) {
+          return;
+        }
+
+        const account = this.userInfo.userAddress;
+        const res = true;
+        
+        if (res) {
+          try {
+            const veFur_contract = this.user.veFur_contract;
+            //const amount = toWei(this.num.toString(), 18);
+            await openDialog(this.dialogue_info, [ProcessInfo.UNSTAKE_LOCKED_FUR]);
+            const gas = await veFur_contract.methods.withdrawLocked().estimateGas({from: account});
+            const tx_result = await veFur_contract.methods.withdrawLocked().send({
+                              from: account,
+                              gas: gas
+                            });
+            //close the dialog
+            closeDialog(this.dialogue_info);
+            this.successMessage(tx_result, 'Successfully Unstaked Locked FUR');
+
+          } catch(e) {
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            this.errorMessage('Error Unstaking on Furion');
+            this.num = undefined;
+          }
+
+        } else {
+          this.num = undefined;
+          return;
         }
       },
 
