@@ -1,4 +1,6 @@
 import { getNftInfoByProject, getNftImages } from "@/api/nft_info";
+import { getContract } from '@/utils/common';
+import { getSeparatePoolABI, getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
 
 export const nft_item = {
     collection: 'Loading',
@@ -11,6 +13,7 @@ export const nft_item = {
     twitter_link: 'https://twitter.com/furion',
     fXprice: 9.99,
     image: require("@/assets/images/placeholder.png"),
+    lock_info: { locker: "0x0000000000000000000000000000000000000000", extended: false, release_time: 0 }
 };
 
 export const initNftItem = async (item, project, tokenId, network) => {
@@ -31,5 +34,13 @@ export const initNftItem = async (item, project, tokenId, network) => {
     item.fXprice = raw_data['reference_price_high'];
     item.image = nft_image;
 
-    return item
+    const factoryContract = await getContract(await getSeparatePoolFactoryABI(), '');;
+    const poolAddress = await factoryContract.methods.getPool(raw_data['address']).call();
+    const poolContract = await getContract(await getSeparatePoolABI(), poolAddress);
+    const lockInfo = await poolContract.methods.getLockInfo(tokenId).call();
+    item.lock_info = {
+        locker: lockInfo[0],
+        extended: lockInfo[1],
+        release_time: lockInfo[2]
+    };
 };
