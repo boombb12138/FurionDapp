@@ -565,6 +565,8 @@
   
       async reset(index) {
         this.num = '';
+        this.info = 'ENTER AN AMOUNT';
+        this.disable = true;
         if (index == -1) {
           // reset all the pools;
           for (let id = 0; id < this.pools.length; id++) {
