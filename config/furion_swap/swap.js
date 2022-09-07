@@ -116,11 +116,11 @@ export const initFurionSwapInfo = async (single_swap, chainId) => {
         // get reserves
         const reserves = await pair.methods.getReserves().call();
         if (single_swap.token_0_address < single_swap.token_1_address) {
-            single_swap.token_0_reserve = fromWei(reserves[0], parseInt(decimal_result[0]));
-            single_swap.token_1_reserve = fromWei(reserves[1], parseInt(decimal_result[1]));
+            single_swap.token_0_reserve = parseFloat(fromWei(reserves[0], parseInt(decimal_result[0])));
+            single_swap.token_1_reserve = parseFloat(fromWei(reserves[1], parseInt(decimal_result[1])));
         } else {
-            single_swap.token_0_reserve = fromWei(reserves[1], parseInt(decimal_result[0]));
-            single_swap.token_1_reserve = fromWei(reserves[0], parseInt(decimal_result[1]));
+            single_swap.token_0_reserve = parseFloat(fromWei(reserves[1], parseInt(decimal_result[0])));
+            single_swap.token_1_reserve = parseFloat(fromWei(reserves[0], parseInt(decimal_result[1])));
         }
 
         single_swap.pool_liquidity = single_swap.token_0_reserve * single_swap.token_1_reserve;

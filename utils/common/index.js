@@ -78,13 +78,13 @@ export const fromWei = (FixNumber, Decimals) => {
     if (result.toFixed(8) - 1e-8 < 0) {
       return 0;
     }
-    return result.toFixed(8);
+    return parseFloat(result.toFixed(8));
   } else {
     const result = Number(Web3.utils.fromWei(FixNumber, FixDecimals));
     if (result.toFixed(8) - 1e-8 < 0) {
       return 0;
     }
-    return result.toFixed(8);
+    return parseFloat(result.toFixed(8));
   }
 };
 export const toWei = (FixNumber, Decimals = 18) => {
