@@ -11,7 +11,7 @@ export const user_info_default = {
 export const pool_info_default = {
     name: 'Mixed',
     id: 1,
-    address: '0xe666e31F96d3E4f1da83a702FAF0dd465deBF481',
+    address: '0x482dc963e587D68B2C7f49F71F21112D98528B52',
     in_pool: [],
     stake_fee: 0,
     unstake_fee: 0,
