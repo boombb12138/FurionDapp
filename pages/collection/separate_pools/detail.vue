@@ -173,7 +173,7 @@
                   <div class="font-700 text-32px">{{nft_item.fXprice.toFixed(2)}}</div>
                 </div>
               </div>
-              <div class="text-22px font-400" style="color: rgba(255, 255, 255, 0.8)">Locking ends at {{ unixToDate(nft_item.lock_info.release_time) }}</div>
+              <div v-if="nft_item.lock_info.locker != zeroAddress" class="text-22px font-400" style="color: rgba(255, 255, 255, 0.8)">Locking ends at {{ unixToDate(nft_item.lock_info.release_time) }}</div>
             </div>
             
 
