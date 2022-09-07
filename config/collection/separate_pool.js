@@ -20,11 +20,11 @@ export const default_pool_info = {
     fXprice: 9.99,
     items: 999,
     in_pool: [
-        { token_id: 1, image_url: require("@/assets/images/placeholder.png") },
-        { token_id: 2, image_url: require("@/assets/images/placeholder.png") },
-        { token_id: 3, image_url: require("@/assets/images/placeholder.png") },
-        { token_id: 4, image_url: require("@/assets/images/placeholder.png") },
-        { token_id: 5, image_url: require("@/assets/images/placeholder.png") },
+        { token_id: 1, image_url: require("@/assets/images/placeholder.png"), lock_info: { locker: "0x0000000000000000000000000000000000000000", extended: false, release_time: 0 } },
+        { token_id: 2, image_url: require("@/assets/images/placeholder.png"), lock_info: { locker: "0x0000000000000000000000000000000000000000", extended: false, release_time: 0 } },
+        { token_id: 3, image_url: require("@/assets/images/placeholder.png"), lock_info: { locker: "0x0000000000000000000000000000000000000000", extended: false, release_time: 0 } },
+        { token_id: 4, image_url: require("@/assets/images/placeholder.png"), lock_info: { locker: "0x0000000000000000000000000000000000000000", extended: false, release_time: 0 } },
+        { token_id: 5, image_url: require("@/assets/images/placeholder.png"), lock_info: { locker: "0x0000000000000000000000000000000000000000", extended: false, release_time: 0 } },
     ],
 };
 
@@ -71,13 +71,22 @@ export const initSeparatePoolInfo = async (project, network) => {
 
     const factoryContract = await initSeparatePoolFactoryContract();
     const poolAddress = await factoryContract.contract.methods.getPool(raw_data['address']).call();
+    const poolContract = await getContract(await getSeparatePoolABI(), poolAddress);
     let raw_in_pool = (await getNftHoldingInfo(raw_data['address'], poolAddress.toLowerCase(), network))['data']['data'];
 
     let in_pool = [];
     for (let j = 0; j < raw_in_pool.length; j++) {
+        const id = raw_in_pool[j];
+        const lockInfo = await poolContract.methods.getLockInfo(id).call();
+        
         let single_record = {
-            token_id: raw_in_pool[j],
-            image_url: require("@/assets/images/placeholder.png")
+            token_id: id,
+            image_url: require("@/assets/images/placeholder.png"),
+            lock_info: {
+                locker: lockInfo[0],
+                extended: lockInfo[1],
+                release_time: lockInfo[2]
+            },
         }
         in_pool.push(single_record);
     }

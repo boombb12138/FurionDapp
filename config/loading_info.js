@@ -50,6 +50,16 @@ export const ProcessInfo = {
     detail: 
       'You are locking your NFT to the pool for 30 days, please sign and wait for the transaction to complete',
   },
+  UNLOCK_NFT: {
+    intro: 'Unlock NFT',
+    detail: 
+      'You are reclaiming your NFT from the pool, please sign and wait for the transaction to complete',
+  },
+  EXTEND_LOCK_PERIOD: {
+    intro: 'Extend NFT locking period',
+    detail: 
+      'You are going to extend locking your NFT for 30 more days, please sign and wait for the transaction to complete',
+  },
   SWAP_APPROVE_TOKEN: {
     intro: 'Approval for Token',
     detail:

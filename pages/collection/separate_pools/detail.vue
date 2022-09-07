@@ -164,13 +164,20 @@
           </div>
           <!-- NFT price and user functions box -->
           <div class="bg flex-1 p-30px">
-            <div class="mb-15px opacity-60 font-500 text-20px">1000 F&nbsp;-&nbsp;{{ nft_item.symbol }}</div>
-            <div class="flex items-center mb-55px">
-              <img src="@/assets/images/icon_eth.svg" class="w-24px mr-10px" />
-              <div class="font-700 text-32px">{{nft_item.fXprice.toFixed(2)}}</div>
+            <div class="flex justify-between">
+              <div>
+                <div class="mb-15px opacity-60 font-500 text-20px">1000 F&nbsp;-&nbsp;{{ nft_item.symbol }}
+                </div>
+                <div class="flex items-center mb-55px">
+                  <img src="@/assets/images/icon_eth.svg" class="w-24px mr-10px" />
+                  <div class="font-700 text-32px">{{nft_item.fXprice.toFixed(2)}}</div>
+                </div>
+              </div>
+              <div class="text-22px font-400" style="color: rgba(255, 255, 255, 0.8)">Locking ends at {{ unixToDate(nft_item.lock_info.release_time) }}</div>
             </div>
+            
 
-            <div class="flex">
+            <div v-if="nft_item.lock_info.locker === zeroAddress" class="flex">
               <div class="btn_border mr-18px">
                 <el-button type="primary" class="w-310px !h-60px" plain @click="toCart">
                   <div class="!flex items-center justify-center">
@@ -182,6 +189,25 @@
               <div class="btn_border">
                 <el-button type="primary" class="w-310px !h-60px" @click="buy">
                   <div class="text-20px font-800">BUY NOW</div>
+                </el-button>
+              </div>
+            </div>
+
+            <div v-if="nft_item.lock_info.locker != zeroAddress && nft_item.lock_info.locker.toLowerCase() != account" class="flex text-35px font-500 justify-center" style="color: rgba(255, 255, 255, 0.9)">
+              NFT is locked
+            </div>
+
+            <div v-if="nft_item.lock_info.locker.toLowerCase() === account" class="flex">
+              <div class="btn_border mr-18px">
+                <el-button type="primary" class="w-310px !h-60px" plain @click="extend" :disabled="nft_item.lock_info.extended === true">
+                  <div class="!flex items-center justify-center">
+                    <div class="text-20px font-800">{{ nft_item.lock_info.extended === false ? "EXTEND" : "EXTENDED" }}</div>
+                  </div>
+                </el-button>
+              </div>
+              <div class="btn_border">
+                <el-button type="primary" class="w-310px !h-60px" @click="unlock">
+                  <div class="text-20px font-800">UNLOCK</div>
                 </el-button>
               </div>
             </div>
@@ -357,7 +383,7 @@ import { mapState } from 'vuex';
 import { nft_item, initNftItem } from '@/config/collection/nft_item';
 import { initSeparatePoolContract, initFurContract } from "@/config/collection/separate_pool";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
-import { getTxURL, toWei } from '@/utils/common';
+import { _compareInt, getTxURL, toWei, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
 
 
 import {
@@ -403,6 +429,15 @@ export default {
     cart() {
       return this.$store.state.user.cart;
     },
+    zeroAddress() {
+      return '0x0000000000000000000000000000000000000000';
+    },
+    account() {
+      return this.userInfo.userAddress;
+    },
+    currentTimestamp() {
+      return Math.floor(Date.now() / 1000);
+    }
   },
   data() {
     const multicall = newMultiCallProvider(4);
@@ -415,6 +450,7 @@ export default {
       nft_activity: nft_activity,
       poolContract: {},
       furContract: {},
+      approved_fur: true,
       editorOption: {
         placeholder: "Share how you feel about the creation or even ask the creator a question.",
         modules: {
@@ -442,13 +478,14 @@ export default {
     };
   },
   async mounted() {
-    this.nft_item = await initNftItem(this.nft_item, this.$route.query.collection, this.$route.query.token_id, this.network);
+    await initNftItem(this.nft_item, this.$route.query.collection, this.$route.query.token_id, this.network);
     // console.log('NFT address', this.nft_item.address);
     this.poolContract = await initSeparatePoolContract(this.nft_item.address);
     this.furContract = await initFurContract();
     this.nft_comment = await initNftComment(this.network, this.nft_item.address, this.nft_item.token_id);
     this.nft_activity = await initNftActivity(this.network, this.nft_item.address, this.nft_item.token_id);
     this.user_info = await inituserinfo(this.network,this.userInfo.userAddress);
+    await this.checkApproval();
     // console.log(nft_activity);
   },
   methods: {
@@ -532,43 +569,59 @@ export default {
         await this.clickViewReply(item);
       }
     },
-    /** Balance & allowance checks **/
+    unixToDate(unixInSeconds) {
+      const milli = unixInSeconds * 1000;
+      const date = new Date(milli).toLocaleString().split(',');
+      return date[0];
+    },
 
-    async hasEnoughFur(account) {
-      let hasEnough = [false, false];
+    /************************* Balance & allowance checks *************************/
+
+    async checkApproval() {
+      const account = this.userInfo.userAddress;
+      let multicall_list = [
+        this.furContract.contract.methods.allowance(account, this.poolContract.address),
+      ];
+
+      const result = await this.multicall.aggregate(multicall_list); // [fur allowance]
+      if (_compareInt(result[0], toWei(ALLOWANCE_THRESHOLD)) == "smaller") {
+        this.approved_fur = false;
+      }
+    },
+    async hasEnoughFur(account, amount) {
+      let hasEnough = false;
 
       let multicall_list = [
         this.furContract.contract.methods.balanceOf(account),
-        this.furContract.contract.methods.allowance(account, this.poolContract.address)
       ];
-      const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
-      const requiredAmount = toWei(100);
-      if(result[0] > requiredAmount) {
-        hasEnough[0] = true;
-      }
-      if(result[1] > requiredAmount) {
-        hasEnough[1] = true;
+      const result = await this.multicall.aggregate(multicall_list); // [balance]
+
+      const requiredAmount = toWei(amount);
+      if (_compareInt(result[0], requiredAmount) != "smaller") {
+        hasEnough = true;
       }
 
       return hasEnough;
     },
-    async hasEnoughFx(account) {
+    async hasEnoughFx(account, amount) {
       let hasEnough = false;
 
       let multicall_list = [
         this.poolContract.contract.methods.balanceOf(account),
       ];
-      const result = await this.multicall.aggregate(multicall_list); // [balance, allowance]
+      const result = await this.multicall.aggregate(multicall_list); // [balance]
 
-      const requiredAmount = toWei(1000);
-      if(result[0] >= requiredAmount) {
+      // console.log('F-X balance', result);
+
+      const requiredAmount = toWei(amount);
+      if (_compareInt(result[0], requiredAmount) != "smaller") {
         hasEnough = true;
       }
 
       return hasEnough;
     },
 
-    /** Contract functions **/
+    /***************************** Contract functions *****************************/
 
     async buy() {
       const account = this.userInfo.userAddress;
@@ -580,20 +633,35 @@ export default {
         this.errorMessage(`Insufficient F-${this.nft_item.symbol} balance`);
         return;
       }
-      if(!checkFur[0]) {
+      if(!checkFur) {
         this.errorMessage("Insufficient FUR balance");
         return;
       }
-      if(!checkFur[1]) {
-        this.errorMessage("Insufficient FUR allowance");
-        return;
-      }
 
-      openDialog(this.dialogue_info, [ProcessInfo.BUY_NFT]);
+      // initialize tx window
+      let dialog_list = [];
+      if (!this.approved_fur) {
+        dialog_list.push(ProcessInfo.APPROVE_FUR);
+      }
+      dialog_list.push(ProcessInfo.BUY_NFT);
+      openDialog(this.dialogue_info, dialog_list);
+
+      if (!this.approved_fur) {
+        try {
+          await tokenApprove(this.furContract.address, account, this.poolContract.address);
+          stepDialog(this.dialogue_info);
+          this.approved_fur = true;
+        }
+        catch (e) {
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
 
       try {
         let tx_result = await this.poolContract.contract.methods.buy(this.nft_item.token_id).send({ from: account });
-        this.successMessage(tx_result, `Purchase F-${this.nft_item.symbol} #${this.nft_item.token_id} succeeded`);
+        this.successMessage(tx_result, `Purchase ${this.nft_item.symbol} #${this.nft_item.token_id} succeeded`);
         //put the message into the database when buy succeed
         let data = {
           network: this.network,
@@ -611,14 +679,70 @@ export default {
         await new Promise(r => setTimeout(r, 100));
         this.nft_activity = await initNftActivity(this.network, this.nft_item.address, this.nft_item.token_id);
       } catch(e) {
-        this.errorMessage(`Purchase F-${this.nft_item.symbol} #${this.nft_item.token_id} failed`);
+        this.errorMessage(`Purchase ${this.nft_item.symbol} #${this.nft_item.token_id} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
 
       closeDialog(this.dialogue_info);
-
     },
+
+    /*********************************** Unlock ***********************************/
+    
+    async unlock() {
+      const checkFx = await this.hasEnoughFx(this.account, 1, 500);
+      let tokenId = this.nft_item.token_id;
+
+      if (!checkFx) {
+        this.errorMessage(`Insufficient F-${this.nft_item.symbol} balance`);
+        return;
+      }
+
+      const dialog_list = [ProcessInfo.UNLOCK_NFT];
+      openDialog(this.dialogue_info, dialog_list);
+
+      try {
+        let tx_result = await this.poolContract.contract.methods.redeem(tokenId).send({ from: this.account });
+        this.successMessage(tx_result, `Unlock ${this.nft_item.symbol} #${tokenId} succeeded`);
+      } catch (e) {
+        this.errorMessage(`Unlock ${this.nft_item.symbol} #${tokenId} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+      closeDialog(this.dialogue_info);
+    },
+
+    /*************************** Extend locking period ***************************/
+
+    async extend() {
+      const checkFur = await this.hasEnoughFur(this.account, 1, 150);
+      let tokenId = this.nft_item.token_id;
+
+      if (!checkFur) {
+        this.errorMessage(`Insufficient FUR balance`);
+        return;
+      }
+
+      let dialog_list = [];
+      if (!this.approved_fur) {
+        dialog_list.push(ProcessInfo.APPROVE_FUR);
+      }
+      dialog_list.push(ProcessInfo.EXTEND_LOCK_PERIOD);
+      openDialog(this.dialogue_info, dialog_list);
+
+      try {
+        let tx_result = await this.poolContract.contract.methods.payFee(tokenId).send({ from: this.account });
+        this.successMessage(tx_result, `Extend locking ${this.nft_item.symbol} #${tokenId} succeeded`);
+      } catch (e) {
+        this.errorMessage(`Extend locking ${this.nft_item.symbol} #${tokenId} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+      closeDialog(this.dialogue_info);
+
+      await initNftItem(this.nft_item, this.$route.query.collection, this.$route.query.token_id, this.network);
+    },
+
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);
       this.$notify({
