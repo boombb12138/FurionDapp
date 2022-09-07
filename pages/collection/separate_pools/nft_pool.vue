@@ -148,6 +148,7 @@
       @click="$router.go(-1)" />
 
 
+
     <div class="w-1124px mx-auto min-h-800px">
 
       <!-- banner and other basic information for this project -->

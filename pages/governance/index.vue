@@ -16,18 +16,9 @@
 <template>
   <div class="px-40px pb-100px bg min-h-100vh">
     <div class="flex justify-between mb-24px pt-40px">
-      <div></div>
-      <div class="btn_border">
-        <el-button
-          type="primary"
-          class="!w-190px !h-48px !px-0"
-          @click="dialogVisible = true"
-        >
-          <div class="relative -top-2px">
-            <span class="text-20px">+</span>
-            <span class="text-14px">Start a proposal</span>
-          </div>
-        </el-button>
+      <div>
+        <img src="@/assets/images/governance/proposal.png" width="180" class="ml-30px mt-50px mb-20px"/>
+        <img src="@/assets/images/governance/vector.svg" class="ml-20px mb-33px"/>
       </div>
     </div>
 
