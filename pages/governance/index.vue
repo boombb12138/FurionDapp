@@ -17,8 +17,8 @@
   <div class="px-40px pb-100px bg min-h-100vh">
     <div class="flex justify-between mb-24px pt-40px">
       <div>
-        <img src="@/assets/images/governance/proposal.png" width="180" class="ml-30px mt-50px mb-20px"/>
-        <img src="@/assets/images/governance/vector.svg" class="ml-20px mb-33px"/>
+        <img src="@/assets/images/governance/Proposal.png" width="180" class="ml-30px mt-50px mb-20px"/>
+        <img src="@/assets/images/governance/Vector.svg" class="ml-20px mb-33px"/>
       </div>
     </div>
 
