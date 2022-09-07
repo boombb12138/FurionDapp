@@ -54,11 +54,33 @@
 .lockBorder {
   border: 2px solid rgba(255, 255, 255, 0.6) !important;
 }
+
+.section {
+  background: rgba(23, 37, 72, 0.6);
+  border-radius: 12px;
+  padding: 27px;
+  padding-bottom: 3px;
+
+  .form-item2 {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: rgba(252, 255, 253, 0.8);
+    font-weight: 700; 
+    font-size: 17px;
+    margin-bottom: 24px;
+
+    .icon {
+      @apply w-34px h-34px mr-14px;
+    }
+  }
+}
 </style>
 
 <template>
   <div class="!w-1160px">
-    <div class="pl-40px pr-20px mb-28px flex justify-between pt-36px">
+    <div class="px-30px mb-28px flex justify-between pt-36px">
       <el-input
         placeholder="search"
         v-model="searchKey"
@@ -164,6 +186,20 @@
         </div>
       </div>
     </div>
+
+    <div v-if="type === 3" class="section">
+      <div 
+        v-for="(item, index) in tokens"
+        :key="index" 
+        class="form-item2"
+      >
+        <div class="flex items-center">
+          <img class="icon" src="@/assets/images/liquidity/tokens/ETH.png" />
+          <p>{{ item.symbol }}</p>
+        </div>
+        <p>{{ formatNumber(item.balance, 3) }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -171,6 +207,7 @@
 import { mapState } from 'vuex';
 import { query_user_holding } from '@/config/collection/separate_pool';
 import { query_user_locked } from '@/config/user_info/locked_nft';
+import { _formatNumber, getNativeTokenAmount, tokenBalance } from "@/utils/common";
 import Loader from '@/components/Loader.vue';
 
 export default {
@@ -209,6 +246,12 @@ export default {
         {name: "World Of Women", symbol: "WOW", address: "0x436643Cb41F6B3Cb375aD87BC95833b460adD4a6"}, 
         {name: "Cryptoadz", symbol: "TOADZ", address: "0x7e357a7eE77872DdD51947f1550381BA0913920B"} 
       ],
+      tokens: [
+        {symbol: "ETH", address: "", balance: ""},
+        {symbol: "FUR", address: "0x175940b39014cD3a9c87cd6b1d7616a097db958E", balance: ""},
+        {symbol: "F-COOL", address: "0xEc5753503C317348d494C852DF64731D3D22d87d", balance: ""},
+        {symbol: "FFT-MIX", address: "0x482dc963e587D68B2C7f49F71F21112D98528B52", balance: ""},
+      ],
       searchKey: "",
       type: 1,
       ready: false,
@@ -216,14 +259,34 @@ export default {
   },
   async mounted() {
     await this.initUserNft();
+    await this.initBalance();
     this.ready = true;
   },
   methods: {
+
+    /*************************************** Utils ***************************************/
+
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
+      } else {
+        final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
+      }
+      if (final_result[0] == '-' || final_result[0] == 'N') {
+        final_result = '--'
+      }
+      return final_result
+    },
     unixToDate(unixInSeconds) {
       const milli = unixInSeconds * 1000;
       const date = new Date(milli).toLocaleString().split(',');
       return date[0];
     },
+
+    /************************************ Init state ************************************/
+
     async initUserNft() {
       for (let collection of this.collections) {
          let wallet = await query_user_holding(collection.address.toLowerCase(), this.account, this.network);
@@ -249,6 +312,15 @@ export default {
 
       this.display_nft = this.wallet_nft;
     },
+    async initBalance() {
+      for (let token of this.tokens) {
+        if (token.symbol === "ETH") {
+          token.balance = await getNativeTokenAmount(this.account);
+        } else {
+          token.balance = await tokenBalance(token.address, this.account);
+        }
+      }
+    }
   },
 };
 </script>
