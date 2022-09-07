@@ -54,6 +54,118 @@
 .lockBorder {
   border: 2px solid rgba(255, 255, 255, 0.6) !important;
 }
+
+.sk-folding-cube {
+  margin: 20px auto;
+  width: 50px;
+  height: 50px;
+  position: relative;
+  -webkit-transform: rotateZ(45deg);
+          transform: rotateZ(45deg);
+}
+.sk-folding-cube .sk-cube {
+  float: left;
+  width: 50%;
+  height: 50%;
+  position: relative;
+  -webkit-transform: scale(1.1);
+      -ms-transform: scale(1.1);
+          transform: scale(1.1); 
+}
+.sk-folding-cube .sk-cube:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
+          animation: sk-foldCubeAngle 2.4s infinite linear both;
+  -webkit-transform-origin: 100% 100%;
+      -ms-transform-origin: 100% 100%;
+          transform-origin: 100% 100%;
+}
+.sk-folding-cube .sk-cube2 {
+  -webkit-transform: scale(1.1) rotateZ(90deg);
+          transform: scale(1.1) rotateZ(90deg);
+}
+.sk-folding-cube .sk-cube3 {
+  -webkit-transform: scale(1.1) rotateZ(180deg);
+          transform: scale(1.1) rotateZ(180deg);
+}
+.sk-folding-cube .sk-cube4 {
+  -webkit-transform: scale(1.1) rotateZ(270deg);
+          transform: scale(1.1) rotateZ(270deg);
+}
+.sk-folding-cube .sk-cube2:before {
+  -webkit-animation-delay: 0.3s;
+          animation-delay: 0.3s;
+}
+.sk-folding-cube .sk-cube3:before {
+  -webkit-animation-delay: 0.6s;
+          animation-delay: 0.6s; 
+}
+.sk-folding-cube .sk-cube4:before {
+  -webkit-animation-delay: 0.9s;
+          animation-delay: 0.9s;
+}
+@-webkit-keyframes sk-foldCubeAngle {
+  0%, 10% {
+    -webkit-transform: perspective(140px) rotateX(-180deg);
+            transform: perspective(140px) rotateX(-180deg);
+    opacity: 0; 
+  } 25%, 75% {
+    -webkit-transform: perspective(140px) rotateX(0deg);
+            transform: perspective(140px) rotateX(0deg);
+    opacity: 1; 
+  } 90%, 100% {
+    -webkit-transform: perspective(140px) rotateY(180deg);
+            transform: perspective(140px) rotateY(180deg);
+    opacity: 0; 
+  } 
+}
+
+@keyframes sk-foldCubeAngle {
+  0%, 10% {
+    -webkit-transform: perspective(140px) rotateX(-180deg);
+            transform: perspective(140px) rotateX(-180deg);
+    opacity: 0; 
+  } 25%, 75% {
+    -webkit-transform: perspective(140px) rotateX(0deg);
+            transform: perspective(140px) rotateX(0deg);
+    opacity: 1; 
+  } 90%, 100% {
+    -webkit-transform: perspective(140px) rotateY(180deg);
+            transform: perspective(140px) rotateY(180deg);
+    opacity: 0; 
+  }
+}
+
+.bouncing {
+  position: relative;
+  -webkit-box-reflect: below 15px linear-gradient(transparent, rgba(0,0,0,.3));
+  font-size: 25px;
+  font-weight: 500;
+  margin-top: 50px;
+}
+.bouncing span {
+  position: relative;
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  animation: bounce 2s infinite;
+  animation-delay: calc(.1s * var(--i));
+  
+}
+@keyframes bounce {
+  0%,40%,100% {
+    transform: translateY(0)
+  }
+  20% {
+    transform: translateY(-20px)
+  }
+}
 </style>
 
 <template>
@@ -82,7 +194,7 @@
         <div
           class="flex items-center type"
           :class="{ active: type == 2 }"
-          @click="type = 2; display_nft = locked_nft;"
+          @click="ready ? type = 2 : type = 1; display_nft = locked_nft;"
         >
           <img src="@/assets/images/mywallet/icon2s.svg" alt="" v-if="type == 2" />
           <img src="@/assets/images/mywallet/icon2.svg" alt="" v-else />
@@ -91,7 +203,7 @@
         <div
           class="flex items-center type"
           :class="{ active: type == 3 }"
-          @click="type = 3"
+          @click="ready ? type = 3 : type = 1"
         >
           <img src="@/assets/images/mywallet/icon3s.svg" alt="" v-if="type == 3" />
           <img src="@/assets/images/mywallet/icon3.svg" alt="" v-else />
@@ -99,13 +211,37 @@
         </div>
       </div>
     </div>
-    <div v-if="type == 1 || type == 2" class="pl-40px pb-100px clearfix">
+    <div v-if="ready === false" class="flex justify-center items-center h-250px">
+      <div>
+        <div class="sk-folding-cube">
+          <div class="sk-cube1 sk-cube"></div>
+          <div class="sk-cube2 sk-cube"></div>
+          <div class="sk-cube4 sk-cube"></div>
+          <div class="sk-cube3 sk-cube"></div>
+        </div>
+        <div class="bouncing">
+         <span style="--i:1">F</span>
+         <span style="--i:2">E</span>
+         <span style="--i:3">T</span>
+         <span style="--i:4">C</span>
+         <span style="--i:5">H</span>
+         <span style="--i:6">I</span>
+         <span style="--i:7">N</span>
+         <span style="--i:8">G</span>
+         <span style="--i:9"></span>
+         <span style="--i:10">.</span>
+         <span style="--i:11">.</span>
+         <span style="--i:12">.</span>
+        </div>
+      </div>
+    </div>
+    <div v-if="(type == 1 || type == 2) && ready === true" class="pl-40px pb-100px clearfix">
       <div
         class="item"
         :class="{ lockBorder: type === 2 }"
         v-for="(item, index) in filterNft"
         :key="index"
-        @click="$router.push('/myWallet/detail?id=' + item.token_id)"
+        @click="$router.push(`/collection/separate_pools/detail?collection=${item.name}&token_id=${item.token_id}`)"
       >
         <el-image
           :src="item.image_url"
@@ -209,10 +345,12 @@ export default {
       ],
       searchKey: "",
       type: 1,
+      ready: false,
     };
   },
   async mounted() {
     await this.initUserNft();
+    this.ready = true;
   },
   methods: {
     unixToDate(unixInSeconds) {
