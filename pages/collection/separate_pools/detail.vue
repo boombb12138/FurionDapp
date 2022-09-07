@@ -626,8 +626,8 @@ export default {
 
     async buy() {
       const account = this.userInfo.userAddress;
-      const checkFx = await this.hasEnoughFx(account);
-      const checkFur = await this.hasEnoughFur(account);
+      const checkFx = await this.hasEnoughFx(account, 1000);
+      const checkFur = await this.hasEnoughFur(account, 100);
 
 
       if(!checkFx) {
