@@ -65,6 +65,9 @@
 .selectedBorder {
   border: 2px solid rgb(1, 182, 46) !important;
 }
+.lockBorder {
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+}
 
 .item-wallet {
   width: 195px;
@@ -145,7 +148,7 @@
       @click="$router.go(-1)" />
 
 
-    <div class="w-1124px mx-auto">
+    <div class="w-1124px mx-auto min-h-800px">
 
       <!-- banner and other basic information for this project -->
       <div class="px-20px">
@@ -165,19 +168,6 @@
                 </el-tooltip>
 
               </div>
-
-
-              <!-- <div class="absolute left-0 top-50px left-20px">
-                <div class="tag">
-                  <div>FFT-A :</div>
-                  <img
-                    src="@/assets/images/icon_eth.svg"
-                    width="18"
-                    class="mx-10px -mt-2px"
-                  />
-                  <div>0.04</div>
-                </div>
-              </div> -->
             </div>
           </div>
 
@@ -248,7 +238,7 @@
         <!-- search bar and item sorting -->
         <div class="flex justify-between items-center mb-12px">
           <el-input placeholder="Search by token ID" v-model="searchKey" class="search !w-858px" clearable
-            @input="search">
+            @input="filterPool">
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
 
@@ -290,15 +280,15 @@
         <!-- Filter checkboxes -->
         <div>
           <el-checkbox-group v-model="checkList">
-            <el-checkbox label="ALL"></el-checkbox>
-            <el-checkbox label="STORED"></el-checkbox>
-            <el-checkbox label="LOCKED"></el-checkbox>
+            <el-checkbox label="ALL" @change="filterPool"></el-checkbox>
+            <el-checkbox label="STORED" @change="filterPool"></el-checkbox>
+            <el-checkbox label="LOCKED" @change="filterPool"></el-checkbox>
           </el-checkbox-group>
         </div>
 
         <!-- grid for NFT items -->
         <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length > 0">
-          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index" @click="clickItem(item)">
+          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index" :class="{ lockBorder: item.lock_info.locker != zeroAddress }" @click="clickItem(item)">
             <!-- NFT image -->
             <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
               <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
@@ -326,17 +316,27 @@
                 </div>
 
                 <!-- Add to cart button -->
-                <div class="btn2 mr-5px" @click.stop="toCart(item)">
+                <div v-if="item.lock_info.locker === zeroAddress" class="btn2 mr-8px" @click.stop="toCart(item)">
                   <img src="@/assets/images/cart.png" class="icon mr-5px -mt-1px" />
                   <img src="@/assets/images/cart2.png" class="icon2 mr-5px -mt-1px" />
                   CART
                 </div>
 
                 <!-- Buy button -->
-                <div class="btn2" @click.stop="buy(item)">
+                <div v-if="item.lock_info.locker === zeroAddress" class="btn2" @click.stop="buy(item)">
                   <img src="@/assets/images/buy.png" class="icon mr-5px" />
                   <img src="@/assets/images/buy2.png" class="icon2 mr-5px" />
                   BUY
+                </div>
+
+                <!-- Extend lock period button -->
+                <div v-if="item.lock_info.locker.toLowerCase() === account && item.lock_info.extended === false && item.lock_info.release_time > currentTimestamp" class="btn2 mr-8px" @click.stop="extend(item)">
+                  EXTEND
+                </div>
+
+                <!-- Unlock button -->
+                <div v-if="item.lock_info.locker.toLowerCase() === account && item.lock_info.release_time > currentTimestamp" class="btn2" @click.stop="unlock(item)">
+                  UNLOCK
                 </div>
               </div>
             </div>
@@ -344,6 +344,7 @@
             <div
               class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px">
               <img src="@/assets/images/icon_eth.svg" />
+              <span v-if="item.lock_info.locker != zeroAddress" style="color: rgba(255, 255, 255, 0.8)">LOCKED</span>
               <div class="flex items-center">
                 <div class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon">
                   <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
@@ -486,6 +487,15 @@ export default {
     cart() {
       return this.$store.state.user.cart;
     },
+    zeroAddress() {
+      return '0x0000000000000000000000000000000000000000';
+    },
+    account() {
+      return this.userInfo.userAddress;
+    },
+    currentTimestamp() {
+      return Math.floor(Date.now() / 1000);
+    }
   },
   data() {
     const multicall = newMultiCallProvider(4);
@@ -496,14 +506,13 @@ export default {
       dialogVisible: false,
       separate_pool_info: separate_pool_info,
       default_pool_info: default_pool_info,
-      checkList: [],
+      checkList: ['ALL'],
       user_info,
       searchKey: "",
       nft_item: nft_item,
       user_nft: [],
       sort: "Price low to high",
       poolContract: {},
-      pool_address: '',
       furContract: {},
       nftToPool: [],
       applySelectedStyle: [],
@@ -553,17 +562,78 @@ export default {
       const account = this.userInfo.userAddress;
       this.user_nft = await query_user_holding(separate_pool_info.nft_address, account, this.network);
     },
+    async filterPool() {
+      const raw_in_pool = (await getNftHoldingInfo(this.separate_pool_info.nft_address, this.poolContract.address.toLowerCase(), this.network))['data']['data'];
+
+      let original = []; 
+      for (let i = 0; i < raw_in_pool.length; i++) {
+        const id = raw_in_pool[i];
+        const lockInfo = await this.poolContract.contract.methods.getLockInfo(id).call();
+        original.push({
+          token_id: id,
+          image_url: require("@/assets/images/placeholder.png"),
+          lock_info: {
+            locker: lockInfo[0],
+            extended: lockInfo[1],
+            release_time: lockInfo[2]
+          }
+        })
+      } 
+
+      if (this.checkList.length == 1) {
+        let temp = [];
+
+        if (this.checkList[0] === "STORED") {
+          for (let i = 0; i < original.length; i++) {
+            if (original[i].lock_info.locker === this.zeroAddress) {
+              temp.push(original[i]);
+            }
+          }
+          original = temp;
+        } else if (this.checkList[0] === "LOCKED") {
+          for (let i = 0; i < original.length; i++) {
+            if (original[i].lock_info.locker != this.zeroAddress) {
+              temp.push(original[i]);
+            }
+          }
+          original = temp;
+        }
+      }
+
+      if (this.searchKey != "") {
+        let temp = [];
+
+        for (let i = 0; i < original.length; i++) {
+          if (original[i].token_id == this.searchKey) {
+            temp.push(original[i]);
+          }
+        }
+        original = temp;
+      }
+
+      this.separate_pool_info.in_pool = original;
+      await initTokenImage(this.separate_pool_info, this.network);
+    },
     async refreshPool() {
       let raw_in_pool = (await getNftHoldingInfo(this.separate_pool_info.nft_address, this.poolContract.address.toLowerCase(), this.network))['data']['data'];
 
       let in_pool = [];
       for (let j = 0; j < raw_in_pool.length; j++) {
+        const id = raw_in_pool[j];
+        const lockInfo = await this.poolContract.contract.methods.getLockInfo(id).call();
+
         let single_record = {
-          token_id: raw_in_pool[j],
-          image_url: require("@/assets/images/placeholder.png")
+          token_id: id,
+          image_url: require("@/assets/images/placeholder.png"),
+          lock_info: {
+            locker: lockInfo[0],
+            extended: lockInfo[1],
+            release_time: lockInfo[2],
+          }
         }
         in_pool.push(single_record);
       }
+
       this.separate_pool_info.in_pool = in_pool;
       await initTokenImage(this.separate_pool_info, this.network);
       await this.initUserInfo();
@@ -614,7 +684,7 @@ export default {
       }
     },
 
-    async hasEnoughFur(account, nftAmount, type) {
+    async hasEnoughFur(account, nftAmount, amountPerNft) {
       let hasEnough = false;
 
       let multicall_list = [
@@ -622,14 +692,14 @@ export default {
       ];
       const result = await this.multicall.aggregate(multicall_list); // [balance]
 
-      const requiredAmount = type === "buy" ? toWei(100 * nftAmount) : toWei(150 * nftAmount);
+      const requiredAmount = toWei(amountPerNft * nftAmount);
       if (_compareInt(result[0], requiredAmount) != "smaller") {
         hasEnough = true;
       }
 
       return hasEnough;
     },
-    async hasEnoughFx(account) {
+    async hasEnoughFx(account, amount) {
       let hasEnough = false;
 
       let multicall_list = [
@@ -639,7 +709,7 @@ export default {
 
       // console.log('F-X balance', result);
 
-      const requiredAmount = toWei(1000);
+      const requiredAmount = toWei(amount);
       if (_compareInt(result[0], requiredAmount) != "smaller") {
         hasEnough = true;
       }
@@ -652,8 +722,8 @@ export default {
     /****************************************** Buy ******************************************/
     async buy(item) {
       const account = this.userInfo.userAddress;
-      const checkFx = await this.hasEnoughFx(account);
-      const checkFur = await this.hasEnoughFur(account, 1, "buy");
+      const checkFx = await this.hasEnoughFx(account, 1000);
+      const checkFur = await this.hasEnoughFur(account, 1, 100);
       let tokenId = item.token_id;
       if (!checkFx) {
         this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
@@ -688,7 +758,7 @@ export default {
 
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
-        this.successMessage(tx_result, `Purchase F-${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+        this.successMessage(tx_result, `Purchase ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
         //put the message into the database when buy succeed
         let data = {
           network: this.network,
@@ -706,7 +776,7 @@ export default {
         intoNftActivity(data);
 
       } catch (e) {
-        this.errorMessage(`Purchase F-${this.separate_pool_info.symbol} #${tokenId} failed`);
+        this.errorMessage(`Purchase ${this.separate_pool_info.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
@@ -714,7 +784,7 @@ export default {
       setTimeout(() => this.refreshPool(), 3000);
     },
 
-    /******************************************* Store *******************************************/
+    /************************************* Store *************************************/
 
     async store() {
       if (this.nftToPool.length == 0) {
@@ -787,7 +857,7 @@ export default {
       }
 
       const account = this.userInfo.userAddress;
-      const checkFur = await this.hasEnoughFur(account, lockAmount, "lock");
+      const checkFur = await this.hasEnoughFur(account, lockAmount, 150);
 
       if (!checkFur) {
         this.errorMessage("Insufficient FUR balance");
@@ -814,6 +884,19 @@ export default {
 
           stepDialog(this.dialogue_info);
         } catch (e) {
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          return
+        }
+      }
+
+      if (!this.approved_fur) {
+        try {
+          await tokenApprove(this.furContract.address, account, this.poolContract.address);
+          stepDialog(this.dialogue_info);
+          this.approved_fur = true;
+        }
+        catch (e) {
           console.warn(e);
           closeDialog(this.dialogue_info);
           return
@@ -850,6 +933,63 @@ export default {
       this.dialogVisible = false;
       setTimeout(() => this.refreshPool(), 3000);
     },
+
+    /*********************************** Unlock ***********************************/
+    
+    async unlock(item) {
+      const checkFx = await this.hasEnoughFx(this.account, 1, 500);
+      let tokenId = item.token_id;
+
+      if (!checkFx) {
+        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
+        return;
+      }
+
+      const dialog_list = [ProcessInfo.UNLOCK_NFT];
+      openDialog(this.dialogue_info, dialog_list);
+
+      try {
+        let tx_result = await this.poolContract.contract.methods.redeem(tokenId).send({ from: this.account });
+        this.successMessage(tx_result, `Unlock ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+      } catch (e) {
+        this.errorMessage(`Unlock ${this.separate_pool_info.symbol} #${tokenId} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+      closeDialog(this.dialogue_info);
+      setTimeout(() => this.refreshPool(), 3000);
+    },
+
+    /*************************** Extend locking period ***************************/
+
+    async extend(item) {
+      const checkFur = await this.hasEnoughFur(this.account, 1, 150);
+      let tokenId = item.token_id;
+
+      if (!checkFur) {
+        this.errorMessage(`Insufficient FUR balance`);
+        return;
+      }
+
+      let dialog_list = [];
+      if (!this.approved_fur) {
+        dialog_list.push(ProcessInfo.APPROVE_FUR);
+      }
+      dialog_list.push(ProcessInfo.EXTEND_LOCK_PERIOD);
+      openDialog(this.dialogue_info, dialog_list);
+
+      try {
+        let tx_result = await this.poolContract.contract.methods.payFee(tokenId).send({ from: this.account });
+        this.successMessage(tx_result, `Extend locking ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+      } catch (e) {
+        this.errorMessage(`Extend locking ${this.separate_pool_info.symbol} #${tokenId} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+      closeDialog(this.dialogue_info);
+      setTimeout(() => this.refreshPool(), 3000);
+    },
+
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);
       this.$notify({
