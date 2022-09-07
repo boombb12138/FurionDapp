@@ -134,8 +134,9 @@
 
               <div class="mt-32px">
                 <el-button plain class="w-1/1 !h-70px !text-18px"
+                  :disabled="disable"
                   @click="handleAmt(scope.row.index)">
-                  ENTER AN AMOUNT
+                  {{info}}
                 </el-button>
               </div>
             </div>
@@ -221,6 +222,8 @@
         multicall: multicall,
         dialogue_info: DialogInfo,
         pools: InitialPoolList,
+        disable: true,
+        info: 'ENTER AN AMOUNT',
       };
     },
   
@@ -317,9 +320,10 @@
               return;
             }
             this.num = amt.toFixed(6);
-            pool.amt = parseFloat(amt.toFixed(6));
+            this.pools[index].amt = parseFloat(amt.toFixed(6));
+            await this.calAmt(index);
           }  
-        
+      
           // percent amt for removing liquidity
           else if (type == '2') {
             const user_stake = parseFloat(pool.user_stake);
@@ -329,9 +333,9 @@
               return;
             }
             this.num = amt.toFixed(6);
-            pool.amt = parseFloat(amt.toFixed(6));
+            this.pools[index].amt = parseFloat(amt.toFixed(6));
+            await this.calAmt(index);
           }
-          this.pools[index] = pool;
           await this.calLpTokenValue(index);
         } catch (e) {
           console.warn(e);
@@ -561,6 +565,8 @@
   
       async reset(index) {
         this.num = '';
+        this.info = 'ENTER AN AMOUNT';
+        this.disable = true;
         if (index == -1) {
           // reset all the pools;
           for (let id = 0; id < this.pools.length; id++) {
@@ -591,9 +597,41 @@
       async calAmt(index) {
         if (this.num == '') {
           this.reset(index);
+          this.info = 'ENTER AN AMOUNT';
+          this.disable = true;
           return;
         }
-        this.pools[index].amt = parseFloat(this.num);
+        const pool = this.pools[index];
+        const type = pool.type;
+        const amt = parseFloat(this.num);
+        if (amt <= 0.0) {
+          this.reset(index);
+          this.info = 'ENTER AN AMOUNT';
+          this.disable = true;
+          return;
+        }
+        if (type == '1') {
+          const user_balance = parseFloat(this.pools[index].user_balance);
+          if (amt > user_balance) {
+            this.info = 'INSUFFICIENT BALANCE';
+            this.disable = true;
+          } else {
+            this.info = 'ADD LIQUIDITY';
+            this.disable = false;
+          }
+        } else if (type == '2') {
+          const user_stake = parseFloat(pool.user_stake);
+          if (amt > user_stake) {
+            this.info = 'INSUFFICIENT LIQUIDITY';
+            this.disable = true;
+          } else {
+            this.info = 'REMOVE LIQUIDITY';
+            this.disable = false;
+          }
+        }
+        pool.amt = amt;
+        this.pools[index] = pool
+        return;
       },
   
       formatNumber(value, fixed = 2) {

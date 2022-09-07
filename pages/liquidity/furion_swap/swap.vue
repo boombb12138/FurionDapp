@@ -175,7 +175,7 @@
             <img class="flex-shrink-0" src="@/assets/images/liquidity/arrow_down.svg" />
             &nbsp;&nbsp;
             <span class="text-10px text-[rgba(252,255,253,0.4)] font-600">In Pool: {{
-                formatNumber(this.swap_info.token_0_reserve)
+            formatNumber(this.swap_info.token_0_reserve)
             }}</span>
           </div>
 
@@ -200,7 +200,7 @@
 
             <img class="flex-shrink-0" src="@/assets/images/liquidity/arrow_down.svg" />
             &nbsp;&nbsp;<span class="text-10px text-[rgba(252,255,253,0.4)] font-600">In Pool: {{
-                formatNumber(this.swap_info.token_1_reserve)
+            formatNumber(this.swap_info.token_1_reserve)
             }}</span>
           </div>
 
@@ -223,14 +223,14 @@
         <div class="flex justify-between items-center">
           <div class="btn_border w-1/2 mt-30px">
             <el-button type="primary" class="!w-1/1 !h-52x" :disabled="approved" @click="approveToken">{{ approved ?
-                "Approved" : "Approve"
+            "Approved" : "Approve"
             }}
             </el-button>
           </div>
           &nbsp;&nbsp;&nbsp;&nbsp;
           <div class="btn_border w-1/2 mt-30px">
             <el-button type="primary" class="!w-1/1 !h-52x" @click="swap" :disabled="!valid_swap">{{ valid_swap ?
-                "Swap" : "Insufficient"
+            "Swap" : "Insufficient"
             }}</el-button>
           </div>
 
@@ -394,14 +394,14 @@ export default {
       // console.log('Account info', account)
       try {
         if (this.swap_info.token_0 == 'ETH') {
-          this.swap_info.token_0_balance = await getNativeTokenAmount(account);
+          this.swap_info.token_0_balance = parseFloat(await getNativeTokenAmount(account));
           let token_1_contract = this.swap_info.token_1_contract;
-          this.swap_info.token_1_balance = fromWei((await token_1_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.token_1_decimal));
+          this.swap_info.token_1_balance = parseFloat(fromWei((await token_1_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.token_1_decimal)));
 
         } else if (this.swap_info.token_1 == 'ETH') {
-          this.swap_info.token_1_balance = await getNativeTokenAmount(account);
+          this.swap_info.token_1_balance = parseFloat(await getNativeTokenAmount(account));
           let token_0_contract = this.swap_info.token_0_contract;
-          this.swap_info.token_0_balance = fromWei((await token_0_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.token_0_decimal));
+          this.swap_info.token_0_balance = parseFloat(fromWei((await token_0_contract.methods.balanceOf(account).call()), parseInt(this.swap_info.token_0_decimal)));
         }
 
         else {
@@ -411,8 +411,8 @@ export default {
           let multicall_list = [token_0_contract.methods.balanceOf(account), token_1_contract.methods.balanceOf(account)];
           const balance_results = await this.multicall.aggregate(multicall_list);
           // console.log('Balance info', balance_results);
-          this.swap_info.token_0_balance = fromWei(balance_results[0], parseInt(this.swap_info.token_0_decimal));
-          this.swap_info.token_1_balance = fromWei(balance_results[1], parseInt(this.swap_info.token_1_decimal));
+          this.swap_info.token_0_balance = parseFloat(fromWei(balance_results[0], parseInt(this.swap_info.token_0_decimal)));
+          this.swap_info.token_1_balance = parseFloat(fromWei(balance_results[1], parseInt(this.swap_info.token_1_decimal)));
 
         }
       } catch (e) {

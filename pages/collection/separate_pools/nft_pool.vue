@@ -287,7 +287,8 @@
         </div>
 
         <!-- grid for NFT items -->
-        <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length > 0">
+        <Loader v-if="ready === false" />
+        <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length > 0 && ready === true">
           <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index" :class="{ lockBorder: item.lock_info.locker != zeroAddress }" @click="clickItem(item)">
             <!-- NFT image -->
             <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
@@ -355,7 +356,7 @@
             </div>
           </div>
         </div>
-        <div class="font-700 text-24px text-center" v-else>
+        <div v-if="separate_pool_info.in_pool.length === 0 && ready === true" class="font-700 text-24px text-center">
           <br /><br /><br />
           <img src="@/assets/images/pool/Empty.png" width="10%" />
           <br /><br />
@@ -474,13 +475,14 @@ import {
   renew_user_hot_news
 } from "@/config/user_info/profile";
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
+import Loader from '@/components/Loader.vue';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
   },
   props: {},
-  components: { ProceedingDetails },
+  components: { ProceedingDetails, Loader },
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
