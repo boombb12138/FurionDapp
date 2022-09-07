@@ -175,7 +175,7 @@
               </div>
               <div v-if="nft_item.lock_info.locker != zeroAddress" class="text-22px font-400" style="color: rgba(255, 255, 255, 0.8)">Locking ends at {{ unixToDate(nft_item.lock_info.release_time) }}</div>
             </div>
-            
+
 
             <div v-if="nft_item.lock_info.locker === zeroAddress" class="flex">
               <div class="btn_border mr-18px">
@@ -415,6 +415,7 @@ import {
   nft_activity,
   initNftActivity,
   intoNftActivity,
+  intoNftActivityByArray
 } from "@/config/collection/nft_activity";
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 export default {
@@ -663,19 +664,19 @@ export default {
         let tx_result = await this.poolContract.contract.methods.buy(this.nft_item.token_id).send({ from: account });
         this.successMessage(tx_result, `Purchase ${this.nft_item.symbol} #${this.nft_item.token_id} succeeded`);
         //put the message into the database when buy succeed
-        let data = {
-          network: this.network,
-          project: this.nft_item.collection,
-          token_id: this.nft_item.token_id,
-          address: this.nft_item.address,
-          event: 'Redeem',
-          event_type: 'success',
-          eth_price: this.nft_item.fXprice.toFixed(2),
-          from_user: this.poolContract.address,
-          tx_hash: tx_result.transactionHash,
-          to_user: account,
-        };
-        intoNftActivity(data);
+        let data = [];
+        data.push({
+            project: this.nft_item.collection,
+            token_id: this.nft_item.token_id,
+            address: this.nft_item.address,
+            event: 'Redeem',
+            event_type: 'success',
+            eth_price: this.nft_item.fXprice.toFixed(2),
+            from_user: this.poolContract.address,
+            tx_hash: tx_result.transactionHash,
+            to_user: account,
+          });
+        intoNftActivityByArray(this.network,data);
         await new Promise(r => setTimeout(r, 100));
         this.nft_activity = await initNftActivity(this.network, this.nft_item.address, this.nft_item.token_id);
       } catch(e) {
@@ -688,7 +689,7 @@ export default {
     },
 
     /*********************************** Unlock ***********************************/
-    
+
     async unlock() {
       const checkFx = await this.hasEnoughFx(this.account, 1, 500);
       let tokenId = this.nft_item.token_id;
@@ -704,6 +705,22 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.redeem(tokenId).send({ from: this.account });
         this.successMessage(tx_result, `Unlock ${this.nft_item.symbol} #${tokenId} succeeded`);
+        //put the message into the database when buy succeed
+        let data = [];
+        data.push({
+            project: this.nft_item.collection,
+            token_id: this.nft_item.token_id,
+            address: this.nft_item.address,
+            event: 'Unlock',
+            event_type: 'success',
+            eth_price: this.nft_item.fXprice.toFixed(2),
+            from_user: this.poolContract.address,
+            tx_hash: tx_result.transactionHash,
+            to_user: this.account,
+          });
+        intoNftActivityByArray(this.network,data);
+        await new Promise(r => setTimeout(r, 100));
+        this.nft_activity = await initNftActivity(this.network, this.nft_item.address, this.nft_item.token_id);
       } catch (e) {
         this.errorMessage(`Unlock ${this.nft_item.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);
@@ -733,6 +750,21 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.payFee(tokenId).send({ from: this.account });
         this.successMessage(tx_result, `Extend locking ${this.nft_item.symbol} #${tokenId} succeeded`);
+        let data = [];
+        data.push({
+            project: this.nft_item.collection,
+            token_id: this.nft_item.token_id,
+            address: this.nft_item.address,
+            event: 'Extend',
+            event_type: 'success',
+            eth_price: this.nft_item.fXprice.toFixed(2),
+            from_user: this.account,
+            tx_hash: tx_result.transactionHash,
+            to_user: this.account,
+          });
+        intoNftActivityByArray(this.network,data);
+        await new Promise(r => setTimeout(r, 100));
+        this.nft_activity = await initNftActivity(this.network, this.nft_item.address, this.nft_item.token_id);
       } catch (e) {
         this.errorMessage(`Extend locking ${this.nft_item.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);

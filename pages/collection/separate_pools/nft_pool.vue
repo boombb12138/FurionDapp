@@ -565,7 +565,7 @@ export default {
     async filterPool() {
       const raw_in_pool = (await getNftHoldingInfo(this.separate_pool_info.nft_address, this.poolContract.address.toLowerCase(), this.network))['data']['data'];
 
-      let original = []; 
+      let original = [];
       for (let i = 0; i < raw_in_pool.length; i++) {
         const id = raw_in_pool[i];
         const lockInfo = await this.poolContract.contract.methods.getLockInfo(id).call();
@@ -578,7 +578,7 @@ export default {
             release_time: lockInfo[2]
           }
         })
-      } 
+      }
 
       if (this.checkList.length == 1) {
         let temp = [];
@@ -759,21 +759,21 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
         this.successMessage(tx_result, `Purchase ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+
         //put the message into the database when buy succeed
-        let data = {
-          network: this.network,
-          project: this.separate_pool_info.collection,
-          token_id: tokenId,
-          address: separate_pool_info.nft_address,
-          event: 'Redeem',
-          event_type: 'success',
-          eth_price: separate_pool_info.fXprice,
-          from_user: this.poolContract.address,
-          tx_hash: tx_result.transactionHash,
-          to_user: account,
-        };
-        // console.log(data);
-        intoNftActivity(data);
+        let data = [];
+        data.push({
+            project: this.separate_pool_info.collection,
+            token_id: tokenId,
+            address: this.separate_pool_info.nft_address,
+            event: 'Redeem',
+            event_type: 'success',
+            eth_price: this.separate_pool_info.fXprice,
+            from_user: this.poolContract.address,
+            tx_hash: tx_result.transactionHash,
+            to_user: account,
+          });
+          intoNftActivityByArray(this.network,data);
 
       } catch (e) {
         this.errorMessage(`Purchase ${this.separate_pool_info.symbol} #${tokenId} failed`);
@@ -823,10 +823,10 @@ export default {
             data.push({
             project: this.separate_pool_info.collection,
             token_id: this.nftToPool[i],
-            address: separate_pool_info.nft_address,
+            address: this.separate_pool_info.nft_address,
             event: 'Store',
             event_type: 'success',
-            eth_price: separate_pool_info.fXprice,
+            eth_price: this.separate_pool_info.fXprice,
             from_user: account,
             tx_hash: tx_result.transactionHash,
             to_user: this.poolContract.address,
@@ -912,10 +912,10 @@ export default {
             data.push({
             project: this.separate_pool_info.collection,
             token_id: this.nftToPool[i],
-            address: separate_pool_info.nft_address,
+            address: this.separate_pool_info.nft_address,
             event: 'Lock',
             event_type: 'success',
-            eth_price: separate_pool_info.fXprice,
+            eth_price: this.separate_pool_info.fXprice,
             from_user: account,
             tx_hash: tx_result.transactionHash,
             to_user: this.poolContract.address,
@@ -935,7 +935,7 @@ export default {
     },
 
     /*********************************** Unlock ***********************************/
-    
+
     async unlock(item) {
       const checkFx = await this.hasEnoughFx(this.account, 1, 500);
       let tokenId = item.token_id;
@@ -951,6 +951,20 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.redeem(tokenId).send({ from: this.account });
         this.successMessage(tx_result, `Unlock ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+        //put the message into the database when buy succeed
+        let data = [];
+        data.push({
+            project: this.separate_pool_info.collection,
+            token_id: tokenId,
+            address: this.separate_pool_info.nft_address,
+            event: 'Unlock',
+            event_type: 'success',
+            eth_price: this.separate_pool_info.fXprice,
+            from_user: this.poolContract.address,
+            tx_hash: tx_result.transactionHash,
+            to_user: this.account,
+          });
+          intoNftActivityByArray(this.network,data);
       } catch (e) {
         this.errorMessage(`Unlock ${this.separate_pool_info.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);
@@ -981,6 +995,19 @@ export default {
       try {
         let tx_result = await this.poolContract.contract.methods.payFee(tokenId).send({ from: this.account });
         this.successMessage(tx_result, `Extend locking ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+        let data = [];
+        data.push({
+            project: this.separate_pool_info.collection,
+            token_id: tokenId,
+            address: this.separate_pool_info.nft_address,
+            event: 'Unlock',
+            event_type: 'success',
+            eth_price: this.separate_pool_info.fXprice,
+            from_user: this.poolContract.address,
+            tx_hash: tx_result.transactionHash,
+            to_user: this.account,
+          });
+          intoNftActivityByArray(this.network,data);
       } catch (e) {
         this.errorMessage(`Extend locking ${this.separate_pool_info.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);
