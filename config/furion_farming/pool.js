@@ -212,9 +212,9 @@ export const InitialPoolList = [
 ];
 
 
-export const InitFarmingPool = async (pool, Id, chainId) => {
+export const InitFarmingPool = async (pool, index, chainId) => {
     try {
-        pool.index = Id;
+        pool.index = index;
         if (pool.token_1 == '') {
             pool.lp_token_address = lp_token_addresses[pool.token_0][pool.token_0];
         } else {
@@ -307,7 +307,7 @@ export const getPoolSummary = async (pool, chainId) => {
 
         if (pool.token_1 == '') {
             const token_0_price = await getPrice(pool.token_0, network);
-            summary['tvl'] = lp_total * token_0_price;
+            summary['tvl'] = lp_added * token_0_price;
             const fur_price = await getPrice('FUR', network);
             pool.fur_price = fur_price;
             summary['apr'] = (parseFloat(pool.reward_per_day) * fur_price) / (365 * summary['tvl']);
@@ -321,6 +321,9 @@ export const getPoolSummary = async (pool, chainId) => {
             const apr = (parseFloat(pool.reward_per_day) * parseFloat(fur_price)) / (365 * tvl);
             summary['apr'] = apr;
         }
+        summary['tvl'] = parseFloat(summary['tvl']).toFixed(6);
+        summary['apr'] = parseFloat(summary['apr']).toFixed(6);
+
 
     } catch(e) {
         console.warn(e);

@@ -83,10 +83,10 @@
                 <div class="flex items-center">
                   <img src="@/assets/images/mining/btn1s.svg" class="cursor-pointer" v-if="scope.row.type == '1'" />
                   <img src="@/assets/images/mining/btn1.svg" class="cursor-pointer" v-else
-                    @click="scope.row.type = '1'; resetAmt(scope.row.index)" />
+                    @click="scope.row.type = '1'; reset(scope.row.index)" />
                   <img src="@/assets/images/mining/btn2s.svg" class="cursor-pointer" v-if="scope.row.type == '2'" />
                   <img src="@/assets/images/mining/btn2.svg" class="cursor-pointer" v-else
-                    @click="scope.row.type = '2'; resetAmt(scope.row.index)" />
+                    @click="scope.row.type = '2'; reset(scope.row.index)" />
                 </div>
                 <div>
                   <el-tag class="w-48px mr-15px" size="medium" type="primary"
@@ -106,8 +106,8 @@
               </div>
 
               <div class="relative mb-24px">
-                <el-input-number v-model="scope.row.amt" :controls="false" class="custom !w-1/1" placeholder="0.0"
-                  @input.native="calLpTokenValue(scope.row.amt, scope.row.index)"></el-input-number>
+                <el-input v-model="num" :controls="false" type="number" class="custom !w-1/1" placeholder="0.0"
+                  @input.native="calLpTokenValue(scope.row.index); calAmt(scope.row.index)"></el-input>
                 <div class="absolute right-0 center-y font-400 text-13px text-right leading-16px pr-24px"
                   style="color: rgba(252, 255, 253, 0.4)">
                   <div class="mb-5px text-gray-700">LP Token</div>
@@ -134,7 +134,7 @@
 
               <div class="mt-32px">
                 <el-button plain class="w-1/1 !h-70px !text-18px"
-                  @click="handleAmt(scope.row.amt, scope.row.index, scope.row.type)">
+                  @click="handleAmt(scope.row.index)">
                   ENTER AN AMOUNT
                 </el-button>
               </div>
@@ -214,6 +214,7 @@
       const multicall = newMultiCallProvider(4);
       return {
         searchKey: "",
+        num: '',
         expanded: false,
         chainId: 4,
         active: 1,
@@ -229,6 +230,7 @@
         this.pools[index] = await InitFarmingPool(this.pools[index], index, this.chainId);
         await this.updateUserInfo(index);
         this.checkLPApproval(index);
+        //console.log('[Pool Id] ', this.pools[index].index);
       }
     },
   
@@ -259,36 +261,83 @@
           console.warn(e);
         }
       },
+
+      async validateAmt(index) {
+        let pool = this.pools[index];
+        const amt = pool.amt;
+        if (amt == undefined) {
+          this.errorMessage('Enter Amount');
+          return false;
+        } 
+        if (amt < 0) {
+          this.errorMessage('Amount must be greater than 0.0');
+          return false;
+        } 
+        // compare amt for different user options such as add or remove liquidity
+        const type = pool.type;
+        // user wants to add liquidity, check amt against user balance
+        if (type == '1') {
+          const lp_token_bal = parseFloat(pool.user_balance);
+          if (amt > lp_token_bal) {
+            this.errorMessage('Insufficient Balance');
+            return false;
+          }
+          pool.amt = parseFloat(amt.toFixed(6));
+          this.pools[index] = pool;
+          return true;
+        }
+
+        // user wants to remove liquidity, check amt against user current stake in the farming pool
+        if (type == '2') {
+          const user_current_stake = parseFloat(pool.user_stake);
+          if (amt > user_current_stake) {
+            this.errorMessage('Insufficient Liquidity Inside The Pool');
+            return false;
+          }
+          pool.amt = parseFloat(amt.toFixed(6));
+          this.pools[index] = pool;
+          return true;
+        }
+
+        return false;
+      },
+  
   
       async percent_change(index, n) {
-        //console.log('[Token Farming] [Amt Percent] calculating...')
         let pool = this.pools[index];
         const type = pool.type;
-        this.pools[index].percent = n;
-  
-        if (type == '1') {
-          //console.log('[Token Farming] Adding Liquidity');
-          const lp_token_bal = parseFloat(pool.user_balance);
-          const amt = parseFloat(( (lp_token_bal * n) / 100 ));
-          if (amt <= 0) {
-            pool.amt = '';
-          } else {
-            this.pools[index].amt = amt.toFixed(6);
-          }
-        } 
+        pool.percent = n;
+        try {
+          // percent amt for adding liquidity
+          if (type == '1') {
+            const lp_token_bal = parseFloat(pool.user_balance);
+            const amt = parseFloat(( (lp_token_bal * n) / 100 ));
+            if (amt <= 0) {
+              this.reset(index);
+              return;
+            }
+            this.num = amt.toFixed(6);
+            pool.amt = parseFloat(amt.toFixed(6));
+          }  
         
-        else if (type == '2') {
-          const user_stake = parseFloat(pool.user_stake);
-          const amt = parseFloat( ((user_stake * n) / 100 ) );
-          if (amt <= 0) {
-            pool.amt = '';
-          } else {
-            this.pools[index].amt = amt.toFixed(6);
+          // percent amt for removing liquidity
+          else if (type == '2') {
+            const user_stake = parseFloat(pool.user_stake);
+            const amt = parseFloat( ((user_stake * n) / 100 ) );
+            if (amt <= 0) {
+              this.reset(index);
+              return;
+            }
+            this.num = amt.toFixed(6);
+            pool.amt = parseFloat(amt.toFixed(6));
           }
+          this.pools[index] = pool;
+          await this.calLpTokenValue(index);
+        } catch (e) {
+          console.warn(e);
+          this.reset(index);
+          return;
         }
-  
-        await this.calLpTokenValue(this.pools[index].amt, index);
-  
       },
   
       checkLPApproval(index) {
@@ -340,93 +389,68 @@
       async harvestReward(index) {
         let pool = this.pools[index];
         if (parseFloat(pool.user_reward) <= 0) {
-          this.errorMessage('Insufficient rewards');
-          await this.refresh(pool);
+          this.errorMessage('Insufficient Rewards');
+          this.reset(index);
           return; 
         }
-  
-        await openDialog(this.dialogue_info, [ProcessInfo.FARM_HARVEST_REWARD]);
-        let account = this.userInfo.userAddress;
+
+        const account = this.userInfo.userAddress;
         const farming_contract = pool.farming_contract;
         const pool_id = pool.pool_Id;
-  
-        try { 
+        try {
+          await openDialog(this.dialogue_info, [ProcessInfo.FARM_HARVEST_REWARD]); 
+          const gas = await farming_contract.methods.harvest(pool_id, account).estimateGas({
+            from: account,
+          });
           let tx_result = await farming_contract.methods
                           .harvest(pool_id, account)
-                          .send({from: account});
-          //console.log('[Token Farming] [Harvest Reward] ', tx_result);
-           closeDialog(this.dialogue_info);
-           this.successMessage(tx_result, 'Successfully harvested rewards')
-        } catch(e) {
-          //console.log('[Token Farming] [Harvest] Error harvesting!!');
-          console.warn(e);
+                          .send({from: account, gas: gas});
           closeDialog(this.dialogue_info);
-          this.errorMessage('Error Harvesting Reward');
-          return;
+          this.successMessage(tx_result, 'Successfully harvested rewards');
+          this.reset(index);
+          await this.refresh(index);
+          
+        } catch(e) {
+            //console.log('[Token Farming] [Harvest] Error harvesting!!');
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            this.errorMessage('Error Harvesting Reward');
+            this.reset(index);
+            return;
         }
-  
-        await this.refresh(index);
-  
       },
   
-      async handleAmt(user_value, index, type) {
-        //console.log('[Token Farming] [Amt Handle] handling amt...');
-  
-        if (user_value == '') {
-          this.errorMessage('Enter an amount');
-          this.resetAmt(index);
-          return;
-        }
-  
-        const amt = parseFloat(user_value);
-  
-        if (amt <= 0) {
-          this.errorMessage('Amount must be greater than zero');
-          this.resetAmt(index);
-          return;
-        }
-  
+      async handleAmt(index) {
         let pool = this.pools[index];
+        //console.log('Handling amt: ', pool.amt);
         try {
-          //const amt = parseFloat(pool.amt);
-          this.pools[index].amt = user_value;
-          this.pools[index].type = type;
-          const user_balance = parseFloat(pool.user_balance);
-          const user_stake = parseFloat(pool.user_stake);
-  
-          // add liquidity
-          if (type == '1') {
-            if (amt > user_balance) {
-              this.errorMessage('Insufficient balance');
-              this.resetAmt(index);
+          const res = await this.validateAmt(index);
+          //console.log('Handling Amount...', res);
+          if (res) {
+            const type = this.pools[index].type;
+            if (type == '1') {
+              // add liquidity
+              await this.addLiquidity(index);
+            } else if (type == '2') {
+              // remove liquidity
+              await this.removeLiquidity(index);
+            } else {
+              this.reset(index);
               return;
             }
-            await this.addLiquidity(index);
-          }
-  
-        
-          // remove liquidity
-          else if (type == '2') {
-            //console.log('[Token Farming] Removing Liquidity ...')
-            if (amt > user_stake) {
-              this.errorMessage('Insufficient liquidity in Farm Pool');
-              this.resetAmt(index);
-              return;
-            }
-            await this.removeLiquidity(index);
-          } 
-  
-          else {
-            this.resetAmt(index);
+          } else {
+            this.reset(index);
             return;
           }
-  
+          this.reset(index);
           await this.refresh(index);
-  
+
         } catch(e) {
           console.warn(e);
+          this.errorMessage('Error Handling Amount');
+          this.reset(index);
+          return;
         }
-  
       },
   
       async addLiquidity(index) {
@@ -467,6 +491,7 @@
               console.warn(e);
               closeDialog(this.dialogue_info);
               this.errorMessage('Error adding liquidity');
+              this.reset(index);
               return;
           }
   
@@ -486,10 +511,10 @@
               console.warn(e);
               closeDialog(this.dialogue_info);
               this.errorMessage('Error adding liquidity');
+              this.reset(index);
               return;
             }
           }
-  
       },
           
       async removeLiquidity(index) {
@@ -507,58 +532,68 @@
           let tx_result = await farming_contract.methods
                                 .withdraw(pool_id, amount)
                                 .send({from: account, gas: gas});
+          closeDialog(this.dialogue_info);
           this.successMessage(tx_result, 'Remove Liquidity Successfully');
-            
+
         } catch(e) {
             console.warn(e);
             closeDialog(this.dialogue_info);
             this.errorMessage('Remove Liquidity Error');
+            this.reset(index);
+            return;
           }
-  
       },
   
       async refresh(index) {
-        // update user and pool info 
         try {
+          // update user balance, user stake, user rewards
           await this.updateUserInfo(index);
+          // get summary based on updated user info
           let summary = await getPoolSummary(this.pools[index], this.chainId);
           this.pools[index].tvl = summary['tvl'];
           this.pools[index].apr = summary['apr'];
-          this.pools[index].amt = '';
-          this.pools[index].percent = 0;
-          this.pools[index].lp_token_value = '0.000';
-          //console.log('Updated Pool ', this.pools[index]);
+    
         } catch (e) {
           console.warn(e);
+          return;
         }
-  
       },
   
-      async resetAmt(index) {
-        let pool = this.pools[index];
-        pool.amt = '';
-        pool.percent = 0;
-        pool.lp_token_value = '0.000';
+      async reset(index) {
+        this.num = '';
+        if (index == -1) {
+          // reset all the pools;
+          for (let id = 0; id < this.pools.length; id++) {
+            this.pools[id].amt = undefined;
+            this.pools[id].percent = 0;
+            this.pools[id].lp_token_value = '0.000';
+          }
+        } else if (index >= 0) {
+          // reset only specific pool
+          this.pools[index].amt = undefined;
+          this.pools[index].percent = 0;
+          this.pools[index].lp_token_value = '0.000';
+        }
       },
   
-      async calLpTokenValue(amt, index) {
-        // calculate value of lp token based on user input amt
-        if (amt == '') {
-            this.pools[index].lp_token_value = '0.000';
-            return;
+      async calLpTokenValue(index) {
+        if (this.num == '') {
+          this.reset(index);
+          return;
         }
         let pool = this.pools[index];
-        let user_amt = parseFloat(amt);
-  
-        if (user_amt <= 0) {
-            this.pools[index].lp_token_value = '0.000';
-            return;
-        }
-       
-        pool.lp_token_value = (pool.lp_token_price * user_amt).toFixed(4);
+        const amt = this.num;
+        pool.lp_token_value = (pool.lp_token_price * parseFloat(amt)).toFixed(4);
         this.pools[index] = pool;
         return;
-  
+      },
+
+      async calAmt(index) {
+        if (this.num == '') {
+          this.reset(index);
+          return;
+        }
+        this.pools[index].amt = parseFloat(this.num);
       },
   
       formatNumber(value, fixed = 2) {
@@ -583,6 +618,7 @@
   
       cell_click(row) {
         this.$refs.table.toggleRowExpansion(row);
+        this.reset()
       },
   
       expandChange(row, rows) {
