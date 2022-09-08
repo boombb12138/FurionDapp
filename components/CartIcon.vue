@@ -39,6 +39,7 @@
     :class="{ isShow }"
     @mousedown="onMouseDown"
     @click="click"
+    v-if="showInfo.showCart"
   >
     <img src="@/assets/images/cart3.svg" />
     <div class="count" v-if="cart.length > 1">{{ cart.length - 1 }}</div>
@@ -47,11 +48,13 @@
 
 <script>
 import store from "store";
+import { mapState } from 'vuex';
 export default {
   name: "CartIcon",
   props: {},
   components: {},
   computed: {
+    ...mapState(['showInfo']),
     icon() {
       return this.$refs.cartIconRef;
     },

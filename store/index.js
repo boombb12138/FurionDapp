@@ -15,6 +15,10 @@ export const state = () => ({
   walletType: '',
   blockNumber: 0,
   walletConnectProvider: null,
+  showInfo: {
+    showPet: true,
+    showCart: true,
+  },
 });
 
 export const mutations = {
@@ -49,6 +53,13 @@ export const mutations = {
   SET_WC_PROVIDER(state, data) {
     state.walletConnectProvider = data;
   },
+  SET_SHOW_PET(state, data) {
+    state.showInfo.showPet = data;
+  },
+  SET_SHOW_CART(state, data) {
+    state.showInfo.showCart = data;
+    console.log(data);
+  },
 };
 
 export const actions = {
@@ -77,5 +88,18 @@ export const actions = {
 
   setWCProvider({ commit }, data) {
     commit('SET_WC_PROVIDER', data);
+  },
+
+  setShowPet({ commit }, data) {
+    commit('SET_SHOW_PET', data);
+  },
+
+  setShowCart({ commit }, data) {
+    commit('SET_SHOW_CART', data);
+  },
+
+  setShowBoth({ commit }, data) {
+    commit('SET_SHOW_PET', data);
+    commit('SET_SHOW_CART', data);
   },
 };

@@ -134,6 +134,7 @@ export default {
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
+    ...mapState(['showInfo']),
   },
   data() {
     return {
@@ -148,7 +149,9 @@ export default {
     setTimeout(() => {
       console.log('User connected?', this.userInfo.isConnect)
       if (!this.userInfo.isConnect) {
+
         this.isShow = true;
+        this.$store.dispatch('setShowBoth', !this.isShow);
       }
       if (this.$route.path.length < 2) {
         return
@@ -212,33 +215,43 @@ export default {
       setTimeout(() => {
         if (this.userInfo.isConnect) {
           this.isShow = false;
+          this.$store.dispatch('setShowBoth', !this.isShow);
         }
-      }, 2000)
+      },2)
 
 
     },
     toggle() {
-      if (!this.userInfo.isConnect) {
-        this.isShow = true;
-      }
-      // this.isShow = !this.isShow;
-    },
-    closeWallet() {
-      if (!this.userInfo.isConnect) {
+      if (this.userInfo.isConnect) {
         return
       }
-      this.isShow = false;
+      this.isShow = true;
+      this.$store.dispatch('setShowBoth', !this.isShow);
+    },
+    closeWallet() {
+      if (this.userInfo.isConnect) {
+        this.isShow = false;
+        this.$store.dispatch('setShowBoth', !this.isShow);
+      }
+      return
+
     },
     hide(e) {
       // console.log(e.target.id);
-      if (!this.userInfo.isConnect) {
-        return
-      }
-      if (e.target.id === "wallet-icon") {
+      if (this.userInfo.isConnect) {
+        if (e.target.id === "wallet-icon") {
         this.isShow = !this.isShow;
+        this.$store.dispatch('setShowBoth', !this.isShow);
       } else {
         this.isShow = false;
+        if(this.isShow == true){
+          this.$store.dispatch('setShowBoth', !this.isShow);
+        }
+
       }
+      }
+      return;
+
     },
   },
 };

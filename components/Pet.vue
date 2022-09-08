@@ -28,12 +28,12 @@
 }
 
 .box {
-  @apply w-206px h-266px  fixed right-220px  text-[#FCFFFD];
+  @apply w-206px h-266px  fixed right-220px top-500px  text-[#FCFFFD];
   background: url("@/assets/images/pet/bg.png");
 }
 
 .box2 {
-  @apply w-248px h-150px  fixed right-220px  text-[#FCFFFD];
+  @apply w-248px h-150px  fixed right-220px top-500px text-[#FCFFFD];
   background: url("@/assets/images/pet/bg2.png");
 }
 
@@ -92,7 +92,7 @@
 </style>
 
 <template>
-  <div class="z-1001" :class="{ 'el-dialog__wrapper': show }">
+  <div class="z-1001" :class="{ 'el-dialog__wrapper': show }" v-if="showInfo.showPet">
     <div class="pet center-y mt-100px z-100" @click="show = true">
       <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==0">
         Welcome to Furion!! Tap me and check your NFT pass!
@@ -268,10 +268,13 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
   props: {},
   components: {},
-  computed: {},
+  computed: {
+    ...mapState(['showInfo']),
+  },
   data() {
     return {
       textList: ["Welcome to Furion!! Tap me and check your NFT pass!",

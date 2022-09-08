@@ -16,7 +16,6 @@
     </div>
 
 
-
     <NetworkInformationDialog :DialogVisible="network_visible" :DialogClose="networkClose" />
   </div>
 </template>

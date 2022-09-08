@@ -215,9 +215,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
   props: {},
-  components: {},
+  computed: {
+    ...mapState(['showInfo']),
+  },
   computed: {
     showShotSearch() {
       return ["/collection/separate_pools", "/collection/aggregate_pools"].includes(
@@ -236,7 +239,6 @@ export default {
   },
   data() {
     return {
-      showCart: true,
       searchKey: "",
     };
   },

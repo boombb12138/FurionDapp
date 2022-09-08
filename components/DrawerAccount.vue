@@ -502,6 +502,7 @@ export default {
   computed: {
     ...mapState('admin', ['connectStatus']),
     ...mapState(['userInfo']),
+    ...mapState(['showInfo']),
   },
   data() {
     return {
@@ -634,7 +635,6 @@ export default {
     },
     click_nick_name(flag){
       this.type_nick_name = flag;
-      this.isShow = true;
     },
     showUserAddress() {
       return _showUserAddressText(this.userInfo);
@@ -662,10 +662,15 @@ export default {
     hide(e) {
       if (e.target.id === "avatar-icon"&this.userInfo.isConnect) {
         this.isShow = !this.isShow;
+        this.$store.dispatch('setShowBoth', !this.isShow);
       }else if(e.target.id ==="type"){
         this.isShow = true;
+        this.$store.dispatch('setShowBoth', !this.isShow);
       }else{
         this.isShow = false;
+        if(this.siShow == true){
+          this.$store.dispatch('setShowBoth', !this.isShow);
+        }
       }
     },
     changeTab(tab) {
@@ -680,10 +685,12 @@ export default {
         center: true,
       });
       this.isShow = true;
+      this.$store.dispatch('setShowBoth', !this.isShow);
     },
     go(url) {
       this.$router.push(url);
       this.isShow = false;
+      this.$store.dispatch('setShowBoth', !this.isShow);
     },
     showProfile(flag) {
       this.isShowProfile = flag;
