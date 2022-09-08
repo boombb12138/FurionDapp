@@ -20,6 +20,10 @@
       border-top-color: #212657;
       bottom: -1px;
     }
+    .underline {
+      text-decoration: underline;
+      color: #ffffff;
+    }
   }
 }
 
@@ -90,8 +94,90 @@
 <template>
   <div class="z-1001" :class="{ 'el-dialog__wrapper': show }">
     <div class="pet center-y mt-100px z-100" @click="show = true">
-      <div class="el-popover el-popper el-popover--plain" x-placement="top-end">
-        {{ textList[textIndex] }}
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==0">
+        Welcome to Furion!! Tap me and check your NFT pass!
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==1">
+        Fuuuuuuuuuuuuuwa~ Nice to meet you!
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==2">
+        Wanna know more about Furion? I can show you
+        <div class="underline inline-block" x-placement="top-end" @click="clickopen('https://medium.com/@project.furion/furion-the-first-all-in-one-nft-liquidity-platform-ffa4e3becb60')">
+          this
+        </div>
+        <div class="inline-block" x-placement="top-end">
+          to know more about us.
+        </div>
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==3">
+        What are the differences between storing and locking? Here is the
+        <div class="underline inline-block" x-placement="top-end" @click="clickopen('https://medium.com/@project.furion/furion-pedia-fractionalize-your-nft-through-locking-or-storing-cf6747d2b513')">
+          answer.
+        </div>
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==4">
+        Wondering how to aggregate liquidity? Let me show you how to
+        <div class="underline inline-block" x-placement="top-end" @click="clickopen('https://app.gitbook.com/s/NAwB8romLca7smcrhGep/function/furion-pools/furion-aggregate-pools')">
+          mint your index token.
+        </div>
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==5">
+        FUR is our native utility token. You should know more about it
+        <div class="underline inline-block" x-placement="top-end" @click="clickopen('https://app.gitbook.com/s/NAwB8romLca7smcrhGep/token/fur')">
+          here
+        </div>
+        <div class="inline-block" x-placement="top-end">
+          !
+        </div>
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==6">
+        veFUR holders can share the revenue from Furion. To learn more about veFUR, press
+        <div class="underline inline-block" x-placement="top-end" @click="clickopen('https://app.gitbook.com/s/NAwB8romLca7smcrhGep/token/vefur')">
+          this
+        </div>
+        <div class="inline-block" x-placement="top-end">
+          !
+        </div>
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==7">
+        Does Furion incur any fee?
+        <div class="underline inline-block" x-placement="top-end" @click="clickopen('https://app.gitbook.com/s/NAwB8romLca7smcrhGep/governance/fees-and-income-sharing')">
+          Here
+        </div>
+        <div class="inline-block" x-placement="top-end">
+          are the details of the fee structure.
+        </div>
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==8">
+        Let me know if you have any questions - just DM me at
+        <div class="underline inline-block" x-placement="top-end" @click="clickopen('http://discord.gg/projectfurion')">
+          Discord
+        </div>
+        <div class="inline-block" x-placement="top-end">
+          !
+        </div>
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==9">
+        Fuuuuuuuuuuuuwa~ Have you joined our
+        <div class="underline inline-block" x-placement="top-end" @click="clickopen('http://discord.gg/projectfurion')">
+          Discord
+        </div>
+        <div class="inline-block" x-placement="top-end">
+          !
+        </div>
+        <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
+      </div>
+      <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==10">
+        Fuwa Fuwa~
         <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
       </div>
 
@@ -161,7 +247,7 @@
       </template>
 
       <template v-else>
-        <div class="msg absolute center-x">You don't have a cat yet！</div>
+        <div class="msg absolute center-x">You don't have a cat yet!</div>
         <img src="@/assets/images/pet/pet0.png" class="absolute center-x bottom-60px" />
         <div class="absolute center-x w-1/1 flex items-center justify-center bottom-20px">
           <div class="btn2 mr-14px" @click="empty = false">MINT</div>
@@ -213,12 +299,15 @@ export default {
       if (this.textIndex >= this.textList.length) {
         this.textIndex = 0;
       }
-    }, 3000);
+    }, 4500);
   },
   destroyed() {
     clearInterval(this.timer);
   },
   methods: {
+    clickopen(url){
+      window.open(url);
+    },
     close() {
       this.dialog = false;
       this.show = false;
