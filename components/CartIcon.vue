@@ -41,7 +41,7 @@
     @click="click"
   >
     <img src="@/assets/images/cart3.svg" />
-    <div class="count" v-if="cart.length">{{ cart.length }}</div>
+    <div class="count" v-if="cart.length > 1">{{ cart.length - 1 }}</div>
   </div>
 </template>
 
