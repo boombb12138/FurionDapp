@@ -22,13 +22,16 @@
     .icon1 {
       display: block;
     }
+
     .icon2 {
       display: none;
     }
+
     &:hover {
       .icon2 {
         display: block;
       }
+
       .icon1 {
         display: none;
       }
@@ -41,16 +44,20 @@
   font-size: 15px;
   color: #667181;
   cursor: pointer;
+
   img {
     margin-right: 10px;
   }
+
   &.active {
     color: #fff;
   }
-  & + .type {
+
+  &+.type {
     margin-left: 35px;
   }
 }
+
 .lockBorder {
   border: 2px solid rgba(255, 255, 255, 0.6) !important;
 }
@@ -67,7 +74,7 @@
     align-items: center;
     justify-content: space-between;
     color: rgba(252, 255, 253, 0.8);
-    font-weight: 700; 
+    font-weight: 700;
     font-size: 17px;
     margin-bottom: 24px;
 
@@ -81,40 +88,23 @@
 <template>
   <div class="!w-1160px">
     <div class="px-30px mb-28px flex justify-between pt-36px">
-      <el-input
-        placeholder="search"
-        v-model="searchKey"
-        class="search !w-590px"
-        clearable
-        @input=""
-      >
+      <el-input placeholder="search" v-model="searchKey" class="search !w-590px" clearable @input="">
         <i slot="prefix" class="el-input__icon el-icon-search"></i>
       </el-input>
 
       <div class="flex flex-1 items-center justify-end">
-        <div
-          class="flex items-center type"
-          :class="{ active: type == 1 }"
-          @click="type = 1; display_nft = wallet_nft;"
-        >
+        <div class="flex items-center type" :class="{ active: type == 1 }" @click="type = 1; display_nft = wallet_nft;">
           <img src="@/assets/images/mywallet/icon1s.svg" alt="" v-if="type == 1" />
           <img src="@/assets/images/mywallet/icon1.svg" alt="" v-else />
           <div>My Wallet</div>
         </div>
-        <div
-          class="flex items-center type"
-          :class="{ active: type == 2 }"
-          @click="ready ? type = 2 : type = 1; display_nft = locked_nft;"
-        >
+        <div class="flex items-center type" :class="{ active: type == 2 }"
+          @click="ready ? type = 2 : type = 1; display_nft = locked_nft;">
           <img src="@/assets/images/mywallet/icon2s.svg" alt="" v-if="type == 2" />
           <img src="@/assets/images/mywallet/icon2.svg" alt="" v-else />
           <div>Locked In Pool</div>
         </div>
-        <div
-          class="flex items-center type"
-          :class="{ active: type == 3 }"
-          @click="ready ? type = 3 : type = 1"
-        >
+        <div class="flex items-center type" :class="{ active: type == 3 }" @click="ready ? type = 3 : type = 1">
           <img src="@/assets/images/mywallet/icon3s.svg" alt="" v-if="type == 3" />
           <img src="@/assets/images/mywallet/icon3.svg" alt="" v-else />
           <div>My Furion Token</div>
@@ -123,27 +113,16 @@
     </div>
     <Loader v-if="ready === false" />
     <div v-if="(type == 1 || type == 2) && ready === true" class="pl-40px pb-100px clearfix">
-      <div
-        class="item"
-        :class="{ lockBorder: type === 2 }"
-        v-for="(item, index) in filterNft"
-        :key="index"
-        @click="$router.push(`/collection/separate_pools/detail?collection=${item.name}&token_id=${item.token_id}`)"
-      >
-        <el-image
-          :src="item.image_url"
-          class="w-252px h-252px rounded-12px m-6px mb-16px"
-          lazy
-        >
+      <div class="item" :class="{ lockBorder: type === 2 }" v-for="(item, index) in filterNft" :key="index"
+        @click="$router.push(`/collection/separate_pools/detail?collection=${item.name}&token_id=${item.token_id}`)">
+        <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
           <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
         </el-image>
         <div class="px-15px">
           <div class="flex justify-between items-center mb-10px">
             <div>
               <div class="flex items-center mb-5px">
-                <div
-                  class="opacity-40 text-13px w-170px line-clamp-1 overflow-ellipsis !block"
-                >
+                <div class="opacity-40 text-13px w-170px line-clamp-1 overflow-ellipsis !block">
                   {{ item.name }}
                 </div>
               </div>
@@ -170,14 +149,11 @@
         </div>
 
         <div
-          class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px"
-        >
+          class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px">
           <img src="@/assets/images/icon_eth.svg" />
           <span v-if="type === 2" style="color: rgba(255, 255, 255, 0.8)">LOCKED</span>
           <div class="flex items-center">
-            <div
-              class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon"
-            >
+            <div class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon">
               <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
               <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
             </div>
@@ -188,11 +164,7 @@
     </div>
 
     <div v-if="type === 3" class="section">
-      <div 
-        v-for="(item, index) in tokens"
-        :key="index" 
-        class="form-item2"
-      >
+      <div v-for="(item, index) in tokens" :key="index" class="form-item2">
         <div class="flex items-center">
           <img class="icon" src="@/assets/images/liquidity/tokens/ETH.png" />
           <p>{{ item.symbol }}</p>
@@ -241,16 +213,16 @@ export default {
       display_nft: [],
       wallet_nft: [],
       locked_nft: [],
-      collections: [ 
-        {name: "Cool Cats", symbol: "COOL", address: "0x1D788A3D8133F79a7D8cf2517c4b3C00C8DBbf82"}, 
-        {name: "World Of Women", symbol: "WOW", address: "0x436643Cb41F6B3Cb375aD87BC95833b460adD4a6"}, 
-        {name: "Cryptoadz", symbol: "TOADZ", address: "0x7e357a7eE77872DdD51947f1550381BA0913920B"} 
+      collections: [
+        { name: "Cool Cats", symbol: "COOL", address: "0x1D788A3D8133F79a7D8cf2517c4b3C00C8DBbf82" },
+        { name: "World Of Women", symbol: "WOW", address: "0x436643Cb41F6B3Cb375aD87BC95833b460adD4a6" },
+        { name: "Cryptoadz", symbol: "TOADZ", address: "0x7e357a7eE77872DdD51947f1550381BA0913920B" }
       ],
       tokens: [
-        {symbol: "ETH", address: "", balance: ""},
-        {symbol: "FUR", address: "0x175940b39014cD3a9c87cd6b1d7616a097db958E", balance: ""},
-        {symbol: "F-COOL", address: "0xEc5753503C317348d494C852DF64731D3D22d87d", balance: ""},
-        {symbol: "FFT-MIX", address: "0x482dc963e587D68B2C7f49F71F21112D98528B52", balance: ""},
+        { symbol: "ETH", address: "", balance: "" },
+        { symbol: "FUR", address: "0x175940b39014cD3a9c87cd6b1d7616a097db958E", balance: "" },
+        { symbol: "F-COOL", address: "0xEc5753503C317348d494C852DF64731D3D22d87d", balance: "" },
+        { symbol: "FFT-MIX", address: "0x482dc963e587D68B2C7f49F71F21112D98528B52", balance: "" },
       ],
       searchKey: "",
       type: 1,
@@ -258,9 +230,13 @@ export default {
     };
   },
   async mounted() {
-    await this.initUserNft();
-    await this.initBalance();
-    this.ready = true;
+    setTimeout(async () => {
+      // console.log('Account info', this.account);
+      await this.initUserNft();
+      await this.initBalance();
+      this.ready = true;
+    }, 2000);
+
   },
   methods: {
 
@@ -289,12 +265,12 @@ export default {
 
     async initUserNft() {
       for (let collection of this.collections) {
-         let wallet = await query_user_holding(collection.address.toLowerCase(), this.account, this.network);
+        let wallet = await query_user_holding(collection.address.toLowerCase(), this.account, this.network);
 
-         for (let i = 0; i < wallet.length; i++) {
-           wallet[i].name = collection.name;
-           wallet[i].symbol = collection.symbol;
-         }
+        for (let i = 0; i < wallet.length; i++) {
+          wallet[i].name = collection.name;
+          wallet[i].symbol = collection.symbol;
+        }
 
         this.wallet_nft = [...this.wallet_nft, ...wallet];
       }
