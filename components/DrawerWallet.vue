@@ -243,8 +243,12 @@ export default {
         this.isShow = !this.isShow;
         this.$store.dispatch('setShowBoth', !this.isShow);
       } else {
-        this.isShow = false;
         if(this.isShow == true){
+          if (e.target.id === "avatar-icon"){
+            this.isShow = false;
+            return;
+          };
+          this.isShow = false;
           this.$store.dispatch('setShowBoth', !this.isShow);
         }
 

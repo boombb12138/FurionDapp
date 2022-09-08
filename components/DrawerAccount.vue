@@ -182,7 +182,7 @@
     <div v-click-outside="hide" class="drawer-wrap" :class="{ isShow }">
       <div class="wrap-bg-top"></div>
       <div class="wrap-bg-bottom"></div>
-      <img class="close-btn" src="@/assets/images/drawer/close_active.svg" @click.stop="isShow = false" />
+      <img class="close-btn" src="@/assets/images/drawer/close_active.svg" @click.stop="closeAccount()" />
 
       <!-- header for tab switch -->
       <div class="drawer-header flex pt-17px cursor-pointer">
@@ -585,6 +585,11 @@ export default {
     }, 500)
   },
   methods: {
+    closeAccount() {
+      this.isShow = false;
+      this.$store.dispatch('setShowBoth', !this.isShow);
+
+    },
     clickaddress(address){
       window.open('https://etherscan.io/address/'+address);
     },
@@ -667,8 +672,12 @@ export default {
         this.isShow = true;
         this.$store.dispatch('setShowBoth', !this.isShow);
       }else{
-        this.isShow = false;
-        if(this.siShow == true){
+        if(this.isShow == true){
+          if (e.target.id === "wallet-icon"){
+            this.isShow = false;
+            return;
+          };
+          this.isShow = false;
           this.$store.dispatch('setShowBoth', !this.isShow);
         }
       }
