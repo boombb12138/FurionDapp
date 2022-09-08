@@ -35,7 +35,7 @@
       <img
         src="@/assets/images/cart/btn.svg"
         class="hover:opacity-80 cursor-pointer"
-        @click="$router.push('/')"
+        @click="$router.push('/collection/separate_pools')"
       />
     </div>
   </div>

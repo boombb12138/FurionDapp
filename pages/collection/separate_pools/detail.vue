@@ -505,8 +505,43 @@ export default {
       window.open('https://rinkeby.etherscan.io/address/'+address);
     },
     toCart() {
-      let arr = [...this.cart, 1];
+      const address = this.nft_item.address;
+      let arr = [];
+      let info = {
+        token_id: this.nft_item.token_id,
+        name: this.nft_item.collection,
+        symbol: this.nft_item.symbol, 
+        image_url: this.nft_item.image,
+        fx_price: this.nft_item.fXprice
+      };
+
+      for (let nft of this.cart.slice(1)) {
+        if (info.token_id == nft.token_id) {
+          this.$notify({
+            title: `Added ${info.symbol} #${info.token_id} to cart`,
+            dangerouslyUseHTMLString: true,
+            type: 'success',
+          });
+          return;
+        }
+      }
+
+      if (this.cart.length === 0) {
+        arr = [...this.cart, address, info];
+      } else {
+        if (address != this.cart[0]) {
+          this.errorMessage("Not same collection");
+          return;
+        }
+        arr = [...this.cart, info];
+      }
+      
       this.$store.commit("save", ["user.cart", arr, this]);
+      this.$notify({
+        title: `Added ${info.symbol} #${info.token_id} to cart`,
+        dangerouslyUseHTMLString: true,
+        type: 'success',
+      });
     },
     async addTheComment(html) {
       //console.log(html.replace(/<[^>]+>|&[^>]+;/g,"").trim());
@@ -626,8 +661,8 @@ export default {
 
     async buy() {
       const account = this.userInfo.userAddress;
-      const checkFx = await this.hasEnoughFx(account);
-      const checkFur = await this.hasEnoughFur(account);
+      const checkFx = await this.hasEnoughFx(account, 1000);
+      const checkFur = await this.hasEnoughFur(account, 100);
 
 
       if(!checkFx) {
