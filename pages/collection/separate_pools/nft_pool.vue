@@ -642,8 +642,43 @@ export default {
       await this.initUserInfo();
     },
     toCart(item) {
-      let arr = [...this.cart, item.id];
+      const address = this.separate_pool_info.nft_address;
+      let arr = [];
+      const info = {
+        token_id: item.token_id,
+        name: this.separate_pool_info.collection,
+        symbol: this.separate_pool_info.symbol,
+        image_url: item.image_url,
+        fx_price: this.separate_pool_info.fXprice
+      };
+
+      for (let nft of this.cart.slice(1)) {
+        if (info.token_id == nft.token_id) {
+          this.$notify({
+            title: `Added ${info.symbol} #${info.token_id} to cart`,
+            dangerouslyUseHTMLString: true,
+            type: 'success',
+          });
+          return;
+        }
+      }
+
+      if (this.cart.length === 0) {
+        arr = [...this.cart, address, info];
+      } else {
+        if (address != this.cart[0]) {
+          this.errorMessage("Not same collection");
+          return;
+        }
+        arr = [...this.cart, info];
+      }
+      
       this.$store.commit("save", ["user.cart", arr, this]);
+      this.$notify({
+        title: `Added ${info.symbol} #${info.token_id} to cart`,
+        dangerouslyUseHTMLString: true,
+        type: 'success',
+      });
     },
     clickItem(item) {
       nft_item.collection = separate_pool_info.collection;
