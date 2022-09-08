@@ -1,6 +1,6 @@
 <style lang="scss" scoped>
 .pet {
-  @apply fixed right-120px text-[#C0C7D5] cursor-pointer;
+  @apply fixed left-50px text-[#C0C7D5] cursor-pointer;
   ::v-deep {
     .el-popover {
       background: #212657;
@@ -104,7 +104,7 @@
       </div>
       <div class="el-popover el-popper el-popover--plain" x-placement="top-end" v-if="textIndex==2">
         Wanna know more about Furion? I can show you
-        <div class="underline inline-block" x-placement="top-end" @click="clickopen('https://medium.com/@project.furion/furion-the-first-all-in-one-nft-liquidity-platform-ffa4e3becb60')">
+        <div class="underline inline-block" x-placement="top-end" @click.stop="clickopen('https://medium.com/@project.furion/furion-the-first-all-in-one-nft-liquidity-platform-ffa4e3becb60')">
           this
         </div>
         <div class="inline-block" x-placement="top-end">

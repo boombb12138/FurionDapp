@@ -206,6 +206,7 @@
         </el-input>
 
         <CartIcon></CartIcon>
+        <Pet></Pet>
         <DrawerAccount></DrawerAccount>
         <DrawerWallet class="ml-20px mt-5px"></DrawerWallet>
       </div>
