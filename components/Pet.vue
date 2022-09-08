@@ -1,12 +1,12 @@
 <style lang="scss" scoped>
 .pet {
-  @apply fixed left-50px text-[#C0C7D5] cursor-pointer;
+  @apply fixed right-80px top-600px text-[#C0C7D5] cursor-pointer;
   ::v-deep {
     .el-popover {
       background: #212657;
       border-color: #212657;
       color: #c0c7d5;
-      @apply absolute bottom-90px left-60px text-12px;
+      @apply absolute bottom-90px left-40px text-12px;
       padding: 8px 8px;
       width: 120px !important;
       min-width: unset !important;

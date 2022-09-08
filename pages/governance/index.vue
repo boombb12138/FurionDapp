@@ -64,34 +64,26 @@ export default {
         {
           id: 1,
           avatar: require("@/assets/images/avatar_g.png"),
-          title: "Monthly Policy Reports",
-          time: "davoice321 Policy 4 days ago",
+          title: "FUWA#1 Adjusting Protection Liquidation Mechanism, the Base Rate and the Collateral Listing",
+          time: "08/09/2022",
           text:
-            "Policy report, October 2021 The Olympus protocol treasury and protocol owned liquidity are rapidly expanding. Runway at the current reward rate has been increasing and is curr...",
+            "Summary: A proposal for enhancing the market risk management to optimize capital efficiency, and mitigate the risk of bad debts...",
         },
         {
           id: 2,
           avatar: require("@/assets/images/avatar_g.png"),
-          title: "Please Use Our Discord for General Enquiry QGeneral ",
-          time: "kschan started Dec 26,2021",
+          title: "FUWA#2 Setting Up the Non-performing Assets Fund",
+          time: "08/09/2022",
           text:
-            "If you have any questions regarding how the protocol works and its various mechanisms, please head to the Olympus Discord, you are more likely to get immediate support there....",
+            "Summary: Taking 20% from the revenue in Money Market to create a fund that can underwrite the non-performing assets, which could increase the confidence of depositors and decrease the risk of bad debts...",
         },
         {
-          id: 2,
+          id: 3,
           avatar: require("@/assets/images/avatar_g.png"),
-          title: "Please Use Our Discord for General Enquiry QGeneral ",
-          time: "kschan started Dec 26,2021",
+          title: "FUWA#3 FUR Reward Adjustment",
+          time: "08/09/2022",
           text:
-            "If you have any questions regarding how the protocol works and its various mechanisms, please head to the Olympus Discord, you are more likely to get immediate support there....",
-        },
-        {
-          id: 2,
-          avatar: require("@/assets/images/avatar_g.png"),
-          title: "Please Use Our Discord for General Enquiry QGeneral ",
-          time: "kschan started Dec 26,2021",
-          text:
-            "If you have any questions regarding how the protocol works and its various mechanisms, please head to the Olympus Discord, you are more likely to get immediate support there....",
+            "Summary: Slowing down the emission rate of FUR reward, and helping the economy of FUR run well...",
         },
       ],
     };

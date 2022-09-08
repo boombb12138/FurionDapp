@@ -121,7 +121,7 @@
           <div class="title">snapshot</div>
           <div class="flex">
             <div class="address flex items-center">
-              <img src="@/assets/images/token1.png" width="26" class="mr-6px" />
+              <img src="@/assets/images/icon_eth.png" width="18" class="mr-6px" />
               <div>0xA7A8...7A36</div>
             </div>
             <img src="@/assets/images/ring.svg" class="cursor-pointer" />
@@ -150,15 +150,15 @@
             <span>Proposal</span>
           </el-menu-item>
 
-          <el-menu-item index="/governance/new_proposal">
+          <el-menu-item index="/governance/">
             <span>New proposal</span>
           </el-menu-item>
 
-          <el-menu-item index="/governance/entrust">
+          <el-menu-item index="/governance/">
             <span>Entrust</span>
           </el-menu-item>
 
-          <el-menu-item index="/governance/about">
+          <el-menu-item index="/governance/">
             <span>About</span>
           </el-menu-item>
         </el-menu>

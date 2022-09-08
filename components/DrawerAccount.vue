@@ -448,7 +448,7 @@
           <!-- notification view -->
           <div v-if="tab === 'notification'" class="pb-20px">
             <ul>
-              <li class="notification-item" v-for="(item, index) in notifications" :key="index">
+              <li class="notification-item" v-for="(item, index) in showNotifications" :key="index">
                 <div class="icon-wrap">
                   <img src="@/assets/images/drawer/case2.svg" />
                 </div>
@@ -468,7 +468,7 @@
               </li>
             </ul>
 
-            <div class="more" @click="more">Show more</div>
+            <div class="more" @click="more" v-if="showMore">Show more</div>
           </div>
         </el-scrollbar>
       </div>
@@ -514,24 +514,57 @@ export default {
       eth_balance: 0,
       type_email: false,
       type_nick_name: false,
+      showNotifications: [],
+      showMore: true,
       notifications: [
         {
-          title: "Connected wallet",
-          time: "07:10",
+          title: "Comment",
+          belong: "Comment",
+          time: "now",
           content:
-            "Game Theory: DeFincentivesBenKapianin CryptoStarsStories for shang zh @zhshang1221-Become a member Today's highlights Game Theory:D...",
+            "@Furion replying to you: Nice collections!",
         },
         {
-          title: "Connected wallet",
-          time: "07:10",
+          title: "Like",
+          belong: "Comment",
+          time: "now",
           content:
-            "Game Theory: DeFincentivesBenKapianin CryptoStarsStories for shang zh @zhshang1221-Become a member Today's highlights Game Theory:D...",
+            "@Furion likes your comment: Fuwa Fuwa, Furion!",
         },
         {
-          title: "Connected wallet",
-          time: "07:10",
+          title: "New Follower",
+          belong: "Comment",
+          time: "now",
           content:
-            "Game Theory: DeFincentivesBenKapianin CryptoStarsStories for shang zh @zhshang1221-Become a member Today's highlights Game Theory:D...",
+            "@Furion follows you",
+        },
+        {
+          title: "To be liquidated",
+          belong: "Liquidation_Alert",
+          time: "now",
+          content:
+            "Your F-BAYC position is close to being liquidated; to avoid this, please repay part of your loan and make sure that the loan is back to the healthy level.",
+        },
+        {
+          title: "Liquidated",
+          belong: "Liquidation_Alert",
+          time: "now",
+          content:
+            "Part of your collateral has been liquidated, and your debts are now back to a healthy status.",
+        },
+        {
+          title: "24h Liquidation protection",
+          belong: "Liquidation_Alert",
+          time: "now",
+          content:
+            "You can buy back your F-BAYC within 24 hours from now on.",
+        },
+        {
+          title: "Alpha Breaking",
+          belong: "Hot_News",
+          time: "now",
+          content:
+            "F-PUNK that you follow has an increase of 128% in 24 hours!",
         },
       ],
       profile: {
@@ -545,6 +578,7 @@ export default {
     ClickOutside,
   },
   async mounted() {
+    this.showNotifications = this.notifications.slice(0, 3);
     setTimeout(()=>{
       this.getBalance();
     }, 500)
@@ -612,28 +646,9 @@ export default {
       console.log('changeProvider')
     },
     more() {
-      this.notifications = [
-        ...this.notifications,
-        {
-          title: "Connected wallet",
-          time: "07:10",
-          content:
-            "Game Theory: DeFincentivesBenKapianin CryptoStarsStories for shang zh @zhshang1221-Become a member Today's highlights Game Theory:D...",
-        },
-        {
-          title: "Connected wallet",
-          time: "07:10",
-          content:
-            "Game Theory: DeFincentivesBenKapianin CryptoStarsStories for shang zh @zhshang1221-Become a member Today's highlights Game Theory:D...",
-        },
-        {
-          title: "Connected wallet",
-          time: "07:10",
-          content:
-            "Game Theory: DeFincentivesBenKapianin CryptoStarsStories for shang zh @zhshang1221-Become a member Today's highlights Game Theory:D...",
-        },
-      ];
-    },
+          this.showNotifications = this.notifications;
+          this.showMore = false;
+      },
     async toggle() {
         if(this.userInfo.isConnect){
           if(this.logdata){
