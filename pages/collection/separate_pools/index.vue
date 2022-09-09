@@ -117,7 +117,7 @@
         <div class="custom-btn !w-170px " @click="dialogVisible = true">+ ADD ASSET</div>
       </div>
 
-      <div class="absolute center-x tip font-500">NOTE: Only Cool Cat Available for Test Due to Some Technical Issues
+      <div class="absolute center-x tip font-500">NOTE: Please just use Cool Cats for Test by now
       </div>
       <br /><br /><br />
 

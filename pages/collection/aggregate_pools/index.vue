@@ -376,7 +376,9 @@ export default {
       this.$router.push(`/collection/aggregate_pools/aggregated_pool?name=${row.name}`);
     },
     enter(row) {
-      this.$refs.table.toggleRowExpansion(row, true);
+      setTimeout(()=>{
+        this.$refs.table.toggleRowExpansion(row, true);
+      }, 200);
     },
     leave(row) {
       this.$refs.table.toggleRowExpansion(row, false);

@@ -331,10 +331,11 @@
           <div class="pl-8px flex">
             <img :src="pool_info.avatar" class="w-142px rounded-full avatar" />
             <div class="pt-10px pl-20px flex relative">
-              <div class="font-700 text-28px mb-5px mr-5px">{{ poolName }}</div>
+              <div class="font-700 text-28px top-50px mr-5px"></div>
 
-              <div class="absolute left-0 top-50px left-20px">
-                <div class="tag">
+              <div class="absolute left-0 top-30px left-20px">
+                <div class="font-700 text-28px top-50px mr-5px">{{ poolName }}</div>
+                <!-- <div class="tag">
                   <div>FFT-A :</div>
                   <img
                     src="@/assets/images/icon_eth.svg"
@@ -342,7 +343,7 @@
                     class="mx-10px -mt-2px"
                   />
                   <div>0.04</div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -368,9 +369,9 @@
             <div class="text-center px-15px">
               <div class="font-600 mb-4px">
                 <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
-                10.0K
+                0.04
               </div>
-              <div class="opacity-40 text-12px">Floor Price</div>
+              <div class="opacity-40 text-12px">FFT-{{poolName}} Price</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
@@ -387,7 +388,7 @@
       <div class="-mt-20px">
         <div class="flex justify-between items-center mb-12px">
           <el-input
-            placeholder="Search by name or attribute"
+            placeholder="Search by NFT name or address"
             v-model="searchKey"
             class="search !w-858px"
             clearable
@@ -431,6 +432,8 @@
             />
           </div>
         </div>
+
+        <!-- filter name -->
         <transition name="el-zoom-in-top">
           <div class="mt-12px relative" v-if="showFilter">
             <div class="el-popover el-popper !static filter" x-placement="bottom">
@@ -449,11 +452,11 @@
                 </div>
                 <div
                   class="filter-item"
-                  v-for="n in 20"
+                  v-for="n in pool_info.collections"
                   @click="add(n)"
                   :class="{ active: filter.includes(n) }"
                 >
-                  NAME
+                  {{n.symbol}}
                 </div>
               </div>
               <div class="popper__arrow" style="right: 15px; top: -6px; left: auto"></div>
