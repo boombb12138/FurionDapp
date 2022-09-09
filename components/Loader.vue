@@ -23,7 +23,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: white;
+  background-color: #69B6E1;
   -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
           animation: sk-foldCubeAngle 2.4s infinite linear both;
   -webkit-transform-origin: 100% 100%;
@@ -96,7 +96,7 @@
 .bouncing span {
   position: relative;
   display: inline-block;
-  color: rgba(255, 255, 255, 0.8);
+  color: #9796D4;
   text-transform: uppercase;
   animation: bounce 2.4s infinite;
   animation-delay: calc(.1s * var(--i));
@@ -121,14 +121,14 @@
         <div class="sk-cube3 sk-cube"></div>
       </div>
       <div class="bouncing">
-        <span style="--i:1">F</span>
-        <span style="--i:2">E</span>
-        <span style="--i:3">T</span>
-        <span style="--i:4">C</span>
-        <span style="--i:5">H</span>
-        <span style="--i:6">I</span>
-        <span style="--i:7">N</span>
-        <span style="--i:8">G</span>
+        <span style="--i:1">L</span>
+        <span style="--i:2">O</span>
+        <span style="--i:3">A</span>
+        <span style="--i:4">D</span>
+        <span style="--i:5">I</span>
+        <span style="--i:6">N</span>
+        <span style="--i:7">G</span>
+        <span style="--i:8"></span>
         <span style="--i:9"></span>
         <span style="--i:10">.</span>
         <span style="--i:11">.</span>
