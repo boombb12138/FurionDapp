@@ -58,7 +58,6 @@ export const mutations = {
   },
   SET_SHOW_CART(state, data) {
     state.showInfo.showCart = data;
-    console.log(data);
   },
 };
 

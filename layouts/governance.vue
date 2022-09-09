@@ -169,7 +169,6 @@
       </div>
     </div>
 
-    <CartIcon></CartIcon>
   </div>
 </template>
 

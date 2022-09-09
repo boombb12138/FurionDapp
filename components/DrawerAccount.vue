@@ -468,7 +468,7 @@
               </li>
             </ul>
 
-            <div class="more" @click="more" v-if="showMore">Show more</div>
+            <div class="more" @click.stop="more" v-if="showMore">Show more</div>
           </div>
         </el-scrollbar>
       </div>
@@ -588,7 +588,6 @@ export default {
     closeAccount() {
       this.isShow = false;
       this.$store.dispatch('setShowBoth', !this.isShow);
-
     },
     clickaddress(address){
       window.open('https://etherscan.io/address/'+address);
