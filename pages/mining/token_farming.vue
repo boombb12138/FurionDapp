@@ -107,7 +107,7 @@
                     {{formatNumber(scope.row.user_balance)}}</div>
                   <div class="mr-50px"><img class="w-18px" src="@/assets/images/mining/liquidity.png" /> &nbsp;
                     Liquidity: {{formatNumber(scope.row.user_stake)}}</div>
-                  <div><img class="w-18px" src="@/assets/images/mining/reward.png" /> &nbsp;Rewards:
+                  <div><img class="w-16px" src="@/assets/images/mining/reward.png" /> &nbsp;Rewards:
                     {{formatNumber(scope.row.user_reward)}}</div>
                 </div>
               </div>

@@ -35,10 +35,10 @@
 }
 
 .pool-stripe {
-  width: 1158px;
-  height: 84px;
-  background: url(@/assets/images/liquidity/pool_stripe2.png) -40px -36px / // 1230px 300px no-repeat;
-    1235px 165px no-repeat;
+  width: 1154px;
+  height: 224px;
+  background: url(@/assets/images/liquidity/pool_stripe.png) -39px -36px / // 1230px 300px no-repeat;
+    1235px 305px no-repeat;
 }
 
 ::v-deep {
@@ -79,8 +79,12 @@
         </div>
       </div> -->
     </div>
-    <div class="pool-stripe pl-35px mb-40px flex items-center">
-      <h4 class="text-white text-32px font-900">POOL</h4>
+    <div class="pool-stripe pt-55px pl-78px mb-40px">
+      <h4 class="text-white text-44px font-900 mb-40px">POOL</h4>
+      <div class="flex text-white text-16px font-900">
+        <p class="mr-110px cursor-pointer">Don't see a pool you joined?</p>
+        <p class="cursor-pointer">Create a Pool</p>
+      </div>
     </div>
     <SwapTab2 v-model="active2" class="mb-24px"></SwapTab2>
 

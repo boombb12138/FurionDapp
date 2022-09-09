@@ -187,8 +187,8 @@
         <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="token_0_amount"
           @input.native="calToken1Amount"></el-input>
         <div class="text-center mt-14px mb-5px">
-          <img class="flex-shrink-0 text-center cursor-pointer" src="@/assets/images/liquidity/arrow_down2.svg"
-            v-on:click="switchToken" />
+          <img class="flex-shrink-0 text-center cursor-pointer" width="35px"
+            src="@/assets/images/liquidity/icon_down.png" v-on:click="switchToken" />
         </div>
 
         <div class="flex justify-between items-center mb-8px px-10px mt-20px">
