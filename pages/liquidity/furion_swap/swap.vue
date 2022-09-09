@@ -157,10 +157,8 @@
       <div class="box-right box w-370px pt-24px px-16px pb-32px">
         <div class="flex items-center justify-between mb-5px">
           <div class="w-99px"></div>
-          <p class="text-[#FCFFFD] text-19px font-700 text-center">Swap</p>
+          <p class="text-[#FCFFFD] text-19px font-700 text-center mr-80px">Swap</p>
           <div class="flex items-center">
-            <img class="flex-shrink-0 mr-12px cursor-pointer" src="@/assets/images/liquidity/setting.svg" />
-            <img class="flex-shrink-0 mr-12px cursor-pointer" src="@/assets/images/liquidity/clock.svg" />
             <img class="flex-shrink-0 cursor-pointer" src="@/assets/images/liquidity/reload.svg" />
           </div>
         </div>
@@ -500,7 +498,7 @@ export default {
 
       // swap between general ERC-20 tokens
       else {
-        // 
+        //
         let trading_path = [];
         if (this.swap_info.pair_address.length < 4) {
           let weth_address;

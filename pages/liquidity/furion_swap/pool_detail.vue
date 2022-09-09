@@ -28,7 +28,7 @@
   border-radius: 20px;
 
   .box-top {
-    height: 226px;
+    height: 240px;
     background: linear-gradient(180deg,
         rgba(51, 53, 114, 0.192) 9.21%,
         rgba(51, 53, 114, 0.24) 95.15%);
@@ -194,7 +194,7 @@
         </div>
         <div class="mr-30px">
           <p class="label">SEARCH</p>
-          <el-input v-model="searchKey" placeholder="Searcg Farns" style="width: 184px"></el-input>
+          <el-input v-model="searchKey" placeholder="Searcg Farms" style="width: 184px"></el-input>
         </div>
       </div>
     </div>
@@ -299,11 +299,11 @@
             </div>
           </div>
 
-          <div class="text-center mt-14px mb-8px">
+          <div class="text-center mt-30px mb-8px">
             <img class="flex-shrink-0 text-center" src="@/assets/images/liquidity/plus.svg" />
           </div>
 
-          <div class="flex justify-between items-center mb-8px px-10px mt-20px">
+          <div class="flex justify-between items-center mb-8px px-10px mt-10px">
             <p class="text-13px text-[rgba(252,255,253,0.4)] font-500">Input</p>
             <p class="text-13px text-[rgba(252,255,253,0.8)] font-700">
               Balance: {{ formatNumber(single_swap_pool.token_1_balance) }}

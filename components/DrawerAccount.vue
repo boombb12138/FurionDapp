@@ -457,9 +457,6 @@
                     <p class="title font-600 leading-28px text-[rgba(252,255,253,0.8)] mb-3px">
                       {{ item.title }}
                     </p>
-                    <p class="time text-12px font-600 leading-28px text-[rgba(252,255,253,0.3)]">
-                      {{ item.time }}
-                    </p>
                   </div>
                   <div class="content text-[rgba(252,255,253,0.4)] font-500 text-13px leading-17px">
                     {{ item.content }}
