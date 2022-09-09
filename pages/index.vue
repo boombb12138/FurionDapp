@@ -165,7 +165,7 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-center mt-120px mb-60px">
+      <div class="flex items-center justify-center mt-120px mb-60px" data-aos="fade-right">
         <img src="@/assets/images/index/fire.svg" />
         <p class="page-title">Notable Drops</p>
       </div>
@@ -174,7 +174,7 @@
         <SwiperPc :list="dropList" height="564px">
           <template v-slot="slotProps">
             <div
-              class="swiper-item-wrap h-570px rounded-20px overflow-hidden border-3px border-[#364666] relative"
+              class="swiper-item-wrap h-570px rounded-20px overflow-hidden border-3px border-[#364666] relative" data-aos="fade-up" :data-aos-delay="400 + dropList.indexOf(slotProps.item) * 200"
             >
               <div class="float-top absolute left-0 top-0 w-1/1 h-45px"></div>
               <div class="float-bottom absolute left-0 bottom-0 w-1/1 h-128px"></div>
@@ -197,18 +197,18 @@
         </SwiperPc>
       </div>
 
-      <div class="flex items-center justify-center mt-100px mb-60px">
+      <div class="flex items-center justify-center mt-100px mb-60px" data-aos="fade-left">
         <p class="page-title">Top collections over</p>
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">last 24 hours</p>
       </div>
       <ul class="collection-list flex flex-wrap">
         <li class="collection-item" v-for="(item, index) in nft_info.nft_list" :key="index">
-          <CollectionItem :index="index" CollectionItem :detail="item" />
+          <CollectionItem :index="index" :detail="item" data-aos="fade-up" :data-aos-delay="300 +index * 150" />
         </li>
       </ul>
 
 
-      <div class="flex items-center justify-center mt-100px mb-60px">
+      <div class="flex items-center justify-center mt-100px mb-60px" data-aos="fade-right" data-aos-delay="500">
         <p class="page-title">Trending</p>
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Now</p>
       </div>
@@ -218,7 +218,7 @@
           <template v-slot="slotProps">
             <div
               class="swiper-item-wrap2 h-334px rounded-16px overflow-hidden border-3px border-[rgba(255,255,255,0.1)] bg-[rgba(23,37,72,0.8)] relative"
-              @click="clickSwiperItem(slotProps.item.collection)"
+              @click="clickSwiperItem(slotProps.item.collection)" data-aos="fade-up" :data-aos-delay="800 + swiperList.indexOf(slotProps.item) * 200"
             >
               <div class="img-wrap h-180px rounded-18px overflow-hidden relative">
                   <img
@@ -253,8 +253,8 @@
 
       <div class="flex items-center justify-center mt-100px mb-60px">
         <div>
-          <p class="page-title">Unleashing NFT Liquidity</p>
-          <p class="text-16px font-500 text-[rgba(252,255,253,0.6)] mt-15px text-center">
+          <p class="page-title" data-aos="fade-left">Unleashing NFT Liquidity</p>
+          <p class="text-18px font-500 text-[rgba(252,255,253,0.6)] mt-15px text-center" data-aos="fade-right" data-aos-delay="300">
             All-in-one NFT marketplace
           </p>
         </div>
@@ -263,25 +263,27 @@
       <ul class="w-1300px flex justify-between">
         <li class="flex flex-col items-center flex-1" v-for="(item, index) in List"
           :key="index">
-          <a @click="clickListItem(item.docs_url)">
+          <a @click="clickListItem(item.docs_url)" data-aos="fade-down" :data-aos-delay="500 + index * 200">
           <img :src="require(`@/assets/images/index/pool${index+1}.png`)" class="cursor-pointer" height="240" width="240"/>
           </a>
-          <a @click="clickListItem(item.docs_url)">
-          <p class="text-16px font-700 text-[#fcfffd] mt-5px mb-14px cursor-pointer">{{item.tital}}</p>
-          </a>
-          <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
-            {{item.remark1}}
-          </p>
-          <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
-            {{item.remark2}}
-          </p>
-          <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
-            {{item.remark3}}
-          </p>
+          <div data-aos="fade-up" :data-aos-delay="300 + index * 200" class="text-center">
+            <a @click="clickListItem(item.docs_url)">
+            <p class="text-16px font-700 text-[#fcfffd] mt-5px mb-14px cursor-pointer">{{item.tital}}</p>
+            </a>
+            <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
+              {{item.remark1}}
+            </p>
+            <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
+              {{item.remark2}}
+            </p>
+            <p class="text-[rgba(252,255,253,0.6)] text-16px leading-24px font-500">
+              {{item.remark3}}
+            </p>
+          </div>
         </li>
       </ul>
 
-      <div class="flex items-center justify-center mt-100px mb-60px">
+      <div class="flex items-center justify-center mt-100px mb-60px" data-aos="fade-right" data-aos-delay="500">
         <p class="page-title">Learn with</p>
         <p class="page-title !text-[#FF7AE8] mr-12px ml-8px">Furion</p>
       </div>
@@ -291,13 +293,13 @@
           v-for="(item, index) in categoryList"
           :key="index"
           class="w-376px h-290px rounded-16px overflow-hidden border-3px border-[rgba(255,255,255,0.1)] bg-[rgba(23,37,72,0.8)] relative"
-          @click="clickCategoryList(item.url)"
+          @click="clickCategoryList(item.url)" data-aos="fade-up" :data-aos-delay="800 + index * 200"
         >
             <div class="img-wrap h-220px rounded-16px overflow-hidden relative">
               <img class="w-1/1 h-1/1 object-cover swiper-img" :src="item.img" />
               <div class="img-float absolute w-1/1 h-80px left-0 bottom-0"></div>
             </div>
-          <p class="font-500 text-16px text-[#fcfffd] text-center mt-15px">
+          <p class="font-500 text-16px text-[#fcfffd] text-center mt-26px">
             {{ item.remark1 }}
           </p>
         </li>
