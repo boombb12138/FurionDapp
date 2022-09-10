@@ -88,6 +88,9 @@
     border-color: #fa6be1 !important;
   }
 }
+.locked {
+  opacity: 0.6;
+}
 </style>
 
 <template>
@@ -105,6 +108,7 @@
         <img
           :src="nft_item.image"
           class="w-400px h-400px rounded-20px mr-30px"
+          :class="{ locked: nft_item.lock_info.locker != zeroAddress }"
         />
         <div class="flex-1 flex flex-col">
           <div class="flex justify-between mb-80px">
@@ -173,7 +177,6 @@
                   <div class="font-700 text-32px">{{nft_item.fXprice.toFixed(2)}}</div>
                 </div>
               </div>
-              <div v-if="nft_item.lock_info.locker != zeroAddress" class="text-22px font-400" style="color: rgba(255, 255, 255, 0.8)">Locking ends at {{ unixToDate(nft_item.lock_info.release_time) }}</div>
             </div>
 
 
@@ -193,8 +196,9 @@
               </div>
             </div>
 
-            <div v-if="nft_item.lock_info.locker != zeroAddress && nft_item.lock_info.locker.toLowerCase() != account" class="flex text-35px font-500 justify-center" style="color: rgba(255, 255, 255, 0.9)">
-              NFT is locked
+            <div v-if="nft_item.lock_info.locker != zeroAddress && nft_item.lock_info.locker.toLowerCase() != account" class="flex justify-end items-center mt-40px" style="color: rgba(255, 255, 255, 0.9)">
+              <img src="@/assets/images/locked.png" class="w-22px h-26px mr-10px" />
+              <p class="text-20px font-600 text-[#6D788A]">Locked Until {{ unixToDate(nft_item.lock_info.release_time) }}</p>
             </div>
 
             <div v-if="nft_item.lock_info.locker.toLowerCase() === account" class="flex">

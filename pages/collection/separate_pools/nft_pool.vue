@@ -66,8 +66,8 @@
   border: 2px solid rgb(1, 182, 46) !important;
 }
 
-.lockBorder {
-  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+.locked {
+  opacity: 0.6;
 }
 
 .item-wallet {
@@ -290,7 +290,7 @@
         <Loader v-if="!pool_ready" />
         <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length > 0 && pool_ready">
           <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index"
-            :class="{ lockBorder: item.lock_info.locker != zeroAddress }" @click="clickItem(item)">
+            :class="{ locked: item.lock_info.locker != zeroAddress }" @click="clickItem(item)">
             <!-- NFT image -->
             <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
               <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
@@ -348,15 +348,20 @@
             </div>
 
             <div
-              class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px">
-              <img src="@/assets/images/icon_eth.svg" />
-              <span v-if="item.lock_info.locker != zeroAddress" style="color: rgba(255, 255, 255, 0.8)">LOCKED</span>
-              <div class="flex items-center">
-                <div class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon">
-                  <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
-                  <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
+              class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center rounded-bl-12px rounded-br-12px">
+              <div v-if="item.lock_info.locker != zeroAddress" class="mx-auto flex items-center">
+                <img src="@/assets/images/locked.png" class="w-14px h-16px mr-10px" />
+                <p class="text-14px font-600 text-[#6D788A]">Locked Until {{ unixToDate(item.lock_info.release_time) }}</p>
+              </div>
+              <div class="flex justify-between w-1/1" v-else>
+                <img src="@/assets/images/icon_eth.svg" />
+                <div class="flex items-center">
+                  <div class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon">
+                    <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
+                    <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
+                  </div>
+                  <div class="opacity-40 text-13px">{{ item.like }}</div>
                 </div>
-                <div class="opacity-40 text-13px">{{ item.like }}</div>
               </div>
             </div>
           </div>
@@ -564,6 +569,11 @@ export default {
     onSort(str) {
       this.$refs.sort.doClose();
       this.sort = str;
+    },
+    unixToDate(unixInSeconds) {
+      const milli = unixInSeconds * 1000;
+      const date = new Date(milli).toLocaleString().split(',');
+      return date[0];
     },
 
     /******************************* Initialize or Update states *******************************/
