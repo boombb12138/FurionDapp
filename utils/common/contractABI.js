@@ -20,6 +20,8 @@ import SimplePriceOracle from "@/assets/abis/rinkeby/money-market/SimplePriceOra
 import FarmingPoolUpgradeable from "@/assets/abis/rinkeby/furion-farming/FarmingPoolUpgradeable.sol/FarmingPoolUpgradeable.json";
 import VoteEscrowedFurion from "@/assets/abis/rinkeby/furion-staking/VoteEscrowedFurion.sol/VoteEscrowedFurion.json";
 
+import TestClaim from "@/assets/abis/rinkeby/TestClaim.sol/TestClaim.json";
+
 
 export const getAddress = () => {
     let address = addressStore['rinkeby'];
@@ -111,4 +113,10 @@ export const getVoteEscrowedFurionABI = async () => {
     let address = getAddress();
     VoteEscrowedFurion.address = address['VoteEscrowedFurion'];
     return VoteEscrowedFurion;
+}
+
+export const getTestClaimABI = async () => {
+    let address = getAddress();
+    TestClaim.address = address['TestClaim'];
+    return TestClaim;
 }

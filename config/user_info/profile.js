@@ -1,5 +1,9 @@
 import { initializeprofile, renew_email, renew_nick_name, renew_image, renew_comment, renew_liquidation_alert, renew_hot_news  } from "@/api/profile";
 
+export const connect_info = {
+    address: ''
+}
+
 export const user_info = {
     init: false,
     info_list:
