@@ -201,7 +201,7 @@
         >
           <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
         </el-input>
-        <el-input
+        <!-- <el-input
           style="width: 300px"
           v-if="showLongSearch2"
           clearable
@@ -211,7 +211,7 @@
           @keyup.enter.native="onSearch"
         >
           <img class="search-icon" src="@/assets/images/index/search.svg" slot="prefix" />
-        </el-input>
+        </el-input> -->
 
         <CartIcon></CartIcon>
         <Pet></Pet>
