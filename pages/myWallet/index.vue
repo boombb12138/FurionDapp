@@ -220,7 +220,7 @@ export default {
       ],
       tokens: [
         { symbol: "ETH", address: "", balance: "" },
-        { symbol: "FUR", address: "0xb443675fc068fB3172D0Ad732a2Be60dCDf14177", balance: "" },
+        { symbol: "FUR", address: "0x175940b39014cD3a9c87cd6b1d7616a097db958E", balance: "" },
         { symbol: "F-COOL", address: "0xEc5753503C317348d494C852DF64731D3D22d87d", balance: "" },
         { symbol: "FFT-MIX", address: "0x482dc963e587D68B2C7f49F71F21112D98528B52", balance: "" },
       ],

@@ -283,12 +283,14 @@ export default {
     };
   },
   async mounted() {
-    this.nft_info = await initPooledNftInfo(this.network);
-    // this.nft_info = await initNftInfo(this.network);
-
+    try{
+      this.nft_info = await initPooledNftInfo(this.network);
+      this.factoryContract = await initSeparatePoolFactoryContract();
+    }catch(e){
+      console.warn(e);
+      this.nft_info.nft_list = [];
+    }
     this.ready = true;
-
-    this.factoryContract = await initSeparatePoolFactoryContract();
   },
 
   methods: {
