@@ -11,6 +11,13 @@
     rgba(1, 19, 46, 0.8);
   border-bottom: 1px solid rgba(76, 53, 139, 0.14);
 }
+.test {
+  border-radius: 40px;
+  height: 45px !important;
+  color: #88FFFF !important;
+  font-size: 14px;
+  font-weight: 500 !important;
+}
 .menu-item {
   @apply flex items-center justify-center text-15px font-700  text-[rgba(252,2553,253,0.7)] cursor-pointer relative h-1/1;
   &.active,
@@ -170,6 +177,7 @@
           </li>
         </ul>
       </div>
+      <el-button plain class="!w-160px !h-56px test" @click="claimToken"> Test Tokens</el-button>
       <div class="flex items-center">
         <el-input
           style="width: 170px"
@@ -211,13 +219,29 @@
         <DrawerWallet class="ml-20px mt-5px"></DrawerWallet>
       </div>
     </div>
+    <ProceedingDetails :DialogInfo="dialogue_info" />
   </div>
 </template>
 
 <script>
+import { getContract } from '@/utils/common';
+import { getTestClaimABI } from '@/utils/common/contractABI';
 import { mapState } from 'vuex';
+import { connect_info } from "@/config/user_info/profile";
+import { getTxURL } from '@/utils/common';
+
+import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from '~/config/loading_info';
 export default {
   props: {},
+  components: {ProceedingDetails,},
   computed: {
     ...mapState(['showInfo']),
   },
@@ -240,11 +264,63 @@ export default {
   data() {
     return {
       searchKey: "",
+      test_claim: "",
+      dialogue_info: DialogInfo
     };
   },
-  mounted() {},
+  async mounted() {
+    await this.initTestClaim();
+  },
   methods: {
     onSearch() {},
+    async initTestClaim() {
+      const test_claim_contract = await getContract(await getTestClaimABI(), '');
+      // console.log('This is test claim contract', test_claim_contract);
+      this.test_claim = test_claim_contract;
+    },
+
+    async claimToken() {
+      // console.log('User info', connect_info);
+      const account = connect_info.address;
+      try {
+        if (account == '' || account == undefined) {
+          console.warn('User not connected');
+          this.errorMessage("Please connect wallet firstly");
+          return
+        }
+      }
+      catch (e) {
+        console.warn(e);
+        this.errorMessage("Please connect wallet firstly");
+        return
+      }
+      await openDialog(this.dialogue_info, [ProcessInfo.CLAIM_TEST_TOKEN]);
+      try {
+        let tx_result = await this.test_claim.methods.claimTest().send({ from: account });
+        this.successMessage(tx_result, 'Cliam test token successfully');
+      }
+      catch (e) {
+        console.warn(e);
+        this.errorMessage("Already claimed");
+      }
+      closeDialog(this.dialogue_info);
+    },
+    successMessage(receipt, title) {
+      const txURL = getTxURL(receipt.transactionHash);
+      this.$notify({
+        title: title,
+        dangerouslyUseHTMLString: true,
+        message: txURL,
+        type: 'success',
+      });
+    },
+    errorMessage(title) {
+      this.$notify.error({
+        title: title,
+        message: '',
+        dangerouslyUseHTMLString: true,
+      });
+    },
   },
 };
 </script>

@@ -83,7 +83,7 @@
       <h4 class="text-white text-44px font-900 mb-40px">POOL</h4>
       <div class="flex text-white text-16px font-900">
         <p class="mr-110px cursor-pointer">Don't see a pool you joined?</p>
-        <p class="cursor-pointer">Create a Pool</p>
+        <p class="cursor-pointer" @click="$router.push('/liquidity/furion_swap/create_pool')">Create a Pool</p>
       </div>
     </div>
     <SwapTab2 v-model="active2" class="mb-24px"></SwapTab2>

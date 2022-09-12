@@ -10,6 +10,11 @@ export const DialogInfo = {
 };
 
 export const ProcessInfo = {
+  CLAIM_TEST_TOKEN:{
+    intro: 'Claim Test Tokens',
+    detail:
+      'You are going to claim test tokens, please sign and wait for the transaction to be done',
+  },
   APPROVE_FUR:{
     intro: 'Approval for FUR',
     detail:

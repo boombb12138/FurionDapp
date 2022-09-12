@@ -128,6 +128,7 @@
 import ClickOutside from "vue-click-outside";
 import { mapState } from 'vuex';
 import { connectMetamask } from '@/utils/web3/wallet';
+import { connect_info } from "@/config/user_info/profile";
 export default {
   props: {},
   components: {},
@@ -156,6 +157,8 @@ export default {
       if (this.$route.path.length < 2) {
         return
       }
+      connect_info.address = this.userInfo.userAddress;
+      // console.timeLog('Connect info', connect_info)
     }, 200)
 
     // await this.connectWallet();
@@ -170,6 +173,7 @@ export default {
                 isConnect: true,
                 userAddress: accounts[0],
               };
+              connect_info.address = account[0];
               this.$store.dispatch('setUserInfo', userInfo);
             } else {
               // console.log('The user is not connected');

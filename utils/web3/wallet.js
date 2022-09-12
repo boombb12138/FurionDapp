@@ -1,3 +1,5 @@
+import { connect_info } from "@/config/user_info/profile";
+
 export const connectMetamask = () => {
   try {
     ethereum.request({ method: 'eth_requestAccounts' }).then(async accounts => {
@@ -7,6 +9,8 @@ export const connectMetamask = () => {
         isConnect: true,
         userAddress: accounts[0],
       };
+      connect_info.address = account[0];
+      console.timeLog('Connect info', connect_info)
       window.$nuxt.$store.dispatch('setUserInfo', userInfo);
       window.$nuxt.$store.commit('update', [
         'admin.connectStatus',
@@ -68,11 +72,13 @@ export const watchAccountChange = () => {
           isConnect: true,
           userAddress: account[0],
         });
+        connect_info.address = account[0];
       } else {
         window.$nuxt.$store.dispatch('setUserInfo', {
           isConnect: false,
           userAddress: '',
         });
+        connect_info.address = '';
       }
       window.location.reload();
     });
