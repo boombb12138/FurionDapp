@@ -84,23 +84,23 @@
           </div>
           <div class="info">
             <div class="key">Total Staked (FUR)</div>
-            <div class="value">{{this.user.total_fur_stake}} FUR</div>
+            <div class="value">{{formatNumber(user.total_fur_stake)}} FUR</div>
           </div>
           <div class="info">
             <div class="key">Total veFUR Supply</div>
-            <div class="value">{{this.user.total_veFur_supply}} veFUR</div>
+            <div class="value">{{formatNumber(user.total_veFur_supply)}} veFUR</div>
           </div>
           <div class="info">
             <div class="key">Your Stake (FUR)</div>
-            <div class="value">{{this.user.current_fur_stake}} FUR</div>
+            <div class="value">{{formatNumber(user.current_fur_stake)}} FUR</div>
           </div>
           <div class="info">
             <div class="key">Wallet Balance (FUR)</div>
-            <div class="value">{{this.user.current_fur_balance}} FUR</div>
+            <div class="value">{{formatNumber(user.current_fur_balance)}} FUR</div>
           </div>
           <div class="info">
             <div class="key">Claimable veFUR</div>
-            <div class="value">{{this.user.pending_veFur_reward}} veFUR</div>
+            <div class="value">{{formatNumber(user.pending_veFur_reward)}} veFUR</div>
           </div>
           <div class="btn" @click="$router.push('/mining/staking_vefur')">Earn veFUR</div>
         </div>
@@ -130,16 +130,16 @@
             </el-popover>
           </div>
           <div class="info">
-            <div class="key">Total Staked (veFUR)</div>
-            <div class="value">0.00 veFUR</div>
+            <div class="key">Total Staked (FUR)</div>
+            <div class="value">{{formatNumber(user.total_fur_stake)}} FUR</div>
           </div>
           <div class="info">
             <div class="key">Total veFUR Supply</div>
-            <div class="value">0.00 veFUR</div>
+            <div class="value">{{formatNumber(user.total_veFur_supply)}} veFUR</div>
           </div>
           <div class="info">
             <div class="key">Your Stake (FUR)</div>
-            <div class="value">0.00 veFUR</div>
+            <div class="value">{{formatNumber(user.current_fur_stake)}} FUR</div>
           </div>
           <div class="info">
             <div class="key">APR (7D)</div>
@@ -161,6 +161,7 @@
 <script>
   import { mapState } from 'vuex';
   import { User, InitUserInfo, UpdateUserInfo } from '@/config/furion_staking/user_info';
+  import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/local/utils/common';
 
   export default {
     async asyncData({ store, $axios, app, query }) {
@@ -190,6 +191,26 @@
         }
         this.user = await UpdateUserInfo(this.user, account);
       },
+
+      formatNumber(value, fixed = 2) {
+        const val = parseFloat(value);
+        //console.log('[Format Number] ', value, val);
+        // return the value if greater than 2 significant decimals
+        if (val * 100 < 1) {
+          return value;
+        }
+        let reserve = value - parseInt(value);
+        let final_result;
+        if (value - reserve < 1) {
+          final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
+        } else {
+          final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
+        }
+        if (final_result[0] == '-' || final_result[0] == 'N') {
+          final_result = '--'
+        }
+        return final_result
+    },
 
     },
   };

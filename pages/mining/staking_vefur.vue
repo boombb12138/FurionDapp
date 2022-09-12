@@ -150,11 +150,11 @@
         <div class="flex justify-between mb-35px">
           <div class="box w-341px h-128px pt-36px">
             <div class="text-[#83899A] font-500 text-20px mb-6px">Total Staked (FUR)</div>
-            <div class="text-[#D9D9D9] font-500 text-30px">$ {{this.user.total_fur_stake}}</div>
+            <div class="text-[#D9D9D9] font-500 text-30px">$ {{formatNumber(user.total_fur_stake)}}</div>
           </div>
           <div class="box w-341px h-128px pt-36px">
             <div class="text-[#83899A] font-500 text-20px mb-6px">Total veFUR Supply</div>
-            <div class="text-[#D9D9D9] font-500 text-30px">{{this.user.total_veFur_supply}} veFUR</div>
+            <div class="text-[#D9D9D9] font-500 text-30px">{{formatNumber(user.total_veFur_supply)}} veFUR</div>
           </div>
         </div>
         <div class="box h-198px pt-30px">
@@ -204,7 +204,7 @@
         <div class="box pt-26px h-230px mb-20px !px-17px">
           <div class="flex justify-between mb-27px">
             <div class="text-[#8B93A2] font-500 text-14px">Balance</div>
-            <div class="text-white font-500 text-16px">{{this.user.current_fur_balance}} FUR</div>
+            <div class="text-white font-500 text-16px">{{formatNumber(user.current_fur_balance)}} FUR</div>
           </div>
 
           <div class="relative mb-20px">
@@ -240,12 +240,12 @@
           <div class="flex mb-20px">
             <div class="flex-1">
               <div class="font-500 text-16px text-[#8B93A2] mb-5px">Staked</div>
-              <div class="font-700 text-24px">{{this.user.current_fur_stake}} FUR</div>
-              <div class="text-[#FA6BE1] font-500 text-16px mt-9px">$0</div>
+              <div class="font-700 text-24px">{{formatNumber(user.current_fur_stake)}} FUR</div>
+              <div class="text-[#FA6BE1] font-500 text-16px mt-9px">${{formatNumber(user.staked_fur_value)}}</div>
             </div>
             <div class="flex-1">
               <div class="font-500 text-16px text-[#8B93A2] mb-5px">Pending Rewards</div>
-              <div class="font-700 text-24px">{{this.user.pending_veFur_reward}} veFUR</div>
+              <div class="font-700 text-24px">{{formatNumber(this.user.pending_veFur_reward)}} veFUR</div>
               <div
                 class="cursor-pointer font-500 text-12px text-white bg-[rgba(250,107,225,0.64)] rounded-20px py-4px px-12px mt-7px"
               >
@@ -254,7 +254,7 @@
             </div>
           </div>
 
-          <div class="btn1-2" v-if="connected">Claim veFUR</div>
+          <div class="btn1-2" v-if="connected" @click="claimReward">Claim veFUR</div>
           <div class="btn1-2" v-else @click="connected = true">Connect Wallet</div>
         </div>
       </div>
@@ -296,6 +296,7 @@
     data() {
       return {
         type: 1,
+        chainId: 4,
         stake: 1,
         num: undefined,
         connected: false,
@@ -307,7 +308,7 @@
     },
 
     async mounted() {
-      this.user = await InitUserInfo(this.user);
+      this.user = await InitUserInfo(this.user, this.chainId);
       await this.updateUserInfo();
       await this.checkFURApproval();
     },
@@ -452,7 +453,7 @@
               this.num = undefined;
               return;
             }
-          await this.updateUserInfo();
+          await this.refresh();
           this.num = undefined;
         } else {
           this.num = undefined;
@@ -514,7 +515,7 @@
               this.num = undefined;
               return;
             }
-          await this.updateUserInfo();
+          await this.refresh();
           this.num = undefined;
 
         } else {
@@ -545,6 +546,8 @@
 
         } catch(e) {
           console.warn(e); 
+          this.num = undefined;
+          return;
         }
       },
 
@@ -575,7 +578,10 @@
             closeDialog(this.dialogue_info);
             this.errorMessage('Error Unstaking on Furion');
             this.num = undefined;
+            return;
           }
+          await this.refresh();
+          this.num = undefined;
 
         } else {
           this.num = undefined;
@@ -610,12 +616,62 @@
             closeDialog(this.dialogue_info);
             this.errorMessage('Error Unstaking on Furion');
             this.num = undefined;
+            return;
           }
+          await this.refresh();
+          this.num = undefined;
 
         } else {
           this.num = undefined;
           return;
         }
+      },
+
+      async claimReward() {
+        const account = this.userInfo.userAddress;
+        try {
+          // disable claim button if the reward is zero
+          if (parseFloat(this.user.pending_veFur_reward) <= 0) {
+            return;
+          }
+          const veFur_contract = this.user.veFur_contract;
+          await openDialog(this.dialogue_info, [ProcessInfo.CLAIM_VEFUR]);
+          const gas = await veFur_contract.methods.claim().estimateGas({from: account});
+          const tx_result = await veFur_contract.methods.claim().send({from: account, gas: gas});
+          closeDialog(this.dialogue_info);
+          this.successMessage(tx_result, 'Successfully claimed veFUR');
+        } catch(e) {
+          console.warn(e);
+          closeDialog(this.dialogue_info);
+          this.errorMessage('Error claiming veFUR');
+          return;
+        }
+        await this.refresh();
+        this.num = undefined;
+      },
+
+      async refresh() {
+        await this.updateUserInfo();
+      },
+
+      formatNumber(value, fixed = 2) {
+        const val = parseFloat(value);
+        // console.log('[Format Number] ', value, val);
+        // return the value if greater than 2 significant decimals
+        if (val * 100 < 1) {
+          return value;
+        }
+        let reserve = value - parseInt(value);
+        let final_result;
+        if (value - reserve < 1) {
+          final_result = '0' + reserve.toFixed(fixed).toString().substr(1);
+        } else {
+          final_result = _formatNumber(value).split('.')[0] + reserve.toFixed(fixed).toString().substr(1);
+        }
+        if (final_result[0] == '-' || final_result[0] == 'N') {
+          final_result = '--'
+        }
+        return final_result
       },
 
       successMessage(receipt, title) {
