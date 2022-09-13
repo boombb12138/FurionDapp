@@ -9,6 +9,10 @@
   font-size: 16px;
 }
 
+.clear-button {
+  margin-left: 60%
+}
+
 .tip {
   width: 381px;
   height: 28px;
@@ -19,11 +23,9 @@
 }
 
 .bar {
-  background: linear-gradient(
-    180deg,
-    rgba(193, 99, 226, 0.162) 0%,
-    rgba(51, 53, 114, 0.3) 113.94%
-  );
+  background: linear-gradient(180deg,
+      rgba(193, 99, 226, 0.162) 0%,
+      rgba(51, 53, 114, 0.3) 113.94%);
   color: rgba(154, 163, 173, 0.8);
   font-weight: 400;
   font-size: 14px;
@@ -40,11 +42,9 @@
   position: relative;
   display: inline-block;
   width: 910px;
-  background: linear-gradient(
-    0,
-    rgba(250, 107, 225, 0.4) 17.23%,
-    rgba(8, 19, 50, 0.4) 100%
-  );
+  background: linear-gradient(0,
+      rgba(250, 107, 225, 0.4) 17.23%,
+      rgba(8, 19, 50, 0.4) 100%);
   border-radius: 30px;
 }
 
@@ -84,47 +84,31 @@
 
 <template>
   <div class="!w-full pb-180px">
-    <div
-      @click="$router.go(-1)"
-      class="absolute left-60px cursor-pointer top-100px hover:opacity-80 flex items-center"
-    >
+    <div @click="$router.go(-1)" class="absolute left-60px cursor-pointer top-100px hover:opacity-80 flex items-center">
       <img src="@/assets/images/icon_back.svg" />
       <div class="go ml-23px">Back to shopping</div>
     </div>
 
     <!--div class="absolute center-x top-105px tip">Cannot find your metamask wallet</div-->
-    <el-button class="absolute left-1000px top-150px" @click="clearCart">Clear Cart</el-button>
+    <el-button class="absolute clear-button top-150px" @click="clearCart">Clear Cart</el-button>
     <div class="pt-80px text-30px font-700 text-center mb-60px">Your cart items</div>
 
     <div class="text-center">
       <div class="box">
         <div class="box-bg relative">
-          <img
-            src="@/assets/images/cart_btn.svg"
-            class="absolute center-x -bottom-20px"
-          />
+          <img src="@/assets/images/cart_btn.svg" class="absolute center-x -bottom-20px" />
         </div>
 
         <div class="pl-12px clearfix cart" :class="{ 'pb-30px': cart.length > 4 }">
           <el-scrollbar class="h-330px overflow-hidden">
-            <div
-              class="item"
-              v-for="(item, index) in cart"
-              :key="index"
-              @click="$router.push(`/collection/separate_pools/detail?collection=${item.name}&token_id=${item.token_id}`)"
-            >
-              <el-image
-                :src="item.image_url"
-                class="w-201px h-201px rounded-12px m-4px mb-12px"
-                lazy
-              >
+            <div class="item" v-for="(item, index) in cart" :key="index"
+              @click="$router.push(`/collection/separate_pools/detail?collection=${item.name}&token_id=${item.token_id}`)">
+              <el-image :src="item.image_url" class="w-201px h-201px rounded-12px m-4px mb-12px" lazy>
                 <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
               </el-image>
               <div class="px-15px">
                 <div class="flex justify-between items-center mb-10px">
-                  <div
-                    class="opacity-40 text-12px w-140px line-clamp-1 overflow-ellipsis !block text-left"
-                  >
+                  <div class="opacity-40 text-12px w-140px line-clamp-1 overflow-ellipsis !block text-left">
                     {{ item.name }}
                   </div>
                   <div class="text-12px flex items-center">
@@ -151,8 +135,9 @@
     <div class="fixed bottom-0 h-80px flex items-center justify-end bar w-1/1 pr-130px">
       <div class="flex items-center">
         <div class="mr-15px">Sub-total:</div>
-        <img src="@/assets/images/icon_eth.svg" class="mr-6px" />
-        <div class="text-16px font-600 text-[rgba(255,255,255,0.8)]">{{ this.cart.length * 1000 }}</div>
+        <!-- <img src="@/assets/images/icon_eth.svg" class="mr-6px" /> -->
+        <div class="text-16px font-600 text-[rgba(255,255,255,0.8)]">{{ this.cart.length * 1000 }} F-{{this.cart.length
+        > 0? this.cart[0].symbol: 'X'}}</div>
       </div>
       <div class="line"></div>
       <div class="flex items-center">
@@ -160,8 +145,8 @@
         <img src="@/assets/images/icon_eth.svg" class="mr-6px" />
         <div class="text-16px font-600 text-[rgba(255,255,255,0.8)]">0.00374</div>
       </div>
-      <div class="btn_border ml-40px" @click="buy">
-        <el-button type="primary" class="!w-140px !h-48px">
+      <div class="btn_border ml-40px">
+        <el-button type="primary" class="!w-140px !h-48px" :disabled="ids.length==0" @click="buy">
           <span class="font-900 text-16px">Check-out</span>
         </el-button>
       </div>
@@ -291,7 +276,7 @@ export default {
 
       try {
         let tx_result = await this.pool.contract.methods.buyBatch(this.ids).send({ from: this.account });
-        this.successMessage(tx_result, `Purchase succeeded`); 
+        this.successMessage(tx_result, `Purchase succeeded`);
       } catch (e) {
         this.errorMessage(`Purchase failed`);
         closeDialog(this.dialogue_info);

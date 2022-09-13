@@ -457,9 +457,6 @@
                     <p class="title font-600 leading-28px text-[rgba(252,255,253,0.8)] mb-3px">
                       {{ item.title }}
                     </p>
-                    <p class="time text-12px font-600 leading-28px text-[rgba(252,255,253,0.3)]">
-                      {{ item.time }}
-                    </p>
                   </div>
                   <div class="content text-[rgba(252,255,253,0.4)] font-500 text-13px leading-17px">
                     {{ item.content }}
@@ -468,7 +465,7 @@
               </li>
             </ul>
 
-            <div class="more" @click="more" v-if="showMore">Show more</div>
+            <div class="more" @click.stop="more" v-if="showMore">Show more</div>
           </div>
         </el-scrollbar>
       </div>
@@ -588,7 +585,6 @@ export default {
     closeAccount() {
       this.isShow = false;
       this.$store.dispatch('setShowBoth', !this.isShow);
-
     },
     clickaddress(address){
       window.open('https://etherscan.io/address/'+address);

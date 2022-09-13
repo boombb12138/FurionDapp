@@ -54,13 +54,14 @@ export default {
   props: {},
   components: {},
   computed: {
-    ...mapState(['showInfo']),
+
     icon() {
       return this.$refs.cartIconRef;
     },
     cart() {
       return this.$store.state.user.cart;
     },
+    ...mapState(['showInfo']),
   },
   data() {
     return {

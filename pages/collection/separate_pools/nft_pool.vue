@@ -65,6 +65,7 @@
 .selectedBorder {
   border: 2px solid rgb(1, 182, 46) !important;
 }
+
 .lockBorder {
   border: 2px solid rgba(255, 255, 255, 0.6) !important;
 }
@@ -147,8 +148,6 @@
     <img src="@/assets/images/icon_back.svg" class="absolute left-60px cursor-pointer top-100px hover:opacity-80"
       @click="$router.go(-1)" />
 
-
-
     <div class="w-1124px mx-auto min-h-800px">
 
       <!-- banner and other basic information for this project -->
@@ -162,7 +161,7 @@
               <div class="text-14px mt-10px">
                 Created by
                 <span class="text-[#34F8FF] font-600"> <a :href="separate_pool_info.external_link" target="_blank">{{
-                    separate_pool_info.symbol
+                separate_pool_info.symbol
                 }}</a></span>
                 <el-tooltip effect="light" :content="separate_pool_info.description" placement="bottom">
                   <img src="@/assets/images/icon_badge.png" alt="" />
@@ -288,9 +287,10 @@
         </div>
 
         <!-- grid for NFT items -->
-        <Loader v-if="ready === false" />
-        <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length > 0 && ready === true">
-          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index" :class="{ lockBorder: item.lock_info.locker != zeroAddress }" @click="clickItem(item)">
+        <Loader v-if="!pool_ready" />
+        <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length > 0 && pool_ready">
+          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index"
+            :class="{ lockBorder: item.lock_info.locker != zeroAddress }" @click="clickItem(item)">
             <!-- NFT image -->
             <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
               <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
@@ -332,12 +332,16 @@
                 </div>
 
                 <!-- Extend lock period button -->
-                <div v-if="item.lock_info.locker.toLowerCase() === account && item.lock_info.extended === false && item.lock_info.release_time > currentTimestamp" class="btn2 mr-8px" @click.stop="extend(item)">
+                <div
+                  v-if="item.lock_info.locker.toLowerCase() === account && item.lock_info.extended === false && item.lock_info.release_time > currentTimestamp"
+                  class="btn2 mr-8px" @click.stop="extend(item)">
                   EXTEND
                 </div>
 
                 <!-- Unlock button -->
-                <div v-if="item.lock_info.locker.toLowerCase() === account && item.lock_info.release_time > currentTimestamp" class="btn2" @click.stop="unlock(item)">
+                <div
+                  v-if="item.lock_info.locker.toLowerCase() === account && item.lock_info.release_time > currentTimestamp"
+                  class="btn2" @click.stop="unlock(item)">
                   UNLOCK
                 </div>
               </div>
@@ -506,6 +510,7 @@ export default {
       collection: this.$route.query.collection,
       network: 'rinkeby',
       ready: false,
+      pool_ready: false,
       dialogVisible: false,
       separate_pool_info: separate_pool_info,
       default_pool_info: default_pool_info,
@@ -533,8 +538,9 @@ export default {
     await initTokenImage(this.separate_pool_info, this.network);
     this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address);
     this.furContract = await initFurContract();
+    this.pool_ready = true;
     await this.initUserInfo();
-    this.user_info = await inituserinfo(this.network,this.userInfo.userAddress);
+    this.user_info = await inituserinfo(this.network, this.userInfo.userAddress);
     await this.checkApproval();
     this.ready = true;
   },
@@ -672,7 +678,7 @@ export default {
         }
         arr = [...this.cart, info];
       }
-      
+
       this.$store.commit("save", ["user.cart", arr, this]);
       this.$notify({
         title: `Added ${info.symbol} #${info.token_id} to cart`,
@@ -801,17 +807,17 @@ export default {
         //put the message into the database when buy succeed
         let data = [];
         data.push({
-            project: this.separate_pool_info.collection,
-            token_id: tokenId,
-            address: this.separate_pool_info.nft_address,
-            event: 'Redeem',
-            event_type: 'success',
-            eth_price: this.separate_pool_info.fXprice,
-            from_user: this.poolContract.address,
-            tx_hash: tx_result.transactionHash,
-            to_user: account,
-          });
-          intoNftActivityByArray(this.network,data);
+          project: this.separate_pool_info.collection,
+          token_id: tokenId,
+          address: this.separate_pool_info.nft_address,
+          event: 'Redeem',
+          event_type: 'success',
+          eth_price: this.separate_pool_info.fXprice,
+          from_user: this.poolContract.address,
+          tx_hash: tx_result.transactionHash,
+          to_user: account,
+        });
+        intoNftActivityByArray(this.network, data);
 
       } catch (e) {
         this.errorMessage(`Purchase ${this.separate_pool_info.symbol} #${tokenId} failed`);
@@ -857,8 +863,8 @@ export default {
         this.successMessage(tx_result, 'Store succeeded');
         // data into database
         let data = [];
-        for (let i = 0; i < this.nftToPool.length; i++){
-            data.push({
+        for (let i = 0; i < this.nftToPool.length; i++) {
+          data.push({
             project: this.separate_pool_info.collection,
             token_id: this.nftToPool[i],
             address: this.separate_pool_info.nft_address,
@@ -870,7 +876,7 @@ export default {
             to_user: this.poolContract.address,
           });
         }
-        intoNftActivityByArray(this.network,data);
+        intoNftActivityByArray(this.network, data);
         this.nftToPool = [];
 
 
@@ -946,8 +952,8 @@ export default {
         this.successMessage(tx_result, 'Lock succeeded');
         // data into database
         let data = [];
-        for (let i = 0; i < this.nftToPool.length; i++){
-            data.push({
+        for (let i = 0; i < this.nftToPool.length; i++) {
+          data.push({
             project: this.separate_pool_info.collection,
             token_id: this.nftToPool[i],
             address: this.separate_pool_info.nft_address,
@@ -959,7 +965,7 @@ export default {
             to_user: this.poolContract.address,
           });
         }
-        intoNftActivityByArray(this.network,data);
+        intoNftActivityByArray(this.network, data);
         this.nftToPool = [];
       } catch (e) {
         this.errorMessage('Lock failed');
@@ -992,17 +998,17 @@ export default {
         //put the message into the database when buy succeed
         let data = [];
         data.push({
-            project: this.separate_pool_info.collection,
-            token_id: tokenId,
-            address: this.separate_pool_info.nft_address,
-            event: 'Unlock',
-            event_type: 'success',
-            eth_price: this.separate_pool_info.fXprice,
-            from_user: this.poolContract.address,
-            tx_hash: tx_result.transactionHash,
-            to_user: this.account,
-          });
-          intoNftActivityByArray(this.network,data);
+          project: this.separate_pool_info.collection,
+          token_id: tokenId,
+          address: this.separate_pool_info.nft_address,
+          event: 'Unlock',
+          event_type: 'success',
+          eth_price: this.separate_pool_info.fXprice,
+          from_user: this.poolContract.address,
+          tx_hash: tx_result.transactionHash,
+          to_user: this.account,
+        });
+        intoNftActivityByArray(this.network, data);
       } catch (e) {
         this.errorMessage(`Unlock ${this.separate_pool_info.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);
@@ -1035,17 +1041,17 @@ export default {
         this.successMessage(tx_result, `Extend locking ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
         let data = [];
         data.push({
-            project: this.separate_pool_info.collection,
-            token_id: tokenId,
-            address: this.separate_pool_info.nft_address,
-            event: 'Unlock',
-            event_type: 'success',
-            eth_price: this.separate_pool_info.fXprice,
-            from_user: this.poolContract.address,
-            tx_hash: tx_result.transactionHash,
-            to_user: this.account,
-          });
-          intoNftActivityByArray(this.network,data);
+          project: this.separate_pool_info.collection,
+          token_id: tokenId,
+          address: this.separate_pool_info.nft_address,
+          event: 'Unlock',
+          event_type: 'success',
+          eth_price: this.separate_pool_info.fXprice,
+          from_user: this.poolContract.address,
+          tx_hash: tx_result.transactionHash,
+          to_user: this.account,
+        });
+        intoNftActivityByArray(this.network, data);
       } catch (e) {
         this.errorMessage(`Extend locking ${this.separate_pool_info.symbol} #${tokenId} failed`);
         closeDialog(this.dialogue_info);

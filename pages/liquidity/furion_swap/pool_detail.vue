@@ -28,7 +28,7 @@
   border-radius: 20px;
 
   .box-top {
-    height: 226px;
+    height: 240px;
     background: linear-gradient(180deg,
         rgba(51, 53, 114, 0.192) 9.21%,
         rgba(51, 53, 114, 0.24) 95.15%);
@@ -178,7 +178,7 @@
   <div class="w-1150px">
     <div class="flex items-end justify-between my-70px">
       <SwapTab v-model="active"></SwapTab>
-      <div class="flex search-section items-end">
+      <!-- <div class="flex search-section items-end">
         <div class="mr-30px">
           <p class="label">SORT BY</p>
           <el-popover placement="bottom-start" title trigger="click" popper-class="el-sort" :visible-arrow="false"
@@ -194,9 +194,9 @@
         </div>
         <div class="mr-30px">
           <p class="label">SEARCH</p>
-          <el-input v-model="searchKey" placeholder="Searcg Farns" style="width: 184px"></el-input>
+          <el-input v-model="searchKey" placeholder="Searcg Farms" style="width: 184px"></el-input>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div class="pool-stripe pl-35px mb-40px flex items-center">
@@ -299,11 +299,11 @@
             </div>
           </div>
 
-          <div class="text-center mt-14px mb-8px">
+          <div class="text-center mt-30px mb-8px">
             <img class="flex-shrink-0 text-center" src="@/assets/images/liquidity/plus.svg" />
           </div>
 
-          <div class="flex justify-between items-center mb-8px px-10px mt-20px">
+          <div class="flex justify-between items-center mb-8px px-10px mt-10px">
             <p class="text-13px text-[rgba(252,255,253,0.4)] font-500">Input</p>
             <p class="text-13px text-[rgba(252,255,253,0.8)] font-700">
               Balance: {{ formatNumber(single_swap_pool.token_1_balance) }}
@@ -324,7 +324,7 @@
           <div class="flex justify-between items-center">
             <div class="btn_border w-1/2 mt-60px">
               <el-button type="primary" class="!w-1/1 !h-52x" :disabled="approved" @click="approveToken">{{ approved ?
-                  "Approved" : "Approve"
+              "Approved" : "Approve"
               }}
               </el-button>
             </div>
@@ -332,8 +332,8 @@
             <div class="btn_border w-1/2 mt-60px">
               <el-button type="primary" class="!w-1/1 !h-52x" @click="addLiquidity" :disabled="!valid_add || !approved">
                 {{ !approved ? "Approve first" : valid_add
-                    ?
-                    "Add liquidity" : "Insufficient"
+                ?
+                "Add liquidity" : "Insufficient"
                 }}</el-button>
             </div>
           </div>
@@ -390,18 +390,18 @@
             <p class="label">Your Pool Tokens</p>
             <div>
               <p class="label mb-5px">1 {{ single_swap_pool.token_0 }} = {{
-                  formatNumber(single_swap_pool.token_1_reserve /
-                    single_swap_pool.token_0_reserve, 4)
+              formatNumber(single_swap_pool.token_1_reserve /
+              single_swap_pool.token_0_reserve, 4)
               }} {{ single_swap_pool.token_1 }}</p>
               <p class="label">1 {{ single_swap_pool.token_1 }} = {{ formatNumber(single_swap_pool.token_0_reserve /
-                  single_swap_pool.token_1_reserve, 4)
+              single_swap_pool.token_1_reserve, 4)
               }} {{ single_swap_pool.token_0 }}</p>
             </div>
           </div>
           <div class="flex mt-35px justify-between">
             <div class="btn_border w-162px">
               <el-button type="primary" class="!w-1/1 !h-52x" :disabled="liquidity_approved" @click="approveLPToken">{{
-                  liquidity_approved ? "Approved" : "Approve"
+              liquidity_approved ? "Approved" : "Approve"
               }}
               </el-button>
             </div>
@@ -409,7 +409,7 @@
               <el-button type="primary" class="!w-1/1 !h-52x" @click="removeLiquidity"
                 :disabled="!valid_remove || !liquidity_approved">
                 <span class="-ml-5px">{{
-                    !liquidity_approved ? "Approve first" : valid_remove ? "Withdraw" : "Insufficient"
+                !liquidity_approved ? "Approve first" : valid_remove ? "Withdraw" : "Insufficient"
                 }}</span>
               </el-button>
             </div>

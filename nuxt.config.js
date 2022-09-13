@@ -84,6 +84,7 @@ export default {
       ssr: false,
     },
     { src: '@plugins/typer', ssr: false},
+    { src: '@/plugins/aos', mode: "client" },
   ],
   buildModules: [
     'nuxt-windicss',

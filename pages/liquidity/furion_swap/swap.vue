@@ -157,10 +157,8 @@
       <div class="box-right box w-370px pt-24px px-16px pb-32px">
         <div class="flex items-center justify-between mb-5px">
           <div class="w-99px"></div>
-          <p class="text-[#FCFFFD] text-19px font-700 text-center">Swap</p>
+          <p class="text-[#FCFFFD] text-19px font-700 text-center mr-80px">Swap</p>
           <div class="flex items-center">
-            <img class="flex-shrink-0 mr-12px cursor-pointer" src="@/assets/images/liquidity/setting.svg" />
-            <img class="flex-shrink-0 mr-12px cursor-pointer" src="@/assets/images/liquidity/clock.svg" />
             <img class="flex-shrink-0 cursor-pointer" src="@/assets/images/liquidity/reload.svg" />
           </div>
         </div>
@@ -189,8 +187,8 @@
         <el-input class="box-input" placeholder="0.0" style="width:100%" v-model="token_0_amount"
           @input.native="calToken1Amount"></el-input>
         <div class="text-center mt-14px mb-5px">
-          <img class="flex-shrink-0 text-center cursor-pointer" src="@/assets/images/liquidity/arrow_down2.svg"
-            v-on:click="switchToken" />
+          <img class="flex-shrink-0 text-center cursor-pointer" width="35px"
+            src="@/assets/images/liquidity/icon_down.png" v-on:click="switchToken" />
         </div>
 
         <div class="flex justify-between items-center mb-8px px-10px mt-20px">
@@ -500,7 +498,7 @@ export default {
 
       // swap between general ERC-20 tokens
       else {
-        // 
+        //
         let trading_path = [];
         if (this.swap_info.pair_address.length < 4) {
           let weth_address;

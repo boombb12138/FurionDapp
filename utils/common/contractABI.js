@@ -23,6 +23,9 @@ import VoteEscrowedFurion from "@/assets/abis/rinkeby/furion-staking/VoteEscrowe
 import FuNFTPass from "@/assets/abis/rinkeby/pet/FuNFTPass.sol/FuNFTPass.json";
 import FuCatNFT from "@/assets/abis/rinkeby/pet/FuCatNFT.sol/FuCatNFT.json";
 
+import TestClaim from "@/assets/abis/rinkeby/TestClaim.sol/TestClaim.json";
+
+
 export const getAddress = () => {
     let address = addressStore['rinkeby'];
     return address;
@@ -125,4 +128,10 @@ export const getFuCatNFTABI = async () => {
     let address = getAddress();
     FuCatNFT.address = address['FuCatNFT'];
     return FuCatNFT;
+}
+
+export const getTestClaimABI = async () => {
+    let address = getAddress();
+    TestClaim.address = address['TestClaim'];
+    return TestClaim;
 }

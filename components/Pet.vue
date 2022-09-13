@@ -1,6 +1,6 @@
 <style lang="scss" scoped>
 .pet {
-  @apply fixed right-80px top-600px text-[#C0C7D5] cursor-pointer;
+  @apply fixed right-80px text-[#C0C7D5] cursor-pointer;
   ::v-deep {
     .el-popover {
       background: #212657;
@@ -28,12 +28,12 @@
 }
 
 .box {
-  @apply w-206px h-266px  fixed right-220px top-500px  text-[#FCFFFD];
+  @apply w-206px h-266px  fixed right-220px  text-[#FCFFFD];
   background: url("@/assets/images/pet/bg.png");
 }
 
 .box2 {
-  @apply w-248px h-150px  fixed right-220px top-500px text-[#FCFFFD];
+  @apply w-248px h-150px  fixed right-220px text-[#FCFFFD];
   background: url("@/assets/images/pet/bg2.png");
 }
 
@@ -166,12 +166,13 @@
         v-if="textIndex == 4"
       >
         Wondering how to aggregate liquidity? Let me show you how to
+
         <div
           class="underline inline-block"
           x-placement="top-end"
           @click="
             clickopen(
-              'https://app.gitbook.com/s/NAwB8romLca7smcrhGep/function/furion-pools/furion-aggregate-pools'
+              'https://medium.com/@project.furion/furion-pedia-concentrated-liquidity-in-aggregate-pool-14cea811804e'
             )
           "
         >
@@ -185,20 +186,18 @@
         v-if="textIndex == 5"
       >
         FUR is our native utility token. You should know more about it
+
         <div
           class="underline inline-block"
           x-placement="top-end"
-          @click="
-            clickopen(
-              'https://app.gitbook.com/s/NAwB8romLca7smcrhGep/token/fur'
-            )
-          "
+          @click="clickopen('https://docs.furion.io/token/fur')"
         >
           here
         </div>
         <div class="inline-block" x-placement="top-end">!</div>
         <div x-arrow="" class="popper__arrow" style="left: 10px"></div>
       </div>
+
       <div
         class="el-popover el-popper el-popover--plain"
         x-placement="top-end"
@@ -209,11 +208,7 @@
         <div
           class="underline inline-block"
           x-placement="top-end"
-          @click="
-            clickopen(
-              'https://app.gitbook.com/s/NAwB8romLca7smcrhGep/token/vefur'
-            )
-          "
+          @click="clickopen('https://docs.furion.io/token/vefur')"
         >
           this
         </div>
@@ -226,12 +221,13 @@
         v-if="textIndex == 7"
       >
         Does Furion incur any fee?
+
         <div
           class="underline inline-block"
           x-placement="top-end"
           @click="
             clickopen(
-              'https://app.gitbook.com/s/NAwB8romLca7smcrhGep/governance/fees-and-income-sharing'
+              'https://docs.furion.io/governance/fees-and-income-sharing'
             )
           "
         >

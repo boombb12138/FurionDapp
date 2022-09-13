@@ -10,6 +10,11 @@ export const DialogInfo = {
 };
 
 export const ProcessInfo = {
+  CLAIM_TEST_TOKEN:{
+    intro: 'Claim Test Tokens',
+    detail:
+      'You are going to claim test tokens, please sign and wait for the transaction to be done',
+  },
   APPROVE_FUR:{
     intro: 'Approval for FUR',
     detail:
@@ -103,37 +108,42 @@ export const ProcessInfo = {
   FARM_ADD_LIQUIDITY:{
     intro: 'Add Liquidity on Furion Farm',
     detail:
-    'You are going to add liquidity to Furion, please sign and wait for the transaction to be done',
+    'You are going to add liquidity to Furion, please sign and wait for the transaction to complete',
   },
   FARM_REMOVE_LIQUIDITY: {
     intro: 'Remove liquidity on Furion Farm',
     detail:
-      'You are going to remove liquidity on Furion, please sign and wait for the transaction to be done',
+      'You are going to remove liquidity on Furion, please sign and wait for the transaction to complete',
   },
   FARM_HARVEST_REWARD: {
     intro: 'Harvest Reward on Furion Farm',
     detail:
-    'You are going to redeem your farming reward on Furion, please sign and wait for the transaction to be done'
+    'You are going to redeem your farming reward on Furion, please sign and wait for the transaction to complete'
   },
   STAKE_FUR: {
     intro: 'Stake FUR on Furion Stake',
     detail: 
-    'You are going to stake FUR to Furion, please sign and wait for the transaction to be done',
+    'You are going to stake FUR to Furion, please sign and wait for the transaction to complete',
   },
   UNSTAKE_FUR: {
     intro: 'Unstake FUR on Furion Stake',
     detail: 
-    'You are going to remove your FUR stake on Furion Stake, please sign and wait for the transaction to be done',
+    'You are going to remove your FUR stake on Furion Stake, please sign and wait for the transaction to complete',
   },
   UNSTAKE_LOCKED_FUR: {
     intro: 'Unstake Locked FUR on Furion Stake',
     detail:
-    'You are going to remove your Locked FUR stake on Furion Stake, please sign and wait for the transaction to be done', 
+    'You are going to remove your Locked FUR stake on Furion Stake, please sign and wait for the transaction to complete', 
   },
   STAKE_LOCK_FUR: {
     intro: 'Stake and Lock FUR on Furion Stake',
     detail: 
-    'You are going to stake and lock FUR to Furion, please sign and wait for the transaction to be done',
+    'You are going to stake and lock FUR to Furion, please sign and wait for the transaction to complete',
+  },
+  CLAIM_VEFUR: {
+    intro: 'Claim veFUR',
+    detail: 
+    'You are going to claim veFUR from Furion Stake, please sign and wait for the transaction to complete',
   },
   DEPOSIT_TOKEN:{
     intro: 'Deposit token to money market',
