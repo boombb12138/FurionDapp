@@ -42,6 +42,8 @@
     "FEther Implementation": "0x2b7b88501904b7c3fe2762a7ae50c2e446f43db3",
     "fFUR Proxy": "0xFaD887C8fB4Ed00042207d747a590D0bc7b3195e",
     "fUSDC Proxy": "0xF566e3D960c0a6c257c36Ee4777195F0aDB7FA3f",
-    "fErc20 Implementation": "0x5cf46e751725979654ba855e1affde2149f08aa6"
+    "fErc20 Implementation": "0x5cf46e751725979654ba855e1affde2149f08aa6",
+    "FuCatNFT": "0x66B848928FA5DD840aC5729c52f811347148696b",
+    "FuNFTPass": "0x1dfb2e2eCB06351F7D5542B5189B0B064310444B"
   }
 }
