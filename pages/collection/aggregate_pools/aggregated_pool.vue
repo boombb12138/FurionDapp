@@ -1,4 +1,16 @@
 <style lang="scss" scoped>
+.page-enter-active, .page-leave-active {
+  transition: all 0.7s ease-out;
+}
+.page-enter {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+.page-leave-to {
+  transform: translateX(50px);
+  opacity: 0;
+}
+  
 .avatar {
   border: 8px solid #01132e;
   transform: translateY(-56px);
@@ -471,6 +483,9 @@
             class="item"
             v-for="(item, index) in pool_info.collections"
             :key="index"
+            data-aos="flip-right"
+            :data-aos-delay="(index % 3) * 150"
+            data-aos-once="true"
           >
             <div class="flex justify-between w-350px px-15px pt-15px">
               <el-image
@@ -569,6 +584,7 @@ import {
   ProcessInfo,
 } from '~/config/loading_info';
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
+import AOS from 'aos';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -642,6 +658,7 @@ export default {
 
     await this.updateUserInfo();
     await this.poolInfoFromContract();
+    AOS.refresh();
   },
   methods: {
     /********************************** Utils **********************************/

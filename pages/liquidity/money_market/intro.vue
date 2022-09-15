@@ -1,4 +1,16 @@
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.page-enter-active, .page-leave-active {
+  transition: all 0.7s ease-out;
+}
+.page-enter {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+.page-leave-to {
+  transform: translateX(50px);
+  opacity: 0;
+}
+</style>
 
 <template>
   <div>

@@ -1,4 +1,16 @@
 <style lang="scss" scoped>
+.page-enter-active, .page-leave-active {
+  transition: all 0.7s ease-out;
+}
+.page-enter {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+.page-leave-to {
+  transform: translateX(50px);
+  opacity: 0;
+}
+  
 .box {
   background: linear-gradient(
     180deg,
@@ -680,7 +692,7 @@ export default {
 
       const balance = await this.token.contract.methods.balanceOf(account).call();
 
-      return parseInt(balance) >= parseInt(amount) ? true : false;
+      return _compareInt(balance, amount) != "smaller" ? true : false;
     },
     async approvedEnoughToken(amount) {
       const account = this.userInfo.userAddress;
@@ -694,7 +706,7 @@ export default {
 
       const balance = await this.market.contract.methods.balanceOf(account).call();
 
-      return parseInt(balance) >= parseInt(amount) ? true : false;
+      return _compareInt(balance, amount) != "smaller" ? true : false;
     },
 
     /*********************************** Contract functions ***********************************/

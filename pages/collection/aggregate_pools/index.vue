@@ -1,4 +1,16 @@
 <style lang="scss" scoped>
+.page-enter-active, .page-leave-active {
+  transition: all 0.7s ease-out;
+}
+.page-enter {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+.page-leave-to {
+  transform: translateX(50px);
+  opacity: 0;
+}
+
 .asset ::v-deep .el-input__inner {
   background: rgba(237, 242, 255, 0.6);
   box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.1), inset 0px -2px 6px rgba(0, 0, 0, 0.1);

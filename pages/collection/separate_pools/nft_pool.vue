@@ -1,4 +1,16 @@
 <style lang="scss" scoped>
+.page-enter-active, .page-leave-active {
+  transition: all 0.7s ease-out;
+}
+.page-enter {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+.page-leave-to {
+  transform: translateX(50px);
+  opacity: 0;
+}
+
 .avatar {
   border: 8px solid #01132e;
   transform: translateY(-56px);
@@ -290,7 +302,7 @@
         <Loader v-if="!pool_ready" />
         <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length > 0 && pool_ready">
           <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index"
-            :class="{ locked: item.lock_info.locker != zeroAddress }" @click="clickItem(item)">
+            :class="{ locked: item.lock_info.locker != zeroAddress }" @click="clickItem(item)" data-aos="flip-right" :data-aos-delay="(index % 4) * 150" data-aos-once="true" data-aos-anchor-placement="top-bottom">
             <!-- NFT image -->
             <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
               <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
@@ -391,15 +403,9 @@
         </el-popover>
       </div>
 
-      <!-- Azuki examples -->
+      <!-- NFTs owned by user -->
       <div class="min-h-250px max-h-425px h-65vh mb-35px">
         <el-scrollbar class="h-1/1">
-          <!--
-          <div class="grid grid-cols-3 gap-y-38px">
-            <img src="@/assets/images/cover.png" class="w-218px h-218px rounded-12px" v-for="(item, index) in 9"
-              :key="index" />
-          </div>
-          -->
           <div class="grid grid-cols-4 mt-10px mr-20px" v-if="user_nft.length > 0">
             <div class="item-wallet text-center" v-for="(item, index) in user_nft" :key="index"
               :class="{ selectedBorder: applySelectedStyle[index] }" @click="toList(item.token_id, index)">
@@ -486,6 +492,7 @@ import {
 } from "@/config/user_info/profile";
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 import Loader from '@/components/Loader.vue';
+import AOS from 'aos';
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -536,7 +543,6 @@ export default {
   },
   async mounted() {
     this.ready = false;
-
     await initSeparatePoolInfo(this.collection, this.network);
     // this.separate_pool_info = separate_pool_info;
     // this.$forceUpdate();
@@ -547,6 +553,7 @@ export default {
     await this.initUserInfo();
     this.user_info = await inituserinfo(this.network, this.userInfo.userAddress);
     await this.checkApproval();
+    AOS.refresh();
     this.ready = true;
   },
   methods: {

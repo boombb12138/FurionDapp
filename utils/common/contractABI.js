@@ -63,7 +63,7 @@ export const getFurionSwapPairABI = async () => {
 
 export const getSeparatePoolFactoryABI = async () => {
     let address = getAddress();
-    SeparatePoolFactory.address = address['Separate Pool Factory'];
+    SeparatePoolFactory.address = address['SeparatePoolFactory'];
     return SeparatePoolFactory;
 }
 
@@ -74,7 +74,7 @@ export const getSeparatePoolABI = async () => {
 
 export const getAggregateatePoolFactoryABI = async () => {
     let address = getAddress();
-    AggregatePoolFactory.address = address['Aggregate Pool Factory'];
+    AggregatePoolFactory.address = address['AggregatePoolFactory'];
     return AggregatePoolFactory;
 }
 
@@ -96,13 +96,13 @@ export const getFErc20ABI = async () => {
 
 export const getRiskManagerABI = async () => {
     let address = getAddress();
-    RiskManager.address = address["Risk Manager Proxy"];
+    RiskManager.address = address["RiskManager"];
     return RiskManager;
 }
 
 export const getPriceOracleABI = async () => {
     let address = getAddress();
-    SimplePriceOracle.address = address["Price Oracle"];
+    SimplePriceOracle.address = address["PriceOracle"];
     return SimplePriceOracle;
 }
 

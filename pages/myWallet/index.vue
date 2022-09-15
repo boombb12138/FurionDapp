@@ -58,8 +58,8 @@
   }
 }
 
-.lockBorder {
-  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+.locked {
+  opacity: 0.6;
 }
 
 .section {
@@ -104,16 +104,19 @@
           <img src="@/assets/images/mywallet/icon2.svg" alt="" v-else />
           <div>Locked In Pool</div>
         </div>
-        <div class="flex items-center type" :class="{ active: type == 3 }" @click="ready ? type = 3 : type = 1">
+        <div class="flex items-center type" :class="{ active: type == 3 }" @click="balance_ready ? type = 3 : type = 1">
           <img src="@/assets/images/mywallet/icon3s.svg" alt="" v-if="type == 3" />
           <img src="@/assets/images/mywallet/icon3.svg" alt="" v-else />
           <div>My Furion Token</div>
         </div>
       </div>
     </div>
-    <Loader v-if="ready === false" />
-    <div v-if="(type == 1 || type == 2) && ready === true" class="pl-40px pb-100px clearfix">
-      <div class="item" :class="{ lockBorder: type === 2 }" v-for="(item, index) in filterNft" :key="index"
+    <Loader v-if="!ready && type === 1" />
+    <div v-if="type === 1 && !ready && balance_ready" class="flex justify-center text-16px mt-40px opacity-80">
+      Check your token balance at<span class="text-[#f181de]">&nbsp; My Furion Token &nbsp;</span> now!
+    </div>
+    <div v-if="(type == 1 || type == 2) && ready" class="pl-40px pb-100px clearfix">
+      <div class="item" :class="{ locked: type === 2 }" v-for="(item, index) in filterNft" :key="index"
         @click="$router.push(`/collection/separate_pools/detail?collection=${item.name}&token_id=${item.token_id}`)">
         <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
           <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
@@ -144,20 +147,20 @@
           </div>
         </div>
 
-        <div v-if="type === 2" class="px-15px font-400" style="color: rgb(241, 129, 222)">
-          Locked until {{ unixToDate(item.lock_info.release_time) }}
-        </div>
-
-        <div
-          class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px">
-          <img src="@/assets/images/icon_eth.svg" />
-          <span v-if="type === 2" style="color: rgba(255, 255, 255, 0.8)">LOCKED</span>
-          <div class="flex items-center">
-            <div class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon">
-              <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
-              <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
+        <div class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center rounded-bl-12px rounded-br-12px">
+          <div v-if="type === 2" class="mx-auto flex items-center">
+            <img src="@/assets/images/locked.png" class="w-14px h-16px mr-10px" />
+            <p class="text-14px font-600 text-[#6D788A]">Locked Until {{ unixToDate(item.lock_info.release_time) }}</p>
+          </div>
+          <div class="flex justify-between w-1/1" v-else>
+            <img src="@/assets/images/icon_eth.svg" />
+            <div class="flex items-center">
+              <div class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon">
+                <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
+                <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
+              </div>
+              <div class="opacity-40 text-13px">{{ item.like }}</div>
             </div>
-            <div class="opacity-40 text-13px">{{ item.like }}</div>
           </div>
         </div>
       </div>
@@ -226,14 +229,16 @@ export default {
       ],
       searchKey: "",
       type: 1,
+      balance_ready: false,
       ready: false,
     };
   },
   async mounted() {
     setTimeout(async () => {
       // console.log('Account info', this.account);
-      await this.initUserNft();
       await this.initBalance();
+      this.balance_ready = true;
+      await this.initUserNft();
       this.ready = true;
     }, 2000);
 
