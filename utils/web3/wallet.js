@@ -9,7 +9,7 @@ export const connectMetamask = () => {
         isConnect: true,
         userAddress: accounts[0],
       };
-      connect_info.address = account[0];
+      connect_info.address = accounts[0];
       console.timeLog('Connect info', connect_info)
       window.$nuxt.$store.dispatch('setUserInfo', userInfo);
       window.$nuxt.$store.commit('update', [
