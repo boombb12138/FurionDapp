@@ -161,11 +161,11 @@
             <div class="text-[#83899A] font-500 text-20px mb-28px">veFUR progress</div>
             <div class="flex justify-between items-center mb-8px">
               <div class="font-500 text-16px text-[#8B93A2]">
-                <span class="text-white">400 veFUR</span>
-                /2000 veFUR
+                <span class="text-white">{{getRedeemedReward()}} veFUR</span>
+                /{{formatNumber(user.total_veFur_reward)}} veFUR
               </div>
               <div class="font-500 text-16px text-[#8B93A2]">
-                <span class="text-white">20%</span>
+                <span class="text-white">{{getRedeemedRewardPercentage()}}%</span>
                 /100%
               </div>
             </div>
@@ -674,6 +674,18 @@
   
         async validate() {
   
+        },
+
+        getRedeemedReward() {
+          const reward = parseFloat(this.user.redeemed_veFur_reward) + parseFloat(this.user.redeemed_veFur_locked_reward);
+          return this.formatNumber(reward);
+        },
+
+        getRedeemedRewardPercentage() {
+          const total = parseFloat(this.user.total_veFur_reward);
+          const reward = parseFloat(this.user.redeemed_veFur_reward) + parseFloat(this.user.redeemed_veFur_locked_reward);
+          const percentage = (reward / total) * 100;
+          return this.formatNumber(percentage);
         },
   
         setAmountMax() {

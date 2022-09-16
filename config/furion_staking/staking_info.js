@@ -25,6 +25,9 @@ export const User = {
     total_user_fur_stake:           '0.000',
     pending_fur_reward:             '0.000',
     pending_veFur_reward:           '0.000',
+    total_veFur_reward:             '0.000',
+    redeemed_veFur_reward:          '0.000',
+    redeemed_veFur_locked_reward:   '0.000',
     redeemed_fur_locked_reward:     '0.000',
 
     total_fur_stake:                '0.000',
@@ -137,7 +140,10 @@ export const UpdateUserInfo = async(user, account) => {
         info = await user.veFur_contract.methods.users(account).call();
         user.current_fur_stake = fromWei(info['amount'], 18);
         user.current_fur_stake_locked = fromWei(info['amountLocked'], 18);
+        user.redeemed_veFur_locked_reward = (parseFloat(user.current_fur_stake_locked) * 100.00).toFixed(2);
+        user.redeemed_veFur_reward = (parseFloat(user.current_veFur_balance) - parseFloat(user.redeemed_veFur_locked_reward)).toFixed(2);
         user.total_user_fur_stake = ( parseFloat(user.current_fur_stake) + parseFloat(user.current_fur_stake_locked) ).toFixed(2);
+        user.total_veFur_reward = (100.00 * parseFloat(user.total_user_fur_stake)).toFixed(2);
 
         //console.log('Current Stake')
 
