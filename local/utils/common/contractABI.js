@@ -20,6 +20,9 @@ import SimplePriceOracle from "@/assets/abis/rinkeby/money-market/SimplePriceOra
 import FarmingPoolUpgradeable from "@/assets/abis/rinkeby/furion-farming/FarmingPoolUpgradeable.sol/FarmingPoolUpgradeable.json";
 import VoteEscrowedFurion from "@/assets/abis/rinkeby/furion-staking/VoteEscrowedFurion.sol/VoteEscrowedFurion.json";
 
+import IncomeMaker from "@/assets/abis/rinkeby/income-sharing/IncomeMaker.sol/IncomeMaker.json";
+import IncomeSharingVault from "@/assets/abis/rinkeby/income-sharing/IncomeSharingVault.sol/IncomeSharingVault.json";
+
 import FuNFTPass from "@/assets/abis/rinkeby/pet/FuNFTPass.sol/FuNFTPass.json";
 import FuCatNFT from "@/assets/abis/rinkeby/pet/FuCatNFT.sol/FuCatNFT.json";
 
@@ -113,6 +116,18 @@ export const getVoteEscrowedFurionABI = async () => {
     let address = getAddress();
     VoteEscrowedFurion.address = address['VoteEscrowedFurion'];
     return VoteEscrowedFurion;
+}
+
+export const getIncomeMakerABI = async () => {
+    let address = getAddress();
+    IncomeMaker.address = address['IncomeMaker'];
+    return IncomeMaker;
+}
+
+export const getIncomeSharingVaultABI = async () => {
+    let address = getAddress();
+    IncomeSharingVault.address = address['IncomeSharingVault'];
+    return IncomeSharingVault;
 }
 
 export const getFuNFTPassABI = async () => {

@@ -145,6 +145,26 @@ export const ProcessInfo = {
     detail: 
     'You are going to claim veFUR from Furion Stake, please sign and wait for the transaction to complete',
   },
+  STAKE_VEFUR: {
+    intro: 'Stake veFUR', 
+    detail: 
+    'You are going to stake veFUR on Furion Income Sharing Platform, please sign and wait for the transaction to complete',
+  },
+  APPROVE_VEFUR: {
+    intro: 'Approval for veFUR token',
+    detail:
+      'Approve our contract to spend your veFUR token',
+  },
+  UNSTAKE_VEFUR: {
+    intro: 'Unstake veFUR',
+    detail: 
+    'You are going to remove your veFUR stake from Furion Income Sharing Platform, please sign and wait for the transaction to complete',
+  },
+  CLAIM_FUR_REWARD: {
+    intro: 'Claim FUR',
+    detail:
+    'You are going to claim your FUR reward from Furion Income Sharing Platform, please sign and wait for the transaction to complete',
+  },
   DEPOSIT_TOKEN:{
     intro: 'Deposit token to money market',
     detail: 
