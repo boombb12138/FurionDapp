@@ -320,14 +320,28 @@
       },
   
       methods: {
-        async updateUserInfo() {
-          let account =  this.userInfo.userAddress;
-          if (account == null) {
-            return;
-          }
-          this.user = await UpdateUserInfo(this.user, account);
+
+        /******************************* Components functions *******************************/
+
+        getRedeemedReward() {
+          const reward = parseFloat(this.user.redeemed_veFur_reward) + parseFloat(this.user.redeemed_veFur_locked_reward);
+          return this.formatNumber(reward);
+        },
+
+        getRedeemedRewardPercentage() {
+          const total = parseFloat(this.user.total_veFur_reward);
+          const reward = parseFloat(this.user.redeemed_veFur_reward) + parseFloat(this.user.redeemed_veFur_locked_reward);
+          const percentage = (reward / total) * 100;
+          return this.formatNumber(percentage);
         },
   
+        validateReward() {
+          if (this.user.pending_veFur_reward > 0) {
+            return true;
+          }
+          return false;
+        },
+
         checkValue(flag) {
           const type = this.type;
           if (flag == 1) {
@@ -344,6 +358,16 @@
             }
           } 
           return '';
+        },
+
+        /******************************* Check & Update info *******************************/
+
+        async updateUserInfo() {
+          let account =  this.userInfo.userAddress;
+          if (account == null) {
+            return;
+          }
+          this.user = await UpdateUserInfo(this.user, account);
         },
   
         async handleAmt() {
@@ -371,6 +395,25 @@
               // unstake locked amt
               await this.unstakeLocked();
             }
+          }
+        },
+
+        setAmountMax() {
+          const type = this.type;
+          const stake = this.stake;
+          if (type == 1) {
+            // stake or stake lock max current user fur balance
+            this.num = parseFloat(this.user.current_fur_balance);
+          } else if (type == 2) {
+            if (stake == 1) {
+              // unstake max
+              this.num = this.user.current_fur_stake;
+            } else if (stake == 2) {
+              // unstake locked max
+              this.num = this.user.current_fur_stake_locked;
+            }
+          } else {
+            this.num = undefined;
           }
         },
   
@@ -407,7 +450,48 @@
             return;
           }
         },
+
+        async validateAmount() {
+          const num = this.num;
+          const user_balance = parseFloat(this.user.current_fur_balance);
+          const user_stake = parseFloat(this.user.current_fur_stake);
+          try {
+            if (num == undefined) {
+              this.errorMessage('Enter amount');
+              return false;
+            } else if (num <= 0.0) {
+              this.errorMessage('Amount should be greater than 0');
+              return false;
+            } else if (num > user_balance && this.type == 1) {
+              this.errorMessage('Insufficient Balance');
+              return false;
+            } else if(num > user_stake && this.type == 2) {
+              this.errorMessage('Insufficient Stake');
+              return false;
+            }
+            return true;
   
+          } catch(e) {
+            console.warn(e); 
+            this.num = undefined;
+            return;
+          }
+        },
+
+        async refresh() {
+          await this.updateUserInfo();
+        },
+  
+        async validate() {
+  
+        },
+
+        reset() {
+          this.num = undefined;
+        },
+        
+        /******************************* Contract functions *******************************/
+
         async stakeAmt() {
           if (this.type != 1) {
             return;
@@ -533,33 +617,6 @@
           }
         },
   
-        async validateAmount() {
-          const num = this.num;
-          const user_balance = parseFloat(this.user.current_fur_balance);
-          const user_stake = parseFloat(this.user.current_fur_stake);
-          try {
-            if (num == undefined) {
-              this.errorMessage('Enter amount');
-              return false;
-            } else if (num <= 0.0) {
-              this.errorMessage('Amount should be greater than 0');
-              return false;
-            } else if (num > user_balance && this.type == 1) {
-              this.errorMessage('Insufficient Balance');
-              return false;
-            } else if(num > user_stake && this.type == 2) {
-              this.errorMessage('Insufficient Stake');
-              return false;
-            }
-            return true;
-  
-          } catch(e) {
-            console.warn(e); 
-            this.num = undefined;
-            return;
-          }
-        },
-  
         async unstakeAmt() {
           if (this.type != 2) {
             return;
@@ -659,7 +716,7 @@
           await this.updateUserInfo();
           this.num = undefined;
         },
-  
+
         async addToWallet() {
           const account = this.userInfo.userAddress;
           if (account == null) {
@@ -667,52 +724,8 @@
           }
           await this.claimReward();
         },
-  
-        async refresh() {
-          await this.updateUserInfo();
-        },
-  
-        async validate() {
-  
-        },
 
-        getRedeemedReward() {
-          const reward = parseFloat(this.user.redeemed_veFur_reward) + parseFloat(this.user.redeemed_veFur_locked_reward);
-          return this.formatNumber(reward);
-        },
-
-        getRedeemedRewardPercentage() {
-          const total = parseFloat(this.user.total_veFur_reward);
-          const reward = parseFloat(this.user.redeemed_veFur_reward) + parseFloat(this.user.redeemed_veFur_locked_reward);
-          const percentage = (reward / total) * 100;
-          return this.formatNumber(percentage);
-        },
-  
-        setAmountMax() {
-          const type = this.type;
-          const stake = this.stake;
-          if (type == 1) {
-            // stake or stake lock max current user fur balance
-            this.num = parseFloat(this.user.current_fur_balance);
-          } else if (type == 2) {
-            if (stake == 1) {
-              // unstake max
-              this.num = this.user.current_fur_stake;
-            } else if (stake == 2) {
-              // unstake locked max
-              this.num = this.user.current_fur_stake_locked;
-            }
-          } else {
-            this.num = undefined;
-          }
-        },
-  
-        validateReward() {
-          if (this.user.pending_veFur_reward > 0) {
-            return true;
-          }
-          return false;
-        },
+        /******************************* Helper functions *******************************/
   
         formatNumber(value, fixed = 2) {
           const val = parseFloat(value);
@@ -732,10 +745,6 @@
             final_result = '--'
           }
           return final_result
-        },
-  
-        reset() {
-          this.num = undefined;
         },
   
         successMessage(receipt, title) {

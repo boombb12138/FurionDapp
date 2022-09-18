@@ -280,72 +280,21 @@ export default {
 
   methods: {
 
-    async updateUserInfo(index) {
-      let pool = this.pools[index];
-      let account = this.userInfo.userAddress;
-      if (account == null) {
-        return;
-      }
+    /******************************* Components functions *******************************/
 
-      try {
-        const balance = await pool.lp_token_contract.methods.balanceOf(account).call();
-        pool.user_balance = fromWei(balance, parseInt(pool.lp_token_decimal));
-
-        // update user stake and pending reward
-        const pool_id = pool.pool_Id;
-        const user_stake = await pool.farming_contract.methods.getUserBalance(pool_id, account).call();
-        const user_reward = await pool.farming_contract.methods.pendingFurion(pool_id, account).call();
-
-
-        pool.user_stake = fromWei(user_stake, parseInt(pool.lp_token_decimal));
-        pool.user_reward = fromWei(user_reward, 18);
-        this.pools[pool.index] = pool;
-
-      } catch (e) {
-        console.warn(e);
-      }
+    cell_click(row) {
+      this.$refs.table.toggleRowExpansion(row);
+      this.reset()
     },
 
-    async validateAmt(index) {
-      let pool = this.pools[index];
-      const amt = pool.amt;
-      if (amt == undefined) {
-        this.errorMessage('Enter Amount');
-        return false;
-      }
-      if (amt < 0) {
-        this.errorMessage('Amount must be greater than 0.0');
-        return false;
-      }
-      // compare amt for different user options such as add or remove liquidity
-      const type = pool.type;
-      // user wants to add liquidity, check amt against user balance
-      if (type == '1') {
-        const lp_token_bal = parseFloat(pool.user_balance);
-        if (amt > lp_token_bal) {
-          this.errorMessage('Insufficient Balance');
-          return false;
-        }
-        pool.amt = parseFloat(amt.toFixed(6));
-        this.pools[index] = pool;
-        return true;
-      }
-
-      // user wants to remove liquidity, check amt against user current stake in the farming pool
-      if (type == '2') {
-        const user_current_stake = parseFloat(pool.user_stake);
-        if (amt > user_current_stake) {
-          this.errorMessage('Insufficient Liquidity Inside The Pool');
-          return false;
-        }
-        pool.amt = parseFloat(amt.toFixed(6));
-        this.pools[index] = pool;
-        return true;
-      }
-
-      return false;
+    expandChange(row, rows) {
+      this.expanded = rows.length;
     },
 
+    onSort(str) {
+      this.$refs.sort.doClose();
+      this.sort = str;
+    },
 
     async percent_change(index, n) {
       let pool = this.pools[index];
@@ -382,6 +331,153 @@ export default {
         console.warn(e);
         this.reset(index);
         return;
+      }
+    },
+
+    async handleAmt(index) {
+      let pool = this.pools[index];
+      //console.log('Handling amt: ', pool.amt);
+      try {
+        const res = await this.validateAmt(index);
+        //console.log('Handling Amount...', res);
+        if (res) {
+          const type = this.pools[index].type;
+          if (type == '1') {
+            // add liquidity
+            await this.addLiquidity(index);
+          } else if (type == '2') {
+            // remove liquidity
+            await this.removeLiquidity(index);
+          } else {
+            this.reset(index);
+            return;
+          }
+        } else {
+          this.reset(index);
+          return;
+        }
+        this.reset(index);
+        await this.refresh(index);
+
+      } catch (e) {
+        console.warn(e);
+        this.errorMessage('Error Handling Amount');
+        this.reset(index);
+        return;
+      }
+    },
+
+    async calLpTokenValue(index) {
+      if (this.num == '') {
+        this.reset(index);
+        return;
+      }
+      let pool = this.pools[index];
+      const amt = this.num;
+      pool.lp_token_value = (pool.lp_token_price * parseFloat(amt)).toFixed(4);
+      this.pools[index] = pool;
+      return;
+    },
+
+    async calAmt(index) {
+      if (this.num == '') {
+        this.reset(index);
+        this.info = 'ENTER AN AMOUNT';
+        this.disable = true;
+        return;
+      }
+      const pool = this.pools[index];
+      const type = pool.type;
+      const amt = parseFloat(this.num);
+      if (amt <= 0.0) {
+        this.reset(index);
+        this.info = 'ENTER AN AMOUNT';
+        this.disable = true;
+        return;
+      }
+      if (type == '1') {
+        const user_balance = parseFloat(this.pools[index].user_balance);
+        if (amt > user_balance) {
+          this.info = 'INSUFFICIENT BALANCE';
+          this.disable = true;
+        } else {
+          this.info = 'ADD LIQUIDITY';
+          this.disable = false;
+        }
+      } else if (type == '2') {
+        const user_stake = parseFloat(pool.user_stake);
+        if (amt > user_stake) {
+          this.info = 'INSUFFICIENT LIQUIDITY';
+          this.disable = true;
+        } else {
+          this.info = 'REMOVE LIQUIDITY';
+          this.disable = false;
+        }
+      }
+      pool.amt = amt;
+      this.pools[index] = pool
+      return;
+    },
+    
+    /******************************* Check & Update info *******************************/
+
+    async updateUserInfo(index) {
+      let pool = this.pools[index];
+      let account = this.userInfo.userAddress;
+      if (account == null) {
+        return;
+      }
+
+      try {
+        const balance = await pool.lp_token_contract.methods.balanceOf(account).call();
+        pool.user_balance = fromWei(balance, parseInt(pool.lp_token_decimal));
+
+        // update user stake and pending reward
+        const pool_id = pool.pool_Id;
+        const user_stake = await pool.farming_contract.methods.getUserBalance(pool_id, account).call();
+        const user_reward = await pool.farming_contract.methods.pendingFurion(pool_id, account).call();
+
+
+        pool.user_stake = fromWei(user_stake, parseInt(pool.lp_token_decimal));
+        pool.user_reward = fromWei(user_reward, 18);
+        this.pools[pool.index] = pool;
+
+      } catch (e) {
+        console.warn(e);
+      }
+    },
+
+    async refresh(index) {
+      try {
+        // update user balance, user stake, user rewards
+        await this.updateUserInfo(index);
+        // get summary based on updated user info
+        let summary = await getPoolSummary(this.pools[index], this.chainId);
+        this.pools[index].tvl = summary['tvl'];
+        this.pools[index].apr = summary['apr'];
+
+      } catch (e) {
+        console.warn(e);
+        return;
+      }
+    },
+
+    async reset(index) {
+      this.num = '';
+      this.info = 'ENTER AN AMOUNT';
+      this.disable = true;
+      if (index == -1) {
+        // reset all the pools;
+        for (let id = 0; id < this.pools.length; id++) {
+          this.pools[id].amt = undefined;
+          this.pools[id].percent = 0;
+          this.pools[id].lp_token_value = '0.000';
+        }
+      } else if (index >= 0) {
+        // reset only specific pool
+        this.pools[index].amt = undefined;
+        this.pools[index].percent = 0;
+        this.pools[index].lp_token_value = '0.000';
       }
     },
 
@@ -431,6 +527,48 @@ export default {
 
     },
 
+    async validateAmt(index) {
+      let pool = this.pools[index];
+      const amt = pool.amt;
+      if (amt == undefined) {
+        this.errorMessage('Enter Amount');
+        return false;
+      }
+      if (amt < 0) {
+        this.errorMessage('Amount must be greater than 0.0');
+        return false;
+      }
+      // compare amt for different user options such as add or remove liquidity
+      const type = pool.type;
+      // user wants to add liquidity, check amt against user balance
+      if (type == '1') {
+        const lp_token_bal = parseFloat(pool.user_balance);
+        if (amt > lp_token_bal) {
+          this.errorMessage('Insufficient Balance');
+          return false;
+        }
+        pool.amt = parseFloat(amt.toFixed(6));
+        this.pools[index] = pool;
+        return true;
+      }
+
+      // user wants to remove liquidity, check amt against user current stake in the farming pool
+      if (type == '2') {
+        const user_current_stake = parseFloat(pool.user_stake);
+        if (amt > user_current_stake) {
+          this.errorMessage('Insufficient Liquidity Inside The Pool');
+          return false;
+        }
+        pool.amt = parseFloat(amt.toFixed(6));
+        this.pools[index] = pool;
+        return true;
+      }
+
+      return false;
+    },
+
+    /******************************* Contract functions *******************************/
+    
     async harvestReward(index) {
       let pool = this.pools[index];
       if (parseFloat(pool.user_reward) <= 0) {
@@ -460,39 +598,6 @@ export default {
         console.warn(e);
         closeDialog(this.dialogue_info);
         this.errorMessage('Error Harvesting Reward');
-        this.reset(index);
-        return;
-      }
-    },
-
-    async handleAmt(index) {
-      let pool = this.pools[index];
-      //console.log('Handling amt: ', pool.amt);
-      try {
-        const res = await this.validateAmt(index);
-        //console.log('Handling Amount...', res);
-        if (res) {
-          const type = this.pools[index].type;
-          if (type == '1') {
-            // add liquidity
-            await this.addLiquidity(index);
-          } else if (type == '2') {
-            // remove liquidity
-            await this.removeLiquidity(index);
-          } else {
-            this.reset(index);
-            return;
-          }
-        } else {
-          this.reset(index);
-          return;
-        }
-        this.reset(index);
-        await this.refresh(index);
-
-      } catch (e) {
-        console.warn(e);
-        this.errorMessage('Error Handling Amount');
         this.reset(index);
         return;
       }
@@ -589,91 +694,8 @@ export default {
       }
     },
 
-    async refresh(index) {
-      try {
-        // update user balance, user stake, user rewards
-        await this.updateUserInfo(index);
-        // get summary based on updated user info
-        let summary = await getPoolSummary(this.pools[index], this.chainId);
-        this.pools[index].tvl = summary['tvl'];
-        this.pools[index].apr = summary['apr'];
 
-      } catch (e) {
-        console.warn(e);
-        return;
-      }
-    },
-
-    async reset(index) {
-      this.num = '';
-      this.info = 'ENTER AN AMOUNT';
-      this.disable = true;
-      if (index == -1) {
-        // reset all the pools;
-        for (let id = 0; id < this.pools.length; id++) {
-          this.pools[id].amt = undefined;
-          this.pools[id].percent = 0;
-          this.pools[id].lp_token_value = '0.000';
-        }
-      } else if (index >= 0) {
-        // reset only specific pool
-        this.pools[index].amt = undefined;
-        this.pools[index].percent = 0;
-        this.pools[index].lp_token_value = '0.000';
-      }
-    },
-
-    async calLpTokenValue(index) {
-      if (this.num == '') {
-        this.reset(index);
-        return;
-      }
-      let pool = this.pools[index];
-      const amt = this.num;
-      pool.lp_token_value = (pool.lp_token_price * parseFloat(amt)).toFixed(4);
-      this.pools[index] = pool;
-      return;
-    },
-
-    async calAmt(index) {
-      if (this.num == '') {
-        this.reset(index);
-        this.info = 'ENTER AN AMOUNT';
-        this.disable = true;
-        return;
-      }
-      const pool = this.pools[index];
-      const type = pool.type;
-      const amt = parseFloat(this.num);
-      if (amt <= 0.0) {
-        this.reset(index);
-        this.info = 'ENTER AN AMOUNT';
-        this.disable = true;
-        return;
-      }
-      if (type == '1') {
-        const user_balance = parseFloat(this.pools[index].user_balance);
-        if (amt > user_balance) {
-          this.info = 'INSUFFICIENT BALANCE';
-          this.disable = true;
-        } else {
-          this.info = 'ADD LIQUIDITY';
-          this.disable = false;
-        }
-      } else if (type == '2') {
-        const user_stake = parseFloat(pool.user_stake);
-        if (amt > user_stake) {
-          this.info = 'INSUFFICIENT LIQUIDITY';
-          this.disable = true;
-        } else {
-          this.info = 'REMOVE LIQUIDITY';
-          this.disable = false;
-        }
-      }
-      pool.amt = amt;
-      this.pools[index] = pool
-      return;
-    },
+    /******************************* Helper functions *******************************/
 
     formatNumber(value, fixed = 2) {
       const val = parseFloat(value);
@@ -693,20 +715,6 @@ export default {
         final_result = '--'
       }
       return final_result
-    },
-
-    cell_click(row) {
-      this.$refs.table.toggleRowExpansion(row);
-      this.reset()
-    },
-
-    expandChange(row, rows) {
-      this.expanded = rows.length;
-    },
-
-    onSort(str) {
-      this.$refs.sort.doClose();
-      this.sort = str;
     },
 
     successMessage(receipt, title) {

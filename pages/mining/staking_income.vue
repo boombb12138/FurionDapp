@@ -316,6 +316,9 @@
       },
   
       methods: {
+
+        /******************************* Check & Update info *******************************/
+
         async updateUserInfo() {
           let account =  this.userInfo.userAddress;
           if (account == null) {
@@ -334,7 +337,61 @@
             return;
           }
         },
+
+        async validateAmount() {
+          const num = this.num;
+          const user_veFur_balance = parseFloat(this.user.current_veFur_balance);
+          const user_veFur_stake = parseFloat(this.user.current_veFur_stake);
+          try {
+            if (num == undefined) {
+              //this.errorMessage('Enter amount');
+              return false;
+            } else if (num <= 0.0) {
+              //this.errorMessage('Amount should be greater than 0');
+              return false;
+            } else if (num > user_veFur_balance && this.type == 1) {
+              //this.errorMessage('Insufficient Balance');
+              return false;
+            } else if(num > user_veFur_stake && this.type == 2) {
+              //this.errorMessage('Insufficient Stake');
+              return false;
+            }
+            return true;
   
+          } catch(e) {
+            console.warn(e); 
+            this.num = undefined;
+            return;
+          }
+        },
+
+        setAmountMax() {
+          const type = this.type;
+          if (type == 1) {
+            this.num = parseFloat(this.user.current_veFur_balance);
+          } else if (type == 2) {
+            this.num = parseFloat(this.user.current_veFur_stake);
+          } else {
+            this.num = undefined;
+          }
+        },
+  
+        setFlag() {
+          if (this.type == 1) {
+            this.flag = "Stake";
+          } else if(this.type == 2) {
+            this.flag = "Unstake";
+          } else {
+            this.flag = "";
+          }
+        },
+
+        reset() {
+          this.num = undefined;
+        },
+        
+        /******************************* Contract functions *******************************/
+
         async stakeVEFUR() {
           if (this.type != 1) {
             return;
@@ -410,33 +467,6 @@
           }
         },
   
-        async validateAmount() {
-          const num = this.num;
-          const user_veFur_balance = parseFloat(this.user.current_veFur_balance);
-          const user_veFur_stake = parseFloat(this.user.current_veFur_stake);
-          try {
-            if (num == undefined) {
-              //this.errorMessage('Enter amount');
-              return false;
-            } else if (num <= 0.0) {
-              //this.errorMessage('Amount should be greater than 0');
-              return false;
-            } else if (num > user_veFur_balance && this.type == 1) {
-              //this.errorMessage('Insufficient Balance');
-              return false;
-            } else if(num > user_veFur_stake && this.type == 2) {
-              //this.errorMessage('Insufficient Stake');
-              return false;
-            }
-            return true;
-  
-          } catch(e) {
-            console.warn(e); 
-            this.num = undefined;
-            return;
-          }
-        },
-  
         async claimReward() {
           if (parseFloat(this.user.pending_fur_reward) <= 0) {
             return;
@@ -463,27 +493,8 @@
             return;
           }
         },
-  
-        setAmountMax() {
-          const type = this.type;
-          if (type == 1) {
-            this.num = parseFloat(this.user.current_veFur_balance);
-          } else if (type == 2) {
-            this.num = parseFloat(this.user.current_veFur_stake);
-          } else {
-            this.num = undefined;
-          }
-        },
-  
-        setFlag() {
-          if (this.type == 1) {
-            this.flag = "Stake";
-          } else if(this.type == 2) {
-            this.flag = "Unstake";
-          } else {
-            this.flag = "";
-          }
-        },
+
+        /******************************* Helper functions *******************************/
   
         formatNumber(value, fixed = 2) {
           const val = parseFloat(value);
@@ -503,10 +514,6 @@
             final_result = '--'
           }
           return final_result
-        },
-  
-        reset() {
-          this.num = undefined;
         },
   
         successMessage(receipt, title) {
