@@ -175,6 +175,13 @@
               <div class="shadow-top"></div>
             </div>
           </li>
+          <li
+            class="menu-item ml-40px"
+            :class="{ active: activeMenu === '/dashboard' }"
+            @click="$router.push('/dashboard/dashboard')"
+          >
+            <span>Dash Board</span>
+          </li>
         </ul>
       </div>
       <el-button plain class="!w-160px !h-56px test" @click="claimToken"> Test Tokens</el-button>
