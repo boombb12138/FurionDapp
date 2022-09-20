@@ -51,13 +51,12 @@
   );
   border-radius: 20px;
   .box-top {
-
     background: linear-gradient(
       180deg,
       rgba(51, 53, 114, 0.4) 9.21%,
       rgba(51, 53, 114, 0.5) 95.15%
     );
-    @apply rounded-8px  mx-auto h-40px w-147px flex items-center pl-14px ;
+    @apply rounded-8px  mx-auto h-40px w-147px flex items-center pl-14px relative;
   }
 }
 .coin-box {
@@ -129,38 +128,35 @@
       <p class="section-title mb-20px">Furion Pool</p>
 
       <div class="flex mb-34px">
-        <Loading class="w-775px h-412px mr-46px" :loading="loading1" >
+        <Loading class="w-775px h-412px mr-46px" :loading="loading1">
           <div class="box-border1 box p-10px">
-            <img src="@/assets/images/dashboard/DashBoardLod1.gif" v-if="loading1"/>
             <div
-              class="box-top flex items-center justify-between pr-27px pl-35px text-[#FCFFFD] text-16px font-700" v-if="!loading1"
+              class="box-top flex items-center justify-between pr-27px pl-35px text-[#FCFFFD] text-16px font-700"
             >
               Pools Market Caps
             </div>
-            <div class="mt-10px mr-10px" v-if="!loading1">
+            <div class="mt-10px mr-10px">
               <client-only>
                 <PoolsMarketCaps></PoolsMarketCaps>
               </client-only>
             </div>
           </div>
         </Loading>
-
         <div>
           <Loading class="w-364px h-220px" :loading="loading2">
             <div class="box-border2 box p-10px relative">
-              <img src="@/assets/images/dashboard/DashBoardLod2.gif" v-if="loading2"/>
               <div
-                class="box-top flex items-center justify-between pr-27px pl-35px text-[#FCFFFD] text-16px font-700 relative z-1" v-if="!loading2"
+                class="box-top flex items-center justify-between pr-27px pl-35px text-[#FCFFFD] text-16px font-700 relative z-1"
               >
                 NFTs in Furion Pool
               </div>
               <div class="mt-10px mr-10px"></div>
               <img
                 src="@/assets/images/dashboard/moon.png"
-                class="absolute right-0 top-0 opacity-30" v-if="!loading2"
+                class="absolute right-0 top-0 opacity-30"
               />
               <p
-                class="text-[#fcfffd] text-50px font-700 text-center relative z-1 mt-40px" v-if="!loading2"
+                class="text-[#fcfffd] text-50px font-700 text-center relative z-1 mt-40px"
               >
                 498.63k
               </p>
@@ -169,39 +165,35 @@
           <div class="flex justify-between mt-20px">
             <Loading class="w-172px h-172px" :loading="loading2">
               <div class="box small-box">
-                <img src="@/assets/images/dashboard/DashBoardLod3.gif" class="mt-12px ml-14px" v-if="loading2"/>
-                <div class="box-top" v-if="!loading2">
-                  <img class="ml-10px mr-7px" src="@/assets/images/dashboard/lock.svg" />
-                  <p class="text-[#FCFFFD] text-16px font-700 ml-6px mt-2px">Locked</p>
+                <div class="box-top">
+                  <img class="mr-7px" src="@/assets/images/dashboard/lock.svg" />
+                  <p class="text-[#FCFFFD] text-16px font-700">Locked</p>
                 </div>
-                <p class="text-[#FCFFFD] text-40px font-700 text-center mt-35px" v-if="!loading2">23k</p>
+                <p class="text-[#FCFFFD] text-40px font-700 text-center mt-25px">23k</p>
               </div>
             </Loading>
             <Loading class="w-172px h-172px" :loading="loading2">
               <div class="box small-box">
-                <img src="@/assets/images/dashboard/DashBoardLod3.gif" class="mt-12px ml-14px" v-if="loading2"/>
-                <div class="box-top" v-if="!loading2">
-                  <img class="ml-10px mr-7px" src="@/assets/images/dashboard/store.svg" />
+                <div class="box-top">
+                  <img class="mr-7px" src="@/assets/images/dashboard/store.svg" />
                   <p class="text-[#FCFFFD] text-16px font-700">Stored</p>
                 </div>
-                <p class="text-[#FCFFFD] text-40px font-700 text-center mt-35px" v-if="!loading2">563</p>
+                <p class="text-[#FCFFFD] text-40px font-700 text-center mt-25px">563</p>
               </div>
             </Loading>
           </div>
         </div>
-
       </div>
 
       <div class="flex justify-between mb-34px">
         <Loading class="w-579px h-230px" :loading="loading2">
           <div class="box pt-10px px-17px">
-            <img src="@/assets/images/dashboard/DashBoardLod4.gif" class="mt-4px ml-6px" v-if="loading2"/>
             <div
-              class="box-top flex items-center justify-between pr-27px pl-20px text-[#FCFFFD] text-16px font-700" v-if="!loading2"
+              class="box-top flex items-center justify-between pr-27px pl-20px text-[#FCFFFD] text-16px font-700"
             >
               Separate Pool
             </div>
-            <div class="flex relative" v-if="!loading2">
+            <div class="flex relative">
               <div class="flex-1 mt-55px">
                 <p class="text-[#FCFFFD] text-32px font-700 text-center mb-11px">
                   #215694
@@ -226,13 +218,12 @@
         </Loading>
         <Loading class="w-579px h-230px" :loading="loading2">
           <div class="box pt-10px px-17px">
-            <img src="@/assets/images/dashboard/DashBoardLod4.gif" class="mt-4px ml-6px" v-if="loading2"/>
             <div
-              class="box-top flex items-center justify-between pr-27px pl-20px text-[#FCFFFD] text-16px font-700" v-if="!loading2"
+              class="box-top flex items-center justify-between pr-27px pl-20px text-[#FCFFFD] text-16px font-700"
             >
               Aggregate Pool
             </div>
-            <div class="flex relative" v-if="!loading2">
+            <div class="flex relative">
               <div class="flex-1 mt-55px">
                 <p class="text-[#FCFFFD] text-32px font-700 text-center mb-11px">
                   #215694
@@ -256,38 +247,30 @@
           </div>
         </Loading>
       </div>
-      
       <Loading class="w-1185px h-257px" :loading="loading2">
         <div class="flex box box-border3 items-center">
           <p class="text-[#FCFFFD] text-20px font-700 mx-27px">FFT Price</p>
           <div class="coin-box">
-            <img src="@/assets/images/dashboard/DashBoardLod7.gif" v-if="loading2"/>
-            <img class="coin-icon" src="@/assets/images/dashboard/coin1.svg" v-if="!loading2"/>
-            <p class="top-text" v-if="!loading2">FFT-A</p>
-            <p class="middle-text" v-if="!loading2">$236.21</p>
+            <img class="coin-icon" src="@/assets/images/dashboard/coin1.svg" />
+            <p class="top-text">FFT-A</p>
+            <p class="middle-text">$236.21</p>
           </div>
           <div class="coin-box">
-            <img src="@/assets/images/dashboard/DashBoardLod7.gif" v-if="loading2"/>
-            <img class="coin-icon" src="@/assets/images/dashboard/coin2.svg" v-if="!loading2"/>
-            <p class="top-text" v-if="!loading2">FFT-B</p>
-            <p class="middle-text" v-if="!loading2">$468</p>
+            <img class="coin-icon" src="@/assets/images/dashboard/coin2.svg" />
+            <p class="top-text">FFT-B</p>
+            <p class="middle-text">$468</p>
           </div>
           <div class="coin-box">
-            <img src="@/assets/images/dashboard/DashBoardLod7.gif" v-if="loading2"/>
-            <img class="coin-icon" src="@/assets/images/dashboard/coin3.svg" v-if="!loading2"/>
-            <p class="top-text" v-if="!loading2">FFT-C</p>
-            <p class="middle-text" v-if="!loading2">$46.21</p>
+            <img class="coin-icon" src="@/assets/images/dashboard/coin3.svg" />
+            <p class="top-text">FFT-C</p>
+            <p class="middle-text">$46.21</p>
           </div>
           <div class="coin-box">
-            <img src="@/assets/images/dashboard/DashBoardLod7.gif" v-if="loading2"/>
-            <img class="coin-icon" src="@/assets/images/dashboard/coin4.svg" v-if="!loading2"/>
-            <p class="top-text" v-if="!loading2">FFT-D</p>
-            <p class="middle-text" v-if="!loading2">$24</p>
+            <img class="coin-icon" src="@/assets/images/dashboard/coin4.svg" />
+            <p class="top-text">FFT-D</p>
+            <p class="middle-text">$24</p>
           </div>
-          <div class="coin-box"  v-if="loading2">
-            <img src="@/assets/images/dashboard/DashBoardLod7.gif"/>
-          </div>
-          <img class="cursor-pointer" src="@/assets/images/dashboard/comming-soon.png" v-if="!loading2"/>
+          <img class="cursor-pointer" src="@/assets/images/dashboard/comming-soon.png" />
         </div>
       </Loading>
 
@@ -296,8 +279,7 @@
       <div class="flex justify-between">
         <Loading class="w-579px h-380px" :loading="loading2">
           <div class="box-border4">
-            <img src="@/assets/images/dashboard/DashBoardLod5.gif" class="mt-14px ml-10px" v-if="loading2"/>
-            <client-only v-if="!loading2">
+            <client-only>
               <SwapLeft />
             </client-only>
           </div>
@@ -305,8 +287,7 @@
 
         <Loading class="w-579px h-380px" :loading="loading2">
           <div class="box-border4">
-            <img src="@/assets/images/dashboard/DashBoardLod5.gif" class="mt-14px ml-10px" v-if="loading2"/>
-            <client-only v-if="!loading2">
+            <client-only>
               <SwapRight />
             </client-only>
           </div>
@@ -323,9 +304,8 @@
 
       <Loading class="h-280px" :loading="loading2">
         <div class="table-wrap relative">
-          <img src="@/assets/images/dashboard/DashBoardLod6.gif" v-if="loading2"/>
           <div class="table-header absolute"></div>
-          <el-table :data="list" style="width: 100%" v-if="!loading2">
+          <el-table :data="list" style="width: 100%">
             <el-table-column prop="Collection" label="#" width="80px">
               <template slot-scope="scope">
                 <div class="ml-30px">{{ scope.$index + 1 }}</div>

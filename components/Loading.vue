@@ -55,7 +55,15 @@
 
 <template>
   <div>
-    <div class="slot h-1/1">
+    <div class="loading h-1/1" v-show="loading">
+      <div
+        class="item"
+        v-for="n in Number(rows)"
+        :class="{ first: n == 1, '!mb-0': n == Number(rows) }"
+      ></div>
+    </div>
+
+    <div v-show="!loading" class="slot h-1/1">
       <slot />
     </div>
   </div>
