@@ -84,7 +84,7 @@
 
 <template>
     <div class="page pt-80px bg-[#01132E] overflow-hidden">
-      <!-- <div class="loading-wrapper" id="loading-wrapper">
+      <div class="loading-wrapper" id="loading-wrapper">
         <div class="loading la-ball-running-dots">
           <div></div>
           <div></div>
@@ -92,7 +92,7 @@
           <div></div>
           <div></div>
         </div>
-      </div> -->
+      </div>
       <div class="page-wrap pt-0px" v-if="ready">
         <div class="float-bg">
           <img class="w-1/1 h-626px" src="@/assets/images/cover3_float.png" />
@@ -313,7 +313,7 @@ import {
   nft_info,
   initNftInfo
 } from "@/config/collection/nft_info";
-// import $ from "jquery";
+import $ from "jquery";
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/"]);
@@ -454,7 +454,7 @@ export default {
     this.showAnimation = true;
     this.nft_info = await initNftInfo(this.network);
     this.ready = true;
-    // $(".loading-wrapper").fadeOut(500);
+    $(".loading-wrapper").fadeOut(500);
   },
   methods: {
     clickSwiperItem(collection) {
