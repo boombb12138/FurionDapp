@@ -14,56 +14,45 @@ import { getLatestSummary } from "@/api/furion_swap";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { WETH_ADDRESS } from "@/utils/web3";
 
-export const pool_info = {
-    pool_list: [
-        {
-            token_0: 'FUR',
-            token_1: 'ETH',
-            token_0_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
-            token_1_address: '0x',
-            token_0_image: require("@/assets/images/liquidity/tokens/FUR.png"),
-            token_1_image: require('@/assets/images/liquidity/tokens/ETH.png'),
-            tvl: '--',
-            volume: '--',
-            fees: '--',
-            apr: '---'
-        },
-        {
-            token_0: 'FUR',
-            token_1: 'USDT',
-            token_0_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
-            token_1_address: '0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84',
-            token_0_image: require("@/assets/images/liquidity/tokens/FUR.png"),
-            token_1_image: require('@/assets/images/liquidity/tokens/USDT.png'),
-            tvl: '--',
-            volume: '--',
-            fees: '--',
-            apr: '---'
-        },
-        {
-            token_0: 'ETH',
-            token_1: 'USDT',
-            token_0_address: '0x',
-            token_1_address: '0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84',
-            token_0_image: require("@/assets/images/liquidity/tokens/ETH.png"),
-            token_1_image: require('@/assets/images/liquidity/tokens/USDT.png'),
+import { getFurionSwapPairs } from "@/utils/common/poolAddress";
+
+const deployed_pools = getFurionSwapPairs();
+
+export const pool_info = ()=> {
+    console.log('Deployed pools', deployed_pools);
+
+    let pool_list = [];
+    for(let index=0; index<deployed_pools.length; index++){
+        let single_pool = {
+            token_0: deployed_pools[index].name0,
+            token_1: deployed_pools[index].name1,
+            token_0_address: deployed_pools[index].token0,
+            token_1_address: deployed_pools[index].token1,
+            token_0_image: require("@/assets/images/liquidity/tokens/" + deployed_pools[index].name0 +  ".png"),
+            token_1_image: require("@/assets/images/liquidity/tokens/" + deployed_pools[index].name1 +  ".png"),
             tvl: '--',
             volume: '--',
             fees: '--',
             apr: '---'
         }
-    ]
+        pool_list.push(single_pool);
+    }
+    const default_pool = {
+        pool_list: pool_list
+    }
+    // console.log('This is default pool info', default_pool);
+    return default_pool;
 }
 
 export const single_swap_pool = {
-    token_0: 'USDT',
-    token_1: 'FUR',
-    token_0_address: '0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84',
-    token_1_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
+    token_0: deployed_pools[0].name0,
+    token_1: deployed_pools[0].name1,
+    token_0_address: deployed_pools[0].token0,
+    token_1_address: deployed_pools[0].token1,
     token_0_contract: {},
     token_1_contract: {},
-    token_0_image: require("@/assets/images/liquidity/tokens/USDT.png"),
-    token_1_image: require('@/assets/images/liquidity/tokens/FUR.png'),
+    token_0_image: require("@/assets/images/liquidity/tokens/" + deployed_pools[0].name0 +  ".png"),
+    token_1_image: require("@/assets/images/liquidity/tokens/" + deployed_pools[0].name1 +  ".png"),
     token_0_decimal: 18,
     token_1_decimal: 18,
 
@@ -90,6 +79,7 @@ export const single_swap_pool = {
 
 export const initSinglePool = async (single_pool, chainId) => {
     const multicall = newMultiCallProvider(chainId);
+    // console.log('This is single pool', single_pool);
     let decimal_result = [];
     if (single_pool.token_0 == 'ETH') {
         if (chainId == 4) {
@@ -140,6 +130,7 @@ export const initSinglePool = async (single_pool, chainId) => {
     // initialize furion swap relavent contracts
     const factory = await getContract(await getFurionSwapFactoryABI(), '');
     const pair_address = await factory.methods.getPair(single_pool.token_0_address, single_pool.token_1_address).call();
+    // console.log('pair info', pair_address);
     single_pool.pair_address = pair_address;
 
 
@@ -148,6 +139,7 @@ export const initSinglePool = async (single_pool, chainId) => {
 
     // get reserves
     const reserves = await pair.methods.getReserves().call();
+    
     if (single_pool.token_0_address < single_pool.token_1_address) {
         single_pool.token_0_reserve = fromWei(reserves[0], parseInt(decimal_result[0]));
         single_pool.token_1_reserve = fromWei(reserves[1], parseInt(decimal_result[1]));
@@ -163,6 +155,7 @@ export const initSinglePool = async (single_pool, chainId) => {
     const router = await getContract(await getFurionSwapRouterABI(), '');
     single_pool.router_contract = router;
     single_pool.router_address = await getAddress()['FurionSwapV2Router'];
+
 
     return single_pool;
 }

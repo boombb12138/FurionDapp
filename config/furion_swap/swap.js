@@ -14,21 +14,26 @@ import { getContract, fromWei } from "@/utils/common";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import { getChainId, WETH_ADDRESS } from "@/utils/web3";
 
+import { getFurionSwapPairs } from "@/utils/common/poolAddress";
+
+const deployed_pools = getFurionSwapPairs();
+const address_info = getAddress();
+
 export const token_info = [
-    { symbol: 'ETH', address: '', market_address: "0xc04609A609af7ED23856a4C26cBbD222C128D2Cb", image: require("@/assets/images/liquidity/tokens/ETH.png") },
-    { symbol: 'USDT', address: "0x27B3A54023Fc257888b8844f60A1aEB80e9f5c84", market_address: "0xF566e3D960c0a6c257c36Ee4777195F0aDB7FA3f", image: require("@/assets/images/liquidity/tokens/USDT.png") },
-    { symbol: 'FUR', address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E', market_address: "0xFaD887C8fB4Ed00042207d747a590D0bc7b3195e", image: require('@/assets/images/liquidity/tokens/FUR.png') },
+    { symbol: 'ETH', address: address_info['WETH'], market_address: "0xc04609A609af7ED23856a4C26cBbD222C128D2Cb", image: require("@/assets/images/liquidity/tokens/ETH.png") },
+    { symbol: 'USDT', address: address_info['MockUSD'], market_address: "0xF566e3D960c0a6c257c36Ee4777195F0aDB7FA3f", image: require("@/assets/images/liquidity/tokens/USDT.png") },
+    { symbol: 'FUR', address: address_info['FurionToken'], market_address: "0xFaD887C8fB4Ed00042207d747a590D0bc7b3195e", image: require('@/assets/images/liquidity/tokens/FUR.png') },
 ]
 
 export const swap_info = {
-    token_0: 'FUR',
-    token_1: 'ETH',
-    token_0_address: '0x175940b39014cD3a9c87cd6b1d7616a097db958E',
-    token_1_address: '0x',
+    token_0: deployed_pools[0].name0,
+    token_1: deployed_pools[0].name1,
+    token_0_address: deployed_pools[0].token0,
+    token_1_address: deployed_pools[0].token1,
     token_0_contract: {},
     token_1_contract: {},
-    token_0_image: require("@/assets/images/liquidity/tokens/FUR.png"),
-    token_1_image: require('@/assets/images/liquidity/tokens/ETH.png'),
+    token_0_image: require("@/assets/images/liquidity/tokens/" + deployed_pools[0].name0 +  ".png"),
+    token_1_image: require("@/assets/images/liquidity/tokens/" + deployed_pools[0].name1 +  ".png"),
     token_0_decimal: 18,
     token_1_decimal: 18,
 
