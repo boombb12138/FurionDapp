@@ -259,7 +259,7 @@ export default {
       );
     },
     showLongSearch() {
-      return ["/liquidity/borrow_list", "/myWallet"].includes(this.$route.path);
+      return [].includes(this.$route.path);
     },
     showLongSearch2() {
       return ["/mining/token_farming"].includes(this.$route.path);

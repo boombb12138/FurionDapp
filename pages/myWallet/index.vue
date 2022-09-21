@@ -169,7 +169,7 @@
     <div v-if="type === 3" class="section">
       <div v-for="(item, index) in tokens" :key="index" class="form-item2">
         <div class="flex items-center">
-          <img class="icon" src="@/assets/images/liquidity/tokens/ETH.png" />
+          <img class="icon" :src=item.image />
           <p>{{ item.symbol }}</p>
         </div>
         <p>{{ formatNumber(item.balance, 3) }}</p>
@@ -180,6 +180,8 @@
 
 <script>
 import { mapState } from 'vuex';
+import { getAddress } from '@/utils/common/contractABI';
+import { getSeparatePools, getAggregatePools } from '@/utils/common/poolAddress';
 import { query_user_holding } from '@/config/collection/separate_pool';
 import { query_user_locked } from '@/config/user_info/locked_nft';
 import { _formatNumber, getNativeTokenAmount, tokenBalance } from "@/utils/common";
@@ -217,15 +219,15 @@ export default {
       wallet_nft: [],
       locked_nft: [],
       collections: [
-        { name: "Cool Cats", symbol: "COOL", address: "0x1D788A3D8133F79a7D8cf2517c4b3C00C8DBbf82" },
+        { name: "Cool Cats", symbol: "COOL", address: getAddress()['CoolCats'] },
         { name: "World Of Women", symbol: "WOW", address: "0x436643Cb41F6B3Cb375aD87BC95833b460adD4a6" },
         { name: "Cryptoadz", symbol: "TOADZ", address: "0x7e357a7eE77872DdD51947f1550381BA0913920B" }
       ],
       tokens: [
-        { symbol: "ETH", address: "", balance: "" },
-        { symbol: "FUR", address: "0x175940b39014cD3a9c87cd6b1d7616a097db958E", balance: "" },
-        { symbol: "F-COOL", address: "0xEc5753503C317348d494C852DF64731D3D22d87d", balance: "" },
-        { symbol: "FFT-MIX", address: "0x482dc963e587D68B2C7f49F71F21112D98528B52", balance: "" },
+        { symbol: "ETH", address: "", balance: "", image: require("@/assets/images/liquidity/tokens/ETH.png") },
+        { symbol: "FUR", address: getAddress()['FurionToken'], balance: "", image: require("@/assets/images/liquidity/tokens/FUR.png") },
+        { symbol: "F-COOL", address: getSeparatePools()['0']['address'], balance: "", image: require("@/assets/images/liquidity/tokens/ETH.png") },
+        { symbol: "FFT-MIX", address: getAggregatePools()['0']['address'], balance: "", image: require("@/assets/images/liquidity/tokens/ETH.png") },
       ],
       searchKey: "",
       type: 1,

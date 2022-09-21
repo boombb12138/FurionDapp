@@ -504,7 +504,7 @@ export default {
   data() {
     return {
       isShow: false,
-      isShowProfile: true,
+      isShowProfile: false,
       tab: "account", // account notification
       fur_balance: 0,
       logdata: true,
