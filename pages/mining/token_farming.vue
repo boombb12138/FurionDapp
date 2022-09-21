@@ -262,7 +262,7 @@ export default {
       active: 1,
       multicall: multicall,
       dialogue_info: DialogInfo,
-      pools: InitialPoolList,
+      pools: InitialPoolList(),
       disable: true,
       info: 'ENTER AN AMOUNT',
     };
