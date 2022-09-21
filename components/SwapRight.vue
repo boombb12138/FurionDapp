@@ -35,8 +35,8 @@
       <div class="chart-title">
         <div class="flex mb-10px h-full items-center pl-22px justify-between">
           <div class="flex items-center">
-            <span class="text-[#C3C6CD] text-16px mr-10px font-700">Volume 24H</span>
-            <span class="mr-10px text-[#FCFFFD] text-32px font-700">${{ num }}b</span>
+            <span class="text-[#C3C6CD] text-16px mr-10px font-700">Volume {{this.timeBtn}}</span>
+            <span class="mr-10px text-[#FCFFFD] text-32px font-700">${{ show(num) }}M</span>
           </div>
           <Date-Selector
             class="date-selector"
@@ -59,7 +59,7 @@ export default {
   name: "PoolsMarketCaps",
   components: {},
   provide: {},
-  props: {},
+  props: ['data_24h','data_1w','data_1m','time_list_24h','time_list_1w','time_list_1m','time'],
   data() {
     return {
       num: 12.98,
@@ -72,9 +72,29 @@ export default {
   },
   computed: {
     ...mapState("admin", ['connectStatus']),
-    dataArr() {
-      return rowData[this.activeBtn2][this.timeBtn];
-    },
+    timeArr() {
+        if (this.timeBtn=='24H') {
+          return this.time_list_24h;
+        } else if (this.timeBtn=='1W') {
+          return this.time_list_1w;
+        } else if (this.timeBtn=='1M'){
+          return this.time_list_1m;
+        }
+      },
+      dataArr() {
+        var arr = [];
+        if (this.timeBtn=='24H') {
+          arr = this.data_24h;
+        } else if (this.timeBtn=='1W') {
+          arr = this.data_1w;
+        } else if (this.timeBtn=='1M') {
+          arr = this.data_1m;
+        }
+        // for(let i = 0; i < arr.length; i++) {
+        //   arr[i] = Math.floor((arr[i]/1000000) * 100) / 100
+        // }
+        return arr;
+      },
     colorMap() {
       return {
         red: {
@@ -128,7 +148,7 @@ export default {
         },
         xAxis: {
           show: true,
-          data: xTime[this.timeBtn],
+          data: this.dataList,
           axisTick: {
             show: false,
           },
@@ -186,27 +206,39 @@ export default {
   },
   mounted() {
     this.$refs.vChart.clear();
-    this.formatData(this.dataArr);
+    this.formatData(this.dataArr,this.timeArr);
     this.$refs.vChart.setOption(this.option, true);
   },
   methods: {
-    formatData(data) {
-      this.dateList = data.map(function (item) {
-        return item[0];
-      });
-      this.valueList = data.map(function (item) {
-        return item[1];
-      });
-    },
+    formatData(data,time) {
+        this.dataList = time.map(function (item) {
+          return item;
+        });
+        this.valueList = data.map(function (item) {
+          return item;
+        });
+      },
     setData(type) {
       // this.activeBtn1 = type;
       this.$refs.vChart.clear();
-      this.formatData(this.dataArr);
+      this.formatData(this.dataArr,this.timeArr);
       this.$refs.vChart.setOption(this.option, true);
     },
     getNum(num) {
       this.num = num;
     },
+    show(num){
+        { if (num > 1000000000) {
+            return (num / 1000000000).toFixed(2) + 'B';
+          } else if (num > 1000000) {
+            return (num / 1000000).toFixed(2) + 'M';
+          } else if (num > 1000) {
+            return (num / 1000).toFixed(2) + 'K';
+          } else {
+            return num;
+          }
+      }
+    }
   },
 };
 </script>

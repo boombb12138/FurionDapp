@@ -74,7 +74,7 @@ export const initNftComment = async (network,nft_address,token_id) => {
 
 
     comment_info.comment_list = final_result;
-    comment_info.init = true;
+    comment_info.comment_init = true;
     return comment_info;
 }
 
@@ -144,7 +144,7 @@ export const initNftReply = async (network,comment_id) => {
 
 
     reply_info.reply_list = final_result;
-    reply_info.init = true;
+    reply_info.reply_init = true;
     return reply_info;
 }
 

@@ -135,7 +135,13 @@
               </div>
               <div class="mt-10px mr-10px" v-if="!loading1">
                 <client-only>
-                  <PoolsMarketCaps></PoolsMarketCaps>
+                  <PoolsMarketCaps :data_24h="this.dash_info.dash_list.furion_market_caps_24h" 
+                  :data_1w="this.dash_info.dash_list.furion_market_caps_1w" 
+                  :data_1m="this.dash_info.dash_list.furion_market_caps_1m" 
+                  :time_list_24h="getDayData(this.dash_info.dash_list.end_time)" 
+                  :time_list_1w="getWeekData(this.dash_info.dash_list.end_time)" 
+                  :time_list_1m="getMonthData(this.dash_info.dash_list.end_time)" 
+                  :time="this.dash_info.dash_list.end_time"></PoolsMarketCaps>
                 </client-only>
               </div>
             </div>
@@ -158,7 +164,7 @@
                 <p
                   class="text-[#fcfffd] text-50px font-700 text-center relative z-1 mt-40px" v-if="!loading2"
                 >
-                  498.63k
+                  {{show(this.dash_info.dash_list.nfts)}}
                 </p>
               </div>
             </Loading>
@@ -170,7 +176,7 @@
                     <img class="ml-10px mr-7px" src="@/assets/images/dashboard/lock.svg" />
                     <p class="text-[#FCFFFD] text-16px font-700 ml-6px mt-2px">Locked</p>
                   </div>
-                  <p class="text-[#FCFFFD] text-40px font-700 text-center mt-35px" v-if="!loading2">23k</p>
+                  <p class="text-[#FCFFFD] text-40px font-700 text-center mt-35px" v-if="!loading2">{{show(this.dash_info.dash_list.locked)}}</p>
                 </div>
               </Loading>
               <Loading class="w-172px h-172px" :loading="loading2">
@@ -180,7 +186,7 @@
                     <img class="ml-10px mr-7px" src="@/assets/images/dashboard/store.svg" />
                     <p class="text-[#FCFFFD] text-16px font-700">Stored</p>
                   </div>
-                  <p class="text-[#FCFFFD] text-40px font-700 text-center mt-35px" v-if="!loading2">563</p>
+                  <p class="text-[#FCFFFD] text-40px font-700 text-center mt-35px" v-if="!loading2">{{show(this.dash_info.dash_list.stored)}}</p>
                 </div>
               </Loading>
             </div>
@@ -200,7 +206,7 @@
               <div class="flex relative" v-if="!loading2">
                 <div class="flex-1 mt-55px">
                   <p class="text-[#FCFFFD] text-32px font-700 text-center mb-11px">
-                    #215694
+                    {{show(this.dash_info.dash_list.sep_no)}}
                   </p>
                   <p class="text-[#8a92a2] text-13px text-center font-600">
                     No. of separate pool
@@ -208,7 +214,7 @@
                 </div>
                 <div class="flex-1 mt-55px">
                   <p class="text-[#FCFFFD] text-32px font-700 text-center mb-11px">
-                    219.26k
+                    {{show(this.dash_info.dash_list.sep_tvl)}}
                   </p>
                   <p class="text-[#8a92a2] text-13px text-center font-600">
                     TVL of separate pool
@@ -231,7 +237,7 @@
               <div class="flex relative" v-if="!loading2">
                 <div class="flex-1 mt-55px">
                   <p class="text-[#FCFFFD] text-32px font-700 text-center mb-11px">
-                    #215694
+                    {{show(this.dash_info.dash_list.agg_no)}}
                   </p>
                   <p class="text-[#8a92a2] text-13px text-center font-600">
                     No. of separate pool
@@ -239,7 +245,7 @@
                 </div>
                 <div class="flex-1 mt-55px">
                   <p class="text-[#FCFFFD] text-32px font-700 text-center mb-11px">
-                    219.26k
+                    {{show(this.dash_info.dash_list.agg_tvl)}}
                   </p>
                   <p class="text-[#8a92a2] text-13px text-center font-600">
                     TVL of separate pool
@@ -292,7 +298,13 @@
             <div class="box-border4">
               <img src="@/assets/images/dashboard/DashBoardLod5.gif" class="mt-14px ml-10px" v-if="loading2"/>
               <client-only v-if="!loading2">
-                <SwapLeft />
+                <SwapLeft :data_24h="this.dash_info.dash_list.swap_tvl_24h" 
+                :data_1w="this.dash_info.dash_list.swap_tvl_1w" 
+                :data_1m="this.dash_info.dash_list.swap_tvl_1m" 
+                :time_list_24h="getDayData(this.dash_info.dash_list.end_time)" 
+                :time_list_1w="getWeekData(this.dash_info.dash_list.end_time)" 
+                :time_list_1m="getMonthData(this.dash_info.dash_list.end_time)" 
+                :time="this.dash_info.dash_list.end_time"/>
               </client-only>
             </div>
           </Loading>
@@ -301,7 +313,13 @@
             <div class="box-border4">
               <img src="@/assets/images/dashboard/DashBoardLod5.gif" class="mt-14px ml-10px" v-if="loading2"/>
               <client-only v-if="!loading2">
-                <SwapRight />
+                <SwapRight :data_24h="this.dash_info.dash_list.swap_volumn_24h" 
+                :data_1w="this.dash_info.dash_list.swap_volumn_1w" 
+                :data_1m="this.dash_info.dash_list.swap_volumn_1m" 
+                :time_list_24h="getDayData(this.dash_info.dash_list.end_time)" 
+                :time_list_1w="getWeekData(this.dash_info.dash_list.end_time)" 
+                :time_list_1m="getMonthData(this.dash_info.dash_list.end_time)" 
+                :time="this.dash_info.dash_list.end_time"/>
               </client-only>
             </div>
           </Loading>
@@ -322,16 +340,6 @@
               <el-table-column prop="Collection" label="#" width="80px">
                 <template slot-scope="scope">
                   <div class="ml-30px">{{ scope.$index + 1 }}</div>
-  
-      
-            
-              
-      
-  
-            
-      
-      
-    
                 </template>
               </el-table-column>
               <el-table-column prop="Collection" label="Name" width="300px">
@@ -387,7 +395,11 @@
       </div>
     </div>
   </template>
-  <script>
+<script>
+import {
+  initNftDash,
+} from '~/config/dashboard';
+import dayjs from 'dayjs';
   export default {
     async asyncData({ store, $axios, app, query }) {
       store.commit("update", ["admin.activeMenu", "/dashboard"]);
@@ -398,6 +410,7 @@
     computed: {},
     data() {
       return {
+        network: 'rinkeby',
         list: [
           {
             id: 1,
@@ -422,16 +435,56 @@
         ],
         loading1: true,
         loading2: true,
+        dash_info: [],
       };
     },
-    mounted() {
-      setTimeout(() => {
-        this.loading1 = false;
-      }, 3000);
+    async mounted() {
+      this.dash_info = await initNftDash(this.network);
+      // console.log(this.dash_info)
+      this.loading1 = false;
       setTimeout(() => {
         this.loading2 = false;
-      }, 5000);
+      }, 1000);
     },
-    methods: {},
+    methods: {
+      show(num){
+        if (num > 1000000000) {
+          return (num / 1000000000).toFixed(2) + 'B';
+        } else if (num > 1000000) {
+          return (num / 1000000).toFixed(2) + 'M';
+        } else if (num > 1000) {
+          return (num / 1000).toFixed(2) + 'K';
+        } else {
+          return num;
+        }
+      },
+      getMonthData(time) {
+        const timeStamp = dayjs(time.replace('T',' ')).valueOf() - 3600 * 15 * 1000 * 39;
+        const arr = [];
+        for (let i = 0; i < 40; i++) {
+          let time = dayjs(timeStamp + i * 3600 * 15 * 1000).format('M-D');
+          arr.push(time);
+        }
+        return arr;
+      },
+      getDayData(time) {
+        const timeStamp = dayjs(time.replace('T',' ')).valueOf() - 39 * 1800 * 1000;
+        const arr = [];
+        for (let i = 0; i < 40; i++) {
+          let time = dayjs(timeStamp + i * 1800 * 1000).format('hh:mm A');
+          arr.push(time);
+        }
+        return arr;
+      },
+      getWeekData(time) {
+        const timeStamp = dayjs(time.replace('T',' ')).valueOf() - 39 * 3600 * 3 * 1000;
+        const arr = [];
+        for (let i = 0; i < 40; i++) {
+          let time = dayjs(timeStamp + i * 3600 * 3 * 1000).format('M-D');
+          arr.push(time);
+        }
+        return arr;
+      },
+    },
   };
   </script>

@@ -20,11 +20,11 @@
     <div class="chart-title flex mb-10px">
       <div class="ml-30px mt-5px">
         <div class="mb-5px">
-          <span class="mr-10px text-[#FCFFFD] text-32px font-700">${{ num }}b</span>
+          <span class="mr-10px text-[#FCFFFD] text-32px font-700">${{ show(num) }}M</span>
           <span class="text-16px font-700 text-[#5DD393]">+1.77%</span>
         </div>
         <p class="text-[rgba(252,255,253,0.8)] text-13px font-600">
-          8 September 2022.09:00AM
+          {{time.replace('T',' ').replace('Z','')}}
         </p>
       </div>
       <Date-Selector
@@ -40,27 +40,47 @@
 
 <script>
 import { mapState } from "vuex";
-import { rowData, xTime } from "@/assets/chartData.js";
+import { rowData, xTime } from "@/assets/chartData3.js";
 
 export default {
   name: "PoolsMarketCaps",
   components: {},
   provide: {},
-  props: {},
+  props: ['data_24h','data_1w','data_1m','time_list_24h','time_list_1w','time_list_1m','time'],
   data() {
     return {
-      num: 58.9,
-      timeBtn: "1W",
+      num: 12.98,
+      timeBtn: "1M",
       activeBtn2: "Market Cap",
       dataList: [],
       valueList: [],
-      options1: ["24H", "1W", "1M", "1Y"],
+      options1: ["24H", "1W", "1M"],
     };
   },
   computed: {
     ...mapState("admin", ['connectStatus']),
+    timeArr() {
+      if (this.timeBtn=='24H') {
+        return this.time_list_24h;
+      } else if (this.timeBtn=='1W') {
+        return this.time_list_1w;
+      } else if (this.timeBtn=='1M'){
+        return this.time_list_1m;
+      }
+    },
     dataArr() {
-      return rowData[this.activeBtn2][this.timeBtn];
+      var arr = [];
+      if (this.timeBtn=='24H') {
+        arr = this.data_24h;
+      } else if (this.timeBtn=='1W') {
+        arr = this.data_1w;
+      } else if (this.timeBtn=='1M') {
+        arr = this.data_1m;
+      }
+      // for(let i = 0; i < arr.length; i++) {
+      //   arr[i] = Math.floor((arr[i]/1000000) * 100) / 100
+      // }
+      return arr;
     },
     colorMap() {
       return {
@@ -104,16 +124,12 @@ export default {
         },
         xAxis: {
           show: true,
-          data: xTime[this.timeBtn],
+          data: this.dataList,
           axisTick: {
             show: false,
           },
           axisLine: {
-            show: true,
-            lineStyle: {
-              color: "rgba(250, 107, 225, .4)",
-              type: "dashed",
-            },
+            show: false,
           },
           axisLabel: {
             interval: 5,
@@ -124,21 +140,12 @@ export default {
           },
         },
         yAxis: {
-          show: true,
-          position: "right",
-          splitLine: {
-            show: false,
-          },
-          axisLabel: {
-            color: "#BCC6DA",
-            verticalAlign: "bottom",
-            formatter: "${value}b",
-          },
+          show: false,
         },
         grid: {
-          top: "20px",
-          left: "4%",
-          right: "1%",
+          top: "4%",
+          left: "0%",
+          right: "8%",
           bottom: "0%",
           containLabel: true,
         },
@@ -174,27 +181,38 @@ export default {
   },
   mounted() {
     this.$refs.vChart.clear();
-    this.formatData(this.dataArr);
+    this.formatData(this.dataArr,this.timeArr);
     this.$refs.vChart.setOption(this.option, true);
   },
   methods: {
-    formatData(data) {
-      this.dateList = data.map(function (item) {
-        return item[0];
+    formatData(data,time) {
+      this.dataList = time.map(function (item) {
+        return item;
       });
       this.valueList = data.map(function (item) {
-        return item[1];
+        return item;
       });
     },
     setData(type) {
       // this.activeBtn1 = type;
       this.$refs.vChart.clear();
-      this.formatData(this.dataArr);
+      this.formatData(this.dataArr,this.timeArr);
       this.$refs.vChart.setOption(this.option, true);
     },
     getNum(num) {
       this.num = num;
     },
+    show(num){
+        if (num > 1000000000) {
+          return (num / 1000000000).toFixed(2) + 'B';
+        } else if (num > 1000000) {
+          return (num / 1000000).toFixed(2) + 'M';
+        } else if (num > 1000) {
+          return (num / 1000).toFixed(2) + 'K';
+        } else {
+          return num;
+        }
+      }
   },
 };
 </script>
