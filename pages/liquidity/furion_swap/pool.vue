@@ -168,13 +168,13 @@ export default {
       searchKey: '',
       number1: '',
       number2: '',
-      pool_info: pool_info,
+      pool_info: pool_info(),
       my_pool: [],
     };
   },
   mounted() {
     setTimeout(() => {
-      for (let index = 0; index < pool_info.pool_list.length; index++) {
+      for (let index = 0; index < this.pool_info.pool_list.length; index++) {
         this.initPoolSummary(this.pool_info.pool_list[index], index);
       }
     }, 200)

@@ -1,0 +1,8 @@
+{
+  "localhost": {
+    "counter": 0
+  },
+  "rinkeby": {
+    "counter": 0
+  }
+}
