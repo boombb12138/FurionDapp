@@ -247,7 +247,7 @@ export default {
       list: [
         {
           id: 1,
-          name: "Mixed",
+          name: "Cool Cats",
           avatar: require("@/assets/images/merged.gif"),
           volume: "28,919,65",
           _24h: "+2.94%",
@@ -315,58 +315,58 @@ export default {
             },
           ]
         },
-        {
-          id: 1,
-          name: "The Animals",
-          avatar: require("@/assets/images/animals.gif"),
-          volume: "28,919,65",
-          _24h: "+2.94%",
-          _7d: "-47.56%",
-          floor_price: "11.44",
-          owners: "5.4K",
-          items: "10.0K",
-          fx_price: "7.28",
-          last_7d: [
-            "10",
-            "22",
-            "50",
-            "13",
-            "31",
-            "15",
-            "0",
-            "22",
-            "10",
-            "22",
-            "10",
-            "50",
-            "13",
-            "31",
-            "15",
-            "0",
-            "22",
-          ],
-          last_7d_type: 1,
-          collections: [
-            {
-              name: "Cryptoadz",
-              symbol: "F-TOADZ",
-              avatar: require("@/assets/images/avatar.png"),
-              staked: "1000"
-            },
-            {
-              name: "Cool Cats",
-              symbol: "F-COOL",
-              avatar: require("@/assets/images/avatar.png"),
-              staked: "1500"
-            },
-            {
-              name: "PudgyPenguins",
-              symbol: "F-PPG",
-              avatar: require("@/assets/images/avatar.png"),
-              staked: "2000"
-            },
-          ]
-        },
+        // {
+        //   id: 1,
+        //   name: "The Animals",
+        //   avatar: require("@/assets/images/animals.gif"),
+        //   volume: "28,919,65",
+        //   _24h: "+2.94%",
+        //   _7d: "-47.56%",
+        //   floor_price: "11.44",
+        //   owners: "5.4K",
+        //   items: "10.0K",
+        //   fx_price: "7.28",
+        //   last_7d: [
+        //     "10",
+        //     "22",
+        //     "50",
+        //     "13",
+        //     "31",
+        //     "15",
+        //     "0",
+        //     "22",
+        //     "10",
+        //     "22",
+        //     "10",
+        //     "50",
+        //     "13",
+        //     "31",
+        //     "15",
+        //     "0",
+        //     "22",
+        //   ],
+        //   last_7d_type: 1,
+        //   collections: [
+        //     {
+        //       name: "Cryptoadz",
+        //       symbol: "F-TOADZ",
+        //       avatar: require("@/assets/images/avatar.png"),
+        //       staked: "1000"
+        //     },
+        //     {
+        //       name: "Cool Cats",
+        //       symbol: "F-COOL",
+        //       avatar: require("@/assets/images/avatar.png"),
+        //       staked: "1500"
+        //     },
+        //     {
+        //       name: "PudgyPenguins",
+        //       symbol: "F-PPG",
+        //       avatar: require("@/assets/images/avatar.png"),
+        //       staked: "2000"
+        //     },
+        //   ]
+        // },
       ],
       option: {},
       ready: false,

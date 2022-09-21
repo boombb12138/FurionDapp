@@ -1,6 +1,6 @@
 import { getNftInfo, getNftInfoByProject, getNftInfoByAddress, getNftWeekPrice } from "@/api/nft_info";
 import getCharts from "@/utils/getCharts";
-import { getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
+import { getAddress, getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
 import { getContract } from "@/utils/common/index";
 
 export const nft_info = {
@@ -667,7 +667,7 @@ export const initNftInfo = async (network) => {
     let nft_info = { nft_init: false, nft_list: [] };
 
     let result = await getNftInfo(network);
-    // console.log('NFT info request', result);
+    console.log('NFT info request', result);
     let raw_data = result['data']['data'];
     let final_result = [];
 
@@ -725,7 +725,7 @@ export const initPooledNftInfo = async (network) => {
     for (let i = 0; i < nftsWithPool.length; i++) {
         const nftAddress = nftsWithPool[i].toLowerCase();
 
-        if (nftAddress != '0x1D788A3D8133F79a7D8cf2517c4b3C00C8DBbf82'.toLowerCase()) {
+        if (nftAddress != getAddress()['CoolCats'].toLowerCase()) {
             continue
         }
         // Assume collection is found in contract but not in backend
