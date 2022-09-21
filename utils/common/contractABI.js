@@ -1,4 +1,4 @@
-import addressStore from "@/assets/abis/address.json";
+import addressStore from "@/assets/info/address.json";
 
 import FurionToken from "@/assets/abis/rinkeby/tokens/FurionToken.sol/FurionToken.json";
 import MockUSD from "@/assets/abis/rinkeby/mock/MockUSD.sol/MockUSD.json";
