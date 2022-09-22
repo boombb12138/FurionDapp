@@ -96,7 +96,7 @@
 
 <template>
   <div
-    class="header-wrap w-1/1 h-80px flex justify-center items-center fixed left-0 right-0 top-0 z-100"
+    class="header-wrap w-1/1 h-80px flex justify-center items-center fixed left-0 right-0 top-0 z-100" v-if="ready"
   >
     <img src="@/assets/images/light_left_bg.png" class="light-left pointer-events-none" />
     <div class="w-1176px h-1/1 flex justify-center items-center justify-between">
@@ -236,7 +236,7 @@ import { getTestClaimABI } from '@/utils/common/contractABI';
 import { mapState } from 'vuex';
 import { connect_info } from "@/config/user_info/profile";
 import { getTxURL } from '@/utils/common';
-
+import $ from 'jquery';
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 import {
   DialogInfo,
@@ -270,13 +270,17 @@ export default {
   },
   data() {
     return {
+      ready: false,
       searchKey: "",
       test_claim: "",
       dialogue_info: DialogInfo
     };
   },
   async mounted() {
+    $(".header-wrap").attr("style","display:none;");
+    this.ready=true;
     await this.initTestClaim();
+    $('.header-wrap').fadeIn(500);
   },
   methods: {
     onSearch() {},
