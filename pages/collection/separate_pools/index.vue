@@ -158,7 +158,16 @@
       </el-dialog>
 
       <!-- Separate pool list -->
-      <el-table :data="nft_info.nft_list" style="width: 100%" @cell-click="viewCollection">
+      <div class="loading-wrapper" id="loading-wrapper">
+        <div class="loading la-ball-running-dots">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+      <el-table :data="nft_info.nft_list" style="width: 100%" @cell-click="viewCollection" v-if="this.ready">
         <el-table-column prop="collection" label="Collection" width="320px">
           <template slot-scope="scope">
             <div class="flex font-500 text-16px pl-30px items-center">
@@ -260,7 +269,7 @@ import { mapState } from 'vuex';
 import { getNftWeekPrice } from "@/api/nft_info";
 import getCharts from "@/utils/getCharts";
 import { _formatNumber, getTxURL } from "@/utils/common";
-
+import $ from "jquery";
 import {
   DialogInfo,
   initDialog,
@@ -302,6 +311,7 @@ export default {
       console.warn(e);
       this.nft_info.nft_list = [];
     }
+    $(".loading-wrapper").fadeOut(500);
     this.ready = true;
   },
 

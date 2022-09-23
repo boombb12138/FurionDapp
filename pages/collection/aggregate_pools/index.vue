@@ -111,13 +111,23 @@
 
       <!-- Pool list -->
 
+      <div class="loading-wrapper" id="loading-wrapper">
+        <div class="loading la-ball-running-dots">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
       <el-table
         :data="list"
         style="width: 100%"
         @cell-click="item"
         @cell-mouse-enter="enter"
         @cell-mouse-leave="leave"
-        ref="table"
+        ref="table" 
+        v-if="ready" 
       >
         <el-table-column prop="name" label="Pool Name" width="320px">
           <template slot-scope="scope">
@@ -231,7 +241,7 @@
 <script>
 import getCharts from "@/utils/getCharts";
 import { initAvatars } from '@/config/collection/aggregate_pools';
-
+import $ from "jquery";
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/collection"]);
@@ -380,6 +390,7 @@ export default {
       };
     });
     await initAvatars(this.list, this.network);
+    $(".loading-wrapper").fadeOut(500);
     this.ready = true;
   },
 

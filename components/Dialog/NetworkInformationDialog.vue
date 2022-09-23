@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="You Must Change Networks" footer append-to-body custom-class="el-dialog-dark"
-    :close-on-click-modal="false" :visible.sync="DialogVisible" @close="DialogClose">
+    :close-on-click-modal="false" :visible.sync="DialogVisible" @close="DialogClose" style="z-index:99">
     <div class="network_dialog_body text-[rgba(252,255,253,0.6)] font-400 leading-30px text-15px">
       <br />
       <p>
