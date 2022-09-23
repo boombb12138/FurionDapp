@@ -3,47 +3,7 @@ import axios from 'axios'
 
 export const nft_comment = {
     init: false,
-    comment_list: [
-        {
-            'id': 99,
-            'address': '0x',
-            'token_id': 99,
-            'content': 'Loading',
-            'from_uid': 'user loading',
-            'from_user': 'user loading',
-            'from_avatar' : 'avatar',
-            'reply_count': 0,
-            'created_time': 'now',
-            'show': false,
-            'show_reply': false,
-        },
-        {
-            'id': 99,
-            'address': '0x',
-            'token_id': 99,
-            'content': 'Loading',
-            'from_uid': 'user loading',
-            'from_user': 'user loading',
-            'from_avatar' : 'avatar',
-            'reply_count': 0,
-            'created_time': 'now',
-            'show': false,
-            'show_reply': false,
-        },
-        {
-            'id': 99,
-            'address': '0x',
-            'token_id': 99,
-            'content': 'Loading',
-            'from_uid': 'user loading',
-            'from_user': 'user loading',
-            'from_avatar' : 'avatar',
-            'reply_count': 0,
-            'created_time': 'now',
-            'show': false,
-            'show_reply': false,
-        }
-    ],
+    comment_list: [],
 };
 export const initNftComment = async (network,nft_address,token_id) => {
     let comment_info = { comment_init: false, comment_list: [] };
@@ -81,37 +41,7 @@ export const initNftComment = async (network,nft_address,token_id) => {
 
 export const nft_reply = {
     init: false,
-    reply_list: [
-    {
-        id: "99",
-        comment_id: "99",
-        reply_id: "99",
-        reply_type: "comment",
-        content: "Loading",
-        from_uid: "ueser loading",
-        from_user: "user loading",
-        from_avatar: "None",
-        to_uid: "ueser loading",
-        to_user: "user loading",
-        to_avatar: "None",
-        created_time: "now",
-    },
-    {
-        id: "99",
-        comment_id: "99",
-        reply_id: "99",
-        reply_type: "comment",
-        content: "Loading",
-        from_uid: "ueser loading",
-        from_user: "user loading",
-        from_avatar: "None",
-        to_uid: "ueser loading",
-        to_user: "user loading",
-        to_avatar: "None",
-        created_time: "now",
-    }
-
-]
+    reply_list: []
 };
 export const initNftReply = async (network,comment_id) => {
     let reply_info = { reply_init: false, reply_list: [] };

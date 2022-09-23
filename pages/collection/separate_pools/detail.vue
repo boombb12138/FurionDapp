@@ -302,7 +302,7 @@
             <div class="flex justify-between items-start" :id='index'>
               <div class="flex items-center mb-12px">
                 <img
-                  src="@/assets/images/avatar.png"
+                  :src="comment_avatar(item.from_avatar)" 
                   width="80"
                   class="mr-20px rounded-full"
                 />
@@ -336,7 +336,7 @@
                   <div class="flex justify-between items-start mb-16px" :id='index_reply'>
                     <div class="flex items-center">
                       <img
-                        src="@/assets/images/avatar.png"
+                        :src="comment_avatar(item_reply.from_avatar)" 
                         width="54"
                         class="mr-15px rounded-full"
                       />
@@ -514,6 +514,9 @@ export default {
       else
         return text.substring(0,12)+'...';
     },
+    comment_avatar(from_avatar) {
+      return require("@/assets/images/comment/avatar_" + from_avatar + ".png");
+    }, 
     clicktx(row){
       window.open('https://rinkeby.etherscan.io/tx/'+row.tx_hash);
     },
@@ -570,7 +573,7 @@ export default {
           content: text,
           from_uid: this.userInfo.userAddress,
           from_user: this.user_info.info_list.nick_name,
-          from_avatar: 'from_avatar',
+          from_avatar: Math.floor(Math.random()*10),
           reply_count: 0,
         };
         this.html = '';
@@ -610,10 +613,10 @@ export default {
           content: text,
           from_uid: this.userInfo.userAddress,
           from_user: this.user_info.info_list.nick_name,
-          from_avatar: 'from_avatar',
-          to_uid: 'anonymous',
+          from_avatar: Math.floor(Math.random()*10),
+          to_uid: item.uid,
           to_user: item.from_user,
-          to_avatar: 'to_avatar',
+          to_avatar: item.from_avatar,
         };
         document.getElementById("reply_content").value = '';
         item.reply_count++;
