@@ -138,7 +138,7 @@
 <script>
 export default {
   async asyncData({ store, $axios, app, query }) {
-    store.commit('update', ['admin.activeMenu', '/faq']);
+    store.commit('update', ['admin.activeMenu', '/liquidity']);
   },
   props: {},
   components: {},
