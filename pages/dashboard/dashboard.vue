@@ -127,7 +127,6 @@
         <div class="flex mb-34px">
           <Loading class="w-775px h-412px mr-46px" :loading="loading1" >
             <div class="box-border1 box p-10px">
-              <img src="@/assets/images/dashboard/DashBoardLod1.gif" v-if="loading1"/>
               <div
                 class="box-top flex items-center justify-between pr-27px pl-35px text-[#FCFFFD] text-16px font-700" v-if="!loading1"
               >
@@ -150,7 +149,6 @@
           <div>
             <Loading class="w-364px h-220px" :loading="loading2">
               <div class="box-border2 box p-10px relative">
-                <img src="@/assets/images/dashboard/DashBoardLod2.gif" v-if="loading2"/>
                 <div
                   class="box-top flex items-center justify-between pr-27px pl-35px text-[#FCFFFD] text-16px font-700 relative z-1" v-if="!loading2"
                 >
@@ -171,7 +169,6 @@
             <div class="flex justify-between mt-20px">
               <Loading class="w-172px h-172px" :loading="loading2">
                 <div class="box small-box">
-                  <img src="@/assets/images/dashboard/DashBoardLod3.gif" class="mt-12px ml-14px" v-if="loading2"/>
                   <div class="box-top" v-if="!loading2">
                     <img class="ml-10px mr-7px" src="@/assets/images/dashboard/lock.svg" />
                     <p class="text-[#FCFFFD] text-16px font-700 ml-6px mt-2px">Locked</p>
@@ -181,7 +178,6 @@
               </Loading>
               <Loading class="w-172px h-172px" :loading="loading2">
                 <div class="box small-box">
-                  <img src="@/assets/images/dashboard/DashBoardLod3.gif" class="mt-12px ml-14px" v-if="loading2"/>
                   <div class="box-top" v-if="!loading2">
                     <img class="ml-10px mr-7px" src="@/assets/images/dashboard/store.svg" />
                     <p class="text-[#FCFFFD] text-16px font-700">Stored</p>
@@ -197,7 +193,6 @@
         <div class="flex justify-between mb-34px">
           <Loading class="w-579px h-230px" :loading="loading2">
             <div class="box pt-10px px-17px">
-              <img src="@/assets/images/dashboard/DashBoardLod4.gif" class="mt-4px ml-6px" v-if="loading2"/>
               <div
                 class="box-top flex items-center justify-between pr-27px pl-20px text-[#FCFFFD] text-16px font-700" v-if="!loading2"
               >
@@ -228,7 +223,6 @@
           </Loading>
           <Loading class="w-579px h-230px" :loading="loading2">
             <div class="box pt-10px px-17px">
-              <img src="@/assets/images/dashboard/DashBoardLod4.gif" class="mt-4px ml-6px" v-if="loading2"/>
               <div
                 class="box-top flex items-center justify-between pr-27px pl-20px text-[#FCFFFD] text-16px font-700" v-if="!loading2"
               >
@@ -263,31 +257,26 @@
           <div class="flex box box-border3 items-center">
             <p class="text-[#FCFFFD] text-20px font-700 mx-27px">FFT Price</p>
             <div class="coin-box">
-              <img src="@/assets/images/dashboard/DashBoardLod7.gif" v-if="loading2"/>
               <img class="coin-icon" src="@/assets/images/dashboard/coin1.svg" v-if="!loading2"/>
               <p class="top-text" v-if="!loading2">FFT-A</p>
               <p class="middle-text" v-if="!loading2">$236.21</p>
             </div>
             <div class="coin-box">
-              <img src="@/assets/images/dashboard/DashBoardLod7.gif" v-if="loading2"/>
               <img class="coin-icon" src="@/assets/images/dashboard/coin2.svg" v-if="!loading2"/>
               <p class="top-text" v-if="!loading2">FFT-B</p>
               <p class="middle-text" v-if="!loading2">$468</p>
             </div>
             <div class="coin-box">
-              <img src="@/assets/images/dashboard/DashBoardLod7.gif" v-if="loading2"/>
               <img class="coin-icon" src="@/assets/images/dashboard/coin3.svg" v-if="!loading2"/>
               <p class="top-text" v-if="!loading2">FFT-C</p>
               <p class="middle-text" v-if="!loading2">$46.21</p>
             </div>
             <div class="coin-box">
-              <img src="@/assets/images/dashboard/DashBoardLod7.gif" v-if="loading2"/>
               <img class="coin-icon" src="@/assets/images/dashboard/coin4.svg" v-if="!loading2"/>
               <p class="top-text" v-if="!loading2">FFT-D</p>
               <p class="middle-text" v-if="!loading2">$24</p>
             </div>
             <div class="coin-box"  v-if="loading2">
-              <img src="@/assets/images/dashboard/DashBoardLod7.gif"/>
             </div>
             <img class="cursor-pointer" src="@/assets/images/dashboard/comming-soon.png" v-if="!loading2"/>
           </div>
@@ -296,7 +285,6 @@
         <div class="flex justify-between">
           <Loading class="w-579px h-380px" :loading="loading2">
             <div class="box-border4">
-              <img src="@/assets/images/dashboard/DashBoardLod5.gif" class="mt-14px ml-10px" v-if="loading2"/>
               <client-only v-if="!loading2">
                 <SwapLeft :data_24h="this.dash_info.dash_list.swap_tvl_24h" 
                 :data_1w="this.dash_info.dash_list.swap_tvl_1w" 
@@ -311,7 +299,6 @@
   
           <Loading class="w-579px h-380px" :loading="loading2">
             <div class="box-border4">
-              <img src="@/assets/images/dashboard/DashBoardLod5.gif" class="mt-14px ml-10px" v-if="loading2"/>
               <client-only v-if="!loading2">
                 <SwapRight :data_24h="this.dash_info.dash_list.swap_volumn_24h" 
                 :data_1w="this.dash_info.dash_list.swap_volumn_1w" 
@@ -334,7 +321,6 @@
   
         <Loading class="h-280px" :loading="loading2">
           <div class="table-wrap relative">
-            <img src="@/assets/images/dashboard/DashBoardLod6.gif" v-if="loading2"/>
             <div class="table-header absolute"></div>
             <el-table :data="list" style="width: 100%" v-if="!loading2">
               <el-table-column prop="Collection" label="#" width="80px">
