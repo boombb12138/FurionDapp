@@ -250,7 +250,7 @@ export default {
   props: {},
   components: {ProceedingDetails,},
   computed: {
-    ...mapState(['showInfo']),
+    ...mapState('effect_init'),
   },
   computed: {
     showShotSearch() {
@@ -273,11 +273,15 @@ export default {
       ready: false,
       searchKey: "",
       test_claim: "",
-      dialogue_info: DialogInfo
+      dialogue_info: DialogInfo,
     };
   },
   async mounted() {
-    this.$options.methods.clickEffect();
+    if(!this.$store.state.effect_init){
+      this.$options.methods.clickEffect();
+      this.$store.dispatch('setEffectInit', true);
+      console.log('here    ' + this.$store.state.effect_init);
+    };
     $(".header-wrap").attr("style","display:none;");
     this.ready=true;
     await this.initTestClaim();
@@ -358,7 +362,7 @@ export default {
           window.addEventListener('resize', updateSize, false);
           loop();
           window.addEventListener("mousedown", function(e) {
-            pushBalls(randBetween(2, 8), e.clientX, e.clientY);
+            pushBalls(randBetween(2, 4), e.clientX, e.clientY);
             document.body.classList.add("is-pressed");
             longPress = setTimeout(function(){
               document.body.classList.add("is-longpress");
@@ -369,7 +373,7 @@ export default {
             clearInterval(longPress);
             if (longPressed == true) {
               document.body.classList.remove("is-longpress");
-              pushBalls(randBetween(10 + Math.ceil(multiplier), 20 + Math.ceil(multiplier)), e.clientX, e.clientY);
+              pushBalls(randBetween(2 + Math.ceil(multiplier), 10 + Math.ceil(multiplier)), e.clientX, e.clientY);
               longPressed = false;
             }
             document.body.classList.remove("is-pressed");

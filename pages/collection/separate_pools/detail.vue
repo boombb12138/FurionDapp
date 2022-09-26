@@ -433,7 +433,6 @@ import {
   intoNftActivity,
   intoNftActivityByArray
 } from "@/config/collection/nft_activity";
-// import {clickEffect} from "@/assets/fireworks.js";
 import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 export default {
   async asyncData({ store, $axios, app, query }) {

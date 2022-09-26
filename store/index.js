@@ -15,6 +15,7 @@ export const state = () => ({
   walletType: '',
   blockNumber: 0,
   walletConnectProvider: null,
+  effect_init: false,
   showInfo: {
     showPet: true,
     showCart: true,
@@ -59,6 +60,9 @@ export const mutations = {
   SET_SHOW_CART(state, data) {
     state.showInfo.showCart = data;
   },
+  SET_EFFECT_INIT(state, data) {
+    state.effect_init = data;
+  },
 };
 
 export const actions = {
@@ -100,5 +104,8 @@ export const actions = {
   setShowBoth({ commit }, data) {
     commit('SET_SHOW_PET', data);
     commit('SET_SHOW_CART', data);
+  },
+  setEffectInit({ commit }, data) {
+    commit('SET_EFFECT_INIT', data);
   },
 };
