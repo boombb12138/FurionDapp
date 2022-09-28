@@ -244,17 +244,17 @@
           <img class="ml-27px mr-15px w-50px h-50px" :src="asset.image" />
           <span class="white mr-10px">{{asset.name}}</span>
           <span class="grey !text-20px mr-100px">({{symbol}})</span>
-          <div>
+          <div class="text-center">
             <p class="grey mb-7px">Reserve Size</p>
-            <p class="white">$ 1,436,317M</p>
+            <p class="white">$ {{displayFormat(approxValue(market_info.reserve), 18+token_decimal, 2)}}</p>
           </div>
-          <div class="ml-80px">
+          <div class="ml-80px text-center">
             <p class="grey mb-7px">Available liquidity</p>
-            <p class="white">$ 236,169M</p>
+            <p class="white">$ {{displayFormat(approxValue(market_info.cash), 18+token_decimal, 2)}}</p>
           </div>
-          <div class="ml-80px">
+          <div class="ml-80px text-center">
             <p class="grey mb-7px">Oracle price</p>
-            <p class="white">$ 1.1</p>
+            <p class="white">$ {{displayFormat(market_info.token_price, 18, 2)}}</p>
           </div>
         </div>
       </Loading>
@@ -267,13 +267,13 @@
             >
               <p class="section-title">Supply Info</p>
               <div class="flex items-center">
-                <div class="mr-45px">
+                <div class="mr-45px text-center">
                   <p class="grey mb-7px">Total supplied</p>
                   <p class="white">30.00M</p>
                 </div>
-                <div>
+                <div class="text-center">
                   <p class="grey mb-7px">APR</p>
-                  <p class="white">0.5%</p>
+                  <p class="white">{{displayFormat(market_info.supply_rate, 18, 2)}}%</p>
                 </div>
               </div>
             </div>
@@ -288,20 +288,20 @@
                 <div class="text-center">
                   <p class="grey2 mb-6px">In Wallet</p>
                   <p class="white2">
-                    100
+                    {{displayFormat(user_info.token_balance, token_decimal, 2)}}
                     <span class="grey !text-16px">{{symbol}}</span>
                   </p>
                 </div>
                 <div class="text-center">
                   <p class="grey2 mb-6px">Deposited</p>
                   <p class="white2">
-                    0
+                    {{displayFormat(user_info.deposited, token_decimal, 2)}}
                     <span class="grey !text-16px">{{symbol}}</span>
                   </p>
                 </div>
                 <div class="text-center">
                   <p class="grey2 mb-6px">APR</p>
-                  <p class="white2">1.5%</p>
+                  <p class="white2">{{displayFormat(market_info.supply_rate, 18, 2)}}%</p>
                 </div>
               </div>
 
@@ -355,13 +355,13 @@
             >
               <p class="section-title">Borrow Info</p>
               <div class="flex items-center">
-                <div class="mr-45px">
+                <div class="mr-45px text-center">
                   <p class="grey mb-7px">Total borrowed</p>
                   <p class="white">30.00M</p>
                 </div>
-                <div>
-                  <p class="grey mb-7px">APY</p>
-                  <p class="white">0.5%</p>
+                <div class="text-center">
+                  <p class="grey mb-7px">APR</p>
+                  <p class="white">{{displayFormat(market_info.borrow_rate, 18, 2)}}%</p>
                 </div>
               </div>
             </div>
@@ -376,20 +376,20 @@
                 <div class="text-center">
                   <p class="grey2 mb-6px">Borrow Limit</p>
                   <p class="white2">
-                    100
+                    {{displayFormat(user_info.borrow_quota, token_decimal, 2)}}
                     <span class="grey !text-16px">{{symbol}}</span>
                   </p>
                 </div>
                 <div class="text-center">
                   <p class="grey2 mb-6px">Borrowed</p>
                   <p class="white2">
-                    0
+                    {{displayFormat(user_info.borrowed, token_decimal, 2)}}
                     <span class="grey !text-16px">{{symbol}}</span>
                   </p>
                 </div>
                 <div class="text-center">
                   <p class="grey2 mb-6px">APR</p>
-                  <p class="white2">1.5%</p>
+                  <p class="white2">{{displayFormat(market_info.borrow_rate, 18, 2)}}%</p>
                 </div>
               </div>
 
@@ -544,28 +544,64 @@ import {
   tokenApprove,
   getNativeTokenAmount,
 } from "@/utils/common";
-import { market_list } from "@/config/money_market/market";
+
+import {
+  user_info_default,
+  market_info_default,
+  initTokenContract,
+  initMarketContract,
+  initManagerContract,
+  initPriceOracle,
+  token_list
+} from "@/config/money_market/market";
+import { newMultiCallProvider } from "@/utils/web3/multicall";
+
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from "~/config/loading_info";
+import ProceedingDetails from "@/components/Dialog/ProceedingDetails.vue";
 
 export default {
   layout: "blank",
+  async asyncData({ store, $axios, app, query }) {
+    store.commit("update", ["admin.activeMenu", "/liquidity"]);
+  },
   props: {},
-  components: {},
+  components: {ProceedingDetails},
   computed: {
+    ...mapState("admin", ["connectStatus"]),
+    ...mapState(["userInfo"]),
     symbol() {
       return this.$route.query.asset;
     },
   },
   data() {
+    const multicall = newMultiCallProvider(4);
     return {
       loading1: true,
       loading2: true,
       loading3: true,
       asset: {},
-      market_info: {token_price: toWei(1200)},
+      user_info: user_info_default,
+      market_info: market_info_default,
+      token: {},
+      market: {},
+      manager: {},
+      priceOracle: {},
       deposit_amount: "",
       borrow_amount: "",
+      token_decimal: 18,
+      is_eth: false,
       collateralize: false,
       isMax: false,
+      dialogue_info: DialogInfo,
+      multicall: multicall,
+      
       collateralList: [
         {
           num: 0.0,
@@ -583,14 +619,26 @@ export default {
         //   balance: 2.02453,
         // },
       ],
+
     };
   },
-  mounted() {
-    this.asset = market_list[this.symbol];
+  async mounted() {
+    this.token = await initTokenContract(this.symbol);
+    this.is_eth = this.symbol === "ETH" ? true : false;
+    if (!this.is_eth) {
+      this.token_decimal = parseInt(
+        await this.token.contract.methods.decimals().call()
+      );
+    }
+    this.asset = token_list[this.symbol];
+    this.market = await initMarketContract(this.symbol);
+    this.priceOracle = await initPriceOracle();
+    await this.updateMarketInfo();
     this.loading1 = false;
-    setTimeout(() => {
-      this.loading2 = false;
-    }, 10);
+    this.loading2 = false;
+
+    this.manager = await initManagerContract();
+    await this.updateUserInfo();
   },
   methods: {
     /*
@@ -605,6 +653,69 @@ export default {
       this.collateralList.splice(this.collateralList.length - 1, 1);
     },
     */
+    async updateMarketInfo() {
+      const multicall_list = [
+        this.market.contract.methods.supplyRatePerBlock(),
+        this.market.contract.methods.borrowRatePerBlock(),
+        this.priceOracle.contract.methods.getUnderlyingPrice(
+          this.market.address
+        ),
+        this.market.contract.methods.totalCash(),
+        this.market.contract.methods.totalReserves()
+      ];
+      const results = await this.multicall.aggregate(multicall_list);
+
+      // Number of blocks assumed per year in interest rate contract: 2102400
+      const supplyRatePerBlock = results[0];
+      this.market_info.supply_rate = supplyRatePerBlock * 2102400 * 100;
+      const borrowRatePerBlock = results[1];
+      this.market_info.borrow_rate = borrowRatePerBlock * 2102400 * 100;
+      this.market_info.token_price = results[2][0];
+      this.market_info.cash = results[3];
+      this.market_info.reserve = results[4];
+    },
+    async updateUserInfo() {
+      const account = this.userInfo.userAddress;
+      let multicall_list = [
+        this.market.contract.methods.balanceOf(account),
+        this.market.contract.methods.balanceOfUnderlying(account),
+        this.market.contract.methods.borrowBalanceCurrent(account),
+        this.manager.contract.methods.getAccountLiquidity(account),
+      ];
+      if (!this.is_eth) {
+        multicall_list.push(this.token.contract.methods.balanceOf(account));
+      }
+      const results = await this.multicall.aggregate(multicall_list);
+
+      this.user_info.ftoken_balance = results[0];
+      this.user_info.deposited = results[1];
+      this.user_info.borrowed = results[2];
+      if (!this.is_eth) {
+        this.user_info.token_balance = results[4];
+      } else {
+        this.user_info.token_balance = toWei(
+          await getNativeTokenAmount(account)
+        );
+      }
+
+      if (results[3]["1"] > 0) {
+        // results[3]["1"]: shortfall
+        this.user_info.borrow_quota = 0;
+      } else {
+        let tempLiquidity = 0;
+
+        for (let i = 0; i < this.tier; i++) {
+          const liquidityValue = results[3]["0"][i]; // results[3]["0"]: liquidities array
+          const tokenEquivalent = liquidityValue / this.market_info.token_price;
+          tempLiquidity += parseInt(toWei(tokenEquivalent, this.token_decimal));
+        }
+
+        this.user_info.borrow_quota =
+          tempLiquidity > parseInt(this.market_info.cash)
+            ? this.market_info.cash
+            : tempLiquidity.toString();
+      }
+    },
     successMessage(receipt, title) {
       const txURL = getTxURL(receipt.transactionHash);
       this.$notify({
@@ -640,8 +751,8 @@ export default {
       const actualAmount = tokenAmount == "" ? 0 : tokenAmount;
       return this.market_info.token_price * actualAmount;
     },
-    displayFormat(amount, decimal = 18) {
-      return this.formatNumber(fromWei(amount, decimal), 0);
+    displayFormat(amount, decimal = 18, fixed = 0) {
+      return this.formatNumber(fromWei(amount, decimal), fixed);
     },
   },
 };
