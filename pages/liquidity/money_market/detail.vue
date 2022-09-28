@@ -328,7 +328,7 @@
                 <el-switch v-model="collateralize"> </el-switch>
               </div>
 
-              <a class="custom_btn mt-30px mx-auto cursor-pointer">
+              <a class="custom_btn mt-30px mx-auto cursor-pointer" @click="deposit(deposit_amount)">
                 <span>DEPOSIT {{symbol}}</span>
               </a>
 
@@ -518,7 +518,7 @@
                 </div>
               </div-->
 
-              <a class="custom_btn mt-70px mx-auto cursor-pointer">
+              <a class="custom_btn mt-70px mx-auto cursor-pointer" @click="borrow(borrow_amount)">
                 <span>BORROW {{symbol}}</span>
               </a>
               <!--div class="btn_border w-480px mx-auto mt-70px">
@@ -538,6 +538,7 @@
 import { mapState } from "vuex";
 import {
   _formatNumber,
+  _compareInt,
   getTxURL,
   toWei,
   fromWei,
@@ -579,6 +580,9 @@ export default {
     symbol() {
       return this.$route.query.asset;
     },
+    tier() {
+      return this.$route.query.tier;
+    }
   },
   data() {
     const multicall = newMultiCallProvider(4);
@@ -597,6 +601,7 @@ export default {
       borrow_amount: "",
       token_decimal: 18,
       is_eth: false,
+      is_collateral: false,
       collateralize: false,
       dialogue_info: DialogInfo,
       multicall: multicall,
@@ -638,6 +643,11 @@ export default {
 
     this.manager = await initManagerContract();
     await this.updateUserInfo();
+
+    this.is_collateral = await this.manager.contract.methods
+      .checkMembership(this.userInfo.userAddress, this.market.address)
+      .call();
+    this.collateralize = this.is_collateral ? true : false;
   },
   methods: {
     /*
@@ -652,6 +662,9 @@ export default {
       this.collateralList.splice(this.collateralList.length - 1, 1);
     },
     */
+
+    /******************************* State management *******************************/
+
     async updateMarketInfo() {
       const multicall_list = [
         this.market.contract.methods.supplyRatePerBlock(),
@@ -699,7 +712,7 @@ export default {
           await getNativeTokenAmount(account)
         );
       }
-
+  
       if (results[3]["1"] > 0) {
         // results[3]["1"]: shortfall
         this.user_info.borrow_quota = 0;
@@ -722,6 +735,134 @@ export default {
       await this.updateMarketInfo();
       await this.updateUserInfo();
     },
+
+    /*********************************** Allowance & balance checks ***********************************/
+
+    async hasEnoughToken(amount) {
+      const account = this.userInfo.userAddress;
+
+      const balance = await this.token.contract.methods
+        .balanceOf(account)
+        .call();
+
+      return _compareInt(balance, amount) != "smaller" ? true : false;
+    },
+    async approvedEnoughToken(amount) {
+      const account = this.userInfo.userAddress;
+
+      const allowance = await this.token.contract.methods
+        .allowance(account, this.market.address)
+        .call();
+      return _compareInt(allowance, amount) != "smaller" ? true : false;
+    },
+
+    /*************************************** Contract functions ***************************************/
+
+    async deposit(amount) {
+      const account = this.userInfo.userAddress;
+      const actualAmount = toWei(amount, this.token_decimal);
+      let approvedEnoughToken;
+
+      let dialog_list = [];
+
+      if (!this.is_eth) {
+        approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
+        if (!approvedEnoughToken) {
+          dialog_list.push(ProcessInfo.APPROVE_TOKEN);
+        }
+      }
+      if (this.collateralize && !this.is_collateral) {
+        dialog_list.push(ProcessInfo.ENTER_MARKET); 
+      }
+      dialog_list.push(ProcessInfo.DEPOSIT_TOKEN);
+      openDialog(this.dialogue_info, dialog_list);
+
+      if (!this.is_eth) {
+        if (!approvedEnoughToken) {
+          try {
+            const approve_result = await tokenApprove(
+              this.token.address,
+              account,
+              this.market.address
+            );
+            this.successMessage(
+              approve_result,
+              `Approve ${this.symbol} succeeded`
+            );
+            stepDialog(this.dialogue_info);
+          } catch (e) {
+            this.errorMessage(`Approve ${this.symbol} failed`);
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            return;
+          }
+        }
+      }
+      
+      if (this.collateralize && !this.is_collateral) {
+        try {
+          const tx_result = await this.manager.contract.methods
+            .enterMarkets([this.market.address])
+            .send({ from: account });
+          this.successMessage(
+            tx_result,
+            `Enter ${this.symbol} market succeeded`
+          );
+          stepDialog(this.dialogue_info);
+        } catch (e) {
+          this.errorMessage(`Enter ${this.symbol} market failed`);
+          closeDialog(this.dialogue_info);
+          return;
+        }
+      }
+
+      try {
+        let tx_result;
+        if (!this.is_eth) {
+          tx_result = await this.market.contract.methods
+            .supply(actualAmount)
+            .send({ from: account });
+        } else {
+          tx_result = await this.market.contract.methods
+            .supply()
+            .send({ from: account, value: actualAmount });
+        }
+        this.successMessage(tx_result, `Deposit ${this.symbol} succeeded`);
+      } catch (e) {
+        console.warn(e);
+        this.errorMessage(`Deposit ${this.symbol} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+
+      closeDialog(this.dialogue_info);
+
+      this.deposit_amount = "";
+      await this.updateAll();
+    },
+    async borrow(amount) {
+      const account = this.userInfo.userAddress;
+      const actualAmount = toWei(amount, this.token_decimal);
+
+      openDialog(this.dialogue_info, [ProcessInfo.BORROW_TOKEN]);
+
+      try {
+        const tx_result = await this.market.contract.methods
+          .borrow(actualAmount)
+          .send({ from: account });
+        this.successMessage(tx_result, `Borrow ${this.symbol} succeeded`);
+      } catch (e) {
+        this.errorMessage(`Borrow ${this.symbol} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+
+      closeDialog(this.dialogue_info);
+
+      this.borrow_amount = "";
+      await this.updateAll();
+    },
+
     async writeMaxDeposit() {
       await this.updateAll();
 
@@ -740,7 +881,7 @@ export default {
         this.errorMessage(`Cannot borrow more`);
       } else {
         const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
-        this.deposit_amount = parseFloat(fromWei(this.user_info.borrow_quota, this.token_decimal)).toFixed(decimals);
+        this.borrow_amount = parseFloat(fromWei(this.user_info.borrow_quota, this.token_decimal)).toFixed(decimals);
       }
     },
     successMessage(receipt, title) {
