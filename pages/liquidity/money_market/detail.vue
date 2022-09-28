@@ -6,7 +6,7 @@
   @apply text-[rgba(252,255,253,1)] text-20px font-700;
 }
 .white2 {
-  @apply text-[rgba(252,255,253,1)] text-16px font-600;
+  @apply text-[rgba(252,255,253,1)] text-18px font-600;
 }
 .white3 {
   @apply text-[rgba(252,255,253,0.8)] text-16px font-400;
@@ -15,7 +15,7 @@
   @apply text-[rgba(138,146,162,1)] text-14px font-600;
 }
 .grey2 {
-  @apply text-[rgba(252,255,253,0.6)] text-14px font-300;
+  @apply text-[rgba(252,255,253,0.6)] text-16px font-300;
 }
 .top1 ::v-deep .loading {
   .item {
@@ -59,9 +59,9 @@
     rgba(51, 53, 114, 0.5) 100.69%
   );
   border: 0.8px solid rgba(255, 255, 255, 0.1);
-  @apply w-536px h-441px rounded-12px px-24px pt-25px pb-44px;
+  @apply w-536px h-380px rounded-12px px-24px pt-25px pb-44px;
   &.high {
-    height: 500px;
+    height: 380px;
   }
 }
 .box-input {
@@ -78,7 +78,7 @@
       border: 1px solid transparent !important;
       border: none !important;
       color: #fcfffd;
-      color: rgba(252, 255, 253, 0.3);
+      color: rgba(252, 255, 253, 0.9);
       font-size: 22px;
       font-weight: 600;
       &::-webkit-input-placeholder {
@@ -153,6 +153,52 @@
     background: transparent !important;
   }
 }
+.reminder {
+  margin-top: 20px;
+  line-height: 22px;
+  color: rgba(255, 255, 255, 0.5);
+  padding-left: 6px;
+}
+::v-deep {
+  .el-switch {
+    height: 26px;
+    line-height: 26px;
+  }
+  .el-switch .el-switch__core::after {
+    height: 21px;
+    width: 21px;
+    top: 3px;
+    color: rgba(5, 27, 61, 0.6);
+    @apply flex items-center justify-center;
+    background-image: url("~@/assets/images/switch.png");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .el-switch .el-switch__core {
+    width: 48px !important;
+  }
+  .el-switch.is-checked .el-switch__core::after {
+    left: calc(100% - 24px) !important;
+    margin-left: 0 !important;
+    background-image: none;
+  }
+}
+.pulse-text {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #f181de;
+  margin-right: 13px;
+  animation: pulseText 1.2s ease-in-out infinite alternate;
+}
+@keyframes pulseText {
+  from {
+    text-shadow: 0 0 0 #f181de;
+  }
+  to {
+    text-shadow: 0 0 8px #f181de;
+  }
+}
 </style>
 
 <template>
@@ -167,9 +213,9 @@
     <div class="w-1184px mx-auto pb-44px">
       <Loading class="w-1184px h-113px top1" :loading="loading1">
         <div class="w-full h-113px rounded-12px flex items-center top-bar">
-          <img class="ml-27px mr-15px" src="@/assets/images/dashboard/pointer2.svg" />
-          <span class="white">Ethereum</span>
-          <span class="grey !text-20px mr-100px">(ETH)</span>
+          <img class="ml-27px mr-15px" :src="asset.image" />
+          <span class="white mr-10px">{{asset.name}}</span>
+          <span class="grey !text-20px mr-100px">({{symbol}})</span>
           <div>
             <p class="grey mb-7px">Reserve Size</p>
             <p class="white">$ 1,436,317M</p>
@@ -185,6 +231,7 @@
         </div>
       </Loading>
       <div class="flex mt-37px justify-between">
+        <!-------------------------------------- Deposit -------------------------------------->
         <Loading class="w-579px h-957px" :loading="loading2">
           <div class="box box-border5 p-10px">
             <div
@@ -207,64 +254,68 @@
               <SupplyInfoChart />
             </client-only>
 
-            <p class="white mt-36px mb-30px ml-22px">Deposit ETH</p>
+            <p class="white mt-36px mb-30px ml-22px">Deposit {{symbol}}</p>
             <div class="box2 ml-12px">
-              <div class="flex justify-between items-center mb-37px">
-                <div class="flex">
-                  <div class="ml-24px mr-50px">
-                    <p class="grey2 mb-3px">In Wallet</p>
-                    <p class="white2">
-                      100
-                      <span class="grey !text-16px">ETH</span>
-                    </p>
-                  </div>
-                  <div>
-                    <p class="grey2 mb-3px">Deposited</p>
-                    <p class="white2">
-                      0
-                      <span class="grey !text-16px">ETH</span>
-                    </p>
-                  </div>
+              <div class="flex justify-between items-center mb-37px px-10px">
+                <div class="text-center">
+                  <p class="grey2 mb-6px">In Wallet</p>
+                  <p class="white2">
+                    100
+                    <span class="grey !text-16px">{{symbol}}</span>
+                  </p>
                 </div>
-                <div>
-                  <p class="grey2 text-right mb-5px">APR</p>
+                <div class="text-center">
+                  <p class="grey2 mb-6px">Deposited</p>
+                  <p class="white2">
+                    0
+                    <span class="grey !text-16px">{{symbol}}</span>
+                  </p>
+                </div>
+                <div class="text-center">
+                  <p class="grey2 mb-6px">APR</p>
                   <p class="white2">1.5%</p>
                 </div>
               </div>
 
-              <div
-                class="h-125px bg-[rgba(1,17,41,0.6)] border-1px border-solid border-[rgba(255,255,255,0.1)] rounded-12px pt-23px px-15px pb-27px"
-              >
-                <div class="flex items-center">
-                  <img class="mr-16px" src="@/assets/images/dashboard/pointer3.svg" />
-                  <p class="white">
-                    <span>0 ETH</span>
-                  </p>
+              <div class="flex items-center box-input">
+                <el-input
+                  type="number"
+                  :precision="2"
+                  placeholder="0.00"
+                  style="width: 100%"
+                  v-model="deposit_amount"
+                ></el-input>
+                <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-15px">
+                  ~${{ displayFormat(approxValue(deposit_amount)) }}
                 </div>
-                <div class="flex justify-between items-end mt-18px">
-                  <div class="flex items-end">
-                    <!-- <p class="white mr-24px !text-30px relative top-3px">0.00</p> -->
-                    <el-input-number
-                      :precision="2"
-                      :controls="false"
-                      class="custom !rounded-0"
-                      placeholder="0.00"
-                    ></el-input-number>
-                    <p class="white3">$850.268</p>
-                  </div>
-                  <p class="white3">Balance:1.02868</p>
+                <div class="flex items-center mr-15px">
+                  <div class="max">MAX</div>
                 </div>
               </div>
 
-              <div class="btn_border w-480px mx-auto mt-123px mb-100px">
+              <div class="flex items-center mt-15px pl-6px">
+                <div class="font-500 text-16px text-[rgba(252,255,253,0.8)] mr-16px pulse-text">
+                  Use as collateral
+                </div>
+                <el-switch v-model="collateralize"> </el-switch>
+              </div>
+
+              <div class="btn_border w-480px mx-auto mt-30px">
                 <el-button type="primary" class="!w-480px !h-54px">
-                  <span class="font-800 text-20px">DEPOSIT ETH</span>
+                  <span class="font-800 text-20px">DEPOSIT {{symbol}}</span>
                 </el-button>
               </div>
+
+              <p class="reminder">
+                Note: Toggle the
+                <span class="text-[#f181de]">use as collateral</span> switch if you plan
+                to use the asset as collateral and have not done so before.
+              </p>
             </div>
           </div>
         </Loading>
 
+        <!-------------------------------------- Borrow -------------------------------------->
         <Loading class="w-579px h-957px" :loading="loading2">
           <div class="box box-border5 p-10px">
             <div
@@ -287,32 +338,30 @@
               <BorrowInfoChart />
             </client-only>
 
-            <p class="white mt-36px mb-30px ml-22px">Borrow ETH</p>
+            <p class="white mt-36px mb-30px ml-22px">Borrow {{symbol}}</p>
             <div class="box2 ml-12px" :class="{ high: collateralList.length > 1 }">
-              <div class="flex justify-between items-center mb-37px">
-                <div class="flex">
-                  <div class="ml-24px mr-50px">
-                    <p class="grey2 mb-3px">In Wallet</p>
-                    <p class="white2">
-                      100
-                      <span class="grey !text-16px">ETH</span>
-                    </p>
-                  </div>
-                  <div>
-                    <p class="grey2 mb-3px">Deposited</p>
-                    <p class="white2">
-                      0
-                      <span class="grey !text-16px">ETH</span>
-                    </p>
-                  </div>
+              <div class="flex justify-between items-center mb-37px px-10px">
+                <div class="text-center">
+                  <p class="grey2 mb-6px">Borrow Limit</p>
+                  <p class="white2">
+                    100
+                    <span class="grey !text-16px">{{symbol}}</span>
+                  </p>
                 </div>
-                <div>
-                  <p class="grey2 text-right mb-5px">APR</p>
+                <div class="text-center">
+                  <p class="grey2 mb-6px">Borrowed</p>
+                  <p class="white2">
+                    0
+                    <span class="grey !text-16px">{{symbol}}</span>
+                  </p>
+                </div>
+                <div class="text-center">
+                  <p class="grey2 mb-6px">APR</p>
                   <p class="white2">1.5%</p>
                 </div>
               </div>
 
-              <p class="font-600 text-16px text-[#fcfffd] mb-16px">Choose collateral</p>
+              <!--p class="font-600 text-16px text-[#fcfffd] mb-16px">Choose collateral</p>
 
               <div v-if="collateralList.length > 1">
                 <div class="list-box">
@@ -395,10 +444,26 @@
                 <div class="flex items-center justify-center mt-20px mb-12px">
                   <div class="operation-icon plus" @click="add"></div>
                 </div>
+              </div-->
+
+              <div class="flex items-center box-input">
+                <el-input
+                  type="number"
+                  :precision="2"
+                  placeholder="0.00"
+                  style="width: 100%"
+                  v-model="borrow_amount"
+                ></el-input>
+                <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-15px">
+                  ~${{ displayFormat(approxValue(borrow_amount)) }}
+                </div>
+                <div class="flex items-center mr-15px">
+                  <div class="max">MAX</div>
+                </div>
               </div>
 
-              <div class="flex items-center justify-between">
-                <p class="text-14px font-600 text-white opacity-70">
+              <!--div class="flex items-center justify-between px-8px">
+                <p class="text-16px font-600 text-white opacity-70">
                   Available to Borrow
                 </p>
                 <div class="flex items-center text-16px font-600 mb-9px">
@@ -419,11 +484,11 @@
                 >
                   <div class="switch-core"></div>
                 </div>
-              </div>
+              </div-->
 
-              <div class="btn_border">
-                <el-button type="primary" class="!w-full !h-54px" disabled>
-                  <span class="font-800 text-20px">BORROW</span>
+              <div class="btn_border w-480px mx-auto mt-70px">
+                <el-button type="primary" class="!w-full !h-54px">
+                  <span class="font-800 text-20px">BORROW {{symbol}}</span>
                 </el-button>
               </div>
             </div>
@@ -435,16 +500,36 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import {
+  _formatNumber,
+  getTxURL,
+  toWei,
+  fromWei,
+  tokenApprove,
+  getNativeTokenAmount,
+} from "@/utils/common";
+import { market_list } from "@/config/money_market/market";
+
 export default {
   layout: "blank",
   props: {},
   components: {},
-  computed: {},
+  computed: {
+    symbol() {
+      return this.$route.query.asset;
+    },
+  },
   data() {
     return {
       loading1: true,
       loading2: true,
       loading3: true,
+      asset: {},
+      market_info: {token_price: toWei(1200)},
+      deposit_amount: "",
+      borrow_amount: "",
+      collateralize: false,
       isMax: false,
       collateralList: [
         {
@@ -466,14 +551,14 @@ export default {
     };
   },
   mounted() {
-    setTimeout(() => {
-      this.loading1 = false;
-    }, 3000);
+    this.asset = market_list[this.symbol];
+    this.loading1 = false;
     setTimeout(() => {
       this.loading2 = false;
     }, 10);
   },
   methods: {
+    /*
     add() {
       this.collateralList.push({
         num: 0,
@@ -483,6 +568,45 @@ export default {
     },
     remove() {
       this.collateralList.splice(this.collateralList.length - 1, 1);
+    },
+    */
+    successMessage(receipt, title) {
+      const txURL = getTxURL(receipt.transactionHash);
+      this.$notify({
+        title: title,
+        dangerouslyUseHTMLString: true,
+        message: txURL,
+        type: "success",
+      });
+    },
+    errorMessage(title) {
+      this.$notify.error({
+        title: title,
+        message: "",
+        dangerouslyUseHTMLString: true,
+      });
+    },
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = "0" + reserve.toFixed(fixed).toString().substr(1);
+      } else {
+        final_result =
+          _formatNumber(value).split(".")[0] +
+          reserve.toFixed(fixed).toString().substr(1);
+      }
+      if (final_result[0] == "-" || final_result[0] == "N") {
+        final_result = "--";
+      }
+      return final_result;
+    },
+    approxValue(tokenAmount) {
+      const actualAmount = tokenAmount == "" ? 0 : tokenAmount;
+      return this.market_info.token_price * actualAmount;
+    },
+    displayFormat(amount, decimal = 18) {
+      return this.formatNumber(fromWei(amount, decimal), 0);
     },
   },
 };
