@@ -189,7 +189,7 @@
 
       <div class="item mb-16px">
         <div class="flex items-center justify-between mb-20px">
-          <!--//todo asset指的是USDT吗  -->
+          <!--//update asset是computed里的数据  -->
           <div class="flex items-center">
             <img
               src="@/assets/images/liquidity/tokens/FUR.png"
@@ -252,7 +252,6 @@
           "
           @click="borrow(borrow_amount)"
         >
-          <!-- //todo borrow函数在这里 -->
           <span class="font-800 text-20px" style="word-spacing: 5px"
             >Borrow {{ asset }}</span
           >
@@ -698,6 +697,7 @@ export default {
     this.is_collateral = await this.manager.contract.methods
       .checkMembership(this.userInfo.userAddress, this.market.address)
       .call();
+    // 这个表达式 不是会让 this.collateralize = this.is_collateral吗？
     this.collateralize = this.is_collateral ? true : false;
 
     await this.updateAll();
@@ -832,8 +832,8 @@ export default {
 
       const allowance = await this.token.contract.methods
         .allowance(account, this.market.address)
-        .call(); //todo 这个合约里面的allowance方法是干嘛的 证明有足够的token? 我怎么才能找到这个合约 从而找到它的allowance方法？
-
+        .call(); //update 这个合约里面的allowance方法是干嘛的 证明有足够的token? 我怎么才能找到这个合约 从而找到它的allowance方法？
+      //allowance方法 用户允许合约从他们的钱包拿走多少token 如果不够交易会失败
       return parseInt(allowance) >= parseInt(amount) ? true : false;
     },
     async hasEnoughFToken(amount) {
@@ -948,20 +948,20 @@ export default {
         // 如果资产不是eth 就
         approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
         if (!approvedEnoughToken) {
-          dialog_list.push(ProcessInfo.APPROVE_TOKEN);
+          dialog_list.push(ProcessInfo.APPROVE_TOKEN); //把程序加到弹出的对话框
         }
       }
       // 如果资产是eth 就判断
-      //todo 这里为什么是互斥的？ 如果抵押 且
+      // 如果用户未曾调用过enterMarkets 即is_collateral是false 而且 用户想要把资产当作抵押物
       if (this.collateralize && !this.is_collateral) {
-        dialog_list.push(ProcessInfo.ENTER_MARKET);
+        dialog_list.push(ProcessInfo.ENTER_MARKET); //就往 dialog_list数组里面添加一个ENTER_MARKET对象
       }
       dialog_list.push(ProcessInfo.DEPOSIT_TOKEN);
-      openDialog(this.dialogue_info, dialog_list); //todo 这里弹出对话框我能不能试一下 好像都是禁用
+      openDialog(this.dialogue_info, dialog_list); //传入了loading_info里的DialogInfo和dialog_list数组 给DialogInfo里的属性赋值
 
-      // todo 这里的逻辑不会和之前的重复吗
       if (!this.is_eth) {
         if (!approvedEnoughToken) {
+          //todo 实际地执行 我来到tokenApprove函数里面 问题在tokenApprove函数里面哦
           try {
             const approve_result = await tokenApprove(
               this.token.address,
@@ -981,17 +981,18 @@ export default {
           }
         }
       }
-      //todo 这里和之前的if条件判断是一样的？
+      //update 这里为什么是互斥的？
+      // 如果用户未曾调用过enterMarkets 即is_collateral是false 而且 用户想要把资产当作抵押物
       if (this.collateralize && !this.is_collateral) {
         try {
           const tx_result = await this.manager.contract.methods
-            .enterMarkets([this.market.address])
+            .enterMarkets([this.market.address]) //就调用ENTER_MARKET
             .send({ from: account });
           this.successMessage(
             tx_result,
             `Enter ${this.asset} market succeeded`
           );
-          stepDialog(this.dialogue_info);
+          stepDialog(this.dialogue_info); //todo 这一步的问题我写在stepDialog函数那边
         } catch (e) {
           this.errorMessage(`Enter ${this.asset} market failed`);
           closeDialog(this.dialogue_info);
