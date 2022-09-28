@@ -242,7 +242,7 @@
                     </div>
                     <div
                       class="btn2 text-shadow"
-                      @click="$router.push('/dashboard/detail')"
+                      @click="$router.push('/liquidity/money_market/detail?asset=ETH')"
                     >
                       Details
                     </div>
@@ -320,7 +320,7 @@
                     </div>
                     <div
                       class="btn2 text-shadow"
-                      @click="$router.push('/dashboard/detail')"
+                      @click="$router.push('/liquidity/money_market/detail?asset=ETH')"
                     >
                       Details
                     </div>
@@ -424,7 +424,7 @@
                     </div>
                     <div
                       class="btn2 text-shadow"
-                      @click="$router.push('/dashboard/detail')"
+                      @click="$router.push('/liquidity/money_market/detail?asset=ETH')"
                     >
                       Details
                     </div>
@@ -569,7 +569,7 @@
                     </div>
                     <div
                       class="btn2 text-shadow"
-                      @click="$router.push('/dashboard/detail')"
+                      @click="$router.push('/liquidity/money_market/detail?asset=ETH')"
                     >
                       Details
                     </div>
