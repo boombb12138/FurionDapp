@@ -1,4 +1,3 @@
-import { token_info } from "@/config/furion_swap/swap";
 import { getContract } from "@/utils/common";
 import {
   getMockUSDABI,
@@ -11,7 +10,7 @@ import {
 
 const addressList = getAddress();
 
-export const market_list = {
+export const token_list = {
   "USDT": {
     name: "Tether USD",
     decimals: 6,
@@ -46,6 +45,7 @@ export const market_info_default = {
   borrow_rate: 0,
   token_price: 0,
   cash: 0,
+  reseve: 0
 };
 
 export const initTokenContract = async (symbol) => {
@@ -60,13 +60,12 @@ export const initTokenContract = async (symbol) => {
     return token_contract;
   }
 
-  for (const token of token_info) {
-    if (token.symbol === symbol) {
-      token_contract.address = token.address;
-      // todo 是不是一般来讲都是得到这个合约
+  for (const _symbol in token_list) {
+    if (symbol === _symbol) {
+      token_contract.address = token_list[_symbol].address;
       token_contract.contract = await getContract(
-        await getMockUSDABI(), //这个ABI里面没有定义可以调用的合约方法？
-        token.address
+        await getMockUSDABI(),
+        token_contract.address
       );
     }
   }
@@ -87,15 +86,9 @@ export const initMarketContract = async (symbol) => {
     return market_contract;
   }
 
-  for (const token of token_info) {
-    if (token.symbol === symbol) {
-      market_contract.address = token.market_address;
-      market_contract.contract = await getContract(
-        await getFErc20ABI(),
-        token.market_address
-      );
-    }
-  }
+  const marketABI = await getFErc20ABI("f"+symbol);
+  market_contract.address = marketABI.address;
+  market_contract.contract = await getContract(marketABI, "");
 
   return market_contract;
 };
