@@ -199,7 +199,7 @@
   border: 2px solid #f06fd2;
   text-align: center;
   position: relative;
-  transition: all .5s;
+  transition: all .5s ease-out;
   border-radius: 12px;
 
   span{
@@ -227,40 +227,146 @@
     width: 100%;
   }
 }
+
+.refresh {
+  line-height: 50px;
+  height: 50px;
+  text-align: center;
+  width: 140px;
+  cursor: pointer;
+  color: #f181de;
+  transition: all 0.5s;
+  position: relative;
+}
+.refresh::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: rgba(241, 129, 222, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+.refresh:hover::before {
+  opacity: 0;
+  transform: scale(0.5, 0.5);
+}
+.refresh::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0;
+  transition: all 0.3s;
+  border: 2px solid rgb(241, 129, 222, 0.5);
+  border-radius: 8px;
+  transform: scale(1.2, 1.2);
+}
+.refresh:hover::after {
+  opacity: 1;
+  transform: scale(1, 1);
+}
+
+.refreshBtn {
+  outline:none;
+  height: 50px;
+  text-align: center;
+  width: 160px;
+  border-radius:40px;
+  background: none;
+  border: 2px solid #f181de;
+  color: #f181de;
+  letter-spacing:1px;
+  text-shadow: 0;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  &:hover {
+    color: #0a1a3a;
+    background: #f181de;
+  }
+  &:active {
+    letter-spacing: 2px ;
+  }
+  &:after {
+    content:"REFRESH DATA";
+  }
+}
+.onclic {
+  width: 50px;
+  border-color:#0a1a3a;
+  border-width:5px;
+  font-size:0;
+  border-left-color:#f181de;
+  animation: rotating 2s 0.25s linear infinite;
+
+  &:after {
+    content:"";
+  }
+}
+.validate {
+  font-size:13px;
+  color: #0a1a3a;
+  background: #f181de;
+  &:after {
+    content: "\2714";
+    font-size: 20px;
+  }
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 </style>
 
 <template>
-  <div class="page pt-192px bg-[#01132E] text-[#FCFFFD]">
+  <div class="page pt-120px bg-[#01132E] text-[#FCFFFD]">
     <div
       @click="$router.go(-1)"
-      class="absolute left-60px cursor-pointer top-100px hover:opacity-80 flex items-center"
+      class="absolute left-60px cursor-pointer top-120px hover:opacity-80 flex items-center"
     >
       <img src="@/assets/images/icon_back.svg" />
     </div>
 
     <div class="w-1184px mx-auto pb-44px">
       <Loading class="w-1184px h-113px top1" :loading="loading1">
-        <div class="w-full h-113px rounded-12px flex items-center top-bar">
-          <img class="ml-27px mr-15px w-50px h-50px" :src="asset.image" />
-          <span class="white mr-10px">{{asset.name}}</span>
-          <span class="grey !text-20px mr-100px">({{symbol}})</span>
-          <div class="text-center">
-            <p class="grey mb-7px">Reserve Size</p>
-            <p class="white">$ {{displayFormat(approxValue(market_info.reserve), 18+token_decimal, 2)}}</p>
+        <div class="w-full h-113px rounded-12px flex items-center top-bar justify-between px-27px">
+          <div class="flex items-center">
+            <img class="mr-15px w-50px h-50px" :src="asset.image" />
+            <span class="white mr-10px">{{asset.name}}</span>
+            <span class="grey !text-20px mr-100px">({{symbol}})</span>
+            <div class="text-center">
+              <p class="grey mb-7px">Reserve Size</p>
+              <p class="white">$ {{displayFormat(approxValue(market_info.reserve), 18+token_decimal, 2)}}</p>
+            </div>
+            <div class="ml-70px text-center">
+              <p class="grey mb-7px">Available liquidity</p>
+              <p class="white">$ {{displayFormat(approxValue(market_info.cash), 18+token_decimal, 2)}}</p>
+            </div>
+            <div class="ml-70px text-center">
+              <p class="grey mb-7px">Oracle price</p>
+              <p class="white">$ {{displayFormat(market_info.token_price, 18, 2)}}</p>
+            </div>
           </div>
-          <div class="ml-80px text-center">
-            <p class="grey mb-7px">Available liquidity</p>
-            <p class="white">$ {{displayFormat(approxValue(market_info.cash), 18+token_decimal, 2)}}</p>
-          </div>
-          <div class="ml-80px text-center">
-            <p class="grey mb-7px">Oracle price</p>
-            <p class="white">$ {{displayFormat(market_info.token_price, 18, 2)}}</p>
-          </div>
+
+          <button class="refreshBtn" :class="{onclic: refreshing, 'validate': validating}" @click="refreshData()"></button>
         </div>
       </Loading>
       <div class="flex mt-37px justify-between">
         <!-------------------------------------- Deposit -------------------------------------->
-        <Loading class="w-579px h-957px" :loading="loading2">
+        <Loading class="w-579px h-861px" :loading="loading2">
           <div class="box box-border5 p-10px">
             <div
               class="box-top flex items-center justify-between pr-53px pl-22px mb-25px"
@@ -332,12 +438,6 @@
                 <span>DEPOSIT {{symbol}}</span>
               </a>
 
-              <!--div class="w-480px mx-auto mt-30px">
-                <el-button type="primary" class="!w-480px !h-54px">
-                  <span class="font-800 text-20px">DEPOSIT {{symbol}}</span>
-                </el-button>
-              </div-->
-
               <p class="reminder">
                 Note: Toggle the
                 <span class="text-[#f181de]">use as collateral</span> switch if you plan
@@ -348,7 +448,7 @@
         </Loading>
 
         <!-------------------------------------- Borrow -------------------------------------->
-        <Loading class="w-579px h-957px" :loading="loading2">
+        <Loading class="w-579px h-861px" :loading="loading2">
           <div class="box box-border5 p-10px">
             <div
               class="box-top flex items-center justify-between pr-53px pl-22px mb-25px"
@@ -603,6 +703,8 @@ export default {
       is_eth: false,
       is_collateral: false,
       collateralize: false,
+      refreshing: false,
+      validating: false,
       dialogue_info: DialogInfo,
       multicall: multicall,
       
@@ -627,27 +729,30 @@ export default {
     };
   },
   async mounted() {
-    this.token = await initTokenContract(this.symbol);
-    this.is_eth = this.symbol === "ETH" ? true : false;
-    if (!this.is_eth) {
-      this.token_decimal = parseInt(
-        await this.token.contract.methods.decimals().call()
-      );
-    }
-    this.asset = token_list[this.symbol];
-    this.market = await initMarketContract(this.symbol);
-    this.priceOracle = await initPriceOracle();
-    await this.updateMarketInfo();
-    this.loading1 = false;
-    this.loading2 = false;
 
-    this.manager = await initManagerContract();
-    await this.updateUserInfo();
+    setTimeout(async () => {
+      this.token = await initTokenContract(this.symbol);
+      this.is_eth = this.symbol === "ETH" ? true : false;
+      if (!this.is_eth) {
+        this.token_decimal = parseInt(
+          await this.token.contract.methods.decimals().call()
+        );
+      }
+      this.asset = token_list[this.symbol];
+      this.market = await initMarketContract(this.symbol);
+      this.priceOracle = await initPriceOracle();
+      await this.updateMarketInfo();
+      this.loading1 = false;
+      this.loading2 = false;
 
-    this.is_collateral = await this.manager.contract.methods
-      .checkMembership(this.userInfo.userAddress, this.market.address)
-      .call();
-    this.collateralize = this.is_collateral ? true : false;
+      this.manager = await initManagerContract();
+      await this.updateUserInfo();
+
+      this.is_collateral = await this.manager.contract.methods
+        .checkMembership(this.userInfo.userAddress, this.market.address)
+        .call();
+      this.collateralize = this.is_collateral ? true : false;
+    }, 2000);
   },
   methods: {
     /*
@@ -665,6 +770,15 @@ export default {
 
     /******************************* State management *******************************/
 
+    async refreshData() {
+      this.refreshing = true;
+      await this.updateAll();
+      this.refreshing = false;
+      this.validating = true;
+      setTimeout(() => {
+        this.validating = false;
+      }, 1500);
+    },
     async updateMarketInfo() {
       const multicall_list = [
         this.market.contract.methods.supplyRatePerBlock(),
