@@ -6,7 +6,31 @@ import {
   getFErc20ABI,
   getRiskManagerABI,
   getPriceOracleABI,
+  getAddress
 } from "@/utils/common/contractABI";
+
+const addressList = getAddress();
+
+export const market_list = {
+  "USDT": {
+    name: "Tether USD",
+    decimals: 6,
+    address: addressList["MockUSD"],
+    image: require("@/assets/images/liquidity/tokens/USDT.png"),
+  },
+  "ETH": {
+    name: "Ethereum",
+    decimals: 18,
+    address: addressList["WETH"],
+    image: require("@/assets/images/liquidity/tokens/ETH.png"),
+  },
+  "FUR": {
+    name: "Furion",
+    decimals: 18,
+    address: addressList["FurionToken"],
+    image: require('@/assets/images/liquidity/tokens/FUR.png'),
+  }
+};
 
 export const user_info_default = {
   token_balance: 0,
