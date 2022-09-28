@@ -16,8 +16,10 @@
 		"FurionSwapFactory": "0x1277d73f140e69f78759E92016a6337dd63a2154",
 		"FurionSwapV2Router": "0x28369430ea0a034a6267f1bab946036eaef54213",
 		"FarmingPoolUpgradeable": "0xd2532bb560CE44e76FcA01Dc338E5D5217BFA9FA",
-		"PriceOracle": "0x470debEeA58974F5a7Bc0A2331bB335ce8E4F840",
-		"JumpInterestRateModel": "0xD66eA9a52769e64195a71fd54E267029Af0cc270"
+		"PriceOracle": "0x24BcFF3e6f9ac92f7bbb4cD4A0795eb31f788b2A",
+		"JumpInterestRateModel": "0x9FB9A632d545f842C2d2aAFb3B04C4F2a8b6AAF4",
+		"RiskManager": "0x773792e66Daa5bAE494751CA0cCAd88fA52D5c05",
+		"NormalInterestRateModel": "0x956cA3EC8396a00E7bB73001F4aA1D9557EbC104"
 	},
 	"goerli": {
 	    "FurionToken": "0xCD989B3af99DaD62aEc047a50cDE5EEd051e3202",
