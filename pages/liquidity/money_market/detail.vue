@@ -269,7 +269,7 @@
               <div class="flex items-center">
                 <div class="mr-45px text-center">
                   <p class="grey mb-7px">Total supplied</p>
-                  <p class="white">30.00M</p>
+                  <p class="white">{{displayFormat(market_info.supplied, token_decimal, 2)}}<span class="grey2 ml-5px !font-600">{{symbol}}</span></p>
                 </div>
                 <div class="text-center">
                   <p class="grey mb-7px">APR</p>
@@ -316,7 +316,7 @@
                 <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px">
                   ~${{ displayFormat(approxValue(deposit_amount)) }}
                 </div>
-                <div class="flex items-center mr-15px">
+                <div class="flex items-center mr-15px" @click="writeMaxDeposit()">
                   <div class="max">MAX</div>
                 </div>
               </div>
@@ -357,7 +357,7 @@
               <div class="flex items-center">
                 <div class="mr-45px text-center">
                   <p class="grey mb-7px">Total borrowed</p>
-                  <p class="white">30.00M</p>
+                  <p class="white">{{displayFormat(market_info.borrowed, token_decimal, 2)}}<span class="grey2 ml-5px !font-600">{{symbol}}</span></p>
                 </div>
                 <div class="text-center">
                   <p class="grey mb-7px">APR</p>
@@ -489,7 +489,7 @@
                 <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px">
                   ~${{ displayFormat(approxValue(borrow_amount)) }}
                 </div>
-                <div class="flex items-center mr-15px">
+                <div class="flex items-center mr-15px" @click="writeMaxBorrow()">
                   <div class="max">MAX</div>
                 </div>
               </div>
@@ -598,7 +598,6 @@ export default {
       token_decimal: 18,
       is_eth: false,
       collateralize: false,
-      isMax: false,
       dialogue_info: DialogInfo,
       multicall: multicall,
       
@@ -661,7 +660,8 @@ export default {
           this.market.address
         ),
         this.market.contract.methods.totalCash(),
-        this.market.contract.methods.totalReserves()
+        this.market.contract.methods.totalReserves(),
+        this.market.contract.methods.totalBorrowsCurrent()
       ];
       const results = await this.multicall.aggregate(multicall_list);
 
@@ -673,6 +673,8 @@ export default {
       this.market_info.token_price = results[2][0];
       this.market_info.cash = results[3];
       this.market_info.reserve = results[4];
+      this.market_info.borrowed = results[5];
+      this.market_info.supplied = parseInt(results[3]) + parseInt(results[5]) - parseInt(results[4]); // cash + borrow - reserve
     },
     async updateUserInfo() {
       const account = this.userInfo.userAddress;
@@ -714,6 +716,31 @@ export default {
           tempLiquidity > parseInt(this.market_info.cash)
             ? this.market_info.cash
             : tempLiquidity.toString();
+      }
+    },
+    async updateAll() {
+      await this.updateMarketInfo();
+      await this.updateUserInfo();
+    },
+    async writeMaxDeposit() {
+      await this.updateAll();
+
+      if (this.user_info.token_balance == 0) {
+        this.errorMessage(`No ${this.symbol} in wallet`);
+      } else {
+        const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
+        console.log(this.user_info.token_balance);
+        this.deposit_amount = parseFloat(fromWei(this.user_info.token_balance, this.token_decimal)).toFixed(decimals);
+      }
+    },
+    async writeMaxBorrow() {
+      await this.updateAll();
+
+      if (this.user_info.borrow_quota == 0) {
+        this.errorMessage(`Cannot borrow more`);
+      } else {
+        const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
+        this.deposit_amount = parseFloat(fromWei(this.user_info.borrow_quota, this.token_decimal)).toFixed(decimals);
       }
     },
     successMessage(receipt, title) {
