@@ -45,7 +45,9 @@ export const market_info_default = {
   borrow_rate: 0,
   token_price: 0,
   cash: 0,
-  reseve: 0
+  reserve: 0,
+  borrowed: 0,
+  supplied: 0
 };
 
 export const initTokenContract = async (symbol) => {
