@@ -15,7 +15,7 @@
   @apply text-[rgba(138,146,162,1)] text-14px font-600;
 }
 .grey2 {
-  @apply text-[rgba(252,255,253,0.6)] text-16px font-300;
+  @apply text-[rgba(252,255,253,0.6)] text-15px font-300;
 }
 .top1 ::v-deep .loading {
   .item {
@@ -140,19 +140,6 @@
     }
   }
 }
-.custom {
-  height: 30px;
-  font-weight: 600;
-  font-size: 30px;
-  color: #fff !important;
-  position: relative;
-  top: 4px;
-  width: 90px !important;
-  ::v-deep .el-input {
-    padding-left: 0 !important;
-    background: transparent !important;
-  }
-}
 .reminder {
   margin-top: 20px;
   line-height: 22px;
@@ -199,6 +186,47 @@
     text-shadow: 0 0 8px #f181de;
   }
 }
+
+.custom_btn {
+  display: block;
+  width: 480px;
+  height: 50px;
+  line-height: 45px;
+  font-size: 19px;
+  font-weight: 800;
+  text-decoration: none;
+  color: #f06fd2;
+  border: 2px solid #f06fd2;
+  text-align: center;
+  position: relative;
+  transition: all .5s;
+  border-radius: 12px;
+
+  span{
+    position: relative;
+    z-index: 2;
+  }
+
+  &:after {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #f06fd2;
+    border-radius: 9px;
+    transition: all .5s;
+  }
+
+  &:hover {
+    color: #0a1a3a;
+  }
+
+  &:hover:after {
+    width: 100%;
+  }
+}
 </style>
 
 <template>
@@ -213,7 +241,7 @@
     <div class="w-1184px mx-auto pb-44px">
       <Loading class="w-1184px h-113px top1" :loading="loading1">
         <div class="w-full h-113px rounded-12px flex items-center top-bar">
-          <img class="ml-27px mr-15px" :src="asset.image" />
+          <img class="ml-27px mr-15px w-50px h-50px" :src="asset.image" />
           <span class="white mr-10px">{{asset.name}}</span>
           <span class="grey !text-20px mr-100px">({{symbol}})</span>
           <div>
@@ -285,7 +313,7 @@
                   style="width: 100%"
                   v-model="deposit_amount"
                 ></el-input>
-                <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-15px">
+                <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px">
                   ~${{ displayFormat(approxValue(deposit_amount)) }}
                 </div>
                 <div class="flex items-center mr-15px">
@@ -300,11 +328,15 @@
                 <el-switch v-model="collateralize"> </el-switch>
               </div>
 
-              <div class="btn_border w-480px mx-auto mt-30px">
+              <a class="custom_btn mt-30px mx-auto cursor-pointer">
+                <span>DEPOSIT {{symbol}}</span>
+              </a>
+
+              <!--div class="w-480px mx-auto mt-30px">
                 <el-button type="primary" class="!w-480px !h-54px">
                   <span class="font-800 text-20px">DEPOSIT {{symbol}}</span>
                 </el-button>
-              </div>
+              </div-->
 
               <p class="reminder">
                 Note: Toggle the
@@ -454,7 +486,7 @@
                   style="width: 100%"
                   v-model="borrow_amount"
                 ></el-input>
-                <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-15px">
+                <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px">
                   ~${{ displayFormat(approxValue(borrow_amount)) }}
                 </div>
                 <div class="flex items-center mr-15px">
@@ -486,11 +518,14 @@
                 </div>
               </div-->
 
-              <div class="btn_border w-480px mx-auto mt-70px">
+              <a class="custom_btn mt-70px mx-auto cursor-pointer">
+                <span>BORROW {{symbol}}</span>
+              </a>
+              <!--div class="btn_border w-480px mx-auto mt-70px">
                 <el-button type="primary" class="!w-full !h-54px">
                   <span class="font-800 text-20px">BORROW {{symbol}}</span>
                 </el-button>
-              </div>
+              </div-->
             </div>
           </div>
         </Loading>
