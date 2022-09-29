@@ -148,8 +148,35 @@
 
         <div class="input">
           <div class="flex items-center mb-20px">
-            <img src="@/assets/images/dashboard/eth_w.png" class="mr-16px" />
-            <div class="font-600 text-22px">ETH</div>
+            <!-- todo 用户点击不同的列显示不同的 -->
+            <template v-if="symbol == 'ETH'">
+              <div class="flex">
+                <img :src="tableData[0].ImgUrl" class="mr-16px" />
+                <div class="font-600 text-22px">ETH</div>
+              </div>
+            </template>
+            <template v-else-if="symbol == 'FUR'">
+              <div class="flex">
+                <img
+                  :src="tableData[1].ImgUrl"
+                  class="mr-16px"
+                  width="22"
+                  height="22"
+                />
+                <div class="font-600 text-22px">FUR</div>
+              </div>
+            </template>
+            <template v-else>
+              <div class="flex">
+                <img
+                  :src="tableData[2].ImgUrl"
+                  class="mr-16px"
+                  width="22"
+                  height="22"
+                />
+                <div class="font-600 text-22px">USDT</div>
+              </div>
+            </template>
           </div>
           <div class="flex items-end justify-between">
             <!-- <input type="text" class="w-200px" placeholder="0.00" /> -->
@@ -160,18 +187,33 @@
               class="custom !w-200px !rounded-0"
               placeholder="0.00"
             ></el-input-number>
-
-            <div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
-              MAX
-              <span class="text-[#FCFFFD] font-600">100</span>
-              ETH
-            </div>
+            <template v-if="symbol == 'ETH'"
+              ><div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
+                MAX
+                <span class="text-[#FCFFFD] font-600">100</span>
+                ETH
+              </div></template
+            >
+            <template v-if="symbol == 'FUR'"
+              ><div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
+                MAX
+                <span class="text-[#FCFFFD] font-600">100</span>
+                FUR
+              </div></template
+            >
+            <template v-if="symbol == 'USDT'"
+              ><div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
+                MAX
+                <span class="text-[#FCFFFD] font-600">100</span>
+                USDT
+              </div></template
+            >
           </div>
         </div>
 
         <el-button type="primary" class="w-488px !h-54px" plain>
           <div class="!flex items-center justify-center">
-            <div class="text-20px font-700 text-white">USE AS collateral</div>
+            <div class="text-20px font-700 text-white">Supply</div>
           </div>
         </el-button>
       </div>
@@ -343,7 +385,6 @@
               <el-table-column width="170px">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <!-- todo 这个函数的参数 -->
                     <div
                       class="btn2 mr-15px hover !w-74px"
                       @click="handleSupplyAssets(scope.row.AssetNamePure)"
@@ -714,6 +755,7 @@ export default {
         },
       ],
       token: {},
+      symbol: "ETH",
     };
   },
   mounted() {
@@ -724,6 +766,7 @@ export default {
   methods: {
     async handleSupplyAssets(symbol) {
       this.dialog = true;
+      this.symbol = symbol;
       console.log(symbol);
       this.token = await initTokenContract(symbol);
     },
