@@ -3,15 +3,15 @@
   border: 1.5px solid #1a2a42;
   border-radius: 4px;
   @apply text-12px w-18px h-18px flex items-center justify-center text-[#8A92A2] cursor-pointer;
-  &.active.A {
+  &.active.\31 {
     background: #23cba0;
     color: #ffffff;
   }
-  &.active.B {
+  &.active.\32 {
     background: #3e94fc;
     color: #ffffff;
   }
-  &.active.C {
+  &.active.\33 {
     background: #e3723f;
     color: #ffffff;
   }
@@ -51,7 +51,7 @@ export default {
   computed: {},
   data() {
     return {
-      list: ["A", "B", "C"],
+      list: ["1", "2", "3"],
     };
   },
   mounted() {},

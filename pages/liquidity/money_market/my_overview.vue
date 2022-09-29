@@ -2,21 +2,20 @@
 .info {
   background: #091839;
   border-radius: 20px;
-  padding-left: 46px;
+  padding: 35px 30px;
   &.closed {
     background: linear-gradient(
       180deg,
       rgba(51, 53, 114, 0.4) 0%,
       rgba(51, 53, 114, 0.5) 100%
     );
+    height: 90px;
   }
 }
 .title {
-  height: 86px;
-  @apply flex justify-between items-center  pr-54px;
-}
-.content {
-  @apply pr-25px pb-45px;
+  margin-bottom: 20px;
+  padding: 0 10px;
+  @apply flex justify-between items-center;
 }
 
 ::v-deep {
@@ -131,6 +130,16 @@
     font-size: 13px;
   }
 }
+
+.symbol {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
 </style>
 
 <template>
@@ -222,465 +231,329 @@
     <div class="w-1184px mx-auto">
       <MarketTab class="mb-55px"></MarketTab>
 
-      <Loading
-        :loading="loading1"
-        :class="[loading1 ? 'h-290px' : 'h-auto']"
-        class="mb-30px"
-      >
-        <div class="info" :class="{ closed: !show1 }">
-          <div class="title">
-            <div class="flex items-center">
-              <div class="text-18px font-700 mr-30px">Your Supplies</div>
-              <Abc v-model="abc"></Abc>
-            </div>
-            <div
-              class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
-              @click="show1 = !show1"
-            >
-              <template v-if="show1">
-                <div class="mr-2px">Hide</div>
-                <i class="el-icon-minus"></i>
-              </template>
-              <template v-else>
-                <div class="mr-2px">Show</div>
-                <i class="el-icon-caret-bottom"></i>
-              </template>
-            </div>
-          </div>
-
-          <div class="content" v-if="show1 && !loading1">
-            <el-table :data="tableData" height="156" style="width: 100%">
-              <el-table-column prop="Asset" label="Asset" width="180">
-                <template slot-scope="scope">
-                  <div class="flex items-center">
-                    <img
-                      :src="scope.row.ImgUrl"
-                      class="mr-8px"
-                      width="22"
-                      height="22"
-                    />
-                    <div>{{ scope.row.Asset }}</div>
-                    <div class="text-[#A5A7AA]">{{ scope.row.AssetName }}</div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="WalletBalance"
-                label="Wallet Balance"
-                width="180"
-                align="right"
-              ></el-table-column>
-              <el-table-column
-                prop="Deposited"
-                label="Deposited"
-                align="right"
-              ></el-table-column>
-              <el-table-column
-                prop="AsCollateral"
-                label="As Collateral"
-                align="right"
-              ></el-table-column>
-              <el-table-column
-                prop="APY"
-                label="APY"
-                align="right"
-              ></el-table-column>
-              <el-table-column></el-table-column>
-              <el-table-column width="170px">
-                <template slot-scope="scope">
-                  <div class="flex items-center">
-                    <div
-                      class="btn2 mr-15px hover !w-74px"
-                      @click="dialog = true"
-                    >
-                      Withdraw
-                    </div>
-                    <div
-                      class="btn2 text-shadow"
-                      @click="
-                        $router.push(
-                          '/liquidity/money_market/detail?asset=ETH&tier=2'
-                        )
-                      "
-                    >
-                      Details
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-        </div>
-      </Loading>
-
-      <Loading
-        :loading="loading1"
-        :class="[loading1 ? 'h-358px' : 'h-auto']"
-        class="mb-30px"
-      >
-        <div class="info" :class="{ closed: !show2 }">
-          <div class="title">
-            <div class="flex items-center">
-              <div class="text-18px font-700 mr-30px">Assets to supply</div>
-              <Abc v-model="abc2"></Abc>
-            </div>
-            <div
-              class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
-              @click="show2 = !show2"
-            >
-              <template v-if="show2">
-                <div class="mr-2px">Hide</div>
-                <i class="el-icon-minus"></i>
-              </template>
-              <template v-else>
-                <div class="mr-2px">Show</div>
-                <i class="el-icon-caret-bottom"></i>
-              </template>
-            </div>
-          </div>
-
-          <div class="content" v-if="show2 && !loading1">
-            <div class="tip">
-              <div class="flex items-center pl-30px">
-                <img src="@/assets/images/dashboard/tip.svg" class="mr-15px" />
-                <div>
-                  Your Ethereum wallet is empty.Purchase or transfer assets
+      <div class="flex justify-between">
+        <div class="wrapper">
+          <Loading
+          :loading="loading1"
+          :class="[loading1 ? 'h-290px' : 'h-auto']"
+          class="w-580px mb-30px"
+          >
+            <div class="info" :class="{ closed: !show1 }">
+              <div class="title">
+                <div class="flex items-center">
+                  <div class="text-18px font-700 mr-30px">Your Supplies</div>
+                  <Abc v-model="abc"></Abc>
+                </div>
+                <div
+                  class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
+                  @click="show1 = !show1"
+                >
+                  <template v-if="show1">
+                    <div class="mr-2px">Hide</div>
+                    <i class="el-icon-minus"></i>
+                  </template>
+                  <template v-else>
+                    <div class="mr-2px">Show</div>
+                    <i class="el-icon-caret-bottom"></i>
+                  </template>
                 </div>
               </div>
-            </div>
-            <el-table :data="tableData" height="156" style="width: 100%">
-              <el-table-column prop="Asset" label="Asset" width="180">
-                <template slot-scope="scope">
-                  <div class="flex items-center">
-                    <img
-                      :src="scope.row.ImgUrl"
-                      class="mr-8px"
-                      width="22"
-                      height="22"
-                    />
-                    <div>{{ scope.row.Asset }}</div>
-                    <div class="text-[#A5A7AA]">{{ scope.row.AssetName }}</div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="WalletBalance"
-                label="Wallet Balance"
-                width="180"
-                align="right"
-              ></el-table-column>
-              <el-table-column
-                prop="APY"
-                label="APY"
-                align="right"
-              ></el-table-column>
-              <el-table-column label="Asset Type" align="center" width="300px">
-                <template slot-scope="scope">
-                  <div class="flex justify-center">
-                    <Abc v-model="scope.row.AssetType" readonly></Abc>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column></el-table-column>
-              <el-table-column width="170px">
-                <template slot-scope="scope">
-                  <div class="flex items-center">
-                    <div
-                      class="btn2 mr-15px hover !w-74px"
-                      @click="handleSupplyAssets(scope.row.AssetNamePure)"
-                    >
-                      Supply
-                    </div>
-                    <div
-                      class="btn2 text-shadow"
-                      @click="
-                        $router.push(
-                          '/liquidity/money_market/detail?asset=ETH&tier=2'
-                        )
-                      "
-                    >
-                      Details
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-        </div>
-      </Loading>
-      <Loading
-        :loading="loading1"
-        :class="[loading1 ? 'h-290px' : 'h-auto']"
-        class="mb-30px"
-      >
-        <div class="info" :class="{ closed: !show3 }">
-          <div class="title">
-            <div class="flex items-center">
-              <div class="text-18px font-700 mr-30px">Your borrows</div>
-              <Abc v-model="abc3"></Abc>
-            </div>
-            <div
-              class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
-              @click="show3 = !show3"
-            >
-              <template v-if="show3">
-                <div class="mr-2px">Hide</div>
-                <i class="el-icon-minus"></i>
-              </template>
-              <template v-else>
-                <div class="mr-2px">Show</div>
-                <i class="el-icon-caret-bottom"></i>
-              </template>
-            </div>
-          </div>
 
-          <div class="content" v-if="show3 && !loading1">
-            <el-table :data="tableData" height="156" style="width: 100%">
-              <el-table-column prop="Asset" label="Asset" width="180">
-                <template slot-scope="scope">
-                  <div class="flex items-center">
-                    <img
-                      :src="scope.row.ImgUrl"
-                      class="mr-8px"
-                      width="22"
-                      height="22"
-                    />
-                    <div>{{ scope.row.Asset }}</div>
-                    <div class="text-[#A5A7AA]">{{ scope.row.AssetName }}</div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="Borrowed"
-                label="Borrowed"
-                width="180"
-                align="right"
-              ></el-table-column>
-              <el-table-column
-                prop="CollateralFactor"
-                label="Collateral Factor"
-                align="right"
-              >
-                <template #header>
-                  <div class="flex items-center justify-end">
-                    Collateral Factor
-                    <el-popover
-                      placement="bottom"
-                      title
-                      trigger="hover"
-                      :visible-arrow="false"
-                      popper-class="el-tip"
-                    >
-                      <div class="text-center text-[#0B1A3B]">
-                        <div>text...</div>
+              <div class="content" v-if="show1 && !loading1">
+                <el-table :data="tableData" style="width: 100%">
+                  <el-table-column prop="Asset" label="Asset" width="100" align="left">
+                    <template slot-scope="scope">
+                      <div class="flex items-center w-1/1 cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <img
+                          :src="scope.row.ImgUrl"
+                          class="mr-8px"
+                          width="23"
+                          height="23"
+                        />
+                        <div class="symbol">{{ scope.row.AssetName }}</div>
                       </div>
-                      <img
-                        src="@/assets/images/dashboard/q.svg"
-                        class="ml-4px cursor-pointer"
-                        style="vertical-align: -1px"
-                        slot="reference"
-                      />
-                    </el-popover>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="APY"
-                label="APY"
-                align="right"
-                width="120px"
-              ></el-table-column>
-              <el-table-column
-                prop="AvailableToYou"
-                label="Available To You"
-                align="right"
-              ></el-table-column>
-
-              <el-table-column width="80px"></el-table-column>
-              <el-table-column width="170px">
-                <template slot-scope="scope">
-                  <div class="flex items-center">
-                    <div
-                      class="btn2 mr-15px hover !w-74px"
-                      @click="dialog = true"
-                    >
-                      Repay
-                    </div>
-                    <div
-                      class="btn2 text-shadow"
-                      @click="
-                        $router.push(
-                          '/liquidity/money_market/detail?asset=ETH&tier=2'
-                        )
-                      "
-                    >
-                      Details
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-        </div>
-      </Loading>
-
-      <Loading
-        :loading="loading1"
-        :class="[loading1 ? 'h-358px' : 'h-auto']"
-        class="mb-30px"
-      >
-        <div class="info" :class="{ closed: !show4 }">
-          <div class="title">
-            <div class="flex items-center">
-              <div class="text-18px font-700 mr-30px">Assets to borrow</div>
-              <Abc v-model="abc4"></Abc>
-            </div>
-            <div
-              class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
-              @click="show4 = !show4"
-            >
-              <template v-if="show4">
-                <div class="mr-2px">Hide</div>
-                <i class="el-icon-minus"></i>
-              </template>
-              <template v-else>
-                <div class="mr-2px">Show</div>
-                <i class="el-icon-caret-bottom"></i>
-              </template>
-            </div>
-          </div>
-
-          <div class="content" v-if="show4 && !loading1">
-            <div class="tip">
-              <div class="flex items-center pl-30px">
-                <img src="@/assets/images/dashboard/tip.svg" class="mr-15px" />
-                <div>
-                  To borrow you need to supply any asset to be used as
-                  collateral.
-                </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="Deposited"
+                    label="Deposited"
+                    align="center"
+                    width="100"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="APY"
+                    label="APY"
+                    align="center"
+                    width="100"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="Collateral"
+                    label="Collateral"
+                    align="center"
+                    width="100"
+                  ></el-table-column>
+                  <el-table-column width="170px">
+                    <template slot-scope="scope">
+                      <div class="flex items-center">
+                        <div
+                          class="btn2 mr-15px hover !w-74px"
+                          @click="dialog = true"
+                        >
+                          Withdraw
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                </el-table>
               </div>
             </div>
-            <el-table :data="tableData" height="156" style="width: 100%">
-              <el-table-column prop="Asset" label="Asset" width="180">
-                <template slot-scope="scope">
-                  <div class="flex items-center">
-                    <img
-                      :src="scope.row.ImgUrl"
-                      class="mr-8px"
-                      width="22"
-                      height="22"
-                    />
-                    <div>{{ scope.row.Asset }}</div>
-                    <div class="text-[#A5A7AA]">{{ scope.row.AssetName }}</div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="Available" label="Available" align="right">
-                <template #header>
-                  <div class="flex items-center justify-end">
-                    Available
-                    <el-popover
-                      placement="bottom"
-                      title
-                      trigger="hover"
-                      :visible-arrow="false"
-                      popper-class="el-tip"
-                    >
-                      <div class="text-center text-[#0B1A3B]">
-                        <div>text...</div>
-                      </div>
-                      <img
-                        src="@/assets/images/dashboard/i.svg"
-                        class="ml-4px cursor-pointer"
-                        style="vertical-align: -1px"
-                        slot="reference"
-                      />
-                    </el-popover>
-                  </div>
-                </template>
-              </el-table-column>
+          </Loading>
 
-              <el-table-column
-                prop="CollateralFactor"
-                label="Collateral Factor"
-                align="right"
-              >
-                <template #header>
-                  <div class="flex items-center justify-end">
-                    Collateral Factor
-                    <el-popover
-                      placement="bottom"
-                      title
-                      trigger="hover"
-                      :visible-arrow="false"
-                      popper-class="el-tip"
-                    >
-                      <div class="text-center text-[#0B1A3B]">
-                        <div>text...</div>
-                      </div>
-                      <img
-                        src="@/assets/images/dashboard/i.svg"
-                        class="ml-4px cursor-pointer"
-                        style="vertical-align: -1px"
-                        slot="reference"
-                      />
-                    </el-popover>
-                  </div>
-                </template>
-              </el-table-column>
+          <Loading
+          :loading="loading1"
+          :class="[loading1 ? 'h-358px' : 'h-auto']"
+          class="w-580px"
+          >
+            <div class="info" :class="{ closed: !show3 }">
+              <div class="title">
+                <div class="flex items-center">
+                  <div class="text-18px font-700 mr-30px">Assets to Supply</div>
+                  <Abc v-model="abc"></Abc>
+                </div>
+                <div
+                  class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
+                  @click="show3 = !show3"
+                >
+                  <template v-if="show3">
+                    <div class="mr-2px">Hide</div>
+                    <i class="el-icon-minus"></i>
+                  </template>
+                  <template v-else>
+                    <div class="mr-2px">Show</div>
+                    <i class="el-icon-caret-bottom"></i>
+                  </template>
+                </div>
+              </div>
 
-              <el-table-column prop="APY" label="APY" align="right">
-                <template #header>
-                  <div class="flex items-center justify-end">
-                    APY
-                    <el-popover
-                      placement="bottom"
-                      title
-                      trigger="hover"
-                      :visible-arrow="false"
-                      popper-class="el-tip"
-                    >
-                      <div class="text-center text-[#0B1A3B]">
-                        <div>text...</div>
-                      </div>
-                      <img
-                        src="@/assets/images/dashboard/i.svg"
-                        class="ml-4px cursor-pointer"
-                        style="vertical-align: -1px"
-                        slot="reference"
-                      />
-                    </el-popover>
-                  </div>
-                </template>
-              </el-table-column>
-
-              <el-table-column></el-table-column>
-              <el-table-column width="170px">
-                <template slot-scope="scope">
-                  <div class="flex items-center">
-                    <div
-                      class="btn2 mr-15px hover !w-74px"
-                      @click="dialog = true"
-                    >
-                      Borrow
-                    </div>
-                    <div
-                      class="btn2 text-shadow"
-                      @click="
-                        $router.push(
-                          '/liquidity/money_market/detail?asset=ETH&tier=2'
-                        )
-                      "
-                    >
-                      Details
+              <div class="content" v-if="show3 && !loading1">
+                <!--div class="tip">
+                  <div class="flex items-center pl-30px">
+                    <img src="@/assets/images/dashboard/tip.svg" class="mr-15px" />
+                    <div>
+                      Your Ethereum wallet is empty.Purchase or transfer assets
                     </div>
                   </div>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
+                </div-->
+                <el-table :data="tableData" style="width: 100%">
+                  <el-table-column prop="Asset" label="Asset" width="100" align="left">
+                    <template slot-scope="scope">
+                      <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)" >
+                        <img
+                          :src="scope.row.ImgUrl"
+                          class="mr-8px"
+                          width="23"
+                          height="23"
+                        />
+                        <div class="symbol">{{ scope.row.AssetName }}</div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="Balance"
+                    label="Balance"
+                    width="100"
+                    align="center"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="APY"
+                    label="APY"
+                    align="center"
+                    width="100"
+                  ></el-table-column>
+                  <el-table-column label="Tier" align="center" width="100">
+                    <template slot-scope="scope">
+                      <div class="flex justify-center">
+                        <Abc v-model="scope.row.tier" readonly></Abc>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column width="100px">
+                    <template slot-scope="scope">
+                      <div class="flex items-center">
+                        <!-- todo 这个函数的参数 -->
+                        <div
+                          class="btn2 mr-15px hover !w-74px"
+                          @click="handleSupplyAssets(scope.row.AssetName)"
+                        >
+                          Supply
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </div>
+          </Loading>
         </div>
-      </Loading>
+        
+        <div class="wrapper">
+          <Loading
+          :loading="loading1"
+          :class="[loading1 ? 'h-290px' : 'h-auto']"
+          class="w-580px mb-30px"
+          >
+            <div class="info" :class="{ closed: !show2 }">
+              <div class="title">
+                <div class="flex items-center">
+                  <div class="text-18px font-700 mr-30px">Your Borrows</div>
+                  <Abc v-model="abc"></Abc>
+                </div>
+                <div
+                  class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
+                  @click="show2 = !show2"
+                >
+                  <template v-if="show2">
+                    <div class="mr-2px">Hide</div>
+                    <i class="el-icon-minus"></i>
+                  </template>
+                  <template v-else>
+                    <div class="mr-2px">Show</div>
+                    <i class="el-icon-caret-bottom"></i>
+                  </template>
+                </div>
+              </div>
+
+              <div class="content" v-if="show2 && !loading1">
+                <el-table :data="tableData" style="width: 100%">
+                  <el-table-column prop="Asset" label="Asset" width="100" align="left">
+                    <template slot-scope="scope">
+                      <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <img
+                          :src="scope.row.ImgUrl"
+                          class="mr-8px"
+                          width="23"
+                          height="23"
+                        />
+                        <div class="symbol">{{ scope.row.AssetName }}</div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="Borrowed"
+                    label="Borrowed"
+                    width="100"
+                    align="center"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="APY"
+                    label="APY"
+                    align="center"
+                    width="100"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="Available"
+                    label="Available"
+                    align="center"
+                    width="100"
+                  ></el-table-column>
+                  <el-table-column width="100px">
+                    <template slot-scope="scope">
+                      <div class="flex items-center">
+                        <div
+                          class="btn2 mr-15px hover !w-74px"
+                          @click="dialog = true"
+                        >
+                          Repay
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </div>
+          </Loading>
+
+          <Loading
+            :loading="loading1"
+            :class="[loading1 ? 'h-358px' : 'h-auto']"
+            class="w-580px"
+          >
+            <div class="info" :class="{ closed: !show4 }">
+              <div class="title">
+                <div class="flex items-center">
+                  <div class="text-18px font-700 mr-30px">Assets to Borrow</div>
+                  <Abc v-model="abc"></Abc>
+                </div>
+                <div
+                  class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
+                  @click="show4 = !show4"
+                >
+                  <template v-if="show4">
+                    <div class="mr-2px">Hide</div>
+                    <i class="el-icon-minus"></i>
+                  </template>
+                  <template v-else>
+                    <div class="mr-2px">Show</div>
+                    <i class="el-icon-caret-bottom"></i>
+                  </template>
+                </div>
+              </div>
+
+              <div class="content" v-if="show4 && !loading1">
+                <!--div class="tip">
+                  <div class="flex items-center pl-30px">
+                    <img src="@/assets/images/dashboard/tip.svg" class="mr-15px" />
+                    <div>
+                      To borrow you need to supply any asset to be used as
+                      collateral.
+                    </div>
+                  </div>
+                </div-->
+                <el-table :data="tableData" style="width: 100%">
+                  <el-table-column prop="Asset" label="Asset" width="100" align="left">
+                    <template slot-scope="scope">
+                      <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <img
+                          :src="scope.row.ImgUrl"
+                          class="mr-8px"
+                          width="23"
+                          height="23"
+                        />
+                        <div class="symbol">{{ scope.row.AssetName }}</div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="Available"
+                    label="Available"
+                    width="100"
+                    align="center"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="APY"
+                    label="APY"
+                    align="center"
+                    width="100"
+                  ></el-table-column>
+                  <el-table-column width="100"></el-table-column>
+                  <el-table-column width="100px">
+                    <template slot-scope="scope">
+                      <div class="flex items-center">
+                        <!-- todo 这个函数的参数 -->
+                        <div
+                          class="btn2 mr-15px hover !w-74px"
+                        >
+                          Borrow
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </div>
+          </Loading>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -699,10 +572,10 @@ export default {
     return {
       dialog: false,
       loading1: true,
-      abc: ["A"],
-      abc2: ["A"],
-      abc3: ["A", "B", "C"],
-      abc4: ["A"],
+      abc: ["1"],
+      abc2: ["1"],
+      abc3: ["1", "2", "3"],
+      abc4: ["1"],
       show1: true,
       show2: true,
       show3: true,
@@ -710,12 +583,11 @@ export default {
       tableData: [
         {
           Asset: "Ethereum",
-          AssetName: "(ETH)",
-          AssetNamePure: "ETH",
-          WalletBalance: "828.07k",
+          AssetName: "ETH",
+          Balance: "828.07k",
           Deposited: "100.00k",
           AsCollateral: "50k",
-          AssetType: "A",
+          tier: "2",
           APY: "5%",
           Borrowed: "548.12k",
           CollateralFactor: "20%",
@@ -725,12 +597,11 @@ export default {
         },
         {
           Asset: "Furion",
-          AssetName: "(FUR)",
-          AssetNamePure: "FUR",
-          WalletBalance: "828.07k",
+          AssetName: "FUR",
+          Balance: "828.07k",
           Deposited: "100.00k",
           AsCollateral: "50k",
-          AssetType: "A",
+          tier: "3",
           APY: "5%",
           Borrowed: "548.12k",
           CollateralFactor: "20%",
@@ -740,12 +611,11 @@ export default {
         },
         {
           Asset: "USDT",
-          AssetName: "(USDT)",
-          AssetNamePure: "USDT",
-          WalletBalance: "828.07k",
+          AssetName: "USDT",
+          Balance: "828.07k",
           Deposited: "100.00k",
           AsCollateral: "50k",
-          AssetType: "A",
+          tier: "1",
           APY: "5%",
           Borrowed: "548.12k",
           CollateralFactor: "20%",
@@ -759,8 +629,9 @@ export default {
     };
   },
   mounted() {
+    this.loading1 = false;
     setTimeout(() => {
-      this.loading1 = false;
+      
     }, 3000);
   },
   methods: {
