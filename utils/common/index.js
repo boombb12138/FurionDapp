@@ -179,6 +179,12 @@ export const getNativeTokenAmount = async (account) => {
   return Number(fromWei(balance)).toFixed(3);
 };
 
+export const getNativeTokenAmountRaw = async (account) => {
+  const web3 = await WEB3();
+  
+  return await web3.eth.getBalance(account);
+};
+
 export const getTxURL_test = (transactionHash) => {
   const url = '"https://etherscan.io/tx/' + transactionHash;
   // console.log(url1);

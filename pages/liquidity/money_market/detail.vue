@@ -716,7 +716,7 @@ import {
   toWei,
   fromWei,
   tokenApprove,
-  getNativeTokenAmount,
+  getNativeTokenAmountRaw,
 } from "@/utils/common";
 
 import {
@@ -895,9 +895,7 @@ export default {
       if (!this.is_eth) {
         this.user_info.token_balance = results[4];
       } else {
-        this.user_info.token_balance = toWei(
-          await getNativeTokenAmount(account)
-        );
+        this.user_info.token_balance = await getNativeTokenAmountRaw(account);
       }
 
       if (results[3]["1"] > 0) {
@@ -1066,9 +1064,10 @@ export default {
       } else {
         const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
         console.log(this.user_info.token_balance);
-        this.deposit_amount = parseFloat(
-          fromWei(this.user_info.token_balance, this.token_decimal)
-        ).toFixed(decimals);
+        this.deposit_amount = parseFloat(fromWei(this.user_info.token_balance, this.token_decimal)).toFixed(decimals);
+        if (this.is_eth) {
+          this.deposit_amount = (this.deposit_amount - 0.001).toFixed(8);
+        }
       }
     },
     async writeMaxBorrow() {
