@@ -103,8 +103,8 @@ export const ProcessInfo = {
     detail:
       "You are going to redeem your farming reward on Furion, please sign and wait for the transaction to be done",
   },
-  DEPOSIT_TOKEN: {
-    intro: "Deposit token to money market",
+  SUPPLY_TOKEN: {
+    intro: "Supply token to money market",
     detail:
       "You are just a click away from starting to earn some juicy interest! Please sign and wait for the transaction to complete",
   },

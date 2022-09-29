@@ -395,7 +395,7 @@
         </div>
       </Loading>
       <div class="flex mt-37px justify-between">
-        <!-------------------------------------- Deposit -------------------------------------->
+        <!-------------------------------------- Supply -------------------------------------->
         <Loading class="w-579px h-861px" :loading="loading2">
           <div class="box box-border5 p-10px">
             <div
@@ -423,7 +423,7 @@
               <SupplyInfoChart />
             </client-only>
 
-            <p class="white mt-36px mb-30px ml-22px">Deposit {{ symbol }}</p>
+            <p class="white mt-36px mb-30px ml-22px">Supply {{ symbol }}</p>
             <div class="box2 ml-12px">
               <div class="flex justify-between items-center mb-37px px-10px">
                 <div class="text-center">
@@ -437,9 +437,9 @@
                   </p>
                 </div>
                 <div class="text-center">
-                  <p class="grey2 mb-6px">Deposited</p>
+                  <p class="grey2 mb-6px">Supplied</p>
                   <p class="white2">
-                    {{ displayFormat(user_info.deposited, token_decimal, 2) }}
+                    {{ displayFormat(user_info.supplied, token_decimal, 2) }}
                     <span class="grey !text-16px">{{ symbol }}</span>
                   </p>
                 </div>
@@ -457,18 +457,18 @@
                   :precision="2"
                   placeholder="0.00"
                   style="width: 100%"
-                  v-model="deposit_amount"
+                  v-model="supply_amount"
                 ></el-input>
                 <div
                   class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px"
                 >
                   <!--mark  approxValue作用：转为美元？  -->
-                  ~${{ displayFormat(approxValue(deposit_amount)) }}
+                  ~${{ displayFormat(approxValue(supply_amount)) }}
                 </div>
                 <!-- mark writeMaxDeposit作用：将用户有的钱都填入表格 -->
                 <div
                   class="flex items-center mr-15px"
-                  @click="writeMaxDeposit()"
+                  @click="writeMaxSupply()"
                 >
                   <div class="max">MAX</div>
                 </div>
@@ -485,9 +485,9 @@
 
               <a
                 class="custom_btn mt-30px mx-auto cursor-pointer"
-                @click="deposit(deposit_amount)"
+                @click="supply(supply_amount)"
               >
-                <span>DEPOSIT {{ symbol }}</span>
+                <span>SUPPLY {{ symbol }}</span>
               </a>
 
               <p class="reminder">
@@ -770,7 +770,7 @@ export default {
       market: {},
       manager: {},
       priceOracle: {},
-      deposit_amount: "",
+      supply_amount: "",
       borrow_amount: "",
       token_decimal: 18,
       is_eth: false,
@@ -890,7 +890,7 @@ export default {
       const results = await this.multicall.aggregate(multicall_list);
 
       this.user_info.ftoken_balance = results[0];
-      this.user_info.deposited = results[1];
+      this.user_info.supplied = results[1];
       this.user_info.borrowed = results[2];
       if (!this.is_eth) {
         this.user_info.token_balance = results[4];
@@ -944,7 +944,7 @@ export default {
 
     /*************************************** Contract functions ***************************************/
 
-    async deposit(amount) {
+    async supply(amount) {
       const account = this.userInfo.userAddress;
       // 将用户输入的转为以wei为单位的数字
       const actualAmount = toWei(amount, this.token_decimal);
@@ -963,8 +963,8 @@ export default {
       if (this.collateralize && !this.is_collateral) {
         dialog_list.push(ProcessInfo.ENTER_MARKET);
       }
-      // ProcessInfo 裡的object：ProcessInfo.DEPOSIT_TOKEN加到DialogInfo array
-      dialog_list.push(ProcessInfo.DEPOSIT_TOKEN);
+      // ProcessInfo 裡的object：ProcessInfo.SUPPLY_TOKEN加到DialogInfo array
+      dialog_list.push(ProcessInfo.SUPPLY_TOKEN);
       //  然後調用openDialog() 打开对话框
       openDialog(this.dialogue_info, dialog_list);
 
@@ -1020,17 +1020,17 @@ export default {
             .send({ from: account, value: actualAmount });
         }
         // 交易成功就弹出窗口
-        this.successMessage(tx_result, `Deposit ${this.symbol} succeeded`);
+        this.successMessage(tx_result, `Supply ${this.symbol} succeeded`);
       } catch (e) {
         console.warn(e);
-        this.errorMessage(`Deposit ${this.symbol} failed`);
+        this.errorMessage(`Supply ${this.symbol} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
       // 关闭对话框
       closeDialog(this.dialogue_info);
       // 将input里面的数值置零
-      this.deposit_amount = "";
+      this.supply_amount = "";
       await this.updateAll();
     },
     async borrow(amount) {
@@ -1056,7 +1056,7 @@ export default {
       await this.updateAll();
     },
 
-    async writeMaxDeposit() {
+    async writeMaxSupply() {
       await this.updateAll();
 
       if (this.user_info.token_balance == 0) {
@@ -1064,9 +1064,9 @@ export default {
       } else {
         const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
         console.log(this.user_info.token_balance);
-        this.deposit_amount = parseFloat(fromWei(this.user_info.token_balance, this.token_decimal)).toFixed(decimals);
+        this.supply_amount = parseFloat(fromWei(this.user_info.token_balance, this.token_decimal)).toFixed(decimals);
         if (this.is_eth) {
-          this.deposit_amount = (this.deposit_amount - 0.001).toFixed(8);
+          this.supply_amount = (this.supply_amount - 0.001).toFixed(8);
         }
       }
     },

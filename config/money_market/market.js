@@ -34,7 +34,7 @@ export const token_list = {
 export const user_info_default = {
   token_balance: 0,
   ftoken_balance: 0,
-  deposited: 0,
+  supplied: 0,
   borrowed: 0,
   borrow_quota: 0,
   withdraw_quota: 0,
