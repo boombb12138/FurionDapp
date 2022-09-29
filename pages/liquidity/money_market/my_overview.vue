@@ -343,9 +343,10 @@
               <el-table-column width="170px">
                 <template slot-scope="scope">
                   <div class="flex items-center">
+                    <!-- todo 这个函数的参数 -->
                     <div
                       class="btn2 mr-15px hover !w-74px"
-                      @click="dialog = true"
+                      @click="handleSupplyAssets(scope.row.AssetNamePure)"
                     >
                       Supply
                     </div>
@@ -644,6 +645,7 @@
 </template>
 
 <script>
+import { initTokenContract } from "@/config/money_market/market";
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
@@ -668,6 +670,7 @@ export default {
         {
           Asset: "Ethereum",
           AssetName: "(ETH)",
+          AssetNamePure: "ETH",
           WalletBalance: "828.07k",
           Deposited: "100.00k",
           AsCollateral: "50k",
@@ -682,6 +685,7 @@ export default {
         {
           Asset: "Furion",
           AssetName: "(FUR)",
+          AssetNamePure: "FUR",
           WalletBalance: "828.07k",
           Deposited: "100.00k",
           AsCollateral: "50k",
@@ -696,6 +700,7 @@ export default {
         {
           Asset: "USDT",
           AssetName: "(USDT)",
+          AssetNamePure: "USDT",
           WalletBalance: "828.07k",
           Deposited: "100.00k",
           AsCollateral: "50k",
@@ -708,6 +713,7 @@ export default {
           ImgUrl: require("@/assets/images/liquidity/tokens/USDT.png"),
         },
       ],
+      token: {},
     };
   },
   mounted() {
@@ -715,6 +721,12 @@ export default {
       this.loading1 = false;
     }, 3000);
   },
-  methods: {},
+  methods: {
+    async handleSupplyAssets(symbol) {
+      this.dialog = true;
+      console.log(symbol);
+      this.token = await initTokenContract(symbol);
+    },
+  },
 };
 </script>
