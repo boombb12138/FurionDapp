@@ -157,7 +157,6 @@
 
         <div class="input">
           <div class="flex items-center mb-20px">
-            <!-- todo 用户点击不同的列显示不同的 -->
             <template v-if="symbol == 'ETH'">
               <div class="flex">
                 <img :src="tableData[0].ImgUrl" class="mr-16px" />
@@ -195,6 +194,7 @@
               :controls="false"
               class="custom !w-200px !rounded-0"
               placeholder="0.00"
+              v-model="supply_amount"
             ></el-input-number>
             <template v-if="symbol == 'ETH'"
               ><div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
@@ -220,7 +220,12 @@
           </div>
         </div>
 
-        <el-button type="primary" class="w-488px !h-54px" plain>
+        <el-button
+          type="primary"
+          class="w-488px !h-54px"
+          plain
+          @click="supply(supply_amount)"
+        >
           <div class="!flex items-center justify-center">
             <div class="text-20px font-700 text-white">Supply</div>
           </div>
@@ -559,7 +564,36 @@
 </template>
 
 <script>
-import { initTokenContract } from "@/config/money_market/market";
+import { mapState } from "vuex";
+import {
+  _formatNumber,
+  _compareInt,
+  getTxURL,
+  toWei,
+  fromWei,
+  tokenApprove,
+  getNativeTokenAmount,
+} from "@/utils/common";
+
+import {
+  user_info_default,
+  market_info_default,
+  initTokenContract,
+  initMarketContract,
+  initManagerContract,
+  initPriceOracle,
+} from "@/config/money_market/market";
+
+import { newMultiCallProvider } from "@/utils/web3/multicall";
+
+import {
+  DialogInfo,
+  initDialog,
+  closeDialog,
+  openDialog,
+  stepDialog,
+  ProcessInfo,
+} from "~/config/loading_info";
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
@@ -567,8 +601,11 @@ export default {
   layout: "blank",
   props: {},
   components: {},
-  computed: {},
+  computed: { ...mapState(["userInfo"]) },
   data() {
+    // todo 检查data
+    // todo 检查mounted
+    const multicall = newMultiCallProvider(4);
     return {
       dialog: false,
       loading1: true,
@@ -625,21 +662,249 @@ export default {
         },
       ],
       token: {},
-      symbol: "ETH",
+      market: {},
+      manager: {},
+      priceOracle: {},
+      symbol: "FUR",
+      supply_amount: "",
+      token_decimal: 18,
+      is_eth: false,
+      is_collateral: false,
+      collateralize: false,
+      dialogue_info: DialogInfo,
+      multicall: multicall,
+      user_info: user_info_default,
+      market_info: market_info_default,
     };
   },
+<<<<<<< Updated upstream
   mounted() {
     this.loading1 = false;
+=======
+  async mounted() {
+>>>>>>> Stashed changes
     setTimeout(() => {
       
     }, 3000);
+    setTimeout(async () => {
+      this.token = await initTokenContract(this.symbol);
+      this.is_eth = this.symbol === "ETH" ? true : false;
+      if (!this.is_eth) {
+        this.token_decimal = parseInt(
+          await this.token.contract.methods.decimals().call()
+        ); //todo 能不能不要在这里给token_decimal赋值
+        //mark 当symbol是FUR this.token_decimal=18
+      }
+      this.market = await initMarketContract(this.symbol);
+      this.priceOracle = await initPriceOracle();
+      await this.updateMarketInfo();
+      this.loading1 = false;
+
+      this.manager = await initManagerContract();
+      await this.updateUserInfo();
+
+      this.is_collateral = await this.manager.contract.methods
+        .checkMembership(this.userInfo.userAddress, this.market.address)
+        .call();
+      this.collateralize = this.is_collateral ? true : false;
+    }, 2000);
   },
   methods: {
+    /******************************* State management *******************************/
+    async updateMarketInfo() {
+      const multicall_list = [
+        this.market.contract.methods.supplyRatePerBlock(),
+        this.market.contract.methods.borrowRatePerBlock(),
+        this.priceOracle.contract.methods.getUnderlyingPrice(
+          this.market.address
+        ),
+        this.market.contract.methods.totalCash(),
+        this.market.contract.methods.totalReserves(),
+        this.market.contract.methods.totalBorrowsCurrent(),
+      ];
+      const results = await this.multicall.aggregate(multicall_list);
+
+      // Number of blocks assumed per year in interest rate contract: 2102400
+      const supplyRatePerBlock = results[0];
+      this.market_info.supply_rate = supplyRatePerBlock * 2102400 * 100;
+      const borrowRatePerBlock = results[1];
+      this.market_info.borrow_rate = borrowRatePerBlock * 2102400 * 100;
+      this.market_info.token_price = results[2][0];
+      this.market_info.cash = results[3];
+      this.market_info.reserve = results[4];
+      this.market_info.borrowed = results[5];
+      this.market_info.supplied =
+        parseInt(results[3]) + parseInt(results[5]) - parseInt(results[4]); // cash + borrow - reserve
+    },
+    async updateUserInfo() {
+      const account = this.userInfo.userAddress;
+      let multicall_list = [
+        this.market.contract.methods.balanceOf(account),
+        this.market.contract.methods.balanceOfUnderlying(account),
+        this.market.contract.methods.borrowBalanceCurrent(account),
+        this.manager.contract.methods.getAccountLiquidity(account),
+      ];
+      if (!this.is_eth) {
+        multicall_list.push(this.token.contract.methods.balanceOf(account));
+      }
+      const results = await this.multicall.aggregate(multicall_list);
+
+      this.user_info.ftoken_balance = results[0];
+      this.user_info.deposited = results[1];
+      this.user_info.borrowed = results[2];
+      if (!this.is_eth) {
+        this.user_info.token_balance = results[4];
+      } else {
+        this.user_info.token_balance = toWei(
+          await getNativeTokenAmount(account)
+        );
+      }
+
+      if (results[3]["1"] > 0) {
+        // results[3]["1"]: shortfall
+        this.user_info.borrow_quota = 0;
+      } else {
+        let tempLiquidity = 0;
+
+        for (let i = 0; i < this.tier; i++) {
+          const liquidityValue = results[3]["0"][i]; // results[3]["0"]: liquidities array
+          const tokenEquivalent = liquidityValue / this.market_info.token_price;
+          tempLiquidity += parseInt(toWei(tokenEquivalent, this.token_decimal));
+        }
+
+        this.user_info.borrow_quota =
+          tempLiquidity > parseInt(this.market_info.cash)
+            ? this.market_info.cash
+            : tempLiquidity.toString();
+      }
+    },
+    async updateAll() {
+      await this.updateMarketInfo();
+      await this.updateUserInfo(); //todo 检查依赖
+    },
+
+    /*********************************** Allowance & balance checks ***********************************/
+
+    async approvedEnoughToken(amount) {
+      const account = this.userInfo.userAddress;
+
+      const allowance = await this.token.contract.methods
+        .allowance(account, this.market.address)
+        .call();
+      return _compareInt(allowance, amount) != "smaller" ? true : false;
+    },
+
     async handleSupplyAssets(symbol) {
       this.dialog = true;
       this.symbol = symbol;
       console.log(symbol);
-      this.token = await initTokenContract(symbol);
+      this.token = await initTokenContract(symbol); //todo  this.symbol 一开始是ETH 那么token一开始也是ETH的
+      console.log("有没有拿到token合约", this.token);
+    },
+
+    /*************************************** Contract functions ***************************************/
+
+    async supply(amount) {
+      console.log("amount", amount);
+      const account = this.userInfo.userAddress;
+      const actualAmount = toWei(amount, this.token_decimal);
+      let approvedEnoughToken;
+
+      let dialog_list = [];
+
+      if (!this.is_eth) {
+        approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
+        if (!approvedEnoughToken) {
+          dialog_list.push(ProcessInfo.APPROVE_TOKEN);
+        }
+      }
+
+      if (this.collateralize && !this.is_collateral) {
+        dialog_list.push(ProcessInfo.ENTER_MARKET);
+      }
+      dialog_list.push(ProcessInfo.DEPOSIT_TOKEN);
+      openDialog(this.dialogue_info, dialog_list);
+
+      if (!this.is_eth) {
+        if (!approvedEnoughToken) {
+          try {
+            const approve_result = await tokenApprove(
+              this.token.address,
+              account,
+              this.market.address
+            );
+            this.successMessage(
+              approve_result,
+              `Approve ${this.symbol} succeeded`
+            );
+            stepDialog(this.dialogue_info);
+          } catch (e) {
+            this.errorMessage(`Approve ${this.symbol} failed`);
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            return;
+          }
+        }
+      }
+
+      if (this.collateralize && !this.is_collateral) {
+        try {
+          const tx_result = await this.manager.contract.methods
+            .enterMarkets([this.market.address])
+            .send({ from: account });
+          this.successMessage(
+            tx_result,
+            `Enter ${this.symbol} market succeeded`
+          );
+          stepDialog(this.dialogue_info);
+        } catch (e) {
+          this.errorMessage(`Enter ${this.symbol} market failed`);
+          closeDialog(this.dialogue_info);
+          return;
+        }
+      }
+
+      try {
+        let tx_result;
+        if (!this.is_eth) {
+          tx_result = await this.market.contract.methods
+            .supply(actualAmount)
+            .send({ from: account });
+        } else {
+          tx_result = await this.market.contract.methods
+            .supply()
+            .send({ from: account, value: actualAmount });
+        }
+        this.successMessage(tx_result, `Deposit ${this.symbol} succeeded`);
+      } catch (e) {
+        console.warn(e);
+        this.errorMessage(`Deposit ${this.symbol} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+      this.dialog = false;
+      closeDialog(this.dialogue_info);
+      this.supply_amount = "";
+      await this.updateAll();
+    },
+    successMessage(receipt, title) {
+      // receipt是交易块的详细信息
+      const txURL = getTxURL(receipt.transactionHash);
+      //txURL :<a href="https://rinkeby.etherscan.io/tx/0xe34eefe362b89f8032c0375267505b62e6b1f84df11dd1e2a4bc793c60d927c2" style="color: blue" target="blank">View on Explorer</a>
+      // 弹出小窗口
+      this.$notify({
+        title: title,
+        dangerouslyUseHTMLString: true,
+        message: txURL,
+        type: "success",
+      });
+    },
+    errorMessage(title) {
+      this.$notify.error({
+        title: title,
+        message: "",
+        dangerouslyUseHTMLString: true,
+      });
     },
   },
 };

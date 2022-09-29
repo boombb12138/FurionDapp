@@ -139,12 +139,12 @@ export const initDialog = (DialogInfo) => {
 export const closeDialog = (DialogInfo) => {
   DialogInfo.DialogVisible = false;
 };
-// 给DialogInfo里的属性赋值
+// 修改DialogInfo里的属性
 export const openDialog = (DialogInfo, StepsInfo) => {
   DialogInfo.Step = 0;
-  DialogInfo.StepsInfo = StepsInfo;
+  DialogInfo.StepsInfo = StepsInfo; //StepsInfo=那两行字的数组对象
   for (let i = 0; i < DialogInfo.StepsInfo.length; i++) {
-    DialogInfo.StepsInfo[i].step = i;
+    DialogInfo.StepsInfo[i].step = i; //只有一个元素 所以是 DialogInfo.StepsInfo[0].step = 0;
   }
   DialogInfo.DialogVisible = true;
 };

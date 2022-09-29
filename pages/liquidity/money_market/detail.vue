@@ -1,6 +1,10 @@
 <style lang="scss" scoped>
 .top-bar {
-  background: linear-gradient(180deg, rgba(51, 53, 114, 0.58) 9.21%, #333572 95.15%);
+  background: linear-gradient(
+    180deg,
+    rgba(51, 53, 114, 0.58) 9.21%,
+    #333572 95.15%
+  );
 }
 .white {
   @apply text-[rgba(252,255,253,1)] text-20px font-700;
@@ -199,10 +203,10 @@
   border: 2px solid #f06fd2;
   text-align: center;
   position: relative;
-  transition: all .5s ease-out;
+  transition: all 0.5s ease-out;
   border-radius: 12px;
 
-  span{
+  span {
     position: relative;
     z-index: 2;
   }
@@ -216,7 +220,7 @@
     height: 100%;
     background: #f06fd2;
     border-radius: 9px;
-    transition: all .5s;
+    transition: all 0.5s;
   }
 
   &:hover {
@@ -274,15 +278,15 @@
 }
 
 .refreshBtn {
-  outline:none;
+  outline: none;
   height: 50px;
   text-align: center;
   width: 160px;
-  border-radius:40px;
+  border-radius: 40px;
   background: none;
   border: 2px solid #f181de;
   color: #f181de;
-  letter-spacing:1px;
+  letter-spacing: 1px;
   text-shadow: 0;
   font-size: 14px;
   font-weight: 800;
@@ -293,26 +297,26 @@
     background: #f181de;
   }
   &:active {
-    letter-spacing: 2px ;
+    letter-spacing: 2px;
   }
   &:after {
-    content:"REFRESH DATA";
+    content: "REFRESH DATA";
   }
 }
 .onclic {
   width: 50px;
-  border-color:#0a1a3a;
-  border-width:5px;
-  font-size:0;
-  border-left-color:#f181de;
+  border-color: #0a1a3a;
+  border-width: 5px;
+  font-size: 0;
+  border-left-color: #f181de;
   animation: rotating 2s 0.25s linear infinite;
 
   &:after {
-    content:"";
+    content: "";
   }
 }
 .validate {
-  font-size:13px;
+  font-size: 13px;
   color: #0a1a3a;
   background: #f181de;
   &:after {
@@ -342,26 +346,52 @@
 
     <div class="w-1184px mx-auto pb-44px">
       <Loading class="w-1184px h-113px top1" :loading="loading1">
-        <div class="w-full h-113px rounded-12px flex items-center top-bar justify-between px-27px">
+        <div
+          class="w-full h-113px rounded-12px flex items-center top-bar justify-between px-27px"
+        >
           <div class="flex items-center">
             <img class="mr-15px w-50px h-50px" :src="asset.image" />
-            <span class="white mr-10px">{{asset.name}}</span>
-            <span class="grey !text-20px mr-100px">({{symbol}})</span>
+            <span class="white mr-10px">{{ asset.name }}</span>
+            <span class="grey !text-20px mr-100px">({{ symbol }})</span>
             <div class="text-center">
               <p class="grey mb-7px">Reserve Size</p>
-              <p class="white">$ {{displayFormat(approxValue(market_info.reserve), 18+token_decimal, 2)}}</p>
+              <p class="white">
+                $
+                {{
+                  displayFormat(
+                    approxValue(market_info.reserve),
+                    18 + token_decimal,
+                    2
+                  )
+                }}
+              </p>
             </div>
             <div class="ml-70px text-center">
               <p class="grey mb-7px">Available liquidity</p>
-              <p class="white">$ {{displayFormat(approxValue(market_info.cash), 18+token_decimal, 2)}}</p>
+              <p class="white">
+                $
+                {{
+                  displayFormat(
+                    approxValue(market_info.cash),
+                    18 + token_decimal,
+                    2
+                  )
+                }}
+              </p>
             </div>
             <div class="ml-70px text-center">
               <p class="grey mb-7px">Oracle price</p>
-              <p class="white">$ {{displayFormat(market_info.token_price, 18, 2)}}</p>
+              <p class="white">
+                $ {{ displayFormat(market_info.token_price, 18, 2) }}
+              </p>
             </div>
           </div>
 
-          <button class="refreshBtn" :class="{onclic: refreshing, 'validate': validating}" @click="refreshData()"></button>
+          <button
+            class="refreshBtn"
+            :class="{ onclic: refreshing, validate: validating }"
+            @click="refreshData()"
+          ></button>
         </div>
       </Loading>
       <div class="flex mt-37px justify-between">
@@ -375,11 +405,16 @@
               <div class="flex items-center">
                 <div class="mr-45px text-center">
                   <p class="grey mb-7px">Total supplied</p>
-                  <p class="white">{{displayFormat(market_info.supplied, token_decimal, 2)}}<span class="grey2 ml-5px !font-600">{{symbol}}</span></p>
+                  <p class="white">
+                    {{ displayFormat(market_info.supplied, token_decimal, 2)
+                    }}<span class="grey2 ml-5px !font-600">{{ symbol }}</span>
+                  </p>
                 </div>
                 <div class="text-center">
                   <p class="grey mb-7px">APR</p>
-                  <p class="white">{{displayFormat(market_info.supply_rate, 18, 2)}}%</p>
+                  <p class="white">
+                    {{ displayFormat(market_info.supply_rate, 18, 2) }}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -388,26 +423,31 @@
               <SupplyInfoChart />
             </client-only>
 
-            <p class="white mt-36px mb-30px ml-22px">Deposit {{symbol}}</p>
+            <p class="white mt-36px mb-30px ml-22px">Deposit {{ symbol }}</p>
             <div class="box2 ml-12px">
               <div class="flex justify-between items-center mb-37px px-10px">
                 <div class="text-center">
                   <p class="grey2 mb-6px">In Wallet</p>
                   <p class="white2">
-                    {{displayFormat(user_info.token_balance, token_decimal, 2)}}
-                    <span class="grey !text-16px">{{symbol}}</span>
+                    <!-- mark 用户钱包余额 -->
+                    {{
+                      displayFormat(user_info.token_balance, token_decimal, 2)
+                    }}
+                    <span class="grey !text-16px">{{ symbol }}</span>
                   </p>
                 </div>
                 <div class="text-center">
                   <p class="grey2 mb-6px">Deposited</p>
                   <p class="white2">
-                    {{displayFormat(user_info.deposited, token_decimal, 2)}}
-                    <span class="grey !text-16px">{{symbol}}</span>
+                    {{ displayFormat(user_info.deposited, token_decimal, 2) }}
+                    <span class="grey !text-16px">{{ symbol }}</span>
                   </p>
                 </div>
                 <div class="text-center">
                   <p class="grey2 mb-6px">APR</p>
-                  <p class="white2">{{displayFormat(market_info.supply_rate, 18, 2)}}%</p>
+                  <p class="white2">
+                    {{ displayFormat(market_info.supply_rate, 18, 2) }}%
+                  </p>
                 </div>
               </div>
 
@@ -419,29 +459,42 @@
                   style="width: 100%"
                   v-model="deposit_amount"
                 ></el-input>
-                <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px">
+                <div
+                  class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px"
+                >
+                  <!--mark  approxValue作用：转为美元？  -->
                   ~${{ displayFormat(approxValue(deposit_amount)) }}
                 </div>
-                <div class="flex items-center mr-15px" @click="writeMaxDeposit()">
+                <!-- mark writeMaxDeposit作用：将用户有的钱都填入表格 -->
+                <div
+                  class="flex items-center mr-15px"
+                  @click="writeMaxDeposit()"
+                >
                   <div class="max">MAX</div>
                 </div>
               </div>
 
               <div class="flex items-center mt-15px pl-6px">
-                <div class="font-500 text-16px text-[rgba(252,255,253,0.8)] mr-16px pulse-text">
+                <div
+                  class="font-500 text-16px text-[rgba(252,255,253,0.8)] mr-16px pulse-text"
+                >
                   Use as collateral
                 </div>
                 <el-switch v-model="collateralize"> </el-switch>
               </div>
 
-              <a class="custom_btn mt-30px mx-auto cursor-pointer" @click="deposit(deposit_amount)">
-                <span>DEPOSIT {{symbol}}</span>
+              <a
+                class="custom_btn mt-30px mx-auto cursor-pointer"
+                @click="deposit(deposit_amount)"
+              >
+                <span>DEPOSIT {{ symbol }}</span>
               </a>
 
               <p class="reminder">
                 Note: Toggle the
-                <span class="text-[#f181de]">use as collateral</span> switch if you plan
-                to use the asset as collateral and have not done so before.
+                <span class="text-[#f181de]">use as collateral</span> switch if
+                you plan to use the asset as collateral and have not done so
+                before.
               </p>
             </div>
           </div>
@@ -457,11 +510,16 @@
               <div class="flex items-center">
                 <div class="mr-45px text-center">
                   <p class="grey mb-7px">Total borrowed</p>
-                  <p class="white">{{displayFormat(market_info.borrowed, token_decimal, 2)}}<span class="grey2 ml-5px !font-600">{{symbol}}</span></p>
+                  <p class="white">
+                    {{ displayFormat(market_info.borrowed, token_decimal, 2)
+                    }}<span class="grey2 ml-5px !font-600">{{ symbol }}</span>
+                  </p>
                 </div>
                 <div class="text-center">
                   <p class="grey mb-7px">APR</p>
-                  <p class="white">{{displayFormat(market_info.borrow_rate, 18, 2)}}%</p>
+                  <p class="white">
+                    {{ displayFormat(market_info.borrow_rate, 18, 2) }}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -470,26 +528,33 @@
               <BorrowInfoChart />
             </client-only>
 
-            <p class="white mt-36px mb-30px ml-22px">Borrow {{symbol}}</p>
-            <div class="box2 ml-12px" :class="{ high: collateralList.length > 1 }">
+            <p class="white mt-36px mb-30px ml-22px">Borrow {{ symbol }}</p>
+            <div
+              class="box2 ml-12px"
+              :class="{ high: collateralList.length > 1 }"
+            >
               <div class="flex justify-between items-center mb-37px px-10px">
                 <div class="text-center">
                   <p class="grey2 mb-6px">Borrow Limit</p>
                   <p class="white2">
-                    {{displayFormat(user_info.borrow_quota, token_decimal, 2)}}
-                    <span class="grey !text-16px">{{symbol}}</span>
+                    {{
+                      displayFormat(user_info.borrow_quota, token_decimal, 2)
+                    }}
+                    <span class="grey !text-16px">{{ symbol }}</span>
                   </p>
                 </div>
                 <div class="text-center">
                   <p class="grey2 mb-6px">Borrowed</p>
                   <p class="white2">
-                    {{displayFormat(user_info.borrowed, token_decimal, 2)}}
-                    <span class="grey !text-16px">{{symbol}}</span>
+                    {{ displayFormat(user_info.borrowed, token_decimal, 2) }}
+                    <span class="grey !text-16px">{{ symbol }}</span>
                   </p>
                 </div>
                 <div class="text-center">
                   <p class="grey2 mb-6px">APR</p>
-                  <p class="white2">{{displayFormat(market_info.borrow_rate, 18, 2)}}%</p>
+                  <p class="white2">
+                    {{ displayFormat(market_info.borrow_rate, 18, 2) }}%
+                  </p>
                 </div>
               </div>
 
@@ -586,10 +651,15 @@
                   style="width: 100%"
                   v-model="borrow_amount"
                 ></el-input>
-                <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px">
+                <div
+                  class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px"
+                >
                   ~${{ displayFormat(approxValue(borrow_amount)) }}
                 </div>
-                <div class="flex items-center mr-15px" @click="writeMaxBorrow()">
+                <div
+                  class="flex items-center mr-15px"
+                  @click="writeMaxBorrow()"
+                >
                   <div class="max">MAX</div>
                 </div>
               </div>
@@ -618,8 +688,11 @@
                 </div>
               </div-->
 
-              <a class="custom_btn mt-70px mx-auto cursor-pointer" @click="borrow(borrow_amount)">
-                <span>BORROW {{symbol}}</span>
+              <a
+                class="custom_btn mt-70px mx-auto cursor-pointer"
+                @click="borrow(borrow_amount)"
+              >
+                <span>BORROW {{ symbol }}</span>
               </a>
               <!--div class="btn_border w-480px mx-auto mt-70px">
                 <el-button type="primary" class="!w-full !h-54px">
@@ -653,7 +726,7 @@ import {
   initMarketContract,
   initManagerContract,
   initPriceOracle,
-  token_list
+  token_list,
 } from "@/config/money_market/market";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 
@@ -673,7 +746,7 @@ export default {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
   },
   props: {},
-  components: {ProceedingDetails},
+  components: { ProceedingDetails },
   computed: {
     ...mapState("admin", ["connectStatus"]),
     ...mapState(["userInfo"]),
@@ -682,7 +755,7 @@ export default {
     },
     tier() {
       return this.$route.query.tier;
-    }
+    },
   },
   data() {
     const multicall = newMultiCallProvider(4);
@@ -707,7 +780,7 @@ export default {
       validating: false,
       dialogue_info: DialogInfo,
       multicall: multicall,
-      
+
       collateralList: [
         {
           num: 0.0,
@@ -725,11 +798,9 @@ export default {
         //   balance: 2.02453,
         // },
       ],
-
     };
   },
   async mounted() {
-
     setTimeout(async () => {
       this.token = await initTokenContract(this.symbol);
       this.is_eth = this.symbol === "ETH" ? true : false;
@@ -737,6 +808,7 @@ export default {
         this.token_decimal = parseInt(
           await this.token.contract.methods.decimals().call()
         );
+        //mark 当symbol是FUR this.token_decimal=18
       }
       this.asset = token_list[this.symbol];
       this.market = await initMarketContract(this.symbol);
@@ -788,7 +860,7 @@ export default {
         ),
         this.market.contract.methods.totalCash(),
         this.market.contract.methods.totalReserves(),
-        this.market.contract.methods.totalBorrowsCurrent()
+        this.market.contract.methods.totalBorrowsCurrent(),
       ];
       const results = await this.multicall.aggregate(multicall_list);
 
@@ -801,7 +873,8 @@ export default {
       this.market_info.cash = results[3];
       this.market_info.reserve = results[4];
       this.market_info.borrowed = results[5];
-      this.market_info.supplied = parseInt(results[3]) + parseInt(results[5]) - parseInt(results[4]); // cash + borrow - reserve
+      this.market_info.supplied =
+        parseInt(results[3]) + parseInt(results[5]) - parseInt(results[4]); // cash + borrow - reserve
     },
     async updateUserInfo() {
       const account = this.userInfo.userAddress;
@@ -826,7 +899,7 @@ export default {
           await getNativeTokenAmount(account)
         );
       }
-  
+
       if (results[3]["1"] > 0) {
         // results[3]["1"]: shortfall
         this.user_info.borrow_quota = 0;
@@ -868,12 +941,14 @@ export default {
         .allowance(account, this.market.address)
         .call();
       return _compareInt(allowance, amount) != "smaller" ? true : false;
+      // 返回一个允许合约划走的金额大于用户要抵押的资产
     },
 
     /*************************************** Contract functions ***************************************/
 
     async deposit(amount) {
       const account = this.userInfo.userAddress;
+      // 将用户输入的转为以wei为单位的数字
       const actualAmount = toWei(amount, this.token_decimal);
       let approvedEnoughToken;
 
@@ -881,14 +956,18 @@ export default {
 
       if (!this.is_eth) {
         approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
+        // console.log("approvedEnoughToken", approvedEnoughToken);//approvedEnoughToken=true
         if (!approvedEnoughToken) {
           dialog_list.push(ProcessInfo.APPROVE_TOKEN);
         }
       }
+      // console.log("this.collateralize", this.collateralize); //false
       if (this.collateralize && !this.is_collateral) {
-        dialog_list.push(ProcessInfo.ENTER_MARKET); 
+        dialog_list.push(ProcessInfo.ENTER_MARKET);
       }
+      // ProcessInfo 裡的object：ProcessInfo.DEPOSIT_TOKEN加到DialogInfo array
       dialog_list.push(ProcessInfo.DEPOSIT_TOKEN);
+      //  然後調用openDialog() 打开对话框
       openDialog(this.dialogue_info, dialog_list);
 
       if (!this.is_eth) {
@@ -912,7 +991,7 @@ export default {
           }
         }
       }
-      
+
       if (this.collateralize && !this.is_collateral) {
         try {
           const tx_result = await this.manager.contract.methods
@@ -931,6 +1010,7 @@ export default {
       }
 
       try {
+        // 交易
         let tx_result;
         if (!this.is_eth) {
           tx_result = await this.market.contract.methods
@@ -941,6 +1021,7 @@ export default {
             .supply()
             .send({ from: account, value: actualAmount });
         }
+        // 交易成功就弹出窗口
         this.successMessage(tx_result, `Deposit ${this.symbol} succeeded`);
       } catch (e) {
         console.warn(e);
@@ -948,9 +1029,9 @@ export default {
         closeDialog(this.dialogue_info);
         return;
       }
-
+      // 关闭对话框
       closeDialog(this.dialogue_info);
-
+      // 将input里面的数值置零
       this.deposit_amount = "";
       await this.updateAll();
     },
@@ -985,7 +1066,9 @@ export default {
       } else {
         const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
         console.log(this.user_info.token_balance);
-        this.deposit_amount = parseFloat(fromWei(this.user_info.token_balance, this.token_decimal)).toFixed(decimals);
+        this.deposit_amount = parseFloat(
+          fromWei(this.user_info.token_balance, this.token_decimal)
+        ).toFixed(decimals);
       }
     },
     async writeMaxBorrow() {
@@ -995,11 +1078,16 @@ export default {
         this.errorMessage(`Cannot borrow more`);
       } else {
         const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
-        this.borrow_amount = parseFloat(fromWei(this.user_info.borrow_quota, this.token_decimal)).toFixed(decimals);
+        this.borrow_amount = parseFloat(
+          fromWei(this.user_info.borrow_quota, this.token_decimal)
+        ).toFixed(decimals);
       }
     },
     successMessage(receipt, title) {
+      // receipt是交易块的详细信息
       const txURL = getTxURL(receipt.transactionHash);
+      //txURL :<a href="https://rinkeby.etherscan.io/tx/0xe34eefe362b89f8032c0375267505b62e6b1f84df11dd1e2a4bc793c60d927c2" style="color: blue" target="blank">View on Explorer</a>
+      // 弹出小窗口
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,
