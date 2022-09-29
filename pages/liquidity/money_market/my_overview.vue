@@ -118,7 +118,8 @@
   height: 44px;
   background: rgba(252, 255, 253, 0.12);
   border: 3px solid #364666;
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25), inset 0px 0px 3px rgba(0, 0, 0, 0.8);
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25),
+    inset 0px 0px 3px rgba(0, 0, 0, 0.8);
   border-radius: 12px;
   margin-bottom: 20px;
   > div {
@@ -210,7 +211,12 @@
               <el-table-column prop="Asset" label="Asset" width="180">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <img src="@/assets/images/dashboard/ETH.png" class="mr-8px" />
+                    <img
+                      :src="scope.row.ImgUrl"
+                      class="mr-8px"
+                      width="22"
+                      height="22"
+                    />
                     <div>{{ scope.row.Asset }}</div>
                     <div class="text-[#A5A7AA]">{{ scope.row.AssetName }}</div>
                   </div>
@@ -232,17 +238,28 @@
                 label="As Collateral"
                 align="right"
               ></el-table-column>
-              <el-table-column prop="APY" label="APY" align="right"></el-table-column>
+              <el-table-column
+                prop="APY"
+                label="APY"
+                align="right"
+              ></el-table-column>
               <el-table-column></el-table-column>
               <el-table-column width="170px">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <div class="btn2 mr-15px hover !w-74px" @click="dialog = true">
+                    <div
+                      class="btn2 mr-15px hover !w-74px"
+                      @click="dialog = true"
+                    >
                       Withdraw
                     </div>
                     <div
                       class="btn2 text-shadow"
-                      @click="$router.push('/liquidity/money_market/detail?asset=ETH&tier=2')"
+                      @click="
+                        $router.push(
+                          '/liquidity/money_market/detail?asset=ETH&tier=2'
+                        )
+                      "
                     >
                       Details
                     </div>
@@ -284,14 +301,21 @@
             <div class="tip">
               <div class="flex items-center pl-30px">
                 <img src="@/assets/images/dashboard/tip.svg" class="mr-15px" />
-                <div>Your Ethereum wallet is empty.Purchase or transfer assets</div>
+                <div>
+                  Your Ethereum wallet is empty.Purchase or transfer assets
+                </div>
               </div>
             </div>
             <el-table :data="tableData" height="156" style="width: 100%">
               <el-table-column prop="Asset" label="Asset" width="180">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <img src="@/assets/images/dashboard/ETH.png" class="mr-8px" />
+                    <img
+                      :src="scope.row.ImgUrl"
+                      class="mr-8px"
+                      width="22"
+                      height="22"
+                    />
                     <div>{{ scope.row.Asset }}</div>
                     <div class="text-[#A5A7AA]">{{ scope.row.AssetName }}</div>
                   </div>
@@ -303,7 +327,11 @@
                 width="180"
                 align="right"
               ></el-table-column>
-              <el-table-column prop="APY" label="APY" align="right"></el-table-column>
+              <el-table-column
+                prop="APY"
+                label="APY"
+                align="right"
+              ></el-table-column>
               <el-table-column label="Asset Type" align="center" width="300px">
                 <template slot-scope="scope">
                   <div class="flex justify-center">
@@ -315,12 +343,19 @@
               <el-table-column width="170px">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <div class="btn2 mr-15px hover !w-74px" @click="dialog = true">
+                    <div
+                      class="btn2 mr-15px hover !w-74px"
+                      @click="dialog = true"
+                    >
                       Supply
                     </div>
                     <div
                       class="btn2 text-shadow"
-                      @click="$router.push('/liquidity/money_market/detail?asset=ETH&tier=2')"
+                      @click="
+                        $router.push(
+                          '/liquidity/money_market/detail?asset=ETH&tier=2'
+                        )
+                      "
                     >
                       Details
                     </div>
@@ -331,7 +366,6 @@
           </div>
         </div>
       </Loading>
-
       <Loading
         :loading="loading1"
         :class="[loading1 ? 'h-290px' : 'h-auto']"
@@ -363,7 +397,12 @@
               <el-table-column prop="Asset" label="Asset" width="180">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <img src="@/assets/images/dashboard/ETH.png" class="mr-8px" />
+                    <img
+                      :src="scope.row.ImgUrl"
+                      class="mr-8px"
+                      width="22"
+                      height="22"
+                    />
                     <div>{{ scope.row.Asset }}</div>
                     <div class="text-[#A5A7AA]">{{ scope.row.AssetName }}</div>
                   </div>
@@ -419,12 +458,19 @@
               <el-table-column width="170px">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <div class="btn2 mr-15px hover !w-74px" @click="dialog = true">
+                    <div
+                      class="btn2 mr-15px hover !w-74px"
+                      @click="dialog = true"
+                    >
                       Repay
                     </div>
                     <div
                       class="btn2 text-shadow"
-                      @click="$router.push('/liquidity/money_market/detail?asset=ETH&tier=2')"
+                      @click="
+                        $router.push(
+                          '/liquidity/money_market/detail?asset=ETH&tier=2'
+                        )
+                      "
                     >
                       Details
                     </div>
@@ -467,7 +513,8 @@
               <div class="flex items-center pl-30px">
                 <img src="@/assets/images/dashboard/tip.svg" class="mr-15px" />
                 <div>
-                  To borrow you need to supply any asset to be used as collateral.
+                  To borrow you need to supply any asset to be used as
+                  collateral.
                 </div>
               </div>
             </div>
@@ -475,7 +522,12 @@
               <el-table-column prop="Asset" label="Asset" width="180">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <img src="@/assets/images/dashboard/ETH.png" class="mr-8px" />
+                    <img
+                      :src="scope.row.ImgUrl"
+                      class="mr-8px"
+                      width="22"
+                      height="22"
+                    />
                     <div>{{ scope.row.Asset }}</div>
                     <div class="text-[#A5A7AA]">{{ scope.row.AssetName }}</div>
                   </div>
@@ -564,12 +616,19 @@
               <el-table-column width="170px">
                 <template slot-scope="scope">
                   <div class="flex items-center">
-                    <div class="btn2 mr-15px hover !w-74px" @click="dialog = true">
+                    <div
+                      class="btn2 mr-15px hover !w-74px"
+                      @click="dialog = true"
+                    >
                       Borrow
                     </div>
                     <div
                       class="btn2 text-shadow"
-                      @click="$router.push('/liquidity/money_market/detail?asset=ETH&tier=2')"
+                      @click="
+                        $router.push(
+                          '/liquidity/money_market/detail?asset=ETH&tier=2'
+                        )
+                      "
                     >
                       Details
                     </div>
@@ -605,19 +664,50 @@ export default {
       show2: true,
       show3: true,
       show4: true,
-      tableData: new Array(10).fill({
-        Asset: "Ethereum",
-        AssetName: "(ETH)",
-        WalletBalance: "828.07k",
-        Deposited: "100.00k",
-        AsCollateral: "50k",
-        AssetType: "A",
-        APY: "5%",
-        Borrowed: "548.12k",
-        CollateralFactor: "20%",
-        AvailableToYou: "5548.12k",
-        Available: "208.12k",
-      }),
+      tableData: [
+        {
+          Asset: "Ethereum",
+          AssetName: "(ETH)",
+          WalletBalance: "828.07k",
+          Deposited: "100.00k",
+          AsCollateral: "50k",
+          AssetType: "A",
+          APY: "5%",
+          Borrowed: "548.12k",
+          CollateralFactor: "20%",
+          AvailableToYou: "5548.12k",
+          Available: "208.12k",
+          ImgUrl: require("@/assets/images/dashboard/ETH.png"),
+        },
+        {
+          Asset: "Furion",
+          AssetName: "(FUR)",
+          WalletBalance: "828.07k",
+          Deposited: "100.00k",
+          AsCollateral: "50k",
+          AssetType: "A",
+          APY: "5%",
+          Borrowed: "548.12k",
+          CollateralFactor: "20%",
+          AvailableToYou: "5548.12k",
+          Available: "208.12k",
+          ImgUrl: require("@/assets/images/liquidity/tokens/FUR.png"),
+        },
+        {
+          Asset: "USDT",
+          AssetName: "(USDT)",
+          WalletBalance: "828.07k",
+          Deposited: "100.00k",
+          AsCollateral: "50k",
+          AssetType: "A",
+          APY: "5%",
+          Borrowed: "548.12k",
+          CollateralFactor: "20%",
+          AvailableToYou: "5548.12k",
+          Available: "208.12k",
+          ImgUrl: require("@/assets/images/liquidity/tokens/USDT.png"),
+        },
+      ],
     };
   },
   mounted() {
