@@ -58,13 +58,13 @@ export const fromWei = (FixNumber, Decimals) => {
     if (result.toFixed(8) - 1e-8 < 0) {
       return 0;
     }
-    return result.toFixed(8) - 1e-8;
+    return result.toFixed(8);
   } else {
     const result = Number(Web3.utils.fromWei(FixNumber, FixDecimals));
     if (result.toFixed(8) - 1e-8 < 0) {
       return 0;
     }
-    return result.toFixed(8) - 1e-8;
+    return result.toFixed(8);
   }
 };
 export const toWei = (FixNumber, Decimals = 18) => {
@@ -239,6 +239,26 @@ export const formatTime = (value) => {
   } else {
     return value;
   }
+};
+
+export const _compareInt = (a, b) => {
+  if (a.length > b. length) {
+    return "larger";
+  }
+  if (a.length < b.length) {
+    return "smaller";
+  }
+    
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] > b[i]) {
+      return "larger";
+    }
+    if (a[i] < b[i]) {
+      return "smaller";
+    }
+  }
+    
+  return "equal";
 };
 
 export const _formatNumber = (value) => {
