@@ -152,12 +152,15 @@
           class="absolute cursor-pointer top-30px right-30px hover:opacity-80"
         />
 
-        <div class="font-600 text-24px mb-25px">Insufficient collateral</div>
-        <div class="font-600 text-16px mb-12px">Adding collateral</div>
+        <div class="font-600 text-24px mb-25px">{{ action }} {{ token_info.symbol }}</div>
 
         <div class="input">
-          <div class="flex items-center mb-20px">
-            <template v-if="symbol == 'ETH'">
+          <div class="mb-20px">
+            <div class="flex items-center">
+              <img :src="token_info.image" class="mr-16px" width="30px" height="30px" />
+              <div class="font-600 text-22px">{{ token_info.symbol }}</div>
+            </div>
+            <!--template v-if="symbol == 'ETH'">
               <div class="flex">
                 <img :src="tableData[0].ImgUrl" class="mr-16px" />
                 <div class="font-600 text-22px">ETH</div>
@@ -184,7 +187,7 @@
                 />
                 <div class="font-600 text-22px">USDT</div>
               </div>
-            </template>
+            </template-->
           </div>
           <div class="flex items-end justify-between">
             <!-- <input type="text" class="w-200px" placeholder="0.00" /> -->
@@ -196,7 +199,12 @@
               placeholder="0.00"
               v-model="supply_amount"
             ></el-input-number>
-            <template v-if="symbol == 'ETH'"
+            <div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
+              MAX
+              <span class="text-[#FCFFFD] font-600">100</span>
+              {{ token_info.symbol }}
+            </div>
+            <!--template v-if="symbol == 'ETH'"
               ><div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
                 MAX
                 <span class="text-[#FCFFFD] font-600">100</span>
@@ -216,7 +224,7 @@
                 <span class="text-[#FCFFFD] font-600">100</span>
                 USDT
               </div></template
-            >
+            -->
           </div>
         </div>
 
@@ -227,7 +235,7 @@
           @click="supply(supply_amount)"
         >
           <div class="!flex items-center justify-center">
-            <div class="text-20px font-700 text-white">Supply</div>
+            <div class="text-20px font-700 text-white">{{ action }}</div>
           </div>
         </el-button>
       </div>
@@ -302,7 +310,7 @@
                       <div class="flex items-center">
                         <div
                           class="btn2 mr-15px hover !w-74px"
-                          @click="dialog = true"
+                          @click="dialog = true; initInteraction(scope.row.AssetName, 'Withdraw')"
                         >
                           Withdraw
                         </div>
@@ -388,7 +396,7 @@
                         <!-- todo 这个函数的参数 -->
                         <div
                           class="btn2 mr-15px hover !w-74px"
-                          @click="handleSupplyAssets(scope.row.AssetName)"
+                          @click="initInteraction(scope.row.AssetName, 'Supply')"
                         >
                           Supply
                         </div>
@@ -466,7 +474,7 @@
                       <div class="flex items-center">
                         <div
                           class="btn2 mr-15px hover !w-74px"
-                          @click="dialog = true"
+                          @click="dialog = true; initInteraction(scope.row.AssetName, 'Repay')"
                         >
                           Repay
                         </div>
@@ -547,6 +555,7 @@
                         <!-- todo 这个函数的参数 -->
                         <div
                           class="btn2 mr-15px hover !w-74px"
+                          @click="dialog = true; initInteraction(scope.row.AssetName, 'Borrow')"
                         >
                           Borrow
                         </div>
@@ -576,6 +585,7 @@ import {
 } from "@/utils/common";
 
 import {
+  token_list,
   user_info_default,
   market_info_default,
   initTokenContract,
@@ -594,13 +604,15 @@ import {
   stepDialog,
   ProcessInfo,
 } from "~/config/loading_info";
+import ProceedingDetails from "@/components/Dialog/ProceedingDetails.vue";
+
 export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
   },
   layout: "blank",
   props: {},
-  components: {},
+  components: {ProceedingDetails},
   computed: { ...mapState(["userInfo"]) },
   data() {
     // todo 检查data
@@ -661,55 +673,39 @@ export default {
           ImgUrl: require("@/assets/images/liquidity/tokens/USDT.png"),
         },
       ],
+
+      balances: {},
+
+      user_info: user_info_default,
+      market_info: market_info_default,
+      token_info: {},
       token: {},
       market: {},
       manager: {},
       priceOracle: {},
-      symbol: "FUR",
-      supply_amount: "",
-      token_decimal: 18,
-      is_eth: false,
+      action: "Supply",
+      interact_amount: "",
       is_collateral: false,
       collateralize: false,
       dialogue_info: DialogInfo,
       multicall: multicall,
-      user_info: user_info_default,
-      market_info: market_info_default,
     };
   },
-<<<<<<< Updated upstream
-  mounted() {
-    this.loading1 = false;
-=======
   async mounted() {
->>>>>>> Stashed changes
-    setTimeout(() => {
-      
-    }, 3000);
-    setTimeout(async () => {
-      this.token = await initTokenContract(this.symbol);
-      this.is_eth = this.symbol === "ETH" ? true : false;
-      if (!this.is_eth) {
-        this.token_decimal = parseInt(
-          await this.token.contract.methods.decimals().call()
-        ); //todo 能不能不要在这里给token_decimal赋值
-        //mark 当symbol是FUR this.token_decimal=18
-      }
-      this.market = await initMarketContract(this.symbol);
-      this.priceOracle = await initPriceOracle();
-      await this.updateMarketInfo();
-      this.loading1 = false;
-
-      this.manager = await initManagerContract();
-      await this.updateUserInfo();
-
-      this.is_collateral = await this.manager.contract.methods
-        .checkMembership(this.userInfo.userAddress, this.market.address)
-        .call();
-      this.collateralize = this.is_collateral ? true : false;
-    }, 2000);
+    this.priceOracle = await initPriceOracle();
+    this.manager = await initManagerContract();
+    this.loading1 = false;
   },
   methods: {
+    async initInteraction(symbol, action) {
+      this.action = action;
+
+      this.token_info = token_list[symbol];
+      this.token_info.symbol = symbol;
+
+      this.token = await initTokenContract(symbol);
+      this.market = await initMarketContract(symbol);
+    },
     /******************************* State management *******************************/
     async updateMarketInfo() {
       const multicall_list = [
