@@ -197,7 +197,7 @@
               :controls="false"
               class="custom !w-200px !rounded-0"
               placeholder="0.00"
-              v-model="supply_amount"
+              v-model="interact_amount"
             ></el-input-number>
             <div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
               MAX
@@ -232,7 +232,7 @@
           type="primary"
           class="w-488px !h-54px"
           plain
-          @click="supply(supply_amount)"
+          @click="supply(interact_amount)"
         >
           <div class="!flex items-center justify-center">
             <div class="text-20px font-700 text-white">{{ action }}</div>
@@ -247,9 +247,9 @@
       <div class="flex justify-between">
         <div class="wrapper">
           <Loading
-            :loading="loading1"
-            :class="[loading1 ? 'h-290px' : 'h-auto']"
-            class="w-580px mb-30px"
+          :loading="loading1"
+          :class="[loading1 ? 'h-290px' : 'h-auto']"
+          class="w-580px mb-30px"
           >
             <div class="info" :class="{ closed: !show1 }">
               <div class="title">
@@ -274,28 +274,19 @@
 
               <div class="content" v-if="show1 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column
-                    prop="Asset"
-                    label="Asset"
-                    width="100"
-                    align="left"
-                  >
+                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
                     <template slot-scope="scope">
-                      <div
-                        class="flex items-center w-1/1 cursor-pointer"
-                        @click="
-                          $router.push(
-                            `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
-                          )
-                        "
-                      >
-                        <img
-                          :src="scope.row.ImgUrl"
-                          class="mr-8px"
-                          width="23"
-                          height="23"
-                        />
-                        <div class="symbol">{{ scope.row.AssetName }}</div>
+                      <div class="flex items-center w-1/1">
+                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
+                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                          <img
+                            :src="scope.row.ImgUrl"
+                            class="mr-8px"
+                            width="23"
+                            height="23"
+                          />
+                          <div class="symbol">{{ scope.row.AssetName }}</div>
+                        </div>
                       </div>
                     </template>
                   </el-table-column>
@@ -303,25 +294,25 @@
                     prop="Deposited"
                     label="Deposited"
                     align="center"
-                    width="100"
+                    width="104"
                   ></el-table-column>
                   <el-table-column
                     prop="APY"
                     label="APY"
                     align="center"
-                    width="100"
+                    width="80"
                   ></el-table-column>
                   <el-table-column
                     prop="Collateral"
                     label="Collateral"
                     align="center"
-                    width="100"
+                    width="104"
                   ></el-table-column>
-                  <el-table-column width="170px">
+                  <el-table-column width="104px">
                     <template slot-scope="scope">
-                      <div class="flex items-center">
+                      <div class="flex items-center justify-end">
                         <div
-                          class="btn2 mr-15px hover !w-74px"
+                          class="btn2 hover !w-74px"
                           @click="dialog = true; initInteraction(scope.row.AssetName, 'Withdraw')"
                         >
                           Withdraw
@@ -335,9 +326,9 @@
           </Loading>
 
           <Loading
-            :loading="loading1"
-            :class="[loading1 ? 'h-358px' : 'h-auto']"
-            class="w-580px"
+          :loading="loading1"
+          :class="[loading1 ? 'h-358px' : 'h-auto']"
+          class="w-580px"
           >
             <div class="info" :class="{ closed: !show3 }">
               <div class="title">
@@ -370,56 +361,42 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column
-                    prop="Asset"
-                    label="Asset"
-                    width="100"
-                    align="left"
-                  >
+                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
                     <template slot-scope="scope">
-                      <div
-                        class="flex items-center cursor-pointer"
-                        @click="
-                          $router.push(
-                            `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
-                          )
-                        "
-                      >
-                        <img
-                          :src="scope.row.ImgUrl"
-                          class="mr-8px"
-                          width="23"
-                          height="23"
-                        />
-                        <div class="symbol">{{ scope.row.AssetName }}</div>
+                      <div class="flex items-center w-1/1">
+                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
+                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                          <img
+                            :src="scope.row.ImgUrl"
+                            class="mr-8px"
+                            width="23"
+                            height="23"
+                          />
+                          <div class="symbol">{{ scope.row.AssetName }}</div>
+                        </div>
                       </div>
                     </template>
                   </el-table-column>
                   <el-table-column
                     prop="Balance"
                     label="Balance"
-                    width="100"
+                    width="104"
                     align="center"
                   ></el-table-column>
                   <el-table-column
                     prop="APY"
                     label="APY"
                     align="center"
-                    width="100"
+                    width="80"
                   ></el-table-column>
-                  <el-table-column label="Tier" align="center" width="100">
+                  <el-table-column width="104"></el-table-column>
+                  <el-table-column width="104" align="right">
                     <template slot-scope="scope">
-                      <div class="flex justify-center">
-                        <Abc v-model="scope.row.tier" readonly></Abc>
-                      </div>
-                    </template>
-                  </el-table-column>
-                  <el-table-column width="100px">
-                    <template slot-scope="scope">
-                      <div class="flex items-center">
+                      <div class="flex items-center justify-end">
+                        <!-- todo 这个函数的参数 -->
                         <div
-                          class="btn2 mr-15px hover !w-74px"
-                          @click="initInteraction(scope.row.AssetName, 'Supply')"
+                          class="btn2 hover !w-74px"
+                          @click="dialog = true; initInteraction(scope.row.AssetName, 'Supply')"
                         >
                           Supply
                         </div>
@@ -431,12 +408,12 @@
             </div>
           </Loading>
         </div>
-
+        
         <div class="wrapper">
           <Loading
-            :loading="loading1"
-            :class="[loading1 ? 'h-290px' : 'h-auto']"
-            class="w-580px mb-30px"
+          :loading="loading1"
+          :class="[loading1 ? 'h-290px' : 'h-auto']"
+          class="w-580px mb-30px"
           >
             <div class="info" :class="{ closed: !show2 }">
               <div class="title">
@@ -461,54 +438,45 @@
 
               <div class="content" v-if="show2 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column
-                    prop="Asset"
-                    label="Asset"
-                    width="100"
-                    align="left"
-                  >
+                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
                     <template slot-scope="scope">
-                      <div
-                        class="flex items-center cursor-pointer"
-                        @click="
-                          $router.push(
-                            `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
-                          )
-                        "
-                      >
-                        <img
-                          :src="scope.row.ImgUrl"
-                          class="mr-8px"
-                          width="23"
-                          height="23"
-                        />
-                        <div class="symbol">{{ scope.row.AssetName }}</div>
+                      <div class="flex items-center w-1/1">
+                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
+                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                          <img
+                            :src="scope.row.ImgUrl"
+                            class="mr-8px"
+                            width="23"
+                            height="23"
+                          />
+                          <div class="symbol">{{ scope.row.AssetName }}</div>
+                        </div>
                       </div>
                     </template>
                   </el-table-column>
                   <el-table-column
                     prop="Borrowed"
                     label="Borrowed"
-                    width="100"
+                    width="104"
                     align="center"
                   ></el-table-column>
                   <el-table-column
                     prop="APY"
                     label="APY"
                     align="center"
-                    width="100"
+                    width="80"
                   ></el-table-column>
                   <el-table-column
                     prop="Available"
                     label="Available"
                     align="center"
-                    width="100"
+                    width="104"
                   ></el-table-column>
-                  <el-table-column width="100px">
+                  <el-table-column width="104">
                     <template slot-scope="scope">
-                      <div class="flex items-center">
+                      <div class="flex items-center justify-end">
                         <div
-                          class="btn2 mr-15px hover !w-74px"
+                          class="btn2 hover !w-74px"
                           @click="dialog = true; initInteraction(scope.row.AssetName, 'Repay')"
                         >
                           Repay
@@ -558,58 +526,45 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column
-                    prop="Asset"
-                    label="Asset"
-                    width="100"
-                    align="left"
-                  >
+                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
                     <template slot-scope="scope">
-                      <div
-                        class="flex items-center cursor-pointer"
-                        @click="
-                          $router.push(
-                            `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
-                          )
-                        "
-                      >
-                        <img
-                          :src="scope.row.ImgUrl"
-                          class="mr-8px"
-                          width="23"
-                          height="23"
-                        />
-                        <div class="symbol">{{ scope.row.AssetName }}</div>
+                      <div class="flex items-center w-1/1">
+                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
+                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                          <img
+                            :src="scope.row.ImgUrl"
+                            class="mr-8px"
+                            width="23"
+                            height="23"
+                          />
+                          <div class="symbol">{{ scope.row.AssetName }}</div>
+                        </div>
                       </div>
                     </template>
                   </el-table-column>
                   <el-table-column
                     prop="Available"
                     label="Available"
-                    width="100"
+                    width="104"
                     align="center"
                   ></el-table-column>
                   <el-table-column
                     prop="APY"
                     label="APY"
                     align="center"
-                    width="100"
+                    width="80"
                   ></el-table-column>
-                  <el-table-column width="100"></el-table-column>
-                  <el-table-column width="100px">
+                  <el-table-column width="104"></el-table-column>
+                  <el-table-column width="104">
                     <template slot-scope="scope">
-                      <div class="flex items-center">
-<<<<<<< Updated upstream
+                      <div class="flex items-center justify-end">
                         <!-- todo 这个函数的参数 -->
                         <div
-                          class="btn2 mr-15px hover !w-74px"
+                          class="btn2 hover !w-74px"
                           @click="dialog = true; initInteraction(scope.row.AssetName, 'Borrow')"
                         >
                           Borrow
                         </div>
-=======
-                        <div class="btn2 mr-15px hover !w-74px">Borrow</div>
->>>>>>> Stashed changes
                       </div>
                     </template>
                   </el-table-column>
@@ -666,6 +621,8 @@ export default {
   components: {ProceedingDetails},
   computed: { ...mapState(["userInfo"]) },
   data() {
+    // todo 检查data
+    // todo 检查mounted
     const multicall = newMultiCallProvider(4);
     return {
       dialog: false,
@@ -741,7 +698,6 @@ export default {
     };
   },
   async mounted() {
-<<<<<<< Updated upstream
     this.priceOracle = await initPriceOracle();
     this.manager = await initManagerContract();
     this.loading1 = false;
@@ -756,38 +712,6 @@ export default {
       this.token = await initTokenContract(symbol);
       this.market = await initMarketContract(symbol);
     },
-=======
-    setTimeout(() => {
-      this.loading1 = false;
-    }, 3000);
-  },
-  methods: {
-    async handleSupplyAssets(symbol) {
-      this.dialog = true;
-      this.symbol = symbol;
-      this.token = await initTokenContract(symbol);
-      this.is_eth = this.symbol === "ETH" ? true : false;
-
-      if (!this.is_eth) {
-        this.token_decimal = parseInt(
-          await this.token.contract.methods.decimals().call()
-        );
-      }
-      this.market = await initMarketContract(this.symbol);
-      this.priceOracle = await initPriceOracle();
-      await this.updateMarketInfo();
-      this.loading1 = false;
-
-      this.manager = await initManagerContract();
-      await this.updateUserInfo();
-
-      this.is_collateral = await this.manager.contract.methods
-        .checkMembership(this.userInfo.userAddress, this.market.address)
-        .call();
-      this.collateralize = this.is_collateral ? true : false;
-    },
-
->>>>>>> Stashed changes
     /******************************* State management *******************************/
     async updateMarketInfo() {
       const multicall_list = [
@@ -858,7 +782,7 @@ export default {
     },
     async updateAll() {
       await this.updateMarketInfo();
-      await this.updateUserInfo();
+      await this.updateUserInfo(); //todo 检查依赖
     },
 
     /*********************************** Allowance & balance checks ***********************************/
@@ -871,29 +795,41 @@ export default {
         .call();
       return _compareInt(allowance, amount) != "smaller" ? true : false;
     },
+    /*
+    async handleSupplyAssets(symbol) {
+      this.dialog = true;
+      this.symbol = symbol;
+      console.log(symbol);
+      this.token = await initTokenContract(symbol); //todo  this.symbol 一开始是ETH 那么token一开始也是ETH的
+      console.log("有没有拿到token合约", this.token);
+    },
+    */
 
     /*************************************** Contract functions ***************************************/
 
     async supply(amount) {
+      //console.log("amount", amount);
       const account = this.userInfo.userAddress;
       const actualAmount = toWei(amount, this.token_decimal);
       let approvedEnoughToken;
 
       let dialog_list = [];
 
-      if (!this.is_eth) {
-        approvedEnoughToken = await this.approvedEnoughToken(actualAmount); //如果不加那个点击按钮切换市场 这个为false
+      if (this.token_info.symbol != "ETH") {
+        approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
         if (!approvedEnoughToken) {
           dialog_list.push(ProcessInfo.APPROVE_TOKEN);
         }
       }
+      /*
       if (this.collateralize && !this.is_collateral) {
         dialog_list.push(ProcessInfo.ENTER_MARKET);
       }
-      dialog_list.push(ProcessInfo.DEPOSIT_TOKEN);
+      */
+      dialog_list.push(ProcessInfo.SUPPLY_TOKEN);
       openDialog(this.dialogue_info, dialog_list);
 
-      if (!this.is_eth) {
+      if (this.token_info.symbol != "ETH") {
         if (!approvedEnoughToken) {
           try {
             const approve_result = await tokenApprove(
@@ -914,7 +850,7 @@ export default {
           }
         }
       }
-
+      /*
       if (this.collateralize && !this.is_collateral) {
         try {
           const tx_result = await this.manager.contract.methods
@@ -931,10 +867,11 @@ export default {
           return;
         }
       }
+      */
 
       try {
         let tx_result;
-        if (!this.is_eth) {
+        if (this.token_info.symbol != "ETH") {
           tx_result = await this.market.contract.methods
             .supply(actualAmount)
             .send({ from: account });
@@ -943,17 +880,17 @@ export default {
             .supply()
             .send({ from: account, value: actualAmount });
         }
-        this.successMessage(tx_result, `Deposit ${this.symbol} succeeded`);
+        this.successMessage(tx_result, `Deposit ${this.token_info.symbol} succeeded`);
       } catch (e) {
         console.warn(e);
-        this.errorMessage(`Deposit ${this.symbol} failed`);
+        this.errorMessage(`Deposit ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
       this.dialog = false;
       closeDialog(this.dialogue_info);
-      this.supply_amount = "";
-      await this.updateAll();
+      this.interact_amount = "";
+      //await this.updateAll();
     },
     successMessage(receipt, title) {
       // receipt是交易块的详细信息
