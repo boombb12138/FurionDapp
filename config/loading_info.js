@@ -148,7 +148,6 @@ export const openDialog = (DialogInfo, StepsInfo) => {
   }
   DialogInfo.DialogVisible = true;
 };
-// todo 也是给DialogInfo里的属性赋值 然后在界面上会有什么实际的变化吗？
 export const stepDialog = (DialogInfo) => {
   DialogInfo.Step += 1;
   if (DialogInfo.Step >= DialogInfo.StepsInfo.length) {

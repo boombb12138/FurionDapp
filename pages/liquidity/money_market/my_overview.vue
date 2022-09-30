@@ -247,9 +247,9 @@
       <div class="flex justify-between">
         <div class="wrapper">
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-290px' : 'h-auto']"
-          class="w-580px mb-30px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-290px' : 'h-auto']"
+            class="w-580px mb-30px"
           >
             <div class="info" :class="{ closed: !show1 }">
               <div class="title">
@@ -274,9 +274,21 @@
 
               <div class="content" v-if="show1 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="100" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="100"
+                    align="left"
+                  >
                     <template slot-scope="scope">
-                      <div class="flex items-center w-1/1 cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                      <div
+                        class="flex items-center w-1/1 cursor-pointer"
+                        @click="
+                          $router.push(
+                            `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                          )
+                        "
+                      >
                         <img
                           :src="scope.row.ImgUrl"
                           class="mr-8px"
@@ -323,9 +335,9 @@
           </Loading>
 
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-358px' : 'h-auto']"
-          class="w-580px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-358px' : 'h-auto']"
+            class="w-580px"
           >
             <div class="info" :class="{ closed: !show3 }">
               <div class="title">
@@ -358,9 +370,21 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="100" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="100"
+                    align="left"
+                  >
                     <template slot-scope="scope">
-                      <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)" >
+                      <div
+                        class="flex items-center cursor-pointer"
+                        @click="
+                          $router.push(
+                            `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                          )
+                        "
+                      >
                         <img
                           :src="scope.row.ImgUrl"
                           class="mr-8px"
@@ -393,7 +417,6 @@
                   <el-table-column width="100px">
                     <template slot-scope="scope">
                       <div class="flex items-center">
-                        <!-- todo 这个函数的参数 -->
                         <div
                           class="btn2 mr-15px hover !w-74px"
                           @click="initInteraction(scope.row.AssetName, 'Supply')"
@@ -408,12 +431,12 @@
             </div>
           </Loading>
         </div>
-        
+
         <div class="wrapper">
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-290px' : 'h-auto']"
-          class="w-580px mb-30px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-290px' : 'h-auto']"
+            class="w-580px mb-30px"
           >
             <div class="info" :class="{ closed: !show2 }">
               <div class="title">
@@ -438,9 +461,21 @@
 
               <div class="content" v-if="show2 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="100" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="100"
+                    align="left"
+                  >
                     <template slot-scope="scope">
-                      <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                      <div
+                        class="flex items-center cursor-pointer"
+                        @click="
+                          $router.push(
+                            `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                          )
+                        "
+                      >
                         <img
                           :src="scope.row.ImgUrl"
                           class="mr-8px"
@@ -523,9 +558,21 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="100" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="100"
+                    align="left"
+                  >
                     <template slot-scope="scope">
-                      <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                      <div
+                        class="flex items-center cursor-pointer"
+                        @click="
+                          $router.push(
+                            `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                          )
+                        "
+                      >
                         <img
                           :src="scope.row.ImgUrl"
                           class="mr-8px"
@@ -552,6 +599,7 @@
                   <el-table-column width="100px">
                     <template slot-scope="scope">
                       <div class="flex items-center">
+<<<<<<< Updated upstream
                         <!-- todo 这个函数的参数 -->
                         <div
                           class="btn2 mr-15px hover !w-74px"
@@ -559,6 +607,9 @@
                         >
                           Borrow
                         </div>
+=======
+                        <div class="btn2 mr-15px hover !w-74px">Borrow</div>
+>>>>>>> Stashed changes
                       </div>
                     </template>
                   </el-table-column>
@@ -615,8 +666,6 @@ export default {
   components: {ProceedingDetails},
   computed: { ...mapState(["userInfo"]) },
   data() {
-    // todo 检查data
-    // todo 检查mounted
     const multicall = newMultiCallProvider(4);
     return {
       dialog: false,
@@ -692,6 +741,7 @@ export default {
     };
   },
   async mounted() {
+<<<<<<< Updated upstream
     this.priceOracle = await initPriceOracle();
     this.manager = await initManagerContract();
     this.loading1 = false;
@@ -706,6 +756,38 @@ export default {
       this.token = await initTokenContract(symbol);
       this.market = await initMarketContract(symbol);
     },
+=======
+    setTimeout(() => {
+      this.loading1 = false;
+    }, 3000);
+  },
+  methods: {
+    async handleSupplyAssets(symbol) {
+      this.dialog = true;
+      this.symbol = symbol;
+      this.token = await initTokenContract(symbol);
+      this.is_eth = this.symbol === "ETH" ? true : false;
+
+      if (!this.is_eth) {
+        this.token_decimal = parseInt(
+          await this.token.contract.methods.decimals().call()
+        );
+      }
+      this.market = await initMarketContract(this.symbol);
+      this.priceOracle = await initPriceOracle();
+      await this.updateMarketInfo();
+      this.loading1 = false;
+
+      this.manager = await initManagerContract();
+      await this.updateUserInfo();
+
+      this.is_collateral = await this.manager.contract.methods
+        .checkMembership(this.userInfo.userAddress, this.market.address)
+        .call();
+      this.collateralize = this.is_collateral ? true : false;
+    },
+
+>>>>>>> Stashed changes
     /******************************* State management *******************************/
     async updateMarketInfo() {
       const multicall_list = [
@@ -776,7 +858,7 @@ export default {
     },
     async updateAll() {
       await this.updateMarketInfo();
-      await this.updateUserInfo(); //todo 检查依赖
+      await this.updateUserInfo();
     },
 
     /*********************************** Allowance & balance checks ***********************************/
@@ -790,18 +872,9 @@ export default {
       return _compareInt(allowance, amount) != "smaller" ? true : false;
     },
 
-    async handleSupplyAssets(symbol) {
-      this.dialog = true;
-      this.symbol = symbol;
-      console.log(symbol);
-      this.token = await initTokenContract(symbol); //todo  this.symbol 一开始是ETH 那么token一开始也是ETH的
-      console.log("有没有拿到token合约", this.token);
-    },
-
     /*************************************** Contract functions ***************************************/
 
     async supply(amount) {
-      console.log("amount", amount);
       const account = this.userInfo.userAddress;
       const actualAmount = toWei(amount, this.token_decimal);
       let approvedEnoughToken;
@@ -809,12 +882,11 @@ export default {
       let dialog_list = [];
 
       if (!this.is_eth) {
-        approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
+        approvedEnoughToken = await this.approvedEnoughToken(actualAmount); //如果不加那个点击按钮切换市场 这个为false
         if (!approvedEnoughToken) {
           dialog_list.push(ProcessInfo.APPROVE_TOKEN);
         }
       }
-
       if (this.collateralize && !this.is_collateral) {
         dialog_list.push(ProcessInfo.ENTER_MARKET);
       }
