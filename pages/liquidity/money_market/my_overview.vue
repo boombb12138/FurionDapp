@@ -192,24 +192,37 @@
   @apply p-25px pr-30px pl-30px relative;
 }
 .box-input {
-    &::v-deep {
-      .el-input__inner {
-        height: 45px;
-        width: 220px;
-        background: #011129;
-        border: none;
-        color: #fcfffd;
-        font-size: 32px;
-        font-weight: 500;
-        text-align: left;
-        padding: 0px;
-        margin-right: 15px;
+  &::v-deep {
+    .el-input__inner {
+      height: 45px;
+      width: 220px;
+      background: #011129;
+      border: none;
+      color: #fcfffd;
+      font-size: 32px;
+      font-weight: 500;
+      text-align: left;
+      padding: 0px;
+      margin-right: 150px;
 
-        &::-webkit-input-placeholder {
-          color: rgba(252,255,253,0.6) !important;
-        }
+      &::-webkit-input-placeholder {
+        color: rgba(252, 255, 253, 0.6) !important;
       }
     }
+    .el-input__suffix-inner {
+      display: flex;
+      height: 100%;
+      right: 15px;
+    }
+  }
+}
+.max {
+  background: linear-gradient(
+    180deg,
+    rgba(51, 53, 114, 0.16) -9.52%,
+    rgba(51, 53, 114, 0.2) 109.52%
+  );
+  @apply rounded-5px w-48px h-28px leading-28px text-[rgba(252,255,253,0.8)] text-13px font-700 text-center cursor-pointer;
 }
 
 @mixin btn-style {
@@ -226,7 +239,7 @@
   position: relative;
 }
 @mixin psuedo-style {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -246,20 +259,20 @@
   }
 
   &:hover::before {
-    opacity: 0 ;
-    transform: scale(0.3,0.3);
+    opacity: 0;
+    transform: scale(0.3, 0.3);
   }
 
   &::after {
     @include psuedo-style;
     opacity: 0;
     border: 2px solid rgba(241, 129, 222, 0.8);
-    transform: scale(1.2,1.2);
+    transform: scale(1.2, 1.2);
   }
 
   &:hover::after {
     opacity: 1;
-    transform: scale(1,1);
+    transform: scale(1, 1);
   }
 }
 </style>
@@ -273,10 +286,12 @@
       :close-on-click-modal="true"
       append-to-body
       custom-class="el-dialog-dark"
-      @close="interact_amount = '';"
+      @close="interact_amount = ''"
     >
       <div slot="title" class="flex font-800 text-28px">
-        <div class="pb-2px line" style="word-spacing: 10px;">{{ action }} {{ token_info.symbol }}</div>
+        <div class="pb-2px line" style="word-spacing: 10px">
+          {{ action }} {{ token_info.symbol }}
+        </div>
       </div>
 
       <div class="input-window mb-25px">
@@ -289,19 +304,30 @@
 
         <div class="flex justify-between items-end">
           <div class="flex items-end">
-            <el-input class="box-input" placeholder="0.0" v-model="interact_amount" type="number"></el-input>
+            <el-input
+              class="box-input"
+              placeholder="0.0"
+              v-model="interact_amount"
+              type="number"
+            ></el-input>
+            <div
+              class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px w-40px"
+            >
+              <!--mark  approxValue作用：转为美元？  -->
+              ~${{ displayFormat(approxValue(interact_amount)) }}
+            </div>
+            <!-- mark writeMaxDeposit作用：将用户有的钱都填入表格 -->
+            <div class="flex items-center mr-15px" @click="writeMaxSupply()">
+              <div class="max">MAX</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <a
-        class="custom_btn mt-30px mx-auto cursor-pointer"
-        @click="execute()"
-      >
+      <a class="custom_btn mt-30px mx-auto cursor-pointer" @click="execute()">
         <span>{{ action }}</span>
       </a>
     </el-dialog>
-    
 
     <div class="w-1184px mx-auto">
       <MarketTab class="mb-55px"></MarketTab>
@@ -309,9 +335,9 @@
       <div class="flex justify-between">
         <div class="wrapper">
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-290px' : 'h-auto']"
-          class="w-580px mb-30px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-290px' : 'h-auto']"
+            class="w-580px mb-30px"
           >
             <div class="info" :class="{ closed: !show1 }">
               <div class="title">
@@ -336,11 +362,27 @@
 
               <div class="content" v-if="show1 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="128"
+                    align="left"
+                  >
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
-                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
-                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <Abc
+                          class="mr-10px"
+                          v-model="scope.row.tier"
+                          readonly
+                        ></Abc>
+                        <div
+                          class="flex items-center cursor-pointer"
+                          @click="
+                            $router.push(
+                              `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                            )
+                          "
+                        >
                           <img
                             :src="scope.row.ImgUrl"
                             class="mr-8px"
@@ -373,7 +415,13 @@
                   <el-table-column width="104px">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Withdraw')">
+                        <div
+                          class="custom-btn"
+                          @click="
+                            dialog = true;
+                            initInteraction(scope.row.AssetName, 'Withdraw');
+                          "
+                        >
                           Withdraw
                         </div>
                       </div>
@@ -385,9 +433,9 @@
           </Loading>
 
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-358px' : 'h-auto']"
-          class="w-580px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-358px' : 'h-auto']"
+            class="w-580px"
           >
             <div class="info" :class="{ closed: !show3 }">
               <div class="title">
@@ -420,11 +468,27 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="128"
+                    align="left"
+                  >
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
-                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
-                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <Abc
+                          class="mr-10px"
+                          v-model="scope.row.tier"
+                          readonly
+                        ></Abc>
+                        <div
+                          class="flex items-center cursor-pointer"
+                          @click="
+                            $router.push(
+                              `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                            )
+                          "
+                        >
                           <img
                             :src="scope.row.ImgUrl"
                             class="mr-8px"
@@ -457,7 +521,13 @@
                   <el-table-column width="104" align="right">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Supply')">
+                        <div
+                          class="custom-btn"
+                          @click="
+                            dialog = true;
+                            initInteraction(scope.row.AssetName, 'Supply');
+                          "
+                        >
                           Supply
                         </div>
                       </div>
@@ -468,12 +538,12 @@
             </div>
           </Loading>
         </div>
-        
+
         <div class="wrapper">
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-290px' : 'h-auto']"
-          class="w-580px mb-30px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-290px' : 'h-auto']"
+            class="w-580px mb-30px"
           >
             <div class="info" :class="{ closed: !show2 }">
               <div class="title">
@@ -498,11 +568,27 @@
 
               <div class="content" v-if="show2 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="128"
+                    align="left"
+                  >
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
-                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
-                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <Abc
+                          class="mr-10px"
+                          v-model="scope.row.tier"
+                          readonly
+                        ></Abc>
+                        <div
+                          class="flex items-center cursor-pointer"
+                          @click="
+                            $router.push(
+                              `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                            )
+                          "
+                        >
                           <img
                             :src="scope.row.ImgUrl"
                             class="mr-8px"
@@ -535,7 +621,13 @@
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Repay')">
+                        <div
+                          class="custom-btn"
+                          @click="
+                            dialog = true;
+                            initInteraction(scope.row.AssetName, 'Repay');
+                          "
+                        >
                           Repay
                         </div>
                       </div>
@@ -583,11 +675,27 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="128"
+                    align="left"
+                  >
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
-                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
-                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <Abc
+                          class="mr-10px"
+                          v-model="scope.row.tier"
+                          readonly
+                        ></Abc>
+                        <div
+                          class="flex items-center cursor-pointer"
+                          @click="
+                            $router.push(
+                              `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                            )
+                          "
+                        >
                           <img
                             :src="scope.row.ImgUrl"
                             class="mr-8px"
@@ -620,7 +728,13 @@
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Borrow')">
+                        <div
+                          class="custom-btn"
+                          @click="
+                            dialog = true;
+                            initInteraction(scope.row.AssetName, 'Borrow');
+                          "
+                        >
                           Borrow
                         </div>
                       </div>
@@ -676,7 +790,7 @@ export default {
   },
   layout: "blank",
   props: {},
-  components: {ProceedingDetails},
+  components: { ProceedingDetails },
   computed: { ...mapState(["userInfo"]) },
   data() {
     // todo 检查data
@@ -753,6 +867,7 @@ export default {
       collateralize: false,
       dialogue_info: DialogInfo,
       multicall: multicall,
+      is_eth: false,
     };
   },
   async mounted() {
@@ -761,14 +876,16 @@ export default {
     this.loading1 = false;
   },
   methods: {
+    // 初始化token和market合约
     async initInteraction(symbol, action) {
       this.action = action;
 
-      this.token_info = token_list[symbol];
+      this.token_info = token_list[symbol]; //mark token_info是代币的信息对象
       this.token_info.symbol = symbol;
 
       this.token = await initTokenContract(symbol);
       this.market = await initMarketContract(symbol);
+      this.is_eth = this.token_info.symbol === "ETH" ? true : false;
     },
     async execute() {
       switch (this.action) {
@@ -779,8 +896,8 @@ export default {
           await this.withdraw();
           break;
         case "Borrow":
-         await this.borrow();
-         break;
+          await this.borrow();
+          break;
         case "Repay":
           await this.repay();
           break;
@@ -874,7 +991,10 @@ export default {
 
     async borrow() {
       const account = this.userInfo.userAddress;
-      const actualAmount = toWei(this.interact_amount, this.token_info.decimals);
+      const actualAmount = toWei(
+        this.interact_amount,
+        this.token_info.decimals
+      );
 
       openDialog(this.dialogue_info, [ProcessInfo.BORROW_TOKEN]);
 
@@ -882,7 +1002,10 @@ export default {
         const tx_result = await this.market.contract.methods
           .borrow(actualAmount)
           .send({ from: account });
-        this.successMessage(tx_result, `Borrow ${this.token_info.symbol} succeeded`);
+        this.successMessage(
+          tx_result,
+          `Borrow ${this.token_info.symbol} succeeded`
+        );
       } catch (e) {
         this.errorMessage(`Borrow ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
@@ -941,7 +1064,10 @@ export default {
             .repayBorrow()
             .send({ from: account, value: actualAmount });
         }
-        this.successMessage(tx_result, `Repay ${this.token_info.symbol} succeeded`);
+        this.successMessage(
+          tx_result,
+          `Repay ${this.token_info.symbol} succeeded`
+        );
       } catch (e) {
         this.errorMessage(`Repay ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
@@ -955,7 +1081,10 @@ export default {
     async supply() {
       //console.log("amount", amount);
       const account = this.userInfo.userAddress;
-      const actualAmount = toWei(this.interact_amount, this.token_info.decimals);
+      const actualAmount = toWei(
+        this.interact_amount,
+        this.token_info.decimals
+      );
       let approvedEnoughToken;
 
       let dialog_list = [];
@@ -1025,14 +1154,17 @@ export default {
             .supply()
             .send({ from: account, value: actualAmount });
         }
-        this.successMessage(tx_result, `Supply ${this.token_info.symbol} succeeded`);
+        this.successMessage(
+          tx_result,
+          `Supply ${this.token_info.symbol} succeeded`
+        );
       } catch (e) {
         console.warn(e);
         this.errorMessage(`Supply ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
-      
+
       closeDialog(this.dialogue_info);
       this.dialog = false;
       this.interact_amount = "";
@@ -1047,7 +1179,10 @@ export default {
         const tx_result = await this.market.contract.methods
           .redeemUnderlying(actualAmount)
           .send({ from: account });
-        this.successMessage(tx_result, `Withdraw ${this.token_info.symbol} succeeded`);
+        this.successMessage(
+          tx_result,
+          `Withdraw ${this.token_info.symbol} succeeded`
+        );
       } catch (e) {
         this.errorMessage(`Withdraw ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
@@ -1057,6 +1192,23 @@ export default {
       closeDialog(this.dialogue_info);
       this.dialog = false;
       this.interact_amount = "";
+    },
+
+    async writeMaxSupply() {
+      await this.updateAll();
+
+      if (this.user_info.token_balance == 0) {
+        this.errorMessage(`No ${this.symbol} in wallet`);
+      } else {
+        const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
+        console.log(this.user_info.token_balance);
+        this.interact_amount = parseFloat(
+          fromWei(this.user_info.token_balance, this.token_decimal)
+        ).toFixed(decimals);
+        if (this.is_eth) {
+          this.interact_amount = (this.interact_amount - 0.001).toFixed(8);
+        }
+      }
     },
     successMessage(receipt, title) {
       // receipt是交易块的详细信息
@@ -1076,6 +1228,28 @@ export default {
         message: "",
         dangerouslyUseHTMLString: true,
       });
+    },
+    formatNumber(value, fixed = 2) {
+      let reserve = value - parseInt(value);
+      let final_result;
+      if (value - reserve < 1) {
+        final_result = "0" + reserve.toFixed(fixed).toString().substr(1);
+      } else {
+        final_result =
+          _formatNumber(value).split(".")[0] +
+          reserve.toFixed(fixed).toString().substr(1);
+      }
+      if (final_result[0] == "-" || final_result[0] == "N") {
+        final_result = "--";
+      }
+      return final_result;
+    },
+    approxValue(tokenAmount) {
+      const actualAmount = tokenAmount == "" ? 0 : tokenAmount;
+      return this.market_info.token_price * actualAmount;
+    },
+    displayFormat(amount, decimal = 18, fixed = 0) {
+      return this.formatNumber(fromWei(amount, decimal), fixed);
     },
   },
 };
