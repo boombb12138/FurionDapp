@@ -140,106 +140,115 @@
   display: flex;
   flex-direction: column;
 }
+
+.custom_btn {
+  display: block;
+  width: 480px;
+  height: 50px;
+  line-height: 45px;
+  font-size: 19px;
+  font-weight: 800;
+  text-decoration: none;
+  color: #f06fd2;
+  border: 2px solid #f06fd2;
+  text-align: center;
+  position: relative;
+  transition: all 0.5s ease-out;
+  border-radius: 12px;
+
+  span {
+    position: relative;
+    z-index: 2;
+  }
+
+  &:after {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #f06fd2;
+    border-radius: 9px;
+    transition: all 0.5s;
+  }
+
+  &:hover {
+    color: #091839;
+  }
+
+  &:hover:after {
+    width: 100%;
+  }
+}
+
+.input-window {
+  background: #011129;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fcfffd;
+  @apply p-25px pr-30px pl-30px relative;
+}
+.box-input {
+    &::v-deep {
+      .el-input__inner {
+        height: 45px;
+        width: 220px;
+        background: #011129;
+        border: none;
+        color: #fcfffd;
+        font-size: 32px;
+        font-weight: 500;
+        text-align: left;
+        padding: 0px;
+        margin-right: 15px;
+
+        &::-webkit-input-placeholder {
+          color: rgba(252,255,253,0.6) !important;
+        }
+      }
+    }
+}
 </style>
 
 <template>
   <div class="page py-156px bg-[#01132E] text-[#FCFFFD]">
-    <div class="el-dialog__wrapper z-1000" v-if="dialog">
-      <div class="dialog center absolute pt-40px px-45px">
-        <img
-          src="@/assets/images/dashboard/close.svg"
-          @click="dialog = false"
-          class="absolute cursor-pointer top-30px right-30px hover:opacity-80"
-        />
+    <el-dialog
+      :visible.sync="dialog"
+      width="587px"
+      height="355px"
+      :close-on-click-modal="true"
+      append-to-body
+      custom-class="el-dialog-dark"
+      @close="interact_amount = '';"
+    >
+      <div slot="title" class="flex font-800 text-28px">
+        <div class="pb-2px line" style="word-spacing: 10px;">{{ action }} {{ token_info.symbol }}</div>
+      </div>
 
-        <div class="font-600 text-24px mb-25px">{{ action }} {{ token_info.symbol }}</div>
-
-        <div class="input">
-          <div class="mb-20px">
-            <div class="flex items-center">
-              <img :src="token_info.image" class="mr-16px" width="30px" height="30px" />
-              <div class="font-600 text-22px">{{ token_info.symbol }}</div>
-            </div>
-            <!--template v-if="symbol == 'ETH'">
-              <div class="flex">
-                <img :src="tableData[0].ImgUrl" class="mr-16px" />
-                <div class="font-600 text-22px">ETH</div>
-              </div>
-            </template>
-            <template v-else-if="symbol == 'FUR'">
-              <div class="flex">
-                <img
-                  :src="tableData[1].ImgUrl"
-                  class="mr-16px"
-                  width="22"
-                  height="22"
-                />
-                <div class="font-600 text-22px">FUR</div>
-              </div>
-            </template>
-            <template v-else>
-              <div class="flex">
-                <img
-                  :src="tableData[2].ImgUrl"
-                  class="mr-16px"
-                  width="22"
-                  height="22"
-                />
-                <div class="font-600 text-22px">USDT</div>
-              </div>
-            </template-->
-          </div>
-          <div class="flex items-end justify-between">
-            <!-- <input type="text" class="w-200px" placeholder="0.00" /> -->
-
-            <el-input-number
-              :precision="2"
-              :controls="false"
-              class="custom !w-200px !rounded-0"
-              placeholder="0.00"
-              v-model="interact_amount"
-            ></el-input-number>
-            <div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
-              MAX
-              <span class="text-[#FCFFFD] font-600">100</span>
-              {{ token_info.symbol }}
-            </div>
-            <!--template v-if="symbol == 'ETH'"
-              ><div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
-                MAX
-                <span class="text-[#FCFFFD] font-600">100</span>
-                ETH
-              </div></template
-            >
-            <template v-if="symbol == 'FUR'"
-              ><div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
-                MAX
-                <span class="text-[#FCFFFD] font-600">100</span>
-                FUR
-              </div></template
-            >
-            <template v-if="symbol == 'USDT'"
-              ><div class="text-[#C3C6CD] font-500 text-16px flex-shrink-0">
-                MAX
-                <span class="text-[#FCFFFD] font-600">100</span>
-                USDT
-              </div></template
-            -->
+      <div class="input-window mb-25px">
+        <div class="flex items-center justify-between mb-20px">
+          <div class="flex items-center">
+            <img :src="token_info.image" class="w-40px mr-15px rounded-full" />
+            <div class="font-600 text-22px">{{ token_info.symbol }}</div>
           </div>
         </div>
 
-        <el-button
-          type="primary"
-          class="w-488px !h-54px"
-          plain
-          @click="supply(interact_amount)"
-        >
-          <div class="!flex items-center justify-center">
-            <div class="text-20px font-700 text-white">{{ action }}</div>
+        <div class="flex justify-between items-end">
+          <div class="flex items-end">
+            <el-input class="box-input" placeholder="0.0" v-model="interact_amount" type="number"></el-input>
           </div>
-        </el-button>
+        </div>
       </div>
-    </div>
+
+      <a
+        class="custom_btn mt-30px mx-auto cursor-pointer"
+        @click="execute()"
+      >
+        <span>{{ action }}</span>
+      </a>
+    </el-dialog>
+    
 
     <div class="w-1184px mx-auto">
       <MarketTab class="mb-55px"></MarketTab>
@@ -389,7 +398,12 @@
                     align="center"
                     width="80"
                   ></el-table-column>
-                  <el-table-column width="104"></el-table-column>
+                  <el-table-column
+                    prop="TotalSupply"
+                    label="Total Supply"
+                    align="center"
+                    width="104"
+                  ></el-table-column>
                   <el-table-column width="104" align="right">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
@@ -554,7 +568,12 @@
                     align="center"
                     width="80"
                   ></el-table-column>
-                  <el-table-column width="104"></el-table-column>
+                  <el-table-column
+                    prop="TotalBorrow"
+                    label="Total Borrow"
+                    align="center"
+                    width="104"
+                  ></el-table-column>
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
@@ -712,6 +731,22 @@ export default {
       this.token = await initTokenContract(symbol);
       this.market = await initMarketContract(symbol);
     },
+    async execute() {
+      switch (this.action) {
+        case "Supply":
+          await this.supply();
+          break;
+        case "Withdraw":
+          await this.withdraw();
+          break;
+        case "Borrow":
+         await this.borrow();
+         break;
+        case "Repay":
+          await this.repay();
+          break;
+      }
+    },
     /******************************* State management *******************************/
     async updateMarketInfo() {
       const multicall_list = [
@@ -795,22 +830,13 @@ export default {
         .call();
       return _compareInt(allowance, amount) != "smaller" ? true : false;
     },
-    /*
-    async handleSupplyAssets(symbol) {
-      this.dialog = true;
-      this.symbol = symbol;
-      console.log(symbol);
-      this.token = await initTokenContract(symbol); //todo  this.symbol 一开始是ETH 那么token一开始也是ETH的
-      console.log("有没有拿到token合约", this.token);
-    },
-    */
 
     /*************************************** Contract functions ***************************************/
 
-    async supply(amount) {
+    async supply() {
       //console.log("amount", amount);
       const account = this.userInfo.userAddress;
-      const actualAmount = toWei(amount, this.token_decimal);
+      const actualAmount = toWei(this.interact_amount, this.token_decimal);
       let approvedEnoughToken;
 
       let dialog_list = [];
@@ -880,10 +906,10 @@ export default {
             .supply()
             .send({ from: account, value: actualAmount });
         }
-        this.successMessage(tx_result, `Deposit ${this.token_info.symbol} succeeded`);
+        this.successMessage(tx_result, `Supply ${this.token_info.symbol} succeeded`);
       } catch (e) {
         console.warn(e);
-        this.errorMessage(`Deposit ${this.token_info.symbol} failed`);
+        this.errorMessage(`Supply ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
