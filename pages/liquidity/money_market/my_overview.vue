@@ -150,7 +150,7 @@
   font-weight: 800;
   text-decoration: none;
   color: #f06fd2;
-  border: 2px solid #f06fd2;
+  // border: 2px solid #f06fd2;
   text-align: center;
   position: relative;
   transition: all 0.5s ease-out;
@@ -163,21 +163,21 @@
     z-index: 2;
   }
 
-  &:after {
-    position: absolute;
-    content: "";
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background: #f06fd2;
-    border-radius: 9px;
-    transition: all 0.5s;
-  }
+  // &:after {
+  //   position: absolute;
+  //   content: "";
+  //   top: 0;
+  //   left: 0;
+  //   width: 0;
+  //   height: 100%;
+  //   background: #f06fd2;
+  //   border-radius: 9px;
+  //   transition: all 0.5s;
+  // }
 
-  &:hover {
-    color: #091839;
-  }
+  // &:hover {
+  //   color: #091839;
+  // }
 
   &:hover:after {
     width: 100%;
@@ -324,9 +324,18 @@
         </div>
       </div>
 
-      <a class="custom_btn mt-30px mx-auto cursor-pointer" @click="execute()">
-        <span>{{ action }}</span>
-      </a>
+      <div class="custom_btn">
+        <el-button
+          type="primary"
+          class="!w-full"
+          :disabled="disableBtn()"
+          @click="execute()"
+        >
+          <span class="font-800 text-20px" style="word-spacing: 5px">{{
+            action
+          }}</span></el-button
+        >
+      </div>
     </el-dialog>
 
     <div class="w-1184px mx-auto">
@@ -1250,6 +1259,48 @@ export default {
     },
     displayFormat(amount, decimal = 18, fixed = 0) {
       return this.formatNumber(fromWei(amount, decimal), fixed);
+    },
+    compareFormat(amount, decimal) {
+      const actualAmount = amount == "" ? 0 : parseFloat(amount);
+      return parseInt(toWei(actualAmount, decimal));
+    },
+    disableBtn() {
+      switch (this.action) {
+        case "Repay":
+        case "Supply":
+          if (
+            this.compareFormat(this.interact_amount, this.token_info.decimals) >
+            parseInt(this.user_info.token_balance)
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        case "Withdraw":
+          if (
+            this.compareFormat(this.interact_amount, this.token_info.decimals) >
+              parseInt(this.user_info.withdraw_quota) ||
+            this.compareFormat(this.interact_amount, this.token_info.decimals) >
+              parseInt(this.user_info.deposited) ||
+            this.interact_amount === ""
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        case "Borrow":
+          if (
+            this.compareFormat(this.interact_amount, this.token_info.decimals) >
+              parseInt(this.user_info.borrow_quota) ||
+            this.compareFormat(this.interact_amount, this.token_info.decimals) >
+              parseInt(this.market_info.cash) ||
+            this.interact_amount === ""
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+      }
     },
   },
 };
