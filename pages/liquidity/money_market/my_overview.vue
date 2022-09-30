@@ -143,10 +143,10 @@
 
 .custom_btn {
   display: block;
-  width: 480px;
+  width: 520px;
   height: 50px;
   line-height: 45px;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 800;
   text-decoration: none;
   color: #f06fd2;
@@ -155,6 +155,8 @@
   position: relative;
   transition: all 0.5s ease-out;
   border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 
   span {
     position: relative;
@@ -208,6 +210,57 @@
         }
       }
     }
+}
+
+@mixin btn-style {
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: 0 1px 0px rgb(1, 19, 46, 0.8);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  line-height: 30px;
+  height: 30px;
+  text-align: center;
+  width: 100px;
+  cursor: pointer;
+  transition: all 0.5s;
+  position: relative;
+}
+@mixin psuedo-style {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+.custom-btn {
+  @include btn-style;
+  color: #f181de;
+
+  &::before {
+    @include psuedo-style;
+    background-color: rgba(241, 129, 222, 0.1);
+  }
+
+  &:hover::before {
+    opacity: 0 ;
+    transform: scale(0.3,0.3);
+  }
+
+  &::after {
+    @include psuedo-style;
+    opacity: 0;
+    border: 2px solid rgba(241, 129, 222, 0.8);
+    transform: scale(1.2,1.2);
+  }
+
+  &:hover::after {
+    opacity: 1;
+    transform: scale(1,1);
+  }
 }
 </style>
 
@@ -320,10 +373,7 @@
                   <el-table-column width="104px">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div
-                          class="btn2 hover !w-74px"
-                          @click="dialog = true; initInteraction(scope.row.AssetName, 'Withdraw')"
-                        >
+                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Withdraw')">
                           Withdraw
                         </div>
                       </div>
@@ -407,11 +457,7 @@
                   <el-table-column width="104" align="right">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <!-- todo 这个函数的参数 -->
-                        <div
-                          class="btn2 hover !w-74px"
-                          @click="dialog = true; initInteraction(scope.row.AssetName, 'Supply')"
-                        >
+                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Supply')">
                           Supply
                         </div>
                       </div>
@@ -489,10 +535,7 @@
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div
-                          class="btn2 hover !w-74px"
-                          @click="dialog = true; initInteraction(scope.row.AssetName, 'Repay')"
-                        >
+                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Repay')">
                           Repay
                         </div>
                       </div>
@@ -577,11 +620,7 @@
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <!-- todo 这个函数的参数 -->
-                        <div
-                          class="btn2 hover !w-74px"
-                          @click="dialog = true; initInteraction(scope.row.AssetName, 'Borrow')"
-                        >
+                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Borrow')">
                           Borrow
                         </div>
                       </div>
