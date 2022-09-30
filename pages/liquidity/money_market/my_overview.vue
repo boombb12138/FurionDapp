@@ -833,10 +833,90 @@ export default {
 
     /*************************************** Contract functions ***************************************/
 
+    async borrow() {
+      const account = this.userInfo.userAddress;
+      const actualAmount = toWei(this.interact_amount, this.token_info.decimals);
+
+      openDialog(this.dialogue_info, [ProcessInfo.BORROW_TOKEN]);
+
+      try {
+        const tx_result = await this.market.contract.methods
+          .borrow(actualAmount)
+          .send({ from: account });
+        this.successMessage(tx_result, `Borrow ${this.token_info.symbol} succeeded`);
+      } catch (e) {
+        this.errorMessage(`Borrow ${this.token_info.symbol} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+
+      closeDialog(this.dialogue_info);
+      this.dialog = false;
+      this.interact_amount = "";
+    },
+    async repay() {
+      const account = this.userInfo.userAddress;
+      let actualAmount = toWei(this.interact_amount, this.token_info.decimals);
+      let approvedEnoughToken;
+
+      let dialog_list = [];
+      if (this.token_info.symbol != "ETH") {
+        approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
+        if (!approvedEnoughToken) {
+          dialog_list.push(ProcessInfo.APPROVE_TOKEN);
+        }
+      }
+      dialog_list.push(ProcessInfo.REPAY_TOKEN);
+      openDialog(this.dialogue_info, dialog_list);
+
+      if (this.token_info.symbol != "ETH") {
+        if (!approvedEnoughToken) {
+          try {
+            const approve_result = await tokenApprove(
+              this.token.address,
+              account,
+              this.market.address
+            );
+            this.successMessage(
+              approve_result,
+              `Approve ${this.token_info.symbol} succeeded`
+            );
+            stepDialog(this.dialogue_info);
+          } catch (e) {
+            this.errorMessage(`Approve ${this.token_info.symbol} failed`);
+            console.warn(e);
+            closeDialog(this.dialogue_info);
+            return;
+          }
+        }
+      }
+
+      try {
+        let tx_result;
+        if (this.token_info.symbol != "ETH") {
+          tx_result = await this.market.contract.methods
+            .repayBorrow(actualAmount)
+            .send({ from: account });
+        } else {
+          tx_result = await this.market.contract.methods
+            .repayBorrow()
+            .send({ from: account, value: actualAmount });
+        }
+        this.successMessage(tx_result, `Repay ${this.token_info.symbol} succeeded`);
+      } catch (e) {
+        this.errorMessage(`Repay ${this.token_info.symbol} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+
+      closeDialog(this.dialogue_info);
+      this.dialog = false;
+      this.interact_amount = "";
+    },
     async supply() {
       //console.log("amount", amount);
       const account = this.userInfo.userAddress;
-      const actualAmount = toWei(this.interact_amount, this.token_decimal);
+      const actualAmount = toWei(this.interact_amount, this.token_info.decimals);
       let approvedEnoughToken;
 
       let dialog_list = [];
@@ -865,11 +945,11 @@ export default {
             );
             this.successMessage(
               approve_result,
-              `Approve ${this.symbol} succeeded`
+              `Approve ${this.token_info.symbol} succeeded`
             );
             stepDialog(this.dialogue_info);
           } catch (e) {
-            this.errorMessage(`Approve ${this.symbol} failed`);
+            this.errorMessage(`Approve ${this.token_info.symbol} failed`);
             console.warn(e);
             closeDialog(this.dialogue_info);
             return;
@@ -884,11 +964,11 @@ export default {
             .send({ from: account });
           this.successMessage(
             tx_result,
-            `Enter ${this.symbol} market succeeded`
+            `Enter ${this.token_info.symbol} market succeeded`
           );
           stepDialog(this.dialogue_info);
         } catch (e) {
-          this.errorMessage(`Enter ${this.symbol} market failed`);
+          this.errorMessage(`Enter ${this.token_info.symbol} market failed`);
           closeDialog(this.dialogue_info);
           return;
         }
@@ -913,10 +993,31 @@ export default {
         closeDialog(this.dialogue_info);
         return;
       }
-      this.dialog = false;
+      
       closeDialog(this.dialogue_info);
+      this.dialog = false;
       this.interact_amount = "";
-      //await this.updateAll();
+    },
+    async withdraw() {
+      const account = this.userInfo.userAddress;
+      let actualAmount = toWei(this.interact_amount, this.token_info.decimals);
+
+      openDialog(this.dialogue_info, [ProcessInfo.WITHDRAW_TOKEN]);
+
+      try {
+        const tx_result = await this.market.contract.methods
+          .redeemUnderlying(actualAmount)
+          .send({ from: account });
+        this.successMessage(tx_result, `Withdraw ${this.token_info.symbol} succeeded`);
+      } catch (e) {
+        this.errorMessage(`Withdraw ${this.token_info.symbol} failed`);
+        closeDialog(this.dialogue_info);
+        return;
+      }
+
+      closeDialog(this.dialogue_info);
+      this.dialog = false;
+      this.interact_amount = "";
     },
     successMessage(receipt, title) {
       // receipt是交易块的详细信息
