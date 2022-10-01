@@ -150,7 +150,7 @@
   font-weight: 800;
   text-decoration: none;
   color: #f06fd2;
-  border: 2px solid #f06fd2;
+  // border: 2px solid #f06fd2;
   text-align: center;
   position: relative;
   transition: all 0.5s ease-out;
@@ -163,21 +163,21 @@
     z-index: 2;
   }
 
-  &:after {
-    position: absolute;
-    content: "";
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background: #f06fd2;
-    border-radius: 9px;
-    transition: all 0.5s;
-  }
+  // &:after {
+  //   position: absolute;
+  //   content: "";
+  //   top: 0;
+  //   left: 0;
+  //   width: 0;
+  //   height: 100%;
+  //   background: #f06fd2;
+  //   border-radius: 9px;
+  //   transition: all 0.5s;
+  // }
 
-  &:hover {
-    color: #091839;
-  }
+  // &:hover {
+  //   color: #091839;
+  // }
 
   &:hover:after {
     width: 100%;
@@ -192,29 +192,29 @@
   @apply p-25px pr-30px pl-30px relative;
 }
 .box-input {
-    &::v-deep {
-      .el-input__inner {
-        height: 45px;
-        width: 220px;
-        background: #011129;
-        border: none;
-        color: #fcfffd;
-        font-size: 32px;
-        font-weight: 500;
-        text-align: left;
-        padding: 0px;
-        margin-right: 15px;
+  &::v-deep {
+    .el-input__inner {
+      height: 45px;
+      width: 220px;
+      background: #011129;
+      border: none;
+      color: #fcfffd;
+      font-size: 32px;
+      font-weight: 500;
+      text-align: left;
+      padding: 0px;
+      margin-right: 150px;
 
-        &::-webkit-input-placeholder {
-          color: rgba(252,255,253,0.6) !important;
-        }
-      }
-      .el-input__suffix-inner {
-        display: flex;
-        height: 100%;
-        right: 15px;
+      &::-webkit-input-placeholder {
+        color: rgba(252, 255, 253, 0.6) !important;
       }
     }
+    .el-input__suffix-inner {
+      display: flex;
+      height: 100%;
+      right: 15px;
+    }
+  }
 }
 .max {
   background: linear-gradient(
@@ -239,7 +239,7 @@
   position: relative;
 }
 @mixin psuedo-style {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -259,20 +259,20 @@
   }
 
   &:hover::before {
-    opacity: 0 ;
-    transform: scale(0.3,0.3);
+    opacity: 0;
+    transform: scale(0.3, 0.3);
   }
 
   &::after {
     @include psuedo-style;
     opacity: 0;
     border: 2px solid rgba(241, 129, 222, 0.8);
-    transform: scale(1.2,1.2);
+    transform: scale(1.2, 1.2);
   }
 
   &:hover::after {
     opacity: 1;
-    transform: scale(1,1);
+    transform: scale(1, 1);
   }
 }
 </style>
@@ -289,20 +289,21 @@
       @close="interact_amount = ''"
     >
       <div slot="title" class="flex font-800 text-28px">
-        <div class="pb-2px line" style="word-spacing: 10px;">{{ action }} {{ symbol }}</div>
+        <div class="pb-2px line" style="word-spacing: 10px">
+          {{ action }} {{ token_info.symbol }}
+        </div>
       </div>
 
       <div class="input-window mb-25px">
         <div class="flex items-center justify-between mb-20px">
           <div class="flex items-center">
             <img :src="token_info.image" class="w-40px mr-15px rounded-full" />
-            <div class="font-600 text-22px">{{ symbol }}</div>
+            <div class="font-600 text-22px">{{ token_info.symbol }}</div>
           </div>
         </div>
 
         <div class="flex justify-between items-end">
           <div class="flex items-end">
-            <!--el-input class="box-input" placeholder="0.0" v-model="interact_amount" type="number"></el-input-->
             <el-input
               class="box-input"
               placeholder="0.0"
@@ -316,31 +317,26 @@
               ~${{ displayFormat(approxValue(interact_amount)) }}
             </div>
             <!-- mark writeMaxDeposit作用：将用户有的钱都填入表格 -->
-            <div class="flex items-center mr-15px" @click="writeMax()">
+            <div class="flex items-center mr-15px" @click="writeMaxSupply()">
               <div class="max">MAX</div>
             </div>
           </div>
         </div>
       </div>
 
-      <el-button
-        type="primary"
-        class="!w-full"
-        :disabled="disableBtn()"
-        @click="execute()"
-      >
-        <span class="font-800 text-20px" style="word-spacing: 5px">
-          {{ action }}
-        </span>
-      </el-button>
-      <!--a
-        class="custom_btn mt-30px mx-auto cursor-pointer"
-        @click="execute()"
-      >
-        <span>{{ action }}</span>
-      </a-->
+      <div class="custom_btn">
+        <el-button
+          type="primary"
+          class="!w-full"
+          :disabled="disableBtn()"
+          @click="execute()"
+        >
+          <span class="font-800 text-20px" style="word-spacing: 5px">{{
+            action
+          }}</span></el-button
+        >
+      </div>
     </el-dialog>
-    
 
     <div class="w-1184px mx-auto">
       <MarketTab class="mb-55px"></MarketTab>
@@ -348,9 +344,9 @@
       <div class="flex justify-between">
         <div class="wrapper">
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-290px' : 'h-auto']"
-          class="w-580px mb-30px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-290px' : 'h-auto']"
+            class="w-580px mb-30px"
           >
             <div class="info" :class="{ closed: !show1 }">
               <div class="title">
@@ -375,11 +371,27 @@
 
               <div class="content" v-if="show1 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="128"
+                    align="left"
+                  >
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
-                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
-                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <Abc
+                          class="mr-10px"
+                          v-model="scope.row.tier"
+                          readonly
+                        ></Abc>
+                        <div
+                          class="flex items-center cursor-pointer"
+                          @click="
+                            $router.push(
+                              `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                            )
+                          "
+                        >
                           <img
                             :src="scope.row.ImgUrl"
                             class="mr-8px"
@@ -412,7 +424,13 @@
                   <el-table-column width="104px">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Withdraw')">
+                        <div
+                          class="custom-btn"
+                          @click="
+                            dialog = true;
+                            initInteraction(scope.row.AssetName, 'Withdraw');
+                          "
+                        >
                           Withdraw
                         </div>
                       </div>
@@ -424,9 +442,9 @@
           </Loading>
 
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-358px' : 'h-auto']"
-          class="w-580px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-358px' : 'h-auto']"
+            class="w-580px"
           >
             <div class="info" :class="{ closed: !show3 }">
               <div class="title">
@@ -459,11 +477,27 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="128"
+                    align="left"
+                  >
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
-                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
-                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <Abc
+                          class="mr-10px"
+                          v-model="scope.row.tier"
+                          readonly
+                        ></Abc>
+                        <div
+                          class="flex items-center cursor-pointer"
+                          @click="
+                            $router.push(
+                              `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                            )
+                          "
+                        >
                           <img
                             :src="scope.row.ImgUrl"
                             class="mr-8px"
@@ -496,7 +530,13 @@
                   <el-table-column width="104" align="right">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Supply')">
+                        <div
+                          class="custom-btn"
+                          @click="
+                            dialog = true;
+                            initInteraction(scope.row.AssetName, 'Supply');
+                          "
+                        >
                           Supply
                         </div>
                       </div>
@@ -507,12 +547,12 @@
             </div>
           </Loading>
         </div>
-        
+
         <div class="wrapper">
           <Loading
-          :loading="loading1"
-          :class="[loading1 ? 'h-290px' : 'h-auto']"
-          class="w-580px mb-30px"
+            :loading="loading1"
+            :class="[loading1 ? 'h-290px' : 'h-auto']"
+            class="w-580px mb-30px"
           >
             <div class="info" :class="{ closed: !show2 }">
               <div class="title">
@@ -537,11 +577,27 @@
 
               <div class="content" v-if="show2 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="128"
+                    align="left"
+                  >
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
-                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
-                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <Abc
+                          class="mr-10px"
+                          v-model="scope.row.tier"
+                          readonly
+                        ></Abc>
+                        <div
+                          class="flex items-center cursor-pointer"
+                          @click="
+                            $router.push(
+                              `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                            )
+                          "
+                        >
                           <img
                             :src="scope.row.ImgUrl"
                             class="mr-8px"
@@ -574,7 +630,13 @@
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Repay')">
+                        <div
+                          class="custom-btn"
+                          @click="
+                            dialog = true;
+                            initInteraction(scope.row.AssetName, 'Repay');
+                          "
+                        >
                           Repay
                         </div>
                       </div>
@@ -622,11 +684,27 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column
+                    prop="Asset"
+                    label="Asset"
+                    width="128"
+                    align="left"
+                  >
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
-                        <Abc class="mr-10px" v-model="scope.row.tier" readonly></Abc>
-                        <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`)">
+                        <Abc
+                          class="mr-10px"
+                          v-model="scope.row.tier"
+                          readonly
+                        ></Abc>
+                        <div
+                          class="flex items-center cursor-pointer"
+                          @click="
+                            $router.push(
+                              `/liquidity/money_market/detail?asset=${scope.row.AssetName}&tier=${scope.row.tier}`
+                            )
+                          "
+                        >
                           <img
                             :src="scope.row.ImgUrl"
                             class="mr-8px"
@@ -659,7 +737,13 @@
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.AssetName, 'Borrow')">
+                        <div
+                          class="custom-btn"
+                          @click="
+                            dialog = true;
+                            initInteraction(scope.row.AssetName, 'Borrow');
+                          "
+                        >
                           Borrow
                         </div>
                       </div>
@@ -715,14 +799,8 @@ export default {
   },
   layout: "blank",
   props: {},
-  components: {ProceedingDetails},
-  computed: { 
-    ...mapState(["userInfo"]),
-    // Returns symbol of underlying token of the market that user is interacting with
-    symbol() {
-      return this.token_info.symbol;
-    }
-  },
+  components: { ProceedingDetails },
+  computed: { ...mapState(["userInfo"]) },
   data() {
     // todo 检查data
     // todo 检查mounted
@@ -783,11 +861,13 @@ export default {
         },
       ],
 
-      user_info: {}, // user info
-      market_info: {}, // market info
+      balances: {},
+
+      user_info: user_info_default,
+      market_info: market_info_default,
       token_info: {},
-      tokens: {}, // token addresses & contracts
-      markets: {}, // market addresses & contracts
+      token: {},
+      market: {},
       manager: {},
       priceOracle: {},
       action: "Supply",
@@ -796,49 +876,25 @@ export default {
       collateralize: false,
       dialogue_info: DialogInfo,
       multicall: multicall,
+      is_eth: false,
     };
   },
   async mounted() {
-    setTimeout(async () => {
-      this.priceOracle = await initPriceOracle();
-      this.manager = await initManagerContract();
-
-      console.time();
-      let symbols = [];
-      for (let symbol in token_list) {
-        this.tokens[symbol] = await initTokenContract(symbol);
-        this.markets[symbol] = await initMarketContract(symbol);
-        symbols.push(symbol);
-      }
-      
-      await this.updateAll(symbols);
-      console.timeEnd();
-
-      this.loading1 = false;
-    }, 2000);
+    this.priceOracle = await initPriceOracle();
+    this.manager = await initManagerContract();
+    this.loading1 = false;
   },
   methods: {
+    // 初始化token和market合约
     async initInteraction(symbol, action) {
       this.action = action;
 
-      this.token_info = token_list[symbol];
+      this.token_info = token_list[symbol]; //mark token_info是代币的信息对象
       this.token_info.symbol = symbol;
 
-      //await this.updateAll(symbol);
-    },
-    async writeMax() {
-      if (this.user_info[this.symbol].token_balance == 0) {
-        this.errorMessage(`No ${this.symbol} in wallet`);
-      } else {
-        const decimals = this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
-        console.log(this.user_info[this.symbol].token_balance);
-        this.interact_amount = parseFloat(
-          fromWei(this.user_info[this.symbol].token_balance, this.token_info.decimals)
-        ).toFixed(decimals);
-        if (this.symbol == "ETH") {
-          this.interact_amount = (this.interact_amount - 0.001).toFixed(8);
-        }
-      }
+      this.token = await initTokenContract(symbol);
+      this.market = await initMarketContract(symbol);
+      this.is_eth = this.token_info.symbol === "ETH" ? true : false;
     },
     async execute() {
       switch (this.action) {
@@ -849,172 +905,118 @@ export default {
           await this.withdraw();
           break;
         case "Borrow":
-         await this.borrow();
-         break;
+          await this.borrow();
+          break;
         case "Repay":
           await this.repay();
           break;
       }
     },
-    disableBtn() {
-      switch (this.action) {
-        case "Repay":
-        case "Supply":
-          if (
-            this.compareFormat(this.interact_amount, this.token_info.decimals) >
-            parseInt(this.user_info.token_balance)
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        case "Withdraw":
-          if (
-            this.compareFormat(this.interact_amount, this.token_info.decimals) >
-              parseInt(this.user_info.withdraw_quota) ||
-            this.compareFormat(this.interact_amount, this.token_info.decimals) >
-              parseInt(this.user_info.deposited) ||
-            this.interact_amount === ""
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        case "Borrow":
-          if (
-            this.compareFormat(this.interact_amount, this.token_info.decimals) >
-              parseInt(this.user_info.borrow_quota) ||
-            this.compareFormat(this.interact_amount, this.token_info.decimals) >
-              parseInt(this.market_info.cash) ||
-            this.interact_amount === ""
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-      }
+    /******************************* State management *******************************/
+    async updateMarketInfo() {
+      const multicall_list = [
+        this.market.contract.methods.supplyRatePerBlock(),
+        this.market.contract.methods.borrowRatePerBlock(),
+        this.priceOracle.contract.methods.getUnderlyingPrice(
+          this.market.address
+        ),
+        this.market.contract.methods.totalCash(),
+        this.market.contract.methods.totalReserves(),
+        this.market.contract.methods.totalBorrowsCurrent(),
+      ];
+      const results = await this.multicall.aggregate(multicall_list);
+
+      // Number of blocks assumed per year in interest rate contract: 2102400
+      const supplyRatePerBlock = results[0];
+      this.market_info.supply_rate = supplyRatePerBlock * 2102400 * 100;
+      const borrowRatePerBlock = results[1];
+      this.market_info.borrow_rate = borrowRatePerBlock * 2102400 * 100;
+      this.market_info.token_price = results[2][0];
+      this.market_info.cash = results[3];
+      this.market_info.reserve = results[4];
+      this.market_info.borrowed = results[5];
+      this.market_info.supplied =
+        parseInt(results[3]) + parseInt(results[5]) - parseInt(results[4]); // cash + borrow - reserve
     },
-
-    /********************************* State management *********************************/
-
-    async updateAll(symbols) {
+    async updateUserInfo() {
       const account = this.userInfo.userAddress;
-      let multicall_list = [];
-      for (let symbol of symbols) {
-        let temp = [
-          // Market info
-          this.markets[symbol].contract.methods.supplyRatePerBlock(),
-          this.markets[symbol].contract.methods.borrowRatePerBlock(),
-          this.priceOracle.contract.methods.getUnderlyingPrice(this.markets[symbol].address),
-          this.markets[symbol].contract.methods.totalCash(),
-          this.markets[symbol].contract.methods.totalReserves(),
-          this.markets[symbol].contract.methods.totalBorrowsCurrent(),
-          this.manager.contract.methods.markets(this.markets[symbol].address),
-          this.manager.contract.methods.checkMembership(account, this.markets[symbol].address),
-          // User info
-          this.markets[symbol].contract.methods.balanceOf(account),
-          this.markets[symbol].contract.methods.balanceOfUnderlying(account),
-          this.markets[symbol].contract.methods.borrowBalanceCurrent(account),
-          this.manager.contract.methods.getAccountLiquidity(account),
-        ];
-
-        multicall_list = [...multicall_list, ...temp];
-        if (symbol != "ETH") {
-          multicall_list.push(this.tokens[symbol].contract.methods.balanceOf(account));
-        }
+      let multicall_list = [
+        this.market.contract.methods.balanceOf(account),
+        this.market.contract.methods.balanceOfUnderlying(account),
+        this.market.contract.methods.borrowBalanceCurrent(account),
+        this.manager.contract.methods.getAccountLiquidity(account),
+      ];
+      if (!this.is_eth) {
+        multicall_list.push(this.token.contract.methods.balanceOf(account));
       }
       const results = await this.multicall.aggregate(multicall_list);
 
-      let i = 0;
-      for (let symbol of symbols) {
-        this.market_info[symbol] = {};
-        this.user_info[symbol] = {};
+      this.user_info.ftoken_balance = results[0];
+      this.user_info.deposited = results[1];
+      this.user_info.borrowed = results[2];
+      if (!this.is_eth) {
+        this.user_info.token_balance = results[4];
+      } else {
+        this.user_info.token_balance = toWei(
+          await getNativeTokenAmount(account)
+        );
+      }
 
-        // Number of blocks assumed per year in interest rate contract: 2102400
-        const supplyRatePerBlock = results[i];
-        i++;
-        this.market_info[symbol].supply_rate = supplyRatePerBlock * 2102400 * 100;
-        const borrowRatePerBlock = results[i];
-        i++;
-        this.market_info[symbol].borrow_rate = borrowRatePerBlock * 2102400 * 100;
-        this.market_info[symbol].token_price = results[i][0];
-        i++;
-        this.market_info[symbol].cash = results[i];
-        i++;
-        this.market_info[symbol].reserve = results[i];
-        i++;
-        this.market_info[symbol].borrowed = results[i];
-        this.market_info[symbol].supplied =
-          parseInt(results[i-2]) + parseInt(results[i]) - parseInt(results[i-1]); // cash + borrow - reserve
-        i++;
-        this.market_info[symbol].tier = results[i][2]; // [isListed, collateral factor mantissa, tier]
-        i++
-        this.market_info[symbol].is_collateral = results[i];
-        i++
+      if (results[3]["1"] > 0) {
+        // results[3]["1"]: shortfall
+        this.user_info.borrow_quota = 0;
+      } else {
+        let tempLiquidity = 0;
 
-        this.user_info[symbol].ftoken_balance = results[i];
-        i++;
-        this.user_info[symbol].deposited = results[i];
-        i++;
-        this.user_info[symbol].borrowed = results[i];
-        i++
-        
-        if (results[i]["1"] > 0) {
-          // results[3]["1"]: shortfall
-          this.user_info.borrow_quota = 0;
-          i++;
-        } else {
-          let tempLiquidity = 0;
-
-          for (let j = 0; j < this.market_info[symbol].tier; j++) {
-            const liquidityValue = results[i]["0"][j]; // results[3]["0"]: liquidities array
-            const tokenEquivalent = liquidityValue / this.market_info[symbol].token_price;
-            tempLiquidity += parseInt(toWei(tokenEquivalent, token_list[symbol].decimals));
-          }
-          this.user_info.borrow_quota =
-            tempLiquidity > parseInt(this.market_info[symbol].cash)
-              ? this.market_info[symbol].cash
-              : tempLiquidity.toString();
-          i++;
+        for (let i = 0; i < this.tier; i++) {
+          const liquidityValue = results[3]["0"][i]; // results[3]["0"]: liquidities array
+          const tokenEquivalent = liquidityValue / this.market_info.token_price;
+          tempLiquidity += parseInt(toWei(tokenEquivalent, this.token_decimal));
         }
 
-        if (symbol != "ETH") {
-          this.user_info[symbol].token_balance = results[i];
-          i++;
-        } else {
-          this.user_info[symbol].token_balance = toWei(
-            await getNativeTokenAmount(account)
-          );
-        }
+        this.user_info.borrow_quota =
+          tempLiquidity > parseInt(this.market_info.cash)
+            ? this.market_info.cash
+            : tempLiquidity.toString();
       }
     },
+    async updateAll() {
+      await this.updateMarketInfo();
+      await this.updateUserInfo(); //todo 检查依赖
+    },
 
-    /***************************** Allowance & balance checks *****************************/
+    /*********************************** Allowance & balance checks ***********************************/
 
     async approvedEnoughToken(amount) {
       const account = this.userInfo.userAddress;
 
-      const allowance = await this.tokens[this.symbol].contract.methods
+      const allowance = await this.token.contract.methods
         .allowance(account, this.market.address)
         .call();
       return _compareInt(allowance, amount) != "smaller" ? true : false;
     },
 
-    /********************************* Contract functions *********************************/
+    /*************************************** Contract functions ***************************************/
 
     async borrow() {
       const account = this.userInfo.userAddress;
-      const actualAmount = toWei(this.interact_amount, this.token_info.decimals);
+      const actualAmount = toWei(
+        this.interact_amount,
+        this.token_info.decimals
+      );
 
       openDialog(this.dialogue_info, [ProcessInfo.BORROW_TOKEN]);
 
       try {
-        const tx_result = await this.markets[this.symbol].contract.methods
+        const tx_result = await this.market.contract.methods
           .borrow(actualAmount)
           .send({ from: account });
-        this.successMessage(tx_result, `Borrow ${this.symbol} succeeded`);
+        this.successMessage(
+          tx_result,
+          `Borrow ${this.token_info.symbol} succeeded`
+        );
       } catch (e) {
-        this.errorMessage(`Borrow ${this.symbol} failed`);
+        this.errorMessage(`Borrow ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
@@ -1029,7 +1031,7 @@ export default {
       let approvedEnoughToken;
 
       let dialog_list = [];
-      if (this.symbol != "ETH") {
+      if (this.token_info.symbol != "ETH") {
         approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
         if (!approvedEnoughToken) {
           dialog_list.push(ProcessInfo.APPROVE_TOKEN);
@@ -1038,21 +1040,21 @@ export default {
       dialog_list.push(ProcessInfo.REPAY_TOKEN);
       openDialog(this.dialogue_info, dialog_list);
 
-      if (this.symbol != "ETH") {
+      if (this.token_info.symbol != "ETH") {
         if (!approvedEnoughToken) {
           try {
             const approve_result = await tokenApprove(
-              this.tokens[this.symbol].address,
+              this.token.address,
               account,
-              this.markets[this.symbol].address
+              this.market.address
             );
             this.successMessage(
               approve_result,
-              `Approve ${this.symbol} succeeded`
+              `Approve ${this.token_info.symbol} succeeded`
             );
             stepDialog(this.dialogue_info);
           } catch (e) {
-            this.errorMessage(`Approve ${this.symbol} failed`);
+            this.errorMessage(`Approve ${this.token_info.symbol} failed`);
             console.warn(e);
             closeDialog(this.dialogue_info);
             return;
@@ -1062,18 +1064,21 @@ export default {
 
       try {
         let tx_result;
-        if (this.symbol != "ETH") {
-          tx_result = await this.markets[this.symbol].contract.methods
+        if (this.token_info.symbol != "ETH") {
+          tx_result = await this.market.contract.methods
             .repayBorrow(actualAmount)
             .send({ from: account });
         } else {
-          tx_result = await this.markets[this.symbol].contract.methods
+          tx_result = await this.market.contract.methods
             .repayBorrow()
             .send({ from: account, value: actualAmount });
         }
-        this.successMessage(tx_result, `Repay ${this.symbol} succeeded`);
+        this.successMessage(
+          tx_result,
+          `Repay ${this.token_info.symbol} succeeded`
+        );
       } catch (e) {
-        this.errorMessage(`Repay ${this.symbol} failed`);
+        this.errorMessage(`Repay ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
@@ -1085,12 +1090,15 @@ export default {
     async supply() {
       //console.log("amount", amount);
       const account = this.userInfo.userAddress;
-      const actualAmount = toWei(this.interact_amount, this.token_info.decimals);
+      const actualAmount = toWei(
+        this.interact_amount,
+        this.token_info.decimals
+      );
       let approvedEnoughToken;
 
       let dialog_list = [];
 
-      if (this.symbol != "ETH") {
+      if (this.token_info.symbol != "ETH") {
         approvedEnoughToken = await this.approvedEnoughToken(actualAmount);
         if (!approvedEnoughToken) {
           dialog_list.push(ProcessInfo.APPROVE_TOKEN);
@@ -1104,21 +1112,21 @@ export default {
       dialog_list.push(ProcessInfo.SUPPLY_TOKEN);
       openDialog(this.dialogue_info, dialog_list);
 
-      if (this.symbol != "ETH") {
+      if (this.token_info.symbol != "ETH") {
         if (!approvedEnoughToken) {
           try {
             const approve_result = await tokenApprove(
-              this.tokens[this.symbol].address,
+              this.token.address,
               account,
-              this.markets[this.symbol].address
+              this.market.address
             );
             this.successMessage(
               approve_result,
-              `Approve ${this.symbol} succeeded`
+              `Approve ${this.token_info.symbol} succeeded`
             );
             stepDialog(this.dialogue_info);
           } catch (e) {
-            this.errorMessage(`Approve ${this.symbol} failed`);
+            this.errorMessage(`Approve ${this.token_info.symbol} failed`);
             console.warn(e);
             closeDialog(this.dialogue_info);
             return;
@@ -1146,23 +1154,26 @@ export default {
 
       try {
         let tx_result;
-        if (this.symbol != "ETH") {
-          tx_result = await this.markets[this.symbol].contract.methods
+        if (this.token_info.symbol != "ETH") {
+          tx_result = await this.market.contract.methods
             .supply(actualAmount)
             .send({ from: account });
         } else {
-          tx_result = await this.markets[this.symbol].contract.methods
+          tx_result = await this.market.contract.methods
             .supply()
             .send({ from: account, value: actualAmount });
         }
-        this.successMessage(tx_result, `Supply ${this.symbol} succeeded`);
+        this.successMessage(
+          tx_result,
+          `Supply ${this.token_info.symbol} succeeded`
+        );
       } catch (e) {
         console.warn(e);
-        this.errorMessage(`Supply ${this.symbol} failed`);
+        this.errorMessage(`Supply ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
-      
+
       closeDialog(this.dialogue_info);
       this.dialog = false;
       this.interact_amount = "";
@@ -1174,12 +1185,15 @@ export default {
       openDialog(this.dialogue_info, [ProcessInfo.WITHDRAW_TOKEN]);
 
       try {
-        const tx_result = await this.markets[this.symbol].contract.methods
+        const tx_result = await this.market.contract.methods
           .redeemUnderlying(actualAmount)
           .send({ from: account });
-        this.successMessage(tx_result, `Withdraw ${this.symbol} succeeded`);
+        this.successMessage(
+          tx_result,
+          `Withdraw ${this.token_info.symbol} succeeded`
+        );
       } catch (e) {
-        this.errorMessage(`Withdraw ${this.symbol} failed`);
+        this.errorMessage(`Withdraw ${this.token_info.symbol} failed`);
         closeDialog(this.dialogue_info);
         return;
       }
@@ -1187,6 +1201,23 @@ export default {
       closeDialog(this.dialogue_info);
       this.dialog = false;
       this.interact_amount = "";
+    },
+
+    async writeMaxSupply() {
+      await this.updateAll();
+
+      if (this.user_info.token_balance == 0) {
+        this.errorMessage(`No ${this.symbol} in wallet`);
+      } else {
+        const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
+        console.log(this.user_info.token_balance);
+        this.interact_amount = parseFloat(
+          fromWei(this.user_info.token_balance, this.token_decimal)
+        ).toFixed(decimals);
+        if (this.is_eth) {
+          this.interact_amount = (this.interact_amount - 0.001).toFixed(8);
+        }
+      }
     },
     successMessage(receipt, title) {
       // receipt是交易块的详细信息
@@ -1224,7 +1255,7 @@ export default {
     },
     approxValue(tokenAmount) {
       const actualAmount = tokenAmount == "" ? 0 : tokenAmount;
-      return this.symbol ? this.market_info[this.symbol].token_price * actualAmount : 0;
+      return this.market_info.token_price * actualAmount;
     },
     displayFormat(amount, decimal = 18, fixed = 0) {
       return this.formatNumber(fromWei(amount, decimal), fixed);
@@ -1232,6 +1263,51 @@ export default {
     compareFormat(amount, decimal) {
       const actualAmount = amount == "" ? 0 : parseFloat(amount);
       return parseInt(toWei(actualAmount, decimal));
+    },
+    disableBtn() {
+      switch (this.action) {
+        case "Repay":
+        case "Supply":
+          if (
+            this.compareFormat(this.interact_amount, this.token_info.decimals) >
+              parseInt(this.user_info.token_balance) ||
+            this.interact_amount === ""
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        case "Withdraw":
+          if (
+            this.compareFormat(
+              this.interact_amount,
+              this.token_info.decimals
+            ) <= parseInt(this.user_info.withdraw_quota) ||
+            this.compareFormat(this.interact_amount, this.token_info.decimals) >
+              parseInt(this.user_info.deposited) ||
+            this.interact_amount === ""
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        case "Borrow":
+          if (
+            this.compareFormat(
+              this.interact_amount,
+              this.token_info.decimals
+            ) <= parseInt(this.user_info.borrow_quota) ||
+            this.compareFormat(
+              this.interact_amount,
+              this.token_info.decimals
+            ) <= parseInt(this.market_info.cash) ||
+            this.interact_amount === ""
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+      }
     },
   },
 };
