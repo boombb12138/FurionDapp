@@ -2,7 +2,7 @@
 .info {
   background: #091839;
   border-radius: 20px;
-  padding: 35px 30px;
+  padding: 35px 20px;
   &.closed {
     background: linear-gradient(
       180deg,
@@ -27,7 +27,7 @@
   }
   .el-table {
     .el-table__header tr .el-table__cell {
-      font-size: 13px;
+      font-size: 15px;
       color: #8a92a2;
     }
     .el-table__header tr .el-table__cell:first-of-type {
@@ -139,6 +139,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
+  margin-top: 50px;
 }
 
 .custom_btn {
@@ -192,11 +193,11 @@
   @apply p-25px pr-30px pl-30px relative;
 }
 .box-input {
+    height: 45px;
+    width: 220px;
     &::v-deep {
       .el-input__inner {
-        height: 45px;
-        width: 220px;
-        background: #011129;
+        background: none;
         border: none;
         color: #fcfffd;
         font-size: 32px;
@@ -222,7 +223,7 @@
     rgba(51, 53, 114, 0.16) -9.52%,
     rgba(51, 53, 114, 0.2) 109.52%
   );
-  @apply rounded-5px w-48px h-28px leading-28px text-[rgba(252,255,253,0.8)] text-13px font-700 text-center cursor-pointer;
+  @apply rounded-5px w-60px h-40px leading-40px text-[rgba(252,255,253,0.8)] text-15px font-700 text-center cursor-pointer;
 }
 
 @mixin btn-style {
@@ -275,10 +276,15 @@
     transform: scale(1,1);
   }
 }
+
+.value {
+  color: #8A92A2; 
+  font-size: 13px;
+}
 </style>
 
 <template>
-  <div class="page py-156px bg-[#01132E] text-[#FCFFFD]">
+  <div class="page py-156px text-[#FCFFFD]">
     <el-dialog
       :visible.sync="dialog"
       width="587px"
@@ -301,25 +307,22 @@
         </div>
 
         <div class="flex justify-between items-end">
-          <div class="flex items-end">
-            <!--el-input class="box-input" placeholder="0.0" v-model="interact_amount" type="number"></el-input-->
             <el-input
               class="box-input"
               placeholder="0.0"
               v-model="interact_amount"
               type="number"
             ></el-input>
-            <div
-              class="text-13px text-[rgba(252,255,253,0.4)] mr-15px pt-13px w-40px"
-            >
-              <!--mark  approxValue作用：转为美元？  -->
-              ~${{ displayFormat(approxValue(interact_amount)) }}
+            <div class="flex">
+              <div class="text-13px text-[rgba(252,255,253,0.4)] mr-15px flex items-end">
+                <!--mark  approxValue作用：转为美元？  -->
+                ~${{ displayFormat(approxValue(symbol, interact_amount), 18, 2) }}
+              </div>
+              <!-- mark writeMaxDeposit作用：将用户有的钱都填入表格 -->
+              <div class="flex items-center" @click="writeMax()">
+                <div class="max">MAX</div>
+              </div>
             </div>
-            <!-- mark writeMaxDeposit作用：将用户有的钱都填入表格 -->
-            <div class="flex items-center mr-15px" @click="writeMax()">
-              <div class="max">MAX</div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -342,15 +345,15 @@
     </el-dialog>
     
 
-    <div class="w-1184px mx-auto">
-      <MarketTab class="mb-55px"></MarketTab>
+    <div class="w-1270px mx-auto">
+      <MarketTab v-if="active == 1 || active == 2" class="mt-50px" v-model="active"></MarketTab>
 
-      <div class="flex justify-between">
+      <div v-if="active == 0 || active == 1" class="flex justify-between">
         <div class="wrapper">
           <Loading
           :loading="loading1"
           :class="[loading1 ? 'h-290px' : 'h-auto']"
-          class="w-580px mb-30px"
+          class="w-620px mb-30px"
           >
             <div class="info" :class="{ closed: !show1 }">
               <div class="title">
@@ -375,7 +378,7 @@
 
               <div class="content" v-if="show1 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column prop="Asset" label="Asset" width="130" align="left">
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
                         <Abc class="mr-10px" v-model="market_info[scope.row.Asset].tier" readonly></Abc>
@@ -383,8 +386,8 @@
                           <img
                             :src="token_list[scope.row.Asset].image"
                             class="mr-8px"
-                            width="23"
-                            height="23"
+                            width="25"
+                            height="25"
                           />
                           <div class="symbol">{{ scope.row.Asset }}</div>
                         </div>
@@ -394,17 +397,17 @@
                   <el-table-column
                     label="Supplied"
                     align="center"
-                    width="104"
+                    width="116"
                   >
                     <template slot-scope="scope">
-                      {{ displayFormat(user_info[scope.row.Asset].supplied, token_list[scope.row.Asset].decimals, 2) }}
+                      {{ displayFormat(user_info[scope.row.Asset].supplied, decimals(scope.row.Asset), 2) }}
                     </template>
                   </el-table-column>
                   <el-table-column
                     prop="APY"
                     label="APY"
                     align="center"
-                    width="80"
+                    width="115"
                   >
                     <template slot-scope="scope">
                       {{ displayFormat(market_info[scope.row.Asset].supply_rate, 18, 2) }}%
@@ -414,7 +417,7 @@
                     prop="Collateral"
                     label="Collateral"
                     align="center"
-                    width="104"
+                    width="115"
                   >
                     <template slot-scope="scope">
                       {{ market_info[scope.row.Asset].is_collateral ? "YES" : "NO" }}
@@ -437,7 +440,7 @@
           <Loading
           :loading="loading1"
           :class="[loading1 ? 'h-358px' : 'h-auto']"
-          class="w-580px"
+          class="w-620px"
           >
             <div class="info" :class="{ closed: !show3 }">
               <div class="title">
@@ -470,7 +473,7 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column prop="Asset" label="Asset" width="130" align="left">
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
                         <Abc class="mr-10px" v-model="market_info[scope.row.Asset].tier" readonly></Abc>
@@ -478,8 +481,8 @@
                           <img
                             :src="token_list[scope.row.Asset].image"
                             class="mr-8px"
-                            width="23"
-                            height="23"
+                            width="25"
+                            height="25"
                           />
                           <div class="symbol">{{ scope.row.Asset }}</div>
                         </div>
@@ -487,23 +490,20 @@
                     </template>
                   </el-table-column>
                   <el-table-column
-                    prop="Balance"
                     label="Balance"
-                    width="104"
+                    width="133"
                     align="center"
-                  ><template slot-scope="scope">{{ displayFormat(user_info[scope.row.Asset].token_balance, token_list[scope.row.Asset].decimals, 2) }}</template></el-table-column>
+                  ><template slot-scope="scope">{{ displayFormat(user_info[scope.row.Asset].token_balance, decimals(scope.row.Asset), 2) }}</template></el-table-column>
                   <el-table-column
-                    prop="APY"
                     label="APY"
                     align="center"
                     width="80"
                   ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].supply_rate, 18, 2) }}%</template></el-table-column>
                   <el-table-column
-                    prop="TotalSupply"
-                    label="Total Supply"
+                    label="Total Supplied"
                     align="center"
-                    width="104"
-                  ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].supplied, token_list[scope.row.Asset].decimals, 2) }}</template></el-table-column>
+                    width="133"
+                  ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].supplied, decimals(scope.row.Asset), 2) }}</template></el-table-column>
                   <el-table-column width="104" align="right">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
@@ -523,7 +523,7 @@
           <Loading
           :loading="loading1"
           :class="[loading1 ? 'h-290px' : 'h-auto']"
-          class="w-580px mb-30px"
+          class="w-620px mb-30px"
           >
             <div class="info" :class="{ closed: !show2 }">
               <div class="title">
@@ -548,7 +548,7 @@
 
               <div class="content" v-if="show2 && !loading1">
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column prop="Asset" label="Asset" width="130" align="left">
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
                         <Abc class="mr-10px" v-model="market_info[scope.row.Asset].tier" readonly></Abc>
@@ -556,8 +556,8 @@
                           <img
                             :src="token_list[scope.row.Asset].image"
                             class="mr-8px"
-                            width="23"
-                            height="23"
+                            width="25"
+                            height="25"
                           />
                           <div class="symbol">{{ scope.row.Asset }}</div>
                         </div>
@@ -565,23 +565,20 @@
                     </template>
                   </el-table-column>
                   <el-table-column
-                    prop="Borrowed"
                     label="Borrowed"
-                    width="104"
+                    width="133"
                     align="center"
-                  ><template slot-scope="scope">{{ displayFormat(user_info[scope.row.Asset].borrowed, token_list[scope.row.Asset].decimals, 2) }}</template></el-table-column>
+                  ><template slot-scope="scope">{{ displayFormat(user_info[scope.row.Asset].borrowed, decimals(scope.row.Asset), 2) }}</template></el-table-column>
                   <el-table-column
-                    prop="APY"
                     label="APY"
                     align="center"
                     width="80"
                   ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].borrow_rate, 18, 2) }}%</template></el-table-column>
                   <el-table-column
-                    prop="Available"
-                    label="Available"
+                    label="Borrowable"
                     align="center"
-                    width="104"
-                  ><template slot-scope="scope">{{ displayFormat(user_info[scope.row.Asset].borrow_quota, token_list[scope.row.Asset].decimals, 2) }}</template></el-table-column>
+                    width="133"
+                  ><template slot-scope="scope">{{ displayFormat(user_info[scope.row.Asset].borrow_quota, decimals(scope.row.Asset), 2) }}</template></el-table-column>
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
@@ -599,7 +596,7 @@
           <Loading
             :loading="loading1"
             :class="[loading1 ? 'h-358px' : 'h-auto']"
-            class="w-580px"
+            class="w-620px"
           >
             <div class="info" :class="{ closed: !show4 }">
               <div class="title">
@@ -633,7 +630,7 @@
                   </div>
                 </div-->
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="Asset" label="Asset" width="128" align="left">
+                  <el-table-column prop="Asset" label="Asset" width="130" align="left">
                     <template slot-scope="scope">
                       <div class="flex items-center w-1/1">
                         <Abc class="mr-10px" v-model="market_info[scope.row.Asset].tier" readonly></Abc>
@@ -641,8 +638,8 @@
                           <img
                             :src="token_list[scope.row.Asset].image"
                             class="mr-8px"
-                            width="23"
-                            height="23"
+                            width="25"
+                            height="25"
                           />
                           <div class="symbol">{{ scope.row.Asset }}</div>
                         </div>
@@ -650,23 +647,20 @@
                     </template>
                   </el-table-column>
                   <el-table-column
-                    prop="Available"
                     label="Available"
-                    width="104"
+                    width="133"
                     align="center"
-                  ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].cash, token_list[scope.row.Asset].decimals, 2) }}</template></el-table-column>
+                  ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].cash, decimals(scope.row.Asset), 2) }}</template></el-table-column>
                   <el-table-column
-                    prop="APY"
                     label="APY"
                     align="center"
                     width="80"
                   ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].borrow_rate, 18, 2) }}%</template></el-table-column>
                   <el-table-column
-                    prop="TotalBorrow"
-                    label="Total Borrow"
+                    label="Total Borrowed"
                     align="center"
-                    width="104"
-                  ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].borrowed, token_list[scope.row.Asset].decimals, 2) }}</template></el-table-column>
+                    width="133"
+                  ><template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].borrowed, decimals(scope.row.Asset), 2) }}</template></el-table-column>
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
@@ -682,6 +676,114 @@
           </Loading>
         </div>
       </div>
+
+      <div v-if="active == 2">
+        <div class="flex justify-between items-center mb-35px mt-50px">
+          <el-input
+            placeholder="Search asset"
+            v-model="searchKey"
+            class="search !w-858px"
+            clearable
+            @input=""
+          >
+            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+          </el-input>
+
+          <!--el-checkbox-group v-model="checkList">
+            <el-checkbox label="Tier 1"></el-checkbox>
+            <el-checkbox label="Tier 2"></el-checkbox>
+            <el-checkbox label="Tier 3"></el-checkbox>
+          </el-checkbox-group-->
+        </div>
+
+        <Loading
+          :loading="loading1"
+          :class="[loading1 ? 'h-358px' : 'h-auto']"
+          class="mb-30px w-1270px"
+        >
+          <div>
+            <el-table :data="tableData" style="width: 100%">
+              <el-table-column prop="Asset" label="Asset" width="260" sortable="" align="left">
+                <template slot-scope="scope">
+                  <div class="flex items-center">
+                    <Abc class="mr-10px" v-model="market_info[scope.row.Asset].tier" readonly></Abc>
+                    <div class="flex items-center cursor-pointer" @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.Asset}&tier=${market_info[scope.row.Asset].tier}`)">
+                      <img :src="token_list[scope.row.Asset].image" class="mr-8px" width="32" height="32" />
+                        <div class="leading-16px text-15px">
+                          {{ scope.row.Asset }}
+                          <div class="text-[#A5A7AA] mt-5px text-14px">{{ token_list[scope.row.Asset].name }}</div>
+                        </div>
+                    </div>
+                  </div>
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                label="Total Supplied"
+                align="center"
+                width="180"
+                sortable=""
+              >
+                <template slot-scope="scope">
+                  <div>
+                    <div>{{ displayFormat(market_info[scope.row.Asset].supplied, decimals(scope.row.Asset), 2) }}</div>
+                    <div class="value">${{ displayFormat(approxValue(scope.row.Asset, market_info[scope.row.Asset].supplied), 18 + decimals(scope.row.Asset), 2) }}</div>
+                  </div>
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                label="Supply APY"
+                align="center"
+                width="180"
+                sortable=""
+              >
+              <template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].supply_rate, 18, 2) }}%</template>
+              </el-table-column>
+
+              <el-table-column
+                label="Total Borrowed"
+                align="center"
+                width="180"
+                sortable=""
+              >
+                <template slot-scope="scope">
+                  <div>
+                    <div>{{ displayFormat(market_info[scope.row.Asset].borrowed, decimals(scope.row.Asset), 2) }}</div>
+                    <div class="value">${{ displayFormat(approxValue(scope.row.Asset, market_info[scope.row.Asset].borrowed), 18 + decimals(scope.row.Asset), 2) }}</div>
+                  </div>
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                label="Borrow APY"
+                align="center"
+                width="180"
+                sortable=""
+              >
+                <template slot-scope="scope">{{ displayFormat(market_info[scope.row.Asset].borrow_rate, 18, 2) }}%</template>
+              </el-table-column>
+
+              <el-table-column label="Available" align="center" width="180" sortable="">
+                <template slot-scope="scope">
+                  <div>{{ displayFormat(market_info[scope.row.Asset].cash, decimals(scope.row.Asset), 2) }}</div>
+                  <div class="value">${{ displayFormat(approxValue(scope.row.Asset, market_info[scope.row.Asset].cash), 18 + decimals(scope.row.Asset, 2)) }}</div>
+                </template>
+              </el-table-column>
+
+              <el-table-column width="104" align="right">
+                <template slot-scope="scope">
+                  <div class="flex items-center justify-end">
+                        <div class="custom-btn"  @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.Asset}&tier=${market_info[scope.row.Asset].tier}`)">
+                          Details
+                        </div>
+                      </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </Loading>
+      </div>
     </div>
   </div>
 </template>
@@ -695,7 +797,7 @@ import {
   toWei,
   fromWei,
   tokenApprove,
-  getNativeTokenAmount,
+  getNativeTokenAmountRaw,
 } from "@/utils/common";
 
 import {
@@ -725,11 +827,11 @@ export default {
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
   },
-  layout: "blank",
   props: {},
   components: {ProceedingDetails},
   computed: { 
-    ...mapState(["userInfo"]),
+    ...mapState('admin', ['connectStatus']),
+    ...mapState(['userInfo']),
     // Returns symbol of underlying token of the market that user is interacting with
     symbol() {
       return this.token_info.symbol;
@@ -774,6 +876,8 @@ export default {
       interact_amount: "",
       is_collateral: false,
       collateralize: false,
+      active: 0,
+      searchKey: "",
       dialogue_info: DialogInfo,
       multicall: multicall,
     };
@@ -790,35 +894,72 @@ export default {
         this.markets[symbol] = await initMarketContract(symbol);
         symbols.push(symbol);
       }
-      
       await this.updateAll(symbols);
       console.timeEnd();
 
+      this.active = 1;
       this.loading1 = false;
-    }, 2000);
+    }, 1000);
   },
   methods: {
+    decimals(symbol) {
+      return symbol ? token_list[symbol].decimals : 18;
+    },
     async initInteraction(symbol, action) {
       this.action = action;
 
       this.token_info = token_list[symbol];
       this.token_info.symbol = symbol;
-
-      //await this.updateAll(symbol);
     },
     async writeMax() {
-      if (this.user_info[this.symbol].token_balance == 0) {
-        this.errorMessage(`No ${this.symbol} in wallet`);
-      } else {
-        const decimals = this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
-        console.log(this.user_info[this.symbol].token_balance);
-        this.interact_amount = parseFloat(
-          fromWei(this.user_info[this.symbol].token_balance, this.token_info.decimals)
-        ).toFixed(decimals);
-        if (this.symbol == "ETH") {
-          this.interact_amount = (this.interact_amount - 0.001).toFixed(8);
-        }
+      await this.updateAll([this.symbol]);
+      
+      switch (this.action) {
+        case "Supply":
+          if (this.user_info[this.symbol].token_balance == 0) {
+            this.errorMessage(`No ${this.symbol} in wallet`);
+          } else {
+            const decimals = this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
+            this.interact_amount = parseFloat(
+              fromWei(this.user_info[this.symbol].token_balance, this.token_info.decimals)
+            ).toFixed(decimals);
+            if (this.symbol == "ETH") {
+              this.interact_amount = (this.interact_amount - 0.001).toFixed(8);
+            }
+          }
+          break;
+        case "Withdraw":
+          if (this.user_info[this.symbol].withdraw_quota == 0) {
+            this.errorMessage("No withdraw quota");
+          } else {
+            const decimals = this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
+            this.interact_amount = parseFloat(
+              fromWei(this.user_info[this.symbol].withdraw_quota, this.token_info.decimals)
+            ).toFixed(decimals);
+          }
+          break;
+        case "Borrow":
+         if (this.user_info[this.symbol].borrow_quota == 0) {
+            this.errorMessage("No borrow quota");
+          } else {
+            const decimals = this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
+            this.interact_amount = parseFloat(
+              fromWei(this.user_info[this.symbol].borrow_quota, this.token_info.decimals)
+            ).toFixed(decimals);
+          }
+         break;
+        case "Repay":
+          if (this.user_info[this.symbol].borrowed == 0) {
+            this.errorMessage("No outstanding borrowings");
+          } else {
+            const decimals = this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
+            this.interact_amount = parseFloat(
+              fromWei(this.user_info[this.symbol].borrowed, this.token_info.decimals)
+            ).toFixed(decimals);
+          }
+          break;
       }
+      
     },
     async execute() {
       switch (this.action) {
@@ -901,7 +1042,6 @@ export default {
         }
       }
       const results = await this.multicall.aggregate(multicall_list);
-      console.log(results);
 
       let i = 0;
       for (let symbol of symbols) {
@@ -965,9 +1105,7 @@ export default {
           this.user_info[symbol].token_balance = results[i];
           i++;
         } else {
-          this.user_info[symbol].token_balance = toWei(
-            await getNativeTokenAmount(account)
-          );
+          this.user_info[symbol].token_balance = await getNativeTokenAmountRaw(account);
         }
       }
     },
@@ -1205,9 +1343,9 @@ export default {
       }
       return final_result;
     },
-    approxValue(tokenAmount) {
+    approxValue(symbol, tokenAmount) {
       const actualAmount = tokenAmount == "" ? 0 : tokenAmount;
-      return this.symbol ? this.market_info[this.symbol].token_price * actualAmount : 0;
+      return symbol ? this.market_info[symbol].token_price * actualAmount : 0;
     },
     displayFormat(amount, decimal = 18, fixed = 0) {
       if (!amount) {
