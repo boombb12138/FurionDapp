@@ -336,10 +336,10 @@
 </style>
 
 <template>
-  <div class="page pt-120px bg-[#01132E] text-[#FCFFFD]">
+  <div class="page pt-120px text-[#FCFFFD]">
     <div
       @click="$router.go(-1)"
-      class="absolute left-60px cursor-pointer top-120px hover:opacity-80 flex items-center"
+      class="absolute cursor-pointer top-120px hover:opacity-80 flex items-center"
     >
       <img src="@/assets/images/icon_back.svg" />
     </div>
@@ -531,7 +531,6 @@
             <p class="white mt-36px mb-30px ml-22px">Borrow {{ symbol }}</p>
             <div
               class="box2 ml-12px"
-              :class="{ high: collateralList.length > 1 }"
             >
               <div class="flex justify-between items-center mb-37px px-10px">
                 <div class="text-center">
@@ -741,7 +740,6 @@ import {
 import ProceedingDetails from "@/components/Dialog/ProceedingDetails.vue";
 
 export default {
-  layout: "blank",
   async asyncData({ store, $axios, app, query }) {
     store.commit("update", ["admin.activeMenu", "/liquidity"]);
   },
@@ -780,24 +778,6 @@ export default {
       validating: false,
       dialogue_info: DialogInfo,
       multicall: multicall,
-
-      collateralList: [
-        {
-          num: 0.0,
-          type: "",
-          balance: 3.01868,
-        },
-        // {
-        //   num: 111,
-        //   type: 'AVAX',
-        //   balance: 1.02868,
-        // },
-        // {
-        //   num: 2222,
-        //   type: 'AVAX',
-        //   balance: 2.02453,
-        // },
-      ],
     };
   },
   async mounted() {
@@ -812,19 +792,14 @@ export default {
       }
       this.asset = token_list[this.symbol];
       this.market = await initMarketContract(this.symbol);
-      this.priceOracle = await initPriceOracle();
-      await this.updateMarketInfo();
+      this.priceOracle = await initPriceOracle();      
+      this.manager = await initManagerContract();
+      await this.updateAll();
+      this.collateralize = this.is_collateral ? true : false;
+
       this.loading1 = false;
       this.loading2 = false;
-
-      this.manager = await initManagerContract();
-      await this.updateUserInfo();
-
-      this.is_collateral = await this.manager.contract.methods
-        .checkMembership(this.userInfo.userAddress, this.market.address)
-        .call();
-      this.collateralize = this.is_collateral ? true : false;
-    }, 2000);
+    }, 1000);
   },
   methods: {
     /*
@@ -851,74 +826,72 @@ export default {
         this.validating = false;
       }, 1500);
     },
-    async updateMarketInfo() {
-      const multicall_list = [
+    async updateAll() {
+      const account = this.userInfo.userAddress;
+      let multicall_list = [
+        // Market info
         this.market.contract.methods.supplyRatePerBlock(),
         this.market.contract.methods.borrowRatePerBlock(),
-        this.priceOracle.contract.methods.getUnderlyingPrice(
-          this.market.address
-        ),
+        this.priceOracle.contract.methods.getUnderlyingPrice(this.market.address),
         this.market.contract.methods.totalCash(),
         this.market.contract.methods.totalReserves(),
         this.market.contract.methods.totalBorrowsCurrent(),
-      ];
-      const results = await this.multicall.aggregate(multicall_list);
-
-      // Number of blocks assumed per year in interest rate contract: 2102400
-      const supplyRatePerBlock = results[0];
-      this.market_info.supply_rate = supplyRatePerBlock * 2102400 * 100;
-      const borrowRatePerBlock = results[1];
-      this.market_info.borrow_rate = borrowRatePerBlock * 2102400 * 100;
-      this.market_info.token_price = results[2][0];
-      this.market_info.cash = results[3];
-      this.market_info.reserve = results[4];
-      this.market_info.borrowed = results[5];
-      this.market_info.supplied =
-        parseInt(results[3]) + parseInt(results[5]) - parseInt(results[4]); // cash + borrow - reserve
-    },
-    async updateUserInfo() {
-      const account = this.userInfo.userAddress;
-      let multicall_list = [
+        this.manager.contract.methods.checkMembership(account, this.market.address),
+        // User info
         this.market.contract.methods.balanceOf(account),
         this.market.contract.methods.balanceOfUnderlying(account),
         this.market.contract.methods.borrowBalanceCurrent(account),
         this.manager.contract.methods.getAccountLiquidity(account),
       ];
-      if (!this.is_eth) {
+      if (this.symbol != "ETH") {
         multicall_list.push(this.token.contract.methods.balanceOf(account));
       }
       const results = await this.multicall.aggregate(multicall_list);
 
-      this.user_info.ftoken_balance = results[0];
-      this.user_info.supplied = results[1];
-      this.user_info.borrowed = results[2];
-      if (!this.is_eth) {
-        this.user_info.token_balance = results[4];
-      } else {
-        this.user_info.token_balance = await getNativeTokenAmountRaw(account);
-      }
+        // Number of blocks assumed per year in interest rate contract: 2102400
+        const supplyRatePerBlock = results[0];
+        this.market_info.supply_rate = supplyRatePerBlock * 2102400 * 100;
+        const borrowRatePerBlock = results[1];
+        this.market_info.borrow_rate = borrowRatePerBlock * 2102400 * 100;
+        this.market_info.token_price = results[2][0];
+        this.market_info.cash = results[3];
+        this.market_info.reserve = results[4];
+        this.market_info.borrowed = results[5];
+        this.market_info.supplied =
+          parseInt(results[3]) + parseInt(results[5]) - parseInt(results[4]); // cash + borrow - reserve
+        this.is_collateral = results[6];
 
-      if (results[3]["1"] > 0) {
-        // results[3]["1"]: shortfall
-        this.user_info.borrow_quota = 0;
-      } else {
-        let tempLiquidity = 0;
+        this.user_info.ftoken_balance = results[7];
+        this.user_info.supplied = results[8];
+        this.user_info.borrowed = results[9];
+        
+        if (results[10]["1"] > 0) {
+          // results[3]["1"]: shortfall
+          this.user_info.borrow_quota = 0;
+          this.user_info.withdraw_quota = 0;
+        } else {
+          let tempLiquidity = 0;
 
-        for (let i = 0; i < this.tier; i++) {
-          const liquidityValue = results[3]["0"][i]; // results[3]["0"]: liquidities array
-          const tokenEquivalent = liquidityValue / this.market_info.token_price;
-          tempLiquidity += parseInt(toWei(tokenEquivalent, this.token_decimal));
+          for (let j = 0; j < this.market_info.tier; j++) {
+            const liquidityValue = results[10]["0"][j]; // results[3]["0"]: liquidities array
+            const tokenEquivalent = liquidityValue / this.market_info.token_price;
+            tempLiquidity += parseInt(toWei(tokenEquivalent, this.token_decimal));
+          }
+          this.user_info.borrow_quota =
+            tempLiquidity > parseInt(this.market_info.cash)
+              ? this.market_info.cash
+              : tempLiquidity.toString();
+          this.user_info.withdraw_quota =
+            tempLiquidity > parseInt(this.user_info.supplied)
+              ? this.user_info.supplied
+              : tempLiquidity.toString();
         }
 
-        this.user_info.borrow_quota =
-          tempLiquidity > parseInt(this.market_info.cash)
-            ? this.market_info.cash
-            : tempLiquidity.toString();
-      }
-    },
-    async updateAll() {
-      await this.updateMarketInfo();
-      await this.updateUserInfo();
+        if (this.symbol != "ETH") {
+          this.user_info.token_balance = results[11];
+        } else {
+          this.user_info.token_balance = await getNativeTokenAmountRaw(account);
+        }
     },
 
     /*********************************** Allowance & balance checks ***********************************/
@@ -1063,7 +1036,6 @@ export default {
         this.errorMessage(`No ${this.symbol} in wallet`);
       } else {
         const decimals = this.token_decimal > 8 ? 8 : this.token_decimal;
-        console.log(this.user_info.token_balance);
         this.supply_amount = parseFloat(fromWei(this.user_info.token_balance, this.token_decimal)).toFixed(decimals);
         if (this.is_eth) {
           this.supply_amount = (this.supply_amount - 0.001).toFixed(8);
