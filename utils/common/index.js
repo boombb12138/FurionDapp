@@ -1,54 +1,250 @@
-import Web3 from 'web3';
+import Web3 from "web3";
 
-import { WEB3 } from '../web3';
+import { WEB3 } from "../web3";
 
-import ERC20ABI from '~/assets/abis/MockUSD.json';
+import ERC20ABI from "~/assets/abis/MockUSD.json";
 
 export const ALLOWANCE_THRESHOLD = 1000000;
 
 export const ipfsToHttp = (url) => {
-  return 'https://ipfs.io/ipfs/' + url.substr(6);
-}
+  return "https://ipfs.io/ipfs/" + url.substr(6);
+};
 
-export const getDecimals = Decimals => {
+export const getDecimals = (Decimals) => {
   switch (Decimals) {
     case 0:
-      return 'noether';
+      return "noether";
     case 1:
-      return 'wei';
+      return "wei";
     case 3:
-      return 'kwei';
+      return "kwei";
     case 6:
-      return 'mwei';
+      return "mwei";
     case 9:
-      return 'gwei';
+      return "gwei";
     case 12:
-      return 'microether';
+      return "microether";
     case 15:
-      return 'milliether';
+      return "milliether";
     case 18:
-      return 'ether';
+      return "ether";
     case 21:
-      return 'kether';
+      return "kether";
     case 24:
-      return 'mether';
+      return "mether";
     case 27:
-      return 'gether';
+      return "gether";
     case 30:
-      return 'tether';
+      return "tether";
     default:
       return Decimals;
   }
 };
 
-export const toBN = FixNumber => {
+export const toBN = (FixNumber) => {
   return Web3.utils.toBN(FixNumber.toString());
 };
 
 export const getMaxNum = () => {
   return Web3.utils.toBN(
-    '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+    "115792089237316195423570985008687907853269984665640564039457584007913129639935"
   );
+};
+
+export const fromWei = (FixNumber, Decimals) => {
+  let FixDecimals = getDecimals(Decimals || 18);
+  if (typeof FixNumber === "number") {
+    const result = FixNumber / 10 ** (Decimals || 18);
+    if (result.toFixed(8) - 1e-8 < 0) {
+      return 0;
+    }
+    return result.toFixed(8);
+  } else {
+    const result = Number(Web3.utils.fromWei(FixNumber, FixDecimals));
+    if (result.toFixed(8) - 1e-8 < 0) {
+      return 0;
+    }
+    return result.toFixed(8);
+  }
+};
+export const toWei = (FixNumber, Decimals = 18) => {
+  let FixDecimals = getDecimals(Decimals);
+  if (typeof FixNumber === "number") {
+    return Web3.utils.toWei(FixNumber.toFixed(Decimals), FixDecimals);
+  } else {
+    return Web3.utils.toWei(FixNumber, FixDecimals);
+  }
+};
+export const toFloor = (FixNumber, Decimals) => {
+  return Math.floor(FixNumber * 10 ** Decimals) / 10 ** Decimals;
+};
+
+export const getContract = async (abi, address) => {
+  const web3 = await WEB3();
+  if (address === "") {
+    try {
+      return new web3.eth.Contract(abi.abi, abi.address);
+    } catch (e) {
+      return new web3.eth.Contract(abi, abi.address);
+    }
+  }
+
+  try {
+    return new web3.eth.Contract(abi.abi, address);
+  } catch (e) {
+    return new web3.eth.Contract(abi, address);
+  }
+};
+
+export const tokenBalance = async (tokenAddress, account) => {
+  const Contracts = await getContract(ERC20ABI, tokenAddress);
+
+  return Contracts.methods
+    .balanceOf(account)
+    .call()
+    .then((res) => {
+      let Balance = fromWei(res, 18);
+      return Balance;
+    });
+};
+
+export const tokenAllowanceCheck = async (
+  tokenAddress,
+  fromAccount,
+  toAccount
+) => {
+  const Contracts = await getContract(ERC20ABI, tokenAddress);
+  return Contracts.methods
+    .allowance(fromAccount, toAccount)
+    .call()
+    .then((res) => {
+      let allowance = fromWei(res, 18);
+      if (allowance < 100000000) {
+        return false;
+      }
+      return true;
+    });
+};
+
+export const tokenApprove = async (tokenAddress, fromAccount, toAccount) => {
+  const tokenContract = await getContract(ERC20ABI, tokenAddress);
+  //todo 1. 不知道这个函数调用的approve、send、on方法的作用是什么
+  //2. abi文件里面不是一般都会有合约可以被调用的方法吗，我怎么知道tokenContract里面可以调用的方法有哪些呢
+  // 3.在furion这个repo里面，tokenContract是对应tokenBase.sol吗 我在里面找不到approve方法
+  await tokenContract.methods
+    .approve(
+      toAccount,
+      //Web3.utils.toBN 将任何给定值安全转换为一个 BN.js 实例, 以便于在 JavaScript 中处理大数.
+      Web3.utils.toBN(
+        "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+      )
+    )
+    .send({ from: fromAccount })
+    .on("transactionHash", (hash) => {
+      console.log("Tx", hash);
+    })
+    .on("receipt", (receipt) => {
+      // console.log('Receipt', receipt);
+      return receipt;
+    })
+    .on("error", (error) => {
+      console.log("Error", error);
+    });
+  return true;
+};
+
+export const getNativeTokenSymbol = (chainId) => {
+  switch (chainId) {
+    case 1:
+      return "ETH";
+    case 4:
+      return "ETH";
+    case 43113:
+      return "AVAX";
+    case 43114:
+      return "AVAX";
+    default:
+      return "ETH";
+  }
+};
+
+export const getNativeTokenAmount = async (account) => {
+  const web3 = await WEB3();
+
+  // console.log('getting native bal');
+  // console.log('current provider', web3);
+
+  const balance = await web3.eth.getBalance(account);
+  // console.log("native balnce", balance);
+  return Number(fromWei(balance)).toFixed(3);
+};
+
+export const getNativeTokenAmountRaw = async (account) => {
+  const web3 = await WEB3();
+  
+  return await web3.eth.getBalance(account);
+};
+
+export const getTxURL_test = (transactionHash) => {
+  const url = '"https://etherscan.io/tx/' + transactionHash;
+  // console.log(url1);
+  const txURL =
+    "<a href=" +
+    url +
+    '"' +
+    ' style="color: blue" target="blank">View on Explorer</a>';
+  // console.log(txURL);
+  return txURL;
+};
+
+export const getAddressURL_test = (address) => {
+  const url = '"https://testnet.etherscan.io/address/' + address;
+  // console.log(url1);
+  const txURL =
+    "<a href=" +
+    url +
+    '"' +
+    ' style="color: blue" target="blank">View on Explorer</a>';
+  // console.log(txURL);
+  return txURL;
+};
+
+export const getTxURL = (transactionHash) => {
+  const url = '"https://rinkeby.etherscan.io/tx/' + transactionHash;
+  // console.log(url1);
+  const txURL =
+    "<a href=" +
+    url +
+    '"' +
+    ' style="color: blue" target="blank">View on Explorer</a>';
+  // console.log(txURL);
+  return txURL;
+};
+
+export const getAddressURL = (address) => {
+  const url = '"https://etherscan.io/address/' + address;
+  // console.log(url1);
+  const txURL =
+    "<a href=" +
+    url +
+    '"' +
+    ' style="color: blue" target="blank">View on Explorer</a>';
+  // console.log(txURL);
+  return txURL;
+};
+
+export const getNow = () => {
+  const time = new Date().getTime();
+  const now = Math.floor(time / 1000);
+  return now;
+};
+
+export const formatTime = (value) => {
+  if (typeof value == "string") {
+    return value.replace("T", " ").split(".")[0];
+  } else {
+    return value;
+  }
 };
 
 export const _compareInt = (a, b) => {
@@ -71,211 +267,25 @@ export const _compareInt = (a, b) => {
   return "equal";
 };
 
-export const fromWei = (FixNumber, Decimals) => {
-  let FixDecimals = getDecimals(Decimals || 18);
-  if (typeof FixNumber === 'number') {
-    const result = FixNumber / 10 ** (Decimals || 18);
-    if (result.toFixed(8) - 1e-8 < 0) {
-      return 0;
-    }
-    return parseFloat(result.toFixed(8));
-  } else {
-    const result = Number(Web3.utils.fromWei(FixNumber, FixDecimals));
-    if (result.toFixed(8) - 1e-8 < 0) {
-      return 0;
-    }
-    return parseFloat(result.toFixed(8));
-  }
-};
-export const toWei = (FixNumber, Decimals = 18) => {
-  let FixDecimals = getDecimals(Decimals);
-  if (typeof FixNumber === 'number') {
-    return Web3.utils.toWei(FixNumber.toFixed(Decimals), FixDecimals);
-  } else {
-    return Web3.utils.toWei(FixNumber, FixDecimals);
-  }
-};
-export const toFloor = (FixNumber, Decimals) => {
-  return Math.floor(FixNumber * 10 ** Decimals) / 10 ** Decimals;
-};
-
-export const getContract = async (abi, address) => {
-  const web3 = await WEB3();
-  if (address === '') {
-    try {
-      return new web3.eth.Contract(abi.abi, abi.address);
-    } catch (e) {
-      return new web3.eth.Contract(abi, abi.address);
-    }
-  }
-
-  try {
-    return new web3.eth.Contract(abi.abi, address);
-  } catch (e) {
-    return new web3.eth.Contract(abi, address);
-  }
-};
-
-export const tokenBalance = async (tokenAddress, account) => {
-  const Contracts = await getContract(ERC20ABI, tokenAddress);
-
-  return Contracts.methods
-    .balanceOf(account)
-    .call()
-    .then(res => {
-      let Balance = fromWei(res, 18);
-      return Balance;
-    });
-};
-
-export const tokenAllowanceCheck = async (
-  tokenAddress,
-  fromAccount,
-  toAccount,
-) => {
-  const Contracts = await getContract(ERC20ABI, tokenAddress);
-  return Contracts.methods
-    .allowance(fromAccount, toAccount)
-    .call()
-    .then(res => {
-      let allowance = fromWei(res, 18);
-      if (allowance < 100000000) {
-        return false;
-      }
-      return true;
-    });
-};
-
-export const tokenApprove = async (tokenAddress, fromAccount, toAccount) => {
-  const tokenContract = await getContract(ERC20ABI, tokenAddress);
-  await tokenContract.methods
-    .approve(
-      toAccount,
-      Web3.utils.toBN(
-        '115792089237316195423570985008687907853269984665640564039457584007913129639935',
-      ),
-    )
-    .send({ from: fromAccount })
-    .on('transactionHash', hash => {
-      console.log('Tx', hash);
-    })
-    .on('receipt', receipt => {
-      // console.log('Receipt', receipt);
-      return receipt;
-    })
-    .on('error', error => {
-      console.log('Error', error);
-    });
-  return true;
-};
-
-export const getNativeTokenSymbol = chainId => {
-  switch (chainId) {
-    case 1:
-      return 'ETH';
-    case 4:
-      return 'ETH';
-    case 43113:
-      return 'AVAX';
-    case 43114:
-      return 'AVAX';
-    default:
-      return 'ETH';
-  }
-};
-
-export const getNativeTokenAmount = async account => {
-  const web3 = await WEB3();
-
-  // console.log('getting native bal');
-  // console.log('current provider', web3);
-
-  const balance = await web3.eth.getBalance(account);
-  // console.log("native balnce", balance);
-  return Number(fromWei(balance)).toFixed(3);
-};
-
-export const getTxURL_test = transactionHash => {
-  const url = '"https://etherscan.io/tx/' + transactionHash;
-  // console.log(url1);
-  const txURL =
-    '<a href=' +
-    url +
-    '"' +
-    ' style="color: blue" target="blank">View on Explorer</a>';
-  // console.log(txURL);
-  return txURL;
-};
-
-export const getAddressURL_test = address => {
-  const url = '"https://testnet.etherscan.io/address/' + address;
-  // console.log(url1);
-  const txURL =
-    '<a href=' +
-    url +
-    '"' +
-    ' style="color: blue" target="blank">View on Explorer</a>';
-  // console.log(txURL);
-  return txURL;
-};
-
-export const getTxURL = transactionHash => {
-  const url = '"https://rinkeby.etherscan.io/tx/' + transactionHash;
-  // console.log(url1);
-  const txURL =
-    '<a href=' +
-    url +
-    '"' +
-    ' style="color: blue" target="blank">View on Explorer</a>';
-  // console.log(txURL);
-  return txURL;
-};
-
-export const getAddressURL = address => {
-  const url = '"https://etherscan.io/address/' + address;
-  // console.log(url1);
-  const txURL =
-    '<a href=' +
-    url +
-    '"' +
-    ' style="color: blue" target="blank">View on Explorer</a>';
-  // console.log(txURL);
-  return txURL;
-};
-
-export const getNow = () => {
-  const time = new Date().getTime();
-  const now = Math.floor(time / 1000);
-  return now;
-};
-
-export const formatTime = value => {
-  if (typeof value == 'string') {
-    return value.replace('T', ' ').split('.')[0];
-  } else {
-    return value;
-  }
-};
-
-export const _formatNumber = value => {
+export const _formatNumber = (value) => {
   if (value == undefined) {
-    return '--';
+    return "--";
   }
-  if (typeof value == 'number') {
-    return value.toLocaleString('en-US');
+  if (typeof value == "number") {
+    return value.toLocaleString("en-US");
   }
-  if (typeof value == 'string') {
-    if (value === '--') {
-      return '--';
+  if (typeof value == "string") {
+    if (value === "--") {
+      return "--";
     }
-    return Number(value).toLocaleString('en-US');
+    return Number(value).toLocaleString("en-US");
   }
   return value;
 };
 
-export const _formatName = value => {
-  if (typeof value == 'string') {
-    return value.replace('_', '').replace('.0', '');
+export const _formatName = (value) => {
+  if (typeof value == "string") {
+    return value.replace("_", "").replace(".0", "");
   }
 };
 
@@ -284,10 +294,12 @@ export const _formatString = (value, length) => {
     return value;
   }
   let half_length = parseInt(length / 2);
-  return value.substr(0, length - half_length) + '...' + value.substr(-half_length);
-}
+  return (
+    value.substr(0, length - half_length) + "..." + value.substr(-half_length)
+  );
+};
 
-export const _showUserAddressText = userInfo => {
+export const _showUserAddressText = (userInfo) => {
   let addressText;
   const fullAddress = userInfo.userAddress;
   if (fullAddress) {
@@ -295,7 +307,7 @@ export const _showUserAddressText = userInfo => {
       fullAddress.substr(0, 1) +
       fullAddress.substr(1, 1).toLowerCase() +
       fullAddress.substr(2, 7) +
-      '...' +
+      "..." +
       fullAddress.substr(-7);
   }
   return addressText;
@@ -303,23 +315,23 @@ export const _showUserAddressText = userInfo => {
 
 export const autoFill = (oldValue, eventType, newValue) => {
   let resultValue;
-  if (eventType == 'insertText') {
+  if (eventType == "insertText") {
     try {
       if (parseFloat(oldValue) < 0.01) {
         resultValue = newValue;
       }
-    } catch (e) { }
+    } catch (e) {}
     if (oldValue == undefined) {
       resultValue = newValue;
     } else {
-      if (newValue == '.') {
-        newValue = ',';
+      if (newValue == ".") {
+        newValue = ",";
       }
-      resultValue = '' + oldValue + newValue;
+      resultValue = "" + oldValue + newValue;
     }
   } else {
     if (oldValue == undefined || oldValue.toString().length < 1) {
-      resultValue = '';
+      resultValue = "";
     } else {
       let num_str = oldValue.toString();
       resultValue = num_str.substr(0, num_str.length - 1);
@@ -327,10 +339,10 @@ export const autoFill = (oldValue, eventType, newValue) => {
   }
   try {
     resultValue = resultValue.toString();
-    if (resultValue[resultValue.length - 1] != ',') {
-      resultValue = resultValue.replace(',', '.');
+    if (resultValue[resultValue.length - 1] != ",") {
+      resultValue = resultValue.replace(",", ".");
     }
-  } catch (e) { }
+  } catch (e) {}
 
   return resultValue;
 };

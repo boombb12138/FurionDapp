@@ -1,4 +1,8 @@
 import addressStore from "@/assets/info/address.json";
+import marketStore from "@/assets/info/MoneyMarket.json";
+import spStore from "@/assets/info/SeparatePool.json";
+import apStore from "@/assets/info/AggregatePool.json";
+import swapStore from "@/assets/info/FurionSwap.json";
 
 import FurionToken from "@/assets/abis/rinkeby/tokens/FurionToken.sol/FurionToken.json";
 import MockUSD from "@/assets/abis/rinkeby/mock/MockUSD.sol/MockUSD.json";
@@ -29,6 +33,39 @@ import TestClaim from "@/assets/abis/rinkeby/TestClaim.sol/TestClaim.json";
 export const getAddress = () => {
     let address = addressStore['rinkeby'];
     return address;
+}
+
+export const getMarkets = () => {
+    let markets = marketStore['rinkeby'];
+    return markets;
+}
+
+export const getMarket = (symbol) => {
+    const markets = getMarkets();
+
+    for (let market of markets) {
+        if (market.name === symbol) {
+            return market;
+        }
+    }
+
+    console.log("Market not found");
+    return {};
+}
+
+export const getSP = () => {
+    let sp = spStore['rinkeby'];
+    return sp;
+}
+
+export const getAP = () => {
+    let ap = apStore['rinkeby'];
+    return ap;
+}
+
+export const getSwap = () => {
+    let swap = swapStore['rinkeby'];
+    return swap;
 }
 
 export const getFurionTokenABI = async () => {
@@ -84,25 +121,26 @@ export const getAggregatePoolABI = async () => {
 }
 
 export const getFEtherABI = async () => {
-    let address = getAddress();
-    FEther.address = address["FEther Proxy"];
+    let feth = getMarket("fETH");
+    FEther.address = feth.address;
     return FEther;
 }
 
-export const getFErc20ABI = async () => {
-    FErc20.address = '';
+export const getFErc20ABI = async (symbol) => {
+    let ferc = getMarket(symbol);
+    FErc20.address = ferc.address;
     return FErc20;
 }
 
 export const getRiskManagerABI = async () => {
     let address = getAddress();
-    RiskManager.address = address["Risk Manager Proxy"];
+    RiskManager.address = address["RiskManager"];
     return RiskManager;
 }
 
 export const getPriceOracleABI = async () => {
     let address = getAddress();
-    SimplePriceOracle.address = address["Price Oracle"];
+    SimplePriceOracle.address = address["PriceOracle"];
     return SimplePriceOracle;
 }
 

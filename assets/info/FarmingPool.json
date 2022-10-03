@@ -19,5 +19,25 @@
       "poolId": 3,
       "reward": "3.0"
     }
+  },
+  "goerli": {
+    "1": {
+      "name": "FUR-ETH",
+      "address": "0x32f59273A81A1db248dcd2ffE1E566e0e2531b93",
+      "poolId": 1,
+      "reward": "1.0"
+    },
+    "2": {
+      "name": "FUR-USDT",
+      "address": "0x625Ef1669D989E5D1dF2AB5623d31083FdB3ef9b",
+      "poolId": 2,
+      "reward": "2.0"
+    },
+    "3": {
+      "name": "USDT-ETH",
+      "address": "0x78A6583630a9389AD575A7934524a6015207Ea65",
+      "poolId": 3,
+      "reward": "3.0"
+    }
   }
 }

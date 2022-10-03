@@ -22,5 +22,28 @@
       "name1": "ETH",
       "pair": "0x76B6106E1e19bdfa051b834F239580B8238B8537"
     }
+  ],
+  "goerli": [
+    {
+      "token0": "0xCD989B3af99DaD62aEc047a50cDE5EEd051e3202",
+      "token1": "0x175940b39014cD3a9c87cd6b1d7616a097db958E",
+      "name0": "FUR",
+      "name1": "ETH",
+      "pair": "0x32f59273A81A1db248dcd2ffE1E566e0e2531b93"
+    },
+    {
+      "token0": "0xCD989B3af99DaD62aEc047a50cDE5EEd051e3202",
+      "token1": "0x62d3B764626A52FDe2D868b7e093863bEAe4336b",
+      "name0": "FUR",
+      "name1": "USDT",
+      "pair": "0x625Ef1669D989E5D1dF2AB5623d31083FdB3ef9b"
+    },
+    {
+      "token0": "0x62d3B764626A52FDe2D868b7e093863bEAe4336b",
+      "token1": "0x175940b39014cD3a9c87cd6b1d7616a097db958E",
+      "name0": "USDT",
+      "name1": "ETH",
+      "pair": "0x78A6583630a9389AD575A7934524a6015207Ea65"
+    }
   ]
 }
