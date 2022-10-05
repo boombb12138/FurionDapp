@@ -256,7 +256,7 @@ import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
 
 import { initFurionSwapInfo, swap_info } from '@/config/furion_swap/swap';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
-import { _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
+import { _compareInt, _formatNumber, ALLOWANCE_THRESHOLD, tokenApprove, getTxURL, fromWei, toWei, getNativeTokenAmount } from '@/utils/common';
 import { addToken } from '@/utils/web3/wallet';
 
 
@@ -419,18 +419,22 @@ export default {
       }
     },
 
-    checkApproval() {
+    async checkApproval() {
       let account = this.userInfo.userAddress;
       if (this.swap_info.token_0 == 'ETH') {
         this.allowance_0 = 10000000000000000000000000000;
         this.approved = true;
       }
       else {
-        this.swap_info.token_0_contract.methods.allowance(account, this.swap_info.router_address).call().then((allowance) => {
-          if (parseInt(allowance) > ALLOWANCE_THRESHOLD) {
-            this.approved = true;
-          }
-        })
+        if (!this.allowance_0) {
+          const allowance = await this.swap_info.token_0_contract.methods.allowance(account, this.swap_info.router_address).call();
+          this.allowance_0 = allowance;
+        }
+        if (!this.token_0_amount) {
+          this.approved = true;
+          return;
+        }
+        _compareInt(toWei(this.token_0_amount, parseInt(this.swap_info.token_0_decimal)), this.allowance_0) == "larger" ? this.approved = false : this.approved = true;
       }
     },
 
@@ -440,11 +444,15 @@ export default {
         return
       }
       // console.log('Ready for approval')
-      if (this.allowance_0 < ALLOWANCE_THRESHOLD) {
-        await openDialog(this.dialogue_info, [ProcessInfo.SWAP_APPROVE_TOKEN]);
-        await tokenApprove(this.swap_info.token_0_address, account, this.swap_info.router_address);
-        // console.log('Approve token', this.swap_info.token_0);
+      openDialog(this.dialogue_info, [ProcessInfo.SWAP_APPROVE_TOKEN]);
+      try {
+        const tx = await tokenApprove(this.swap_info.token_0_address, account, this.swap_info.router_address);
+        this.successMessage(tx, `Approve succeeded`);
+      } catch (e) {
+        this.errorMessage(`Approve failed`);
+        console.warn(e);
       }
+      // console.log('Approve token', this.swap_info.token_0);
       closeDialog(this.dialogue_info);
     },
 
@@ -538,7 +546,8 @@ export default {
 
     /******************************* Helper functions *******************************/
 
-    calToken1Amount() {
+    async calToken1Amount() {
+      await this.checkApproval();
       if (this.token_0_amount > this.swap_info.token_0_balance) {
         this.valid_swap = false;
         return
@@ -552,7 +561,8 @@ export default {
       this.token_1_amount = token_1_desired.toFixed(4);
       this.valid_swap = true;
     },
-    calToken0Amount() {
+    async calToken0Amount() {
+      await this.checkApproval();
       if (this.token_1_amount > this.swap_info.token_1_balance) {
         this.valid_swap = false;
         return

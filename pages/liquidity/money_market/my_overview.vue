@@ -144,10 +144,10 @@
 
 .custom_btn {
   display: block;
-  width: 520px;
+  width: 523px;
   height: 50px;
   line-height: 45px;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
   text-decoration: none;
   color: #f06fd2;
@@ -157,14 +157,13 @@
   transition: all 0.5s ease-out;
   border-radius: 12px;
   text-transform: uppercase;
-  letter-spacing: 1px;
 
   span {
     position: relative;
     z-index: 2;
   }
 
-  &:after {
+  &:before {
     position: absolute;
     content: "";
     top: 0;
@@ -177,12 +176,15 @@
   }
 
   &:hover {
-    color: #091839;
+    color: #0a1a3a;
   }
 
-  &:hover:after {
+  &:hover:before {
     width: 100%;
   }
+}
+.disabled {
+  filter: grayscale(80%);
 }
 
 .input-window {
@@ -250,7 +252,7 @@
   border-radius: 10px;
   transition: all 0.3s;
 }
-.custom-btn {
+.small-btn {
   @include btn-style;
   color: #f181de;
 
@@ -330,22 +332,23 @@
         </div>
       </div>
 
-      <el-button
+      <a
+        class="custom_btn mt-30px mx-auto cursor-pointer"
+        :class="{ disabled: disableBtn() }"
+        @click="disableBtn() ? undefined : execute()"
+      >
+        <span>{{ error ? error : action }}</span>
+      </a>
+      <!--el-button
         type="primary"
         class="!w-full"
         :disabled="disableBtn()"
         @click="execute()"
       >
-        <span class="font-800 text-20px" style="word-spacing: 5px">
-          {{ action }}
+        <span class="font-800 text-20px" style="word-spacing: 5px; text-transform: uppercase">
+          {{ error ? error : action }}
         </span>
-      </el-button>
-      <!--a
-        class="custom_btn mt-30px mx-auto cursor-pointer"
-        @click="execute()"
-      >
-        <span>{{ action }}</span>
-      </a-->
+      </el-button-->
     </el-dialog>
 
     <div class="w-1270px mx-auto">
@@ -1153,6 +1156,7 @@ export default {
       collateralize: false,
       active: 0,
       searchKey: "",
+      error: "",
       dialogue_info: DialogInfo,
       multicall: multicall,
       table: ["supplies", "borrow", "assetsSupply", "assetsBorrow"],
@@ -1269,11 +1273,16 @@ export default {
       }
     },
     disableBtn() {
+<<<<<<< HEAD
       if (
         this.interact_amount == "" ||
         this.interact_amount == 0 ||
         this.interact_amount[0] == "."
       ) {
+=======
+      if (this.interact_amount == "" || this.interact_amount == 0 || this.interact_amount[0] == ".") {
+        this.error = "";
+>>>>>>> ce1a9b29449e56aa0127424779d5762a5480235a
         return true;
       }
 
@@ -1289,12 +1298,15 @@ export default {
               this.user_info[this.symbol].token_balance
             ) == "larger"
           ) {
+            this.error = "Insufficient balance";
             return true;
           } else {
+            this.error = "";
             return false;
           }
         case "Withdraw":
           if (
+<<<<<<< HEAD
             _compareInt(
               this.compareFormat(
                 this.interact_amount,
@@ -1309,9 +1321,15 @@ export default {
               ),
               this.user_info[this.symbol].supplied
             ) == "larger"
+=======
+            _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].withdraw_quota) == "larger" ||
+            _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].supplied) == "larger"
+>>>>>>> ce1a9b29449e56aa0127424779d5762a5480235a
           ) {
+            this.error = "Quota exceeded";
             return true;
           } else {
+            this.error = "";
             return false;
           }
         case "Borrow":
@@ -1331,8 +1349,10 @@ export default {
               this.market_info[this.symbol].cash
             ) == "larger"
           ) {
+            this.error = "Quota exceeded";
             return true;
           } else {
+            this.error = "";
             return false;
           }
       }
@@ -1430,12 +1450,12 @@ export default {
             );
           }
           this.user_info[symbol].borrow_quota =
-            tempLiquidity > parseInt(this.market_info[symbol].cash)
+            _compareInt(tempLiquidity.toString(), this.market_info[symbol].cash) == "larger"
               ? this.market_info[symbol].cash
               : tempLiquidity.toString();
           this.user_info[symbol].withdraw_quota =
-            tempLiquidity > parseInt(this.user_info[symbol].deposited)
-              ? this.user_info.deposited
+            _compareInt(tempLiquidity.toString(), this.user_info[symbol].supplied) == "larger"
+              ? this.user_info.supplied
               : tempLiquidity.toString();
           i++;
         }
@@ -1705,9 +1725,15 @@ export default {
       return this.formatNumber(fromWei(amount, decimal), fixed);
     },
     compareFormat(amount, decimal) {
+<<<<<<< HEAD
       const actualAmount =
         amount == "" ? 0 : parseFloat(amount).toFixed(decimal);
       return toWei(actualAmount, decimal);
+=======
+      const actualAmount = amount == "" ? 0 : parseFloat(amount);
+      const res = toWei(actualAmount, decimal).split(".");
+      return res[0];
+>>>>>>> ce1a9b29449e56aa0127424779d5762a5480235a
     },
 
     handleAbcClick(item) {

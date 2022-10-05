@@ -205,13 +205,14 @@
   position: relative;
   transition: all 0.5s ease-out;
   border-radius: 12px;
+  text-transform: uppercase;
 
   span {
     position: relative;
     z-index: 2;
   }
 
-  &:after {
+  &:before {
     position: absolute;
     content: "";
     top: 0;
@@ -227,7 +228,7 @@
     color: #0a1a3a;
   }
 
-  &:hover:after {
+  &:hover:before {
     width: 100%;
   }
 }
@@ -333,6 +334,10 @@
     transform: rotate(360deg);
   }
 }
+
+.disabled {
+  filter: grayscale(80%);
+}
 </style>
 
 <template>
@@ -345,7 +350,7 @@
     </div>
 
     <div class="w-1184px mx-auto pb-44px">
-      <Loading class="w-1184px h-113px top1" :loading="loading1">
+      <Loading class="w-1184px h-113px top1" :loading="loading">
         <div
           class="w-full h-113px rounded-12px flex items-center top-bar justify-between px-27px"
         >
@@ -396,7 +401,7 @@
       </Loading>
       <div class="flex mt-37px justify-between">
         <!-------------------------------------- Supply -------------------------------------->
-        <Loading class="w-579px h-861px" :loading="loading2">
+        <Loading class="w-579px h-861px" :loading="loading">
           <div class="box box-border5 p-10px">
             <div
               class="box-top flex items-center justify-between pr-53px pl-22px mb-25px"
@@ -485,9 +490,10 @@
 
               <a
                 class="custom_btn mt-30px mx-auto cursor-pointer"
-                @click="supply(supply_amount)"
+                :class="{ disabled: disableSupply() }"
+                @click="disableSupply() ? undefined : supply(supply_amount)"
               >
-                <span>SUPPLY {{ symbol }}</span>
+                <span>{{ supply_error ? supply_error : `SUPPLY ${symbol}` }}</span>
               </a>
 
               <p class="reminder">
@@ -501,7 +507,7 @@
         </Loading>
 
         <!-------------------------------------- Borrow -------------------------------------->
-        <Loading class="w-579px h-861px" :loading="loading2">
+        <Loading class="w-579px h-861px" :loading="loading">
           <div class="box box-border5 p-10px">
             <div
               class="box-top flex items-center justify-between pr-53px pl-22px mb-25px"
@@ -689,9 +695,10 @@
 
               <a
                 class="custom_btn mt-70px mx-auto cursor-pointer"
-                @click="borrow(borrow_amount)"
+                :class="{ disabled: disableBorrow() }"
+                @click="disableBorrow() ? undefined : borrow(borrow_amount)"
               >
-                <span>BORROW {{ symbol }}</span>
+                <span>{{ borrow_error ? borrow_error : `BORROW ${symbol}` }}</span>
               </a>
               <!--div class="btn_border w-480px mx-auto mt-70px">
                 <el-button type="primary" class="!w-full !h-54px">
@@ -758,9 +765,7 @@ export default {
   data() {
     const multicall = newMultiCallProvider(4);
     return {
-      loading1: true,
-      loading2: true,
-      loading3: true,
+      loading: true,
       asset: {},
       user_info: user_info_default,
       market_info: market_info_default,
@@ -776,6 +781,8 @@ export default {
       collateralize: false,
       refreshing: false,
       validating: false,
+      supply_error: "",
+      borrow_error: "",
       dialogue_info: DialogInfo,
       multicall: multicall,
     };
@@ -797,23 +804,43 @@ export default {
       await this.updateAll();
       this.collateralize = this.is_collateral ? true : false;
 
-      this.loading1 = false;
-      this.loading2 = false;
+      this.loading = false;
     }, 1000);
   },
   methods: {
-    /*
-    add() {
-      this.collateralList.push({
-        num: 0,
-        type: "AVAX",
-        balance: 0,
-      });
+    disableSupply() {
+      if (this.supply_amount == "" || this.supply_amount == 0 || this.supply_amount[0] == ".") {
+        this.supply_error = "";
+        return true;
+      }
+
+      if (
+        _compareInt(this.compareFormat(this.supply_amount, this.token_decimal), this.user_info.token_balance) == "larger"
+      ) {
+        this.supply_error = "Insufficient balance";
+        return true;
+      } else {
+        this.supply_error = "";
+        return false;
+      }
     },
-    remove() {
-      this.collateralList.splice(this.collateralList.length - 1, 1);
+    disableBorrow() {
+      if (this.borrow_amount == "" || this.borrow_amount == 0 || this.borrow_amount[0] == ".") {
+        this.borrow_error = "";
+        return true;
+      }
+
+      if (
+        _compareInt(this.compareFormat(this.borrow_amount, this.token_decimal), this.user_info.borrow_quota) == "larger" || 
+        _compareInt(this.compareFormat(this.borrow_amount, this.token_decimal), this.market_info.cash) == "larger"
+      ) {
+        this.borrow_error = "Quota exceeded";
+        return true;
+      } else {
+        this.borrow_error = "";
+        return false;
+      }
     },
-    */
 
     /******************************* State management *******************************/
 
@@ -868,22 +895,17 @@ export default {
         if (results[10]["1"] > 0) {
           // results[3]["1"]: shortfall
           this.user_info.borrow_quota = 0;
-          this.user_info.withdraw_quota = 0;
         } else {
           let tempLiquidity = 0;
 
-          for (let j = 0; j < this.market_info.tier; j++) {
-            const liquidityValue = results[10]["0"][j]; // results[3]["0"]: liquidities array
+          for (let j = 0; j < this.tier; j++) {
+            const liquidityValue = results[10]["0"][j]; // results[10]["0"]: liquidities array
             const tokenEquivalent = liquidityValue / this.market_info.token_price;
             tempLiquidity += parseInt(toWei(tokenEquivalent, this.token_decimal));
           }
           this.user_info.borrow_quota =
-            tempLiquidity > parseInt(this.market_info.cash)
+            _compareInt(tempLiquidity.toString(), this.market_info.cash) == "larger"
               ? this.market_info.cash
-              : tempLiquidity.toString();
-          this.user_info.withdraw_quota =
-            tempLiquidity > parseInt(this.user_info.supplied)
-              ? this.user_info.supplied
               : tempLiquidity.toString();
         }
 
@@ -1094,6 +1116,11 @@ export default {
     },
     displayFormat(amount, decimal = 18, fixed = 0) {
       return this.formatNumber(fromWei(amount, decimal), fixed);
+    },
+    compareFormat(amount, decimal) {
+      const actualAmount = amount == "" ? 0 : parseFloat(amount);
+      const res = toWei(actualAmount, decimal).split(".");
+      return res[0];
     },
   },
 };

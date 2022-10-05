@@ -1,11 +1,9 @@
 <style lang="scss" scoped>
 .network_dialog_body {
-  font-family: 'Montserrat';
   font-size: 12pt;
 }
 
 .step-title {
-  font-family: 'Montserrat';
   font-size: 14pt;
   font-weight: 800 !important;
   text-align: left;
@@ -17,11 +15,10 @@
 }
 
 .step-body {
-  font-family: 'Montserrat';
   font-size: 12pt;
   text-align: center;
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 400;
   padding-left: 8%;
   padding-right: 8%;
 }
