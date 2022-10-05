@@ -144,10 +144,10 @@
 
 .custom_btn {
   display: block;
-  width: 520px;
+  width: 523px;
   height: 50px;
   line-height: 45px;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
   text-decoration: none;
   color: #f06fd2;
@@ -157,14 +157,13 @@
   transition: all 0.5s ease-out;
   border-radius: 12px;
   text-transform: uppercase;
-  letter-spacing: 1px;
 
   span {
     position: relative;
     z-index: 2;
   }
 
-  &:after {
+  &:before {
     position: absolute;
     content: "";
     top: 0;
@@ -177,12 +176,15 @@
   }
 
   &:hover {
-    color: #091839;
+    color: #0a1a3a;
   }
 
-  &:hover:after {
+  &:hover:before {
     width: 100%;
   }
+}
+.disabled {
+  filter: grayscale(80%);
 }
 
 .input-window {
@@ -250,7 +252,7 @@
   border-radius: 10px;
   transition: all 0.3s;
 }
-.custom-btn {
+.small-btn {
   @include btn-style;
   color: #f181de;
 
@@ -326,22 +328,23 @@
         </div>
       </div>
 
-      <el-button
+      <a
+        class="custom_btn mt-30px mx-auto cursor-pointer"
+        :class="{ disabled: disableBtn() }"
+        @click="disableBtn() ? undefined : execute()"
+      >
+        <span>{{ error ? error : action }}</span>
+      </a>
+      <!--el-button
         type="primary"
         class="!w-full"
         :disabled="disableBtn()"
         @click="execute()"
       >
-        <span class="font-800 text-20px" style="word-spacing: 5px">
-          {{ action }}
+        <span class="font-800 text-20px" style="word-spacing: 5px; text-transform: uppercase">
+          {{ error ? error : action }}
         </span>
-      </el-button>
-      <!--a
-        class="custom_btn mt-30px mx-auto cursor-pointer"
-        @click="execute()"
-      >
-        <span>{{ action }}</span>
-      </a-->
+      </el-button-->
     </el-dialog>
     
 
@@ -426,7 +429,7 @@
                   <el-table-column width="104px">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.Asset, 'Withdraw')">
+                        <div class="small-btn"  @click="dialog = true; initInteraction(scope.row.Asset, 'Withdraw')">
                           Withdraw
                         </div>
                       </div>
@@ -507,7 +510,7 @@
                   <el-table-column width="104" align="right">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.Asset, 'Supply')">
+                        <div class="small-btn"  @click="dialog = true; initInteraction(scope.row.Asset, 'Supply')">
                           Supply
                         </div>
                       </div>
@@ -582,7 +585,7 @@
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.Asset, 'Repay')">
+                        <div class="small-btn"  @click="dialog = true; initInteraction(scope.row.Asset, 'Repay')">
                           Repay
                         </div>
                       </div>
@@ -664,7 +667,7 @@
                   <el-table-column width="104">
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="dialog = true; initInteraction(scope.row.Asset, 'Borrow')">
+                        <div class="small-btn"  @click="dialog = true; initInteraction(scope.row.Asset, 'Borrow')">
                           Borrow
                         </div>
                       </div>
@@ -774,7 +777,7 @@
               <el-table-column width="104" align="right">
                 <template slot-scope="scope">
                   <div class="flex items-center justify-end">
-                        <div class="custom-btn"  @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.Asset}&tier=${market_info[scope.row.Asset].tier}`)">
+                        <div class="small-btn"  @click="$router.push(`/liquidity/money_market/detail?asset=${scope.row.Asset}&tier=${market_info[scope.row.Asset].tier}`)">
                           Details
                         </div>
                       </div>
@@ -878,6 +881,7 @@ export default {
       collateralize: false,
       active: 0,
       searchKey: "",
+      error: "",
       dialogue_info: DialogInfo,
       multicall: multicall,
     };
@@ -979,6 +983,7 @@ export default {
     },
     disableBtn() {
       if (this.interact_amount == "" || this.interact_amount == 0 || this.interact_amount[0] == ".") {
+        this.error = "";
         return true;
       }
 
@@ -988,17 +993,21 @@ export default {
           if (
             _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].token_balance) == "larger"
           ) {
+            this.error = "Insufficient balance";
             return true;
           } else {
+            this.error = "";
             return false;
           }
         case "Withdraw":
           if (
-            _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].withdraw_quota) == "larger" ||
+            _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].withdraw_quota) == "larger" || 
             _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].supplied) == "larger"
           ) {
+            this.error = "Quota exceeded";
             return true;
           } else {
+            this.error = "";
             return false;
           }
         case "Borrow":
@@ -1006,8 +1015,10 @@ export default {
             _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].borrow_quota) == "larger" ||
             _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.market_info[this.symbol].cash) == "larger"
           ) {
+            this.error = "Quota exceeded";
             return true;
           } else {
+            this.error = "";
             return false;
           }
       }
@@ -1091,12 +1102,12 @@ export default {
             tempLiquidity += parseInt(toWei(tokenEquivalent, token_list[symbol].decimals));
           }
           this.user_info[symbol].borrow_quota =
-            tempLiquidity > parseInt(this.market_info[symbol].cash)
+            _compareInt(tempLiquidity.toString(), this.market_info[symbol].cash) == "larger"
               ? this.market_info[symbol].cash
               : tempLiquidity.toString();
           this.user_info[symbol].withdraw_quota =
-            tempLiquidity > parseInt(this.user_info[symbol].deposited)
-              ? this.user_info.deposited
+            _compareInt(tempLiquidity.toString(), this.user_info[symbol].supplied) == "larger"
+              ? this.user_info.supplied
               : tempLiquidity.toString();
           i++;
         }
@@ -1354,8 +1365,9 @@ export default {
       return this.formatNumber(fromWei(amount, decimal), fixed);
     },
     compareFormat(amount, decimal) {
-      const actualAmount = amount == "" ? 0 : parseFloat(amount).toFixed(decimal);
-      return toWei(actualAmount, decimal);
+      const actualAmount = amount == "" ? 0 : parseFloat(amount);
+      const res = toWei(actualAmount, decimal).split(".");
+      return res[0];
     },
   },
 };
