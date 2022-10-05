@@ -2,6 +2,7 @@ import { getNftInfoByProject, getNftImages, getNftHoldingInfo, getUri } from "@/
 import { query_abi } from "@/api/query_etherscan";
 import { getContract, ipfsToHttp } from '@/utils/common';
 import { getSeparatePoolABI, getFurionTokenABI, getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
+import { newMultiCallProvider } from "@/utils/web3/multicall";
 
 export const default_pool_info = {
     collection: 'Loading',
@@ -74,25 +75,34 @@ export const initSeparatePoolInfo = async (project, network) => {
     const poolContract = await getContract(await getSeparatePoolABI(), poolAddress);
     let raw_in_pool = (await getNftHoldingInfo(raw_data['address'], poolAddress.toLowerCase(), network))['data']['data'];
 
-    let in_pool = [];
-    for (let j = 0; j < raw_in_pool.length; j++) {
-        const id = raw_in_pool[j];
-        const lockInfo = await poolContract.methods.getLockInfo(id).call();
-        
-        let single_record = {
-            token_id: id,
-            image_url: require("@/assets/images/placeholder.png"),
-            lock_info: {
-                locker: lockInfo[0],
-                extended: lockInfo[1],
-                release_time: lockInfo[2]
-            },
-        }
-        in_pool.push(single_record);
-    }
-    separate_pool_info.in_pool = in_pool;
+    separate_pool_info.in_pool = await getLockInfo(poolContract, raw_in_pool);
 
     // console.log('Separate Pool Info', separate_pool_info);
+}
+
+const getLockInfo = async (poolContract, ids) => {
+    const multicall = newMultiCallProvider(4);
+
+    let in_pool = [];
+    let multicall_list = [];
+    for (let id of ids) {
+        multicall_list.push(poolContract.methods.getLockInfo(id));
+    }
+    const results = await multicall.aggregate(multicall_list);
+
+    for (let i = 0; i < ids.length; i++) {
+        in_pool.push({
+            token_id: ids[i],
+            image_url: require("@/assets/images/placeholder.png"),
+            lock_info: {
+                locker: results[i][0],
+                extended: results[i][1],
+                release_time: results[i][2]
+            },
+        });
+    }
+
+    return in_pool;
 }
 
 export const initSeparatePoolContract = async (nftAddress) => {
