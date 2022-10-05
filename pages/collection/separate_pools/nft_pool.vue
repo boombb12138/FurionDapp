@@ -456,7 +456,7 @@ import { mapState } from 'vuex';
 import {
   separate_pool_info, default_pool_info,
   initSeparatePoolInfo, initSeparatePoolContract, initFurContract,
-  initTokenImage, defaultSeparatePoolInfo, query_user_holding
+  initTokenImage, defaultSeparatePoolInfo, query_user_holding, getInfo
 } from '@/config/collection/separate_pool';
 import { getNftHoldingInfo } from '@/api/nft_info';
 import {
@@ -591,20 +591,7 @@ export default {
     async filterPool() {
       const raw_in_pool = (await getNftHoldingInfo(this.separate_pool_info.nft_address, this.poolContract.address.toLowerCase(), this.network))['data']['data'];
 
-      let original = [];
-      for (let i = 0; i < raw_in_pool.length; i++) {
-        const id = raw_in_pool[i];
-        const lockInfo = await this.poolContract.contract.methods.getLockInfo(id).call();
-        original.push({
-          token_id: id,
-          image_url: require("@/assets/images/placeholder.png"),
-          lock_info: {
-            locker: lockInfo[0],
-            extended: lockInfo[1],
-            release_time: lockInfo[2]
-          }
-        })
-      }
+      let original = await getInfo(this.poolContract.contract, raw_in_pool);
 
       if (this.checkList.length == 1) {
         let temp = [];
@@ -643,24 +630,7 @@ export default {
     async refreshPool() {
       let raw_in_pool = (await getNftHoldingInfo(this.separate_pool_info.nft_address, this.poolContract.address.toLowerCase(), this.network))['data']['data'];
 
-      let in_pool = [];
-      for (let j = 0; j < raw_in_pool.length; j++) {
-        const id = raw_in_pool[j];
-        const lockInfo = await this.poolContract.contract.methods.getLockInfo(id).call();
-
-        let single_record = {
-          token_id: id,
-          image_url: require("@/assets/images/placeholder.png"),
-          lock_info: {
-            locker: lockInfo[0],
-            extended: lockInfo[1],
-            release_time: lockInfo[2],
-          }
-        }
-        in_pool.push(single_record);
-      }
-
-      this.separate_pool_info.in_pool = in_pool;
+      this.separate_pool_info.in_pool = await getInfo(this.poolContract.contract, raw_in_pool);
       await initTokenImage(this.separate_pool_info, this.network);
       await this.initUserInfo();
     },

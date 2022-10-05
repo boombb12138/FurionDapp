@@ -4,6 +4,8 @@ import { getContract, ipfsToHttp } from '@/utils/common';
 import { getSeparatePoolABI, getFurionTokenABI, getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 
+const multicall = newMultiCallProvider(4);
+
 export const default_pool_info = {
     collection: 'Loading',
     nft_address: '0x',
@@ -75,21 +77,19 @@ export const initSeparatePoolInfo = async (project, network) => {
     const poolContract = await getContract(await getSeparatePoolABI(), poolAddress);
     let raw_in_pool = (await getNftHoldingInfo(raw_data['address'], poolAddress.toLowerCase(), network))['data']['data'];
 
-    separate_pool_info.in_pool = await getLockInfo(poolContract, raw_in_pool);
+    separate_pool_info.in_pool = await getInfo(poolContract, raw_in_pool);
 
     // console.log('Separate Pool Info', separate_pool_info);
 }
 
-const getLockInfo = async (poolContract, ids) => {
-    const multicall = newMultiCallProvider(4);
-
-    let in_pool = [];
+export const getInfo = async (poolContract, ids) => {
     let multicall_list = [];
     for (let id of ids) {
         multicall_list.push(poolContract.methods.getLockInfo(id));
     }
     const results = await multicall.aggregate(multicall_list);
 
+    let in_pool = [];
     for (let i = 0; i < ids.length; i++) {
         in_pool.push({
             token_id: ids[i],
@@ -163,19 +163,19 @@ export const initTokenImage = async (pool_info, network) => {
 
     let nft_contract = pool_info.nft_contract;
     // console.log('NFT contract info', nft_contract);
+
+    let multicall_list = [];
+    for (let nft of in_pool) {
+        multicall_list.push(nft_contract.methods.tokenURI(nft.token_id));
+    }
+    const results = await multicall.aggregate(multicall_list);
+
     for (let i = 0; i < in_pool.length; i++) {
-        nft_contract.methods.tokenURI(in_pool[i].token_id).call().then(
-            (uri) => {
-                // console.log('Token URI', uri);
-                getUri(uri).then(res => {
-                    // console.log(i, 'get updated succesfully')
-                    // console.log('URI specific info', res.data)
-                    let raw_image_url = res.data.image;
-                    in_pool[i].image_url = raw_image_url[0] == 'i'
-                        ? ipfsToHttp(raw_image_url) : raw_image_url;
-                })
-            }
-        )
+        const res = await getUri(results[i]);
+        // console.log(i, 'get updated succesfully')
+        // console.log('URI specific info', res.data)
+        let raw_image_url = res.data.image;
+        in_pool[i].image_url = raw_image_url[0] == 'i' ? ipfsToHttp(raw_image_url) : raw_image_url;
     }
 }
 
@@ -189,25 +189,25 @@ export const initSeparatePoolFactoryContract = async () => {
 }
 
 export const query_user_holding = async (nft_address, user_address, network) => {
-    let in_pool = [];
+    let ids = [];
     try{
-        in_pool = (await getNftHoldingInfo(nft_address, user_address.toLowerCase(), network))['data']['data'];
+        ids = (await getNftHoldingInfo(nft_address, user_address.toLowerCase(), network))['data']['data'];
     }catch(e){
         console.warn(e);
         return
     }
 
 
-    // console.log('User list result', in_pool)
+    // console.log('User list result', ids)
 
-    if (in_pool.length < 1) {
+    if (ids.length < 1) {
         return []
     }
 
     let final_result = [];
-    for (let i = 0; i < in_pool.length; i++) {
+    for (let i = 0; i < ids.length; i++) {
         final_result.push({
-            token_id: in_pool[i],
+            token_id: ids[i],
             image_url: require("@/assets/images/placeholder.png")
         })
     }
@@ -218,29 +218,19 @@ export const query_user_holding = async (nft_address, user_address, network) => 
 
     let nft_contract = await getContract(nft_abi, nft_address);
 
-    for (let i = 0; i < in_pool.length; i++) {
-        let temp_uri = await nft_contract.methods.tokenURI(in_pool[i]).call();
+    let multicall_list = [];
+    for (let id of ids) {
+        multicall_list.push(nft_contract.methods.tokenURI(id));
+    }
+    const results = await multicall.aggregate(multicall_list);
+
+    for (let i = 0; i < ids.length; i++) {
+        let temp_uri = results[i];
 
         let result = await getUri(temp_uri);
         let raw_image_url = result.data.image;
         final_result[i].image_url = raw_image_url[0] == 'i' ? ipfsToHttp(raw_image_url) : raw_image_url;
     }
-    // let token_id_str = '';
-    // for(let i=0; i<nft_list.length; i++){
-    //     token_id_str += nft_list[i].token_id + '_';
-    // }
 
-    // const nft_image_request = await getNftImages(nft_address, token_id_str.substr(0, token_id_str.length - 1), network);
-    // // console.log('Image info', nft_image_request)
-
-    // const nft_images = nft_image_request['data']['data'];
-
-    // for (let i = 0; i < nft_list.length; i++) {
-    //     let temp_record = {
-    //         token_id: nft_list[i],
-    //         image_url: nft_images[nft_list[i]]
-    //     }
-    //     final_result.push(temp_record)
-    // }
     return final_result
 }
