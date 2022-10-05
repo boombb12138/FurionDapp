@@ -22,7 +22,11 @@
   <div class="flex">
     <div
       class="item"
-      :class="{ active: value.includes(item), [item]: true, 'mr-18px': !readonly }"
+      :class="{
+        active: value.includes(item),
+        [item]: true, //todo 这里的item是一个变量，所以要加中括号吗
+        'mr-18px': !readonly,
+      }"
       @click="select(item)"
       v-for="item in list"
       :key="item"
@@ -35,6 +39,8 @@
 
 <script>
 export default {
+  //
+
   props: {
     value: {
       type: [Array, String],
@@ -46,26 +52,48 @@ export default {
       type: Boolean,
       default: false,
     },
+    table: {
+      type: String,
+      default: "supplies",
+    },
   },
   components: {},
   computed: {},
   data() {
     return {
       list: ["1", "2", "3"],
+      board: -1,
     };
   },
-  mounted() {},
+  // mounted() {
+  //   switch (this.table) {
+  //     case "supplies":
+  //       this.board = 0;
+  //       break;
+  //     case "borrows":
+  //       this.board = 1;
+  //       break;
+  //     case "assetsSupply":
+  //       this.board = 2;
+  //       break;
+  //     case "assetsBorrow":
+  //       this.board = 3;
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // },
   methods: {
+    // sendItem(item) {
+    //   this.$emit("sendItem", item);
+    // },
     select(item) {
       if (this.readonly) {
         return;
       }
-
       const i = this.value.findIndex((item2) => {
-        console.log(item, item2);
-        return item == item2;
+        return item == item2; //item2就是遍历this.value里面的一个个元素 如果没有满足的元素 就返回-1
       });
-
       if (i != -1) {
         let arr = this.value;
         arr.splice(i, 1);
