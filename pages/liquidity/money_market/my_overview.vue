@@ -492,7 +492,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Assets to Supply</div>
-                  <Abc v-model="abc"></Abc>
+                  <Abc v-model="abc1"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -616,7 +616,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Your Borrows</div>
-                  <Abc v-model="abc"></Abc>
+                  <Abc v-model="abc2"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -727,7 +727,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Assets to Borrow</div>
-                  <Abc v-model="abc"></Abc>
+                  <Abc v-model="abc3"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
