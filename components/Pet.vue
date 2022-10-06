@@ -102,7 +102,7 @@
     :class="{ 'el-dialog__wrapper': show }"
     v-if="showInfo.showPet"
   >
-    <div class="pet center-y mt-100px z-100" @click="clickPet">
+    <div class="pet center-y mt-100px z-100" @click="$router.push('/petNFT')">
       <div
         class="el-popover el-popper el-popover--plain"
         x-placement="top-end"
@@ -288,20 +288,23 @@
       <img src="@/assets/images/pet/pet.png" alt="" />
     </div>
 
-    <div class="box relative center-y mt-20px mr-20px" v-if="show && !dialog">
+    <!-- 第一个弹窗 -->
+    <!-- <div class="box relative center-y mt-20px mr-20px" v-if="show && !dialog">
       <div
         class="absolute w-10px h-10px right-23px top-25px cursor-pointer"
         @click="dialog = true"
       ></div>
-      <div class="pl-24px">
-        <div
+      <div class="pl-24px"> -->
+    <!-- 左上角Portfolio部分 -->
+    <!-- <div
           class="flex items-center pt-20px pb-9px"
           style="border-bottom: 1px solid #2e305c"
         >
           <img src="@/assets/images/pet/Cat.svg" alt="" />
-          <div class="font-600 text-14px mr-4px">Portfolio</div>
+          <div class="font-600 text-14px mr-4px">Portfolio</div> -->
 
-          <el-popover
+    <!-- popover做问号的弹出框 -->
+    <!-- <el-popover
             placement="bottom"
             title=""
             trigger="hover"
@@ -318,9 +321,10 @@
             />
           </el-popover>
         </div>
-      </div>
-
-      <template v-if="!empty">
+      </div> -->
+    <!-- //test NFT左侧布局 -->
+    <!-- 1.如果有nft ta g就是徽章-->
+    <!-- <template v-if="!empty">
         <div class="grid grid-cols-2 absolute right-10px top-60px z-10">
           <img src="@/assets/images/pet/tag.png" class="" width="30" />
           <img src="@/assets/images/pet/tag2.png" class="" width="30" />
@@ -345,11 +349,12 @@
           <img src="@/assets/images/pet/lock.svg" alt="" />
           <div class="ml-4px font-600 text-12px">#0001</div>
         </div>
-      </template>
-
-      <template v-else>
-        <div class="msg absolute center-x">You don't have a cat yet!</div>
-        <img
+      </template> -->
+    <!-- 2.如果没有nft -->
+    <!-- <template v-else>
+        <div class="msg absolute center-x">You don't have a cat yet!</div> -->
+    <!-- //test 虚线轮廓猫 -->
+    <!-- <img
           src="@/assets/images/pet/pet0.png"
           class="absolute center-x bottom-60px"
         />
@@ -360,9 +365,9 @@
           <div class="btn2">QUIT</div>
         </div>
       </template>
-    </div>
-
-    <div v-if="show && dialog" class="box2 relative center-y mt-20px mr-20px">
+    </div> -->
+    <!-- 第2个弹窗:退出提示 -->
+    <!-- <div v-if="show && dialog" class="box2 relative center-y mt-20px mr-20px">
       <img
         src="@/assets/images/pet/tip.png"
         class="absolute center-x top-12px"
@@ -374,7 +379,7 @@
         <div class="btn2 mr-14px !h-24px" @click="close">YES</div>
         <div class="btn2 !h-24px" @click="dialog = false">NO</div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -424,6 +429,7 @@ export default {
     clearInterval(this.timer);
   },
   methods: {
+    // test 初始化宠物信息 如果有宠物，那么empty就为false 展示第1个NFT界面
     async initPetInfo() {
       let account = this.userInfo.userAddress;
       this.pet = await InitPetInfo(this.pet, account);
@@ -435,7 +441,7 @@ export default {
       window.open(url);
     },
     clickPet() {
-      this.show = true;
+      // this.show = true;
       if (!this.initPet) {
         this.initPetInfo();
       }

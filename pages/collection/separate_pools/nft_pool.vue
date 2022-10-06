@@ -1,5 +1,6 @@
 <style lang="scss" scoped>
-.page-enter-active, .page-leave-active {
+.page-enter-active,
+.page-leave-active {
   transition: all 0.7s ease-out;
 }
 .page-enter {
@@ -18,8 +19,8 @@
 
 .tag {
   background: rgba(250, 107, 225, 0.7);
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1), inset 0px -1px 1px rgba(0, 0, 0, 0.4),
-    inset 0px 1px 0.6px #ffb7f3;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0px -1px 1px rgba(0, 0, 0, 0.4), inset 0px 1px 0.6px #ffb7f3;
   border-radius: 8px;
   width: 200px;
   height: 34px;
@@ -141,7 +142,7 @@
     opacity: 1;
     background: transparent;
 
-    >div {
+    > div {
       background: #edf2ff;
       box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.1),
         inset 0px -2px 6px rgba(0, 0, 0, 0.1);
@@ -155,56 +156,87 @@
 
 <template>
   <div class="!w-1/1 pt-0">
-    <img :src="ready ? separate_pool_info.banner_url : default_pool_info.banner_url"
-      class="w-1/1 h-280px object-cover" />
-    <img src="@/assets/images/icon_back.svg" class="absolute left-60px cursor-pointer top-100px hover:opacity-80"
-      @click="$router.go(-1)" />
+    <img
+      :src="
+        ready ? separate_pool_info.banner_url : default_pool_info.banner_url
+      "
+      class="w-1/1 h-280px object-cover"
+    />
+    <img
+      src="@/assets/images/icon_back.svg"
+      class="absolute left-60px cursor-pointer top-100px hover:opacity-80"
+      @click="$router.go(-1)"
+    />
+    <!-- //test Back to home -->
 
     <div class="w-1124px mx-auto min-h-800px">
-
       <!-- banner and other basic information for this project -->
       <div class="px-20px">
         <div class="flex justify-between">
           <div class="pl-8px flex">
-            <img :src="ready ? separate_pool_info.avatar : separate_pool_info.avatar"
-              class="w-142px rounded-full avatar" />
+            <img
+              :src="
+                ready ? separate_pool_info.avatar : separate_pool_info.avatar
+              "
+              class="w-142px rounded-full avatar"
+            />
             <div class="pt-10px pl-20px relative">
-              <div class="font-700 text-24px mb-5px mr-5px">{{ formatString(separate_pool_info.collection, 20) }}</div>
+              <div class="font-700 text-24px mb-5px mr-5px">
+                {{ formatString(separate_pool_info.collection, 20) }}
+              </div>
               <div class="text-14px mt-10px">
                 Created by
-                <span class="text-[#34F8FF] font-600"> <a :href="separate_pool_info.external_link" target="_blank">{{
-                separate_pool_info.symbol
-                }}</a></span>
-                <el-tooltip effect="light" :content="separate_pool_info.description" placement="bottom">
+                <span class="text-[#34F8FF] font-600">
+                  <a :href="separate_pool_info.external_link" target="_blank">{{
+                    separate_pool_info.symbol
+                  }}</a></span
+                >
+                <el-tooltip
+                  effect="light"
+                  :content="separate_pool_info.description"
+                  placement="bottom"
+                >
                   <img src="@/assets/images/icon_badge.png" alt="" />
                 </el-tooltip>
-
               </div>
             </div>
           </div>
 
           <div class="flex items-center h-94px">
             <div>
-              <a :href="separate_pool_info.twitter_link" target="_blank" class="block link flex items-center mr-42px">
+              <a
+                :href="separate_pool_info.twitter_link"
+                target="_blank"
+                class="block link flex items-center mr-42px"
+              >
                 <img src="@/assets/images/icon_link.png" class="mr-10px" />
-                <div class="text-13px mr-5px">{{ formatString(separate_pool_info.twitter_name, 8) }}</div>
+                <div class="text-13px mr-5px">
+                  {{ formatString(separate_pool_info.twitter_name, 8) }}
+                </div>
                 <div class="text-13px opacity-60">Linked</div>
               </a>
             </div>
 
             <div class="text-center px-15px">
-              <div class="font-600 mb-4px">{{ formatNumber(separate_pool_info.items) }}</div>
+              <div class="font-600 mb-4px">
+                {{ formatNumber(separate_pool_info.items) }}
+              </div>
               <div class="opacity-40 text-12px">items</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
-              <div class="font-600 mb-4px">{{ formatNumber(separate_pool_info.in_pool.length) }}</div>
+              <div class="font-600 mb-4px">
+                {{ formatNumber(separate_pool_info.in_pool.length) }}
+              </div>
               <div class="opacity-40 text-12px">in pool</div>
             </div>
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
               <div class="font-600 mb-4px">
-                <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
+                <img
+                  src="@/assets/images/icon_eth.svg"
+                  style="vertical-align: -2px"
+                />
                 {{ separate_pool_info.fXprice.toFixed(2) }}
               </div>
               <div class="opacity-40 text-12px">F-X price</div>
@@ -212,7 +244,10 @@
             <el-divider direction="vertical" class="!h-40px"></el-divider>
             <div class="text-center px-15px">
               <div class="font-600 mb-4px">
-                <img src="@/assets/images/icon_eth.svg" style="vertical-align: -2px" />
+                <img
+                  src="@/assets/images/icon_eth.svg"
+                  style="vertical-align: -2px"
+                />
                 {{ formatNumber(separate_pool_info.volume) }}
               </div>
               <div class="opacity-40 text-12px">volume traded</div>
@@ -230,15 +265,31 @@
             </div>
 
             <div class="flex mt-12px items-center">
-              <img src="@/assets/images/rate1.svg" class="mr-20px cursor-pointer" />
-              <img src="@/assets/images/rate2.svg" class="mr-20px cursor-pointer" />
-              <img src="@/assets/images/rate3.svg" class="mr-25px cursor-pointer" />
+              <img
+                src="@/assets/images/rate1.svg"
+                class="mr-20px cursor-pointer"
+              />
+              <img
+                src="@/assets/images/rate2.svg"
+                class="mr-20px cursor-pointer"
+              />
+              <img
+                src="@/assets/images/rate3.svg"
+                class="mr-25px cursor-pointer"
+              />
               <img src="@/assets/images/most.png" alt="" />
             </div>
           </div>
           <div class="btn_border">
-            <el-button type="primary" :disabled="!ready" class="!w-170px !h-48px"
-              @click="dialogVisible = true; initSelectedStyle();">
+            <el-button
+              type="primary"
+              :disabled="!ready"
+              class="!w-170px !h-48px"
+              @click="
+                dialogVisible = true;
+                initSelectedStyle();
+              "
+            >
               <div class="relative -top-2px">
                 <span class="text-20px">+</span>
                 {{ ready ? "ADD ASSET" : "LOADING" }}
@@ -249,24 +300,40 @@
 
         <!-- search bar and item sorting -->
         <div class="flex justify-between items-center mb-12px">
-          <el-input placeholder="Search by token ID" v-model="searchKey" class="search !w-858px" clearable
-            @input="filterPool">
+          <el-input
+            placeholder="Search by token ID"
+            v-model="searchKey"
+            class="search !w-858px"
+            clearable
+            @input="filterPool"
+          >
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
 
-          <el-popover placement="bottom" title="" trigger="click" popper-class="el-sort" :visible-arrow="false"
-            width="200" ref="sort">
+          <el-popover
+            placement="bottom"
+            title=""
+            trigger="click"
+            popper-class="el-sort"
+            :visible-arrow="false"
+            width="200"
+            ref="sort"
+          >
             <div class="el-sort-item" @click="onSort('Recently listed')">
               Recently listed
             </div>
             <div class="el-sort-item" @click="onSort('Recently created')">
               Recently created
             </div>
-            <div class="el-sort-item" @click="onSort('Recently sold')">Recently sold</div>
+            <div class="el-sort-item" @click="onSort('Recently sold')">
+              Recently sold
+            </div>
             <div class="el-sort-item" @click="onSort('Recently received')">
               Recently received
             </div>
-            <div class="el-sort-item" @click="onSort('Ending soon')">Ending soon</div>
+            <div class="el-sort-item" @click="onSort('Ending soon')">
+              Ending soon
+            </div>
             <div class="el-sort-item" @click="onSort('Price low to high')">
               Price low to high
             </div>
@@ -276,7 +343,9 @@
             <div class="el-sort-item" @click="onSort('Highest last sale')">
               Highest last sale
             </div>
-            <div class="el-sort-item" @click="onSort('Most viewed')">Most viewed</div>
+            <div class="el-sort-item" @click="onSort('Most viewed')">
+              Most viewed
+            </div>
             <div class="el-sort-item" @click="onSort('Most favorited')">
               Most favorited
             </div>
@@ -300,17 +369,39 @@
 
         <!-- grid for NFT items -->
         <Loader v-if="!pool_ready" />
-        <div class="pb-150px grid grid-cols-4 mt-20px" v-if="separate_pool_info.in_pool.length > 0 && pool_ready">
-          <div class="item" v-for="(item, index) in separate_pool_info.in_pool" :key="index"
-            :class="{ locked: item.lock_info.locker != zeroAddress }" @click="clickItem(item)" data-aos="flip-right" :data-aos-delay="(index % 4) * 150" data-aos-once="true" data-aos-anchor-placement="top-bottom">
+        <div
+          class="pb-150px grid grid-cols-4 mt-20px"
+          v-if="separate_pool_info.in_pool.length > 0 && pool_ready"
+        >
+          <div
+            class="item"
+            v-for="(item, index) in separate_pool_info.in_pool"
+            :key="index"
+            :class="{ locked: item.lock_info.locker != zeroAddress }"
+            @click="clickItem(item)"
+            data-aos="flip-right"
+            :data-aos-delay="(index % 4) * 150"
+            data-aos-once="true"
+            data-aos-anchor-placement="top-bottom"
+          >
             <!-- NFT image -->
-            <el-image :src="item.image_url" class="w-252px h-252px rounded-12px m-6px mb-16px" lazy>
-              <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
+            <el-image
+              :src="item.image_url"
+              class="w-252px h-252px rounded-12px m-6px mb-16px"
+              lazy
+            >
+              <img
+                src="@/assets/images/placeholder.png"
+                alt=""
+                slot="placeholder"
+              />
             </el-image>
             <div class="px-15px">
               <!-- Collection name and NFT price -->
               <div class="flex justify-between items-center mb-10px">
-                <div class="opacity-40 text-13px w-180px line-clamp-1 overflow-ellipsis !block">
+                <div
+                  class="opacity-40 text-13px w-180px line-clamp-1 overflow-ellipsis !block"
+                >
                   {{ separate_pool_info.collection }}
                 </div>
                 <div class="text-13px">
@@ -330,14 +421,28 @@
                 </div>
 
                 <!-- Add to cart button -->
-                <div v-if="item.lock_info.locker === zeroAddress" class="btn2 mr-8px" @click.stop="toCart(item)">
-                  <img src="@/assets/images/cart.png" class="icon mr-5px -mt-1px" />
-                  <img src="@/assets/images/cart2.png" class="icon2 mr-5px -mt-1px" />
+                <div
+                  v-if="item.lock_info.locker === zeroAddress"
+                  class="btn2 mr-8px"
+                  @click.stop="toCart(item)"
+                >
+                  <img
+                    src="@/assets/images/cart.png"
+                    class="icon mr-5px -mt-1px"
+                  />
+                  <img
+                    src="@/assets/images/cart2.png"
+                    class="icon2 mr-5px -mt-1px"
+                  />
                   CART
                 </div>
 
                 <!-- Buy button -->
-                <div v-if="item.lock_info.locker === zeroAddress" class="btn2" @click.stop="buy(item)">
+                <div
+                  v-if="item.lock_info.locker === zeroAddress"
+                  class="btn2"
+                  @click.stop="buy(item)"
+                >
                   <img src="@/assets/images/buy.png" class="icon mr-5px" />
                   <img src="@/assets/images/buy2.png" class="icon2 mr-5px" />
                   BUY
@@ -345,32 +450,60 @@
 
                 <!-- Extend lock period button -->
                 <div
-                  v-if="item.lock_info.locker.toLowerCase() === account && item.lock_info.extended === false && item.lock_info.release_time > currentTimestamp"
-                  class="btn2 mr-8px" @click.stop="extend(item)">
+                  v-if="
+                    item.lock_info.locker.toLowerCase() === account &&
+                    item.lock_info.extended === false &&
+                    item.lock_info.release_time > currentTimestamp
+                  "
+                  class="btn2 mr-8px"
+                  @click.stop="extend(item)"
+                >
                   EXTEND
                 </div>
 
                 <!-- Unlock button -->
                 <div
-                  v-if="item.lock_info.locker.toLowerCase() === account && item.lock_info.release_time > currentTimestamp"
-                  class="btn2" @click.stop="unlock(item)">
+                  v-if="
+                    item.lock_info.locker.toLowerCase() === account &&
+                    item.lock_info.release_time > currentTimestamp
+                  "
+                  class="btn2"
+                  @click.stop="unlock(item)"
+                >
                   UNLOCK
                 </div>
               </div>
             </div>
 
             <div
-              class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center rounded-bl-12px rounded-br-12px">
-              <div v-if="item.lock_info.locker != zeroAddress" class="mx-auto flex items-center">
-                <img src="@/assets/images/locked.png" class="w-14px h-16px mr-10px" />
-                <p class="text-14px font-600 text-[#6D788A]">Locked Until {{ unixToDate(item.lock_info.release_time) }}</p>
+              class="h-36px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center rounded-bl-12px rounded-br-12px"
+            >
+              <div
+                v-if="item.lock_info.locker != zeroAddress"
+                class="mx-auto flex items-center"
+              >
+                <img
+                  src="@/assets/images/locked.png"
+                  class="w-14px h-16px mr-10px"
+                />
+                <p class="text-14px font-600 text-[#6D788A]">
+                  Locked Until {{ unixToDate(item.lock_info.release_time) }}
+                </p>
               </div>
               <div class="flex justify-between w-1/1" v-else>
                 <img src="@/assets/images/icon_eth.svg" />
                 <div class="flex items-center">
-                  <div class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon">
-                    <img src="@/assets/images/Vector.svg" class="w-12px icon1" />
-                    <img src="@/assets/images/Vector2.svg" class="w-12px icon2" />
+                  <div
+                    class="w-24px h-24px flex items-center justify-center rounded-full hover:bg-[#1F2E48] icon"
+                  >
+                    <img
+                      src="@/assets/images/Vector.svg"
+                      class="w-12px icon1"
+                    />
+                    <img
+                      src="@/assets/images/Vector2.svg"
+                      class="w-12px icon2"
+                    />
                   </div>
                   <div class="opacity-40 text-13px">{{ item.like }}</div>
                 </div>
@@ -378,7 +511,10 @@
             </div>
           </div>
         </div>
-        <div v-if="separate_pool_info.in_pool.length === 0 && ready === true" class="font-700 text-24px text-center">
+        <div
+          v-if="separate_pool_info.in_pool.length === 0 && ready === true"
+          class="font-700 text-24px text-center"
+        >
           <br /><br /><br />
           <img src="@/assets/images/pool/Empty.png" width="10%" />
           <br /><br />
@@ -387,35 +523,72 @@
     </div>
 
     <!-- Modal box for storing and locking NFTs -->
-    <el-dialog title="NFT Contract Address:" :visible.sync="dialogVisible" width="880px" :close-on-click-modal="false"
-      append-to-body custom-class="el-dialog-dark el-dialog-padding">
+    <el-dialog
+      title="NFT Contract Address:"
+      :visible.sync="dialogVisible"
+      width="880px"
+      :close-on-click-modal="false"
+      append-to-body
+      custom-class="el-dialog-dark el-dialog-padding"
+    >
       <div slot="title" class="flex font-800 text-20px">
-        <div class="pb-2px" style="border-bottom: 2px solid #fff">ADD ASSET</div>
+        <div class="pb-2px" style="border-bottom: 2px solid #fff">
+          ADD ASSET
+        </div>
 
-        <el-popover placement="bottom" title="" trigger="hover" :visible-arrow="false" popper-class="el-tip">
+        <el-popover
+          placement="bottom"
+          title=""
+          trigger="hover"
+          :visible-arrow="false"
+          popper-class="el-tip"
+        >
           <div class="text-center text-[#0B1A3B]">
             <div class="text-20px font-600 mb-30px">
               Store to get 1000 and lock for 500.
             </div>
-            <div class="font-900 text-20px">F-{{ separate_pool_info.symbol }} Token</div>
+            <div class="font-900 text-20px">
+              F-{{ separate_pool_info.symbol }} Token
+            </div>
           </div>
-          <img src="@/assets/images/q.svg" class="ml-14px cursor-pointer -mt-3px" slot="reference" />
+          <img
+            src="@/assets/images/q.svg"
+            class="ml-14px cursor-pointer -mt-3px"
+            slot="reference"
+          />
         </el-popover>
       </div>
 
       <!-- NFTs owned by user -->
       <div class="min-h-250px max-h-425px h-65vh mb-35px">
         <el-scrollbar class="h-1/1">
-          <div class="grid grid-cols-4 mt-10px mr-20px" v-if="user_nft.length > 0">
-            <div class="item-wallet text-center" v-for="(item, index) in user_nft" :key="index"
-              :class="{ selectedBorder: applySelectedStyle[index] }" @click="toList(item.token_id, index)">
+          <div
+            class="grid grid-cols-4 mt-10px mr-20px"
+            v-if="user_nft.length > 0"
+          >
+            <div
+              class="item-wallet text-center"
+              v-for="(item, index) in user_nft"
+              :key="index"
+              :class="{ selectedBorder: applySelectedStyle[index] }"
+              @click="toList(item.token_id, index)"
+            >
               <!-- NFT image -->
-              <el-image :src="item.image_url" class="w-181px h-181px rounded-12px mt-5px" lazy>
-                <img src="@/assets/images/placeholder.png" alt="" slot="placeholder" />
+              <el-image
+                :src="item.image_url"
+                class="w-181px h-181px rounded-12px mt-5px"
+                lazy
+              >
+                <img
+                  src="@/assets/images/placeholder.png"
+                  alt=""
+                  slot="placeholder"
+                />
               </el-image>
 
               <div
-                class="h-32px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px font-600">
+                class="h-32px bg-opacity-60 bg-[#01132E] w-1/1 absolute bottom-0 left-0 px-15px flex items-center justify-between rounded-bl-12px rounded-br-12px font-600"
+              >
                 <div class="flex">
                   <span class="line-clamp-1 overflow-ellipsis !block mr-4px">
                     {{ separate_pool_info.symbol }}
@@ -426,7 +599,8 @@
               </div>
             </div>
           </div>
-          <div v-else class="text-center"><br /><br /><br /><br /><br /><br />
+          <div v-else class="text-center">
+            <br /><br /><br /><br /><br /><br />
             <img src="@/assets/images/pool/Empty.png" width="15%" />
             <br /><br /><br />
           </div>
@@ -438,10 +612,17 @@
         <div></div>
         <div class="flex">
           <div class="btn_border mr-25px">
-            <el-button plain class="!w-150px !h-50px !p-0" @click="lock()">LOCK</el-button>
+            <el-button plain class="!w-150px !h-50px !p-0" @click="lock()"
+              >LOCK</el-button
+            >
           </div>
           <div class="btn_border">
-            <el-button type="primary" class="!w-150px !h-50px !p-0" @click="store()">STORE</el-button>
+            <el-button
+              type="primary"
+              class="!w-150px !h-50px !p-0"
+              @click="store()"
+              >STORE</el-button
+            >
           </div>
         </div>
       </div>
@@ -452,20 +633,28 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 import {
-  separate_pool_info, default_pool_info,
-  initSeparatePoolInfo, initSeparatePoolContract, initFurContract,
-  initTokenImage, defaultSeparatePoolInfo, query_user_holding, getInfo
-} from '@/config/collection/separate_pool';
-import { getNftHoldingInfo } from '@/api/nft_info';
+  separate_pool_info,
+  default_pool_info,
+  initSeparatePoolInfo,
+  initSeparatePoolContract,
+  initFurContract,
+  initTokenImage,
+  defaultSeparatePoolInfo,
+  query_user_holding,
+  getInfo,
+} from "@/config/collection/separate_pool";
+import { getNftHoldingInfo } from "@/api/nft_info";
+import { _formatString, _formatNumber, _compareInt } from "@/utils/common";
+import { nft_item } from "@/config/collection/nft_item";
 import {
-  _formatString,
-  _formatNumber,
-  _compareInt
+  getTxURL,
+  toWei,
+  fromWei,
+  ALLOWANCE_THRESHOLD,
+  tokenApprove,
 } from "@/utils/common";
-import { nft_item } from '@/config/collection/nft_item';
-import { getTxURL, toWei, fromWei, ALLOWANCE_THRESHOLD, tokenApprove } from '@/utils/common';
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 import {
   nft_activity,
@@ -480,7 +669,7 @@ import {
   openDialog,
   stepDialog,
   ProcessInfo,
-} from '~/config/loading_info';
+} from "~/config/loading_info";
 import {
   user_info,
   inituserinfo,
@@ -488,11 +677,11 @@ import {
   renew_user_nick_name,
   renew_user_comment,
   renew_user_liquidation_alert,
-  renew_user_hot_news
+  renew_user_hot_news,
 } from "@/config/user_info/profile";
-import ProceedingDetails from '@/components/Dialog/ProceedingDetails.vue';
-import Loader from '@/components/Loader.vue';
-import AOS from 'aos';
+import ProceedingDetails from "@/components/Dialog/ProceedingDetails.vue";
+import Loader from "@/components/Loader.vue";
+import AOS from "aos";
 
 export default {
   async asyncData({ store, $axios, app, query }) {
@@ -501,32 +690,32 @@ export default {
   props: {},
   components: { ProceedingDetails, Loader },
   computed: {
-    ...mapState('admin', ['connectStatus']),
-    ...mapState(['userInfo']),
+    ...mapState("admin", ["connectStatus"]),
+    ...mapState(["userInfo"]),
     cart() {
       return this.$store.state.user.cart;
     },
     zeroAddress() {
-      return '0x0000000000000000000000000000000000000000';
+      return "0x0000000000000000000000000000000000000000";
     },
     account() {
       return this.userInfo.userAddress;
     },
     currentTimestamp() {
       return Math.floor(Date.now() / 1000);
-    }
+    },
   },
   data() {
     const multicall = newMultiCallProvider(4);
     return {
       collection: this.$route.query.collection,
-      network: 'rinkeby',
+      network: "rinkeby",
       ready: false,
       pool_ready: false,
       dialogVisible: false,
       separate_pool_info: separate_pool_info,
       default_pool_info: default_pool_info,
-      checkList: ['ALL'],
+      checkList: ["ALL"],
       user_info,
       searchKey: "",
       nft_item: nft_item,
@@ -547,11 +736,16 @@ export default {
     // this.separate_pool_info = separate_pool_info;
     // this.$forceUpdate();
     await initTokenImage(this.separate_pool_info, this.network);
-    this.poolContract = await initSeparatePoolContract(this.separate_pool_info.nft_address);
+    this.poolContract = await initSeparatePoolContract(
+      this.separate_pool_info.nft_address
+    );
     this.furContract = await initFurContract();
     this.pool_ready = true;
     await this.initUserInfo();
-    this.user_info = await inituserinfo(this.network, this.userInfo.userAddress);
+    this.user_info = await inituserinfo(
+      this.network,
+      this.userInfo.userAddress
+    );
     await this.checkApproval();
     AOS.refresh();
     this.ready = true;
@@ -579,17 +773,27 @@ export default {
     },
     unixToDate(unixInSeconds) {
       const milli = unixInSeconds * 1000;
-      const date = new Date(milli).toLocaleString().split(',');
+      const date = new Date(milli).toLocaleString().split(",");
       return date[0];
     },
 
     /******************************* Initialize or Update states *******************************/
     async initUserInfo() {
       const account = this.userInfo.userAddress;
-      this.user_nft = await query_user_holding(separate_pool_info.nft_address, account, this.network);
+      this.user_nft = await query_user_holding(
+        separate_pool_info.nft_address,
+        account,
+        this.network
+      );
     },
     async filterPool() {
-      const raw_in_pool = (await getNftHoldingInfo(this.separate_pool_info.nft_address, this.poolContract.address.toLowerCase(), this.network))['data']['data'];
+      const raw_in_pool = (
+        await getNftHoldingInfo(
+          this.separate_pool_info.nft_address,
+          this.poolContract.address.toLowerCase(),
+          this.network
+        )
+      )["data"]["data"];
 
       let original = await getInfo(this.poolContract.contract, raw_in_pool);
 
@@ -628,9 +832,18 @@ export default {
       await initTokenImage(this.separate_pool_info, this.network);
     },
     async refreshPool() {
-      let raw_in_pool = (await getNftHoldingInfo(this.separate_pool_info.nft_address, this.poolContract.address.toLowerCase(), this.network))['data']['data'];
+      let raw_in_pool = (
+        await getNftHoldingInfo(
+          this.separate_pool_info.nft_address,
+          this.poolContract.address.toLowerCase(),
+          this.network
+        )
+      )["data"]["data"];
 
-      this.separate_pool_info.in_pool = await getInfo(this.poolContract.contract, raw_in_pool);
+      this.separate_pool_info.in_pool = await getInfo(
+        this.poolContract.contract,
+        raw_in_pool
+      );
       await initTokenImage(this.separate_pool_info, this.network);
       await this.initUserInfo();
     },
@@ -642,7 +855,7 @@ export default {
         name: this.separate_pool_info.collection,
         symbol: this.separate_pool_info.symbol,
         image_url: item.image_url,
-        fx_price: this.separate_pool_info.fXprice
+        fx_price: this.separate_pool_info.fXprice,
       };
 
       for (let nft of this.cart.slice(1)) {
@@ -650,7 +863,7 @@ export default {
           this.$notify({
             title: `Added ${info.symbol} #${info.token_id} to cart`,
             dangerouslyUseHTMLString: true,
-            type: 'success',
+            type: "success",
           });
           return;
         }
@@ -670,7 +883,7 @@ export default {
       this.$notify({
         title: `Added ${info.symbol} #${info.token_id} to cart`,
         dangerouslyUseHTMLString: true,
-        type: 'success',
+        type: "success",
       });
     },
     clickItem(item) {
@@ -686,7 +899,12 @@ export default {
       nft_item.image = item.image_url;
 
       // console.log('NFT item', nft_item);
-      this.$router.push('/collection/separate_pools/detail?collection=' + separate_pool_info.collection + '&token_id=' + item.token_id);
+      this.$router.push(
+        "/collection/separate_pools/detail?collection=" +
+          separate_pool_info.collection +
+          "&token_id=" +
+          item.token_id
+      );
     },
     toList(tokenId, tokenIndex) {
       const index = this.nftToPool.indexOf(tokenId);
@@ -696,7 +914,11 @@ export default {
       } else {
         this.nftToPool.push(tokenId);
       }
-      this.$set(this.applySelectedStyle, tokenIndex, !this.applySelectedStyle[tokenIndex]);
+      this.$set(
+        this.applySelectedStyle,
+        tokenIndex,
+        !this.applySelectedStyle[tokenIndex]
+      );
 
       // console.log(this.applySelectedStyle);
     },
@@ -706,7 +928,10 @@ export default {
     async checkApproval() {
       const account = this.userInfo.userAddress;
       let multicall_list = [
-        this.furContract.contract.methods.allowance(account, this.poolContract.address),
+        this.furContract.contract.methods.allowance(
+          account,
+          this.poolContract.address
+        ),
       ];
 
       const result = await this.multicall.aggregate(multicall_list); // [fur allowance]
@@ -757,7 +982,9 @@ export default {
       const checkFur = await this.hasEnoughFur(account, 1, 100);
       let tokenId = item.token_id;
       if (!checkFx) {
-        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
+        this.errorMessage(
+          `Insufficient F-${separate_pool_info.symbol} balance`
+        );
         return;
       }
       if (!checkFur) {
@@ -776,20 +1003,28 @@ export default {
 
       if (!this.approved_fur) {
         try {
-          await tokenApprove(this.furContract.address, account, this.poolContract.address);
+          await tokenApprove(
+            this.furContract.address,
+            account,
+            this.poolContract.address
+          );
           stepDialog(this.dialogue_info);
           this.approved_fur = true;
-        }
-        catch (e) {
+        } catch (e) {
           console.warn(e);
           closeDialog(this.dialogue_info);
-          return
+          return;
         }
       }
 
       try {
-        let tx_result = await this.poolContract.contract.methods.buy(tokenId).send({ from: account });
-        this.successMessage(tx_result, `Purchase ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+        let tx_result = await this.poolContract.contract.methods
+          .buy(tokenId)
+          .send({ from: account });
+        this.successMessage(
+          tx_result,
+          `Purchase ${this.separate_pool_info.symbol} #${tokenId} succeeded`
+        );
 
         //put the message into the database when buy succeed
         let data = [];
@@ -797,17 +1032,18 @@ export default {
           project: this.separate_pool_info.collection,
           token_id: tokenId,
           address: this.separate_pool_info.nft_address,
-          event: 'Redeem',
-          event_type: 'success',
+          event: "Redeem",
+          event_type: "success",
           eth_price: this.separate_pool_info.fXprice,
           from_user: this.poolContract.address,
           tx_hash: tx_result.transactionHash,
           to_user: account,
         });
         intoNftActivityByArray(this.network, data);
-
       } catch (e) {
-        this.errorMessage(`Purchase ${this.separate_pool_info.symbol} #${tokenId} failed`);
+        this.errorMessage(
+          `Purchase ${this.separate_pool_info.symbol} #${tokenId} failed`
+        );
         closeDialog(this.dialogue_info);
         return;
       }
@@ -823,7 +1059,9 @@ export default {
         return;
       }
       const account = this.userInfo.userAddress;
-      const approvedForAll = await this.separate_pool_info.nft_contract.methods.isApprovedForAll(account, this.poolContract.address).call();
+      const approvedForAll = await this.separate_pool_info.nft_contract.methods
+        .isApprovedForAll(account, this.poolContract.address)
+        .call();
 
       // initialize tx window
       let dialog_list = [];
@@ -835,19 +1073,24 @@ export default {
 
       if (!approvedForAll) {
         try {
-          let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
-          this.successMessage(approve_result, 'Approval succeeded');
+          let approve_result =
+            await this.separate_pool_info.nft_contract.methods
+              .setApprovalForAll(this.poolContract.address, true)
+              .send({ from: account });
+          this.successMessage(approve_result, "Approval succeeded");
           stepDialog(this.dialogue_info);
         } catch (e) {
           console.warn(e);
           closeDialog(this.dialogue_info);
-          return
+          return;
         }
       }
 
       try {
-        let tx_result = await this.poolContract.contract.methods.sellBatch(this.nftToPool).send({ from: account });
-        this.successMessage(tx_result, 'Store succeeded');
+        let tx_result = await this.poolContract.contract.methods
+          .sellBatch(this.nftToPool)
+          .send({ from: account });
+        this.successMessage(tx_result, "Store succeeded");
         // data into database
         let data = [];
         for (let i = 0; i < this.nftToPool.length; i++) {
@@ -855,8 +1098,8 @@ export default {
             project: this.separate_pool_info.collection,
             token_id: this.nftToPool[i],
             address: this.separate_pool_info.nft_address,
-            event: 'Store',
-            event_type: 'success',
+            event: "Store",
+            event_type: "success",
             eth_price: this.separate_pool_info.fXprice,
             from_user: account,
             tx_hash: tx_result.transactionHash,
@@ -865,11 +1108,9 @@ export default {
         }
         intoNftActivityByArray(this.network, data);
         this.nftToPool = [];
-
-
       } catch (e) {
         console.warn(e);
-        this.errorMessage('Store failed');
+        this.errorMessage("Store failed");
       }
 
       closeDialog(this.dialogue_info);
@@ -895,7 +1136,9 @@ export default {
         return;
       }
 
-      const approvedForAll = await this.separate_pool_info.nft_contract.methods.isApprovedForAll(account, this.poolContract.address).call();
+      const approvedForAll = await this.separate_pool_info.nft_contract.methods
+        .isApprovedForAll(account, this.poolContract.address)
+        .call();
 
       // initialize tx window
       let dialog_list = [];
@@ -910,33 +1153,41 @@ export default {
 
       if (!approvedForAll) {
         try {
-          let approve_result = await this.separate_pool_info.nft_contract.methods.setApprovalForAll(this.poolContract.address, true).send({ from: account });
-          this.successMessage(approve_result, 'Approval succeeded');
+          let approve_result =
+            await this.separate_pool_info.nft_contract.methods
+              .setApprovalForAll(this.poolContract.address, true)
+              .send({ from: account });
+          this.successMessage(approve_result, "Approval succeeded");
 
           stepDialog(this.dialogue_info);
         } catch (e) {
           console.warn(e);
           closeDialog(this.dialogue_info);
-          return
+          return;
         }
       }
 
       if (!this.approved_fur) {
         try {
-          await tokenApprove(this.furContract.address, account, this.poolContract.address);
+          await tokenApprove(
+            this.furContract.address,
+            account,
+            this.poolContract.address
+          );
           stepDialog(this.dialogue_info);
           this.approved_fur = true;
-        }
-        catch (e) {
+        } catch (e) {
           console.warn(e);
           closeDialog(this.dialogue_info);
-          return
+          return;
         }
       }
 
       try {
-        let tx_result = await this.poolContract.contract.methods.lockBatch(this.nftToPool).send({ from: account });
-        this.successMessage(tx_result, 'Lock succeeded');
+        let tx_result = await this.poolContract.contract.methods
+          .lockBatch(this.nftToPool)
+          .send({ from: account });
+        this.successMessage(tx_result, "Lock succeeded");
         // data into database
         let data = [];
         for (let i = 0; i < this.nftToPool.length; i++) {
@@ -944,8 +1195,8 @@ export default {
             project: this.separate_pool_info.collection,
             token_id: this.nftToPool[i],
             address: this.separate_pool_info.nft_address,
-            event: 'Lock',
-            event_type: 'success',
+            event: "Lock",
+            event_type: "success",
             eth_price: this.separate_pool_info.fXprice,
             from_user: account,
             tx_hash: tx_result.transactionHash,
@@ -955,7 +1206,7 @@ export default {
         intoNftActivityByArray(this.network, data);
         this.nftToPool = [];
       } catch (e) {
-        this.errorMessage('Lock failed');
+        this.errorMessage("Lock failed");
         closeDialog(this.dialogue_info);
         return;
       }
@@ -972,7 +1223,9 @@ export default {
       let tokenId = item.token_id;
 
       if (!checkFx) {
-        this.errorMessage(`Insufficient F-${separate_pool_info.symbol} balance`);
+        this.errorMessage(
+          `Insufficient F-${separate_pool_info.symbol} balance`
+        );
         return;
       }
 
@@ -980,16 +1233,21 @@ export default {
       openDialog(this.dialogue_info, dialog_list);
 
       try {
-        let tx_result = await this.poolContract.contract.methods.redeem(tokenId).send({ from: this.account });
-        this.successMessage(tx_result, `Unlock ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+        let tx_result = await this.poolContract.contract.methods
+          .redeem(tokenId)
+          .send({ from: this.account });
+        this.successMessage(
+          tx_result,
+          `Unlock ${this.separate_pool_info.symbol} #${tokenId} succeeded`
+        );
         //put the message into the database when buy succeed
         let data = [];
         data.push({
           project: this.separate_pool_info.collection,
           token_id: tokenId,
           address: this.separate_pool_info.nft_address,
-          event: 'Unlock',
-          event_type: 'success',
+          event: "Unlock",
+          event_type: "success",
           eth_price: this.separate_pool_info.fXprice,
           from_user: this.poolContract.address,
           tx_hash: tx_result.transactionHash,
@@ -997,7 +1255,9 @@ export default {
         });
         intoNftActivityByArray(this.network, data);
       } catch (e) {
-        this.errorMessage(`Unlock ${this.separate_pool_info.symbol} #${tokenId} failed`);
+        this.errorMessage(
+          `Unlock ${this.separate_pool_info.symbol} #${tokenId} failed`
+        );
         closeDialog(this.dialogue_info);
         return;
       }
@@ -1024,15 +1284,20 @@ export default {
       openDialog(this.dialogue_info, dialog_list);
 
       try {
-        let tx_result = await this.poolContract.contract.methods.payFee(tokenId).send({ from: this.account });
-        this.successMessage(tx_result, `Extend locking ${this.separate_pool_info.symbol} #${tokenId} succeeded`);
+        let tx_result = await this.poolContract.contract.methods
+          .payFee(tokenId)
+          .send({ from: this.account });
+        this.successMessage(
+          tx_result,
+          `Extend locking ${this.separate_pool_info.symbol} #${tokenId} succeeded`
+        );
         let data = [];
         data.push({
           project: this.separate_pool_info.collection,
           token_id: tokenId,
           address: this.separate_pool_info.nft_address,
-          event: 'Unlock',
-          event_type: 'success',
+          event: "Unlock",
+          event_type: "success",
           eth_price: this.separate_pool_info.fXprice,
           from_user: this.poolContract.address,
           tx_hash: tx_result.transactionHash,
@@ -1040,7 +1305,9 @@ export default {
         });
         intoNftActivityByArray(this.network, data);
       } catch (e) {
-        this.errorMessage(`Extend locking ${this.separate_pool_info.symbol} #${tokenId} failed`);
+        this.errorMessage(
+          `Extend locking ${this.separate_pool_info.symbol} #${tokenId} failed`
+        );
         closeDialog(this.dialogue_info);
         return;
       }
@@ -1054,13 +1321,13 @@ export default {
         title: title,
         dangerouslyUseHTMLString: true,
         message: txURL,
-        type: 'success',
+        type: "success",
       });
     },
     errorMessage(title) {
       this.$notify.error({
         title: title,
-        message: '',
+        message: "",
         dangerouslyUseHTMLString: true,
       });
     },

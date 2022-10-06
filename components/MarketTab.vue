@@ -29,7 +29,7 @@
   }
 
   .glider {
-    --pos: '0';
+    --pos: "0";
     position: absolute;
     left: -2px;
     height: 65px;
@@ -51,25 +51,25 @@
 }
 </style>
 
-
 <template>
+  <!-- //test nft和badges的跳转 -->
   <div class="w-400px h-66px relative box">
     <div class="w-400px flex h-66px relative -top-2px -left-2px">
-        <div
-          class="flex-1 text"
-          :class="{ active: value == 1 }"
-          @click="$emit('input', 1)"
-        >
-          My Overview
-        </div>
-        <div
-          class="flex-1 text"
-          :class="{ active: value == 2 }"
-          @click="$emit('input', 2)"
-        >
-          Markets
-        </div>
-        <span class="glider" :style="`--pos: ${translateTo}`"></span>
+      <div
+        class="flex-1 text"
+        :class="{ active: value == 1 }"
+        @click="$emit('input', 1)"
+      >
+        My Overview
+      </div>
+      <div
+        class="flex-1 text"
+        :class="{ active: value == 2 }"
+        @click="$emit('input', 2)"
+      >
+        Markets
+      </div>
+      <span class="glider" :style="`--pos: ${translateTo}`"></span>
     </div>
   </div>
 </template>
@@ -87,11 +87,11 @@ export default {
     translateTo() {
       switch (this.value) {
         case 1:
-          return '0';
+          return "0";
         case 2:
-          return '100%';
+          return "100%";
       }
-    }
+    },
   },
   data() {
     return {};

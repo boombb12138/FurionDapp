@@ -357,7 +357,7 @@
         class="mt-50px"
         v-model="active"
       ></MarketTab>
-
+      <!-- //test nft和badges的跳转2 -->
       <div v-if="active == 0 || active == 1" class="flex justify-between">
         <div class="wrapper">
           <Loading
@@ -1116,6 +1116,13 @@ export default {
     symbol() {
       return this.token_info.symbol;
     },
+    // ctableData() {
+    //   for (i = 0; i < this.abc.length; i++) {
+    //     let newArr = [];
+    //     newArr.push(this.tableData[this.abc[i] - 1]);
+    //     return newArr;
+    //   }
+    // },
   },
   data() {
     const multicall = newMultiCallProvider(4);
@@ -1133,16 +1140,15 @@ export default {
       token_list: token_list,
       tableData: [
         {
+          Asset: "USDT",
+        },
+        {
           Asset: "ETH",
         },
         {
           Asset: "FUR",
         },
-        {
-          Asset: "USDT",
-        },
       ],
-
       user_info: {}, // user info
       market_info: {}, // market info
       token_info: {},
@@ -1273,16 +1279,11 @@ export default {
       }
     },
     disableBtn() {
-<<<<<<< HEAD
       if (
         this.interact_amount == "" ||
         this.interact_amount == 0 ||
         this.interact_amount[0] == "."
       ) {
-=======
-      if (this.interact_amount == "" || this.interact_amount == 0 || this.interact_amount[0] == ".") {
-        this.error = "";
->>>>>>> ce1a9b29449e56aa0127424779d5762a5480235a
         return true;
       }
 
@@ -1306,7 +1307,6 @@ export default {
           }
         case "Withdraw":
           if (
-<<<<<<< HEAD
             _compareInt(
               this.compareFormat(
                 this.interact_amount,
@@ -1321,10 +1321,6 @@ export default {
               ),
               this.user_info[this.symbol].supplied
             ) == "larger"
-=======
-            _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].withdraw_quota) == "larger" ||
-            _compareInt(this.compareFormat(this.interact_amount, this.token_info.decimals), this.user_info[this.symbol].supplied) == "larger"
->>>>>>> ce1a9b29449e56aa0127424779d5762a5480235a
           ) {
             this.error = "Quota exceeded";
             return true;
@@ -1450,11 +1446,17 @@ export default {
             );
           }
           this.user_info[symbol].borrow_quota =
-            _compareInt(tempLiquidity.toString(), this.market_info[symbol].cash) == "larger"
+            _compareInt(
+              tempLiquidity.toString(),
+              this.market_info[symbol].cash
+            ) == "larger"
               ? this.market_info[symbol].cash
               : tempLiquidity.toString();
           this.user_info[symbol].withdraw_quota =
-            _compareInt(tempLiquidity.toString(), this.user_info[symbol].supplied) == "larger"
+            _compareInt(
+              tempLiquidity.toString(),
+              this.user_info[symbol].supplied
+            ) == "larger"
               ? this.user_info.supplied
               : tempLiquidity.toString();
           i++;
@@ -1725,24 +1727,14 @@ export default {
       return this.formatNumber(fromWei(amount, decimal), fixed);
     },
     compareFormat(amount, decimal) {
-<<<<<<< HEAD
       const actualAmount =
         amount == "" ? 0 : parseFloat(amount).toFixed(decimal);
       return toWei(actualAmount, decimal);
-=======
-      const actualAmount = amount == "" ? 0 : parseFloat(amount);
-      const res = toWei(actualAmount, decimal).split(".");
-      return res[0];
->>>>>>> ce1a9b29449e56aa0127424779d5762a5480235a
     },
 
     handleAbcClick(item) {
       this.$refs.Abc0.select(item);
     },
-    // handleAbcClick3(item) {
-    //   console.log("handleAbcClick3");
-    //   // this.$refs.Abc3.select3(item);
-    // },
   },
 };
 </script>
