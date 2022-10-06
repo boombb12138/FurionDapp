@@ -1148,10 +1148,10 @@ export default {
     return {
       dialog: false,
       loading1: true,
-      abc: ["1"],
-      abc2: ["1"],
+      abc: ["1", "2", "3"],
+      abc2: ["1", "2", "3"],
       abc3: ["1", "2", "3"],
-      abc4: ["1"],
+      abc4: ["1", "2", "3"],
       show1: true,
       show2: true,
       show3: true,
@@ -1205,6 +1205,9 @@ export default {
       this.active = 1;
       this.loading1 = false;
     }, 1000);
+    if (!this.searchKey) {
+      this.mtableData = this.tableData;
+    }
   },
   methods: {
     decimals(symbol) {
@@ -1745,7 +1748,12 @@ export default {
         amount == "" ? 0 : parseFloat(amount).toFixed(decimal);
       return toWei(actualAmount, decimal);
     },
-    handleSearch() {
+    handleSearch(event) {
+      this.mtableData = [];
+      console.log(event);
+      if (event == "") {
+        this.mtableData = this.tableData;
+      }
       for (let i = 0; i < this.tableData.length; i++) {
         if (this.searchKey.toUpperCase().includes(this.tableData[i].Asset)) {
           if (this.mtableData.indexOf(this.tableData[i]) == -1) {

@@ -22,6 +22,12 @@
       />
       <div class="title">Back to Home</div>
     </div>
+
+    <PetNFTTab
+      v-if="active == 1 || active == 2"
+      class="mt-50px"
+      v-model="active"
+    ></PetNFTTab>
   </div>
 </template>
 
@@ -31,7 +37,7 @@ export default {
   components: {},
   computed: {},
   data() {
-    return {};
+    return { active: 1 };
   },
   mounted() {},
   methods: {},
