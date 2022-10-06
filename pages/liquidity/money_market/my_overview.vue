@@ -1116,6 +1116,9 @@ export default {
     },
     tableData1() {
       let newArr = [];
+      if (this.abc.length == 0) {
+        newArr = this.tableData;
+      }
       for (let i = 0; i < this.abc.length; i++) {
         newArr.push(this.tableData[parseInt(this.abc[i]) - 1]);
       }
@@ -1123,6 +1126,9 @@ export default {
     },
     tableData2() {
       let newArr = [];
+      if (this.abc2.length == 0) {
+        newArr = this.tableData;
+      }
       for (let i = 0; i < this.abc2.length; i++) {
         newArr.push(this.tableData[parseInt(this.abc2[i]) - 1]);
       }
@@ -1130,6 +1136,9 @@ export default {
     },
     tableData3() {
       let newArr = [];
+      if (this.abc3.length == 0) {
+        newArr = this.tableData;
+      }
       for (let i = 0; i < this.abc3.length; i++) {
         newArr.push(this.tableData[parseInt(this.abc3[i]) - 1]);
       }
@@ -1137,6 +1146,9 @@ export default {
     },
     tableData4() {
       let newArr = [];
+      if (this.abc4.length == 0) {
+        newArr = this.tableData;
+      }
       for (let i = 0; i < this.abc4.length; i++) {
         newArr.push(this.tableData[parseInt(this.abc4[i]) - 1]);
       }
