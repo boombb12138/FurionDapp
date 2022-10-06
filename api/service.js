@@ -12,7 +12,7 @@ export const service_coinmarket = axios.create({
 });
 
 export const service_etherscan = axios.create({
-  baseURL: 'https://api-rinkeby.etherscan.io/api',
+  baseURL: 'https://api-goerli.etherscan.io/api',
   timeout: 6000000,
 });
 

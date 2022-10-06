@@ -214,7 +214,7 @@ export default {
   },
   data() {
     return {
-      network: 'rinkeby',
+      network: 'goerli',
       display_nft: [],
       wallet_nft: [],
       locked_nft: [],

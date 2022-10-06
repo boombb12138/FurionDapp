@@ -369,9 +369,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Your Supplies</div>
-                  <div class="flex">
-                    <Abc v-model="abc"></Abc>
-                  </div>
+                  <Abc v-model="abc"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -469,7 +467,7 @@
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
                         <div
-                          class="custom-btn"
+                          class="small-btn"
                           @click="
                             dialog = true;
                             initInteraction(scope.row.Asset, 'Withdraw');
@@ -494,7 +492,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Assets to Supply</div>
-                  <Abc v-model="abc2"></Abc>
+                  <Abc v-model="abc"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -591,7 +589,7 @@
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
                         <div
-                          class="custom-btn"
+                          class="small-btn"
                           @click="
                             dialog = true;
                             initInteraction(scope.row.Asset, 'Supply');
@@ -618,7 +616,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Your Borrows</div>
-                  <Abc v-model="abc3"></Abc>
+                  <Abc v-model="abc"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -704,7 +702,7 @@
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
                         <div
-                          class="custom-btn"
+                          class="small-btn"
                           @click="
                             dialog = true;
                             initInteraction(scope.row.Asset, 'Repay');
@@ -729,7 +727,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Assets to Borrow</div>
-                  <Abc v-model="abc4"></Abc>
+                  <Abc v-model="abc"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -827,7 +825,7 @@
                     <template slot-scope="scope">
                       <div class="flex items-center justify-end">
                         <div
-                          class="custom-btn"
+                          class="small-btn"
                           @click="
                             dialog = true;
                             initInteraction(scope.row.Asset, 'Borrow');
@@ -1046,7 +1044,7 @@
                 <template slot-scope="scope">
                   <div class="flex items-center justify-end">
                     <div
-                      class="custom-btn"
+                      class="small-btn"
                       @click="
                         $router.push(
                           `/liquidity/money_market/detail?asset=${
@@ -1125,13 +1123,13 @@ export default {
     // },
   },
   data() {
-    const multicall = newMultiCallProvider(4);
+    const multicall = newMultiCallProvider(5);
     return {
       dialog: false,
       loading1: true,
       abc: ["1"],
       abc2: ["1"],
-      abc3: ["1", "2", "3"], //todo 這裏爲什麽是3個
+      abc3: ["1", "2", "3"],
       abc4: ["1"],
       show1: true,
       show2: true,
@@ -1165,7 +1163,6 @@ export default {
       error: "",
       dialogue_info: DialogInfo,
       multicall: multicall,
-      table: ["supplies", "borrow", "assetsSupply", "assetsBorrow"],
     };
   },
   async mounted() {
@@ -1470,10 +1467,6 @@ export default {
             account
           );
         }
-        console.log(
-          "this.market_info[symbol].tier",
-          this.market_info[symbol].tier //1/ 2/ 3
-        );
       }
     },
 
@@ -1730,10 +1723,6 @@ export default {
       const actualAmount =
         amount == "" ? 0 : parseFloat(amount).toFixed(decimal);
       return toWei(actualAmount, decimal);
-    },
-
-    handleAbcClick(item) {
-      this.$refs.Abc0.select(item);
     },
   },
 };

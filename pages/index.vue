@@ -324,7 +324,7 @@ export default {
   computed: {},
   data() {
     return {
-      network: 'rinkeby',
+      network: 'goerli',
       dialogVisible: false,
       asset: "default text",
       nft_info: nft_info,

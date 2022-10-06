@@ -396,7 +396,7 @@ import dayjs from 'dayjs';
     computed: {},
     data() {
       return {
-        network: 'rinkeby',
+        network: 'goerli',
         list: [
           {
             id: 1,

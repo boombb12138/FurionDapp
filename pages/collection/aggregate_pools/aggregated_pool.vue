@@ -631,7 +631,7 @@ export default {
     },
   },
   data() {
-    const multicall = newMultiCallProvider(4);
+    const multicall = newMultiCallProvider(5);
     return {
       dialogVisible: false,
       checkList: [],

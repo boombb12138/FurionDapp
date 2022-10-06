@@ -4,7 +4,7 @@ import { getContract, ipfsToHttp } from '@/utils/common';
 import { getSeparatePoolABI, getFurionTokenABI, getSeparatePoolFactoryABI } from "@/utils/common/contractABI";
 import { newMultiCallProvider } from "@/utils/web3/multicall";
 
-const multicall = newMultiCallProvider(4);
+const multicall = newMultiCallProvider(5);
 
 export const default_pool_info = {
     collection: 'Loading',

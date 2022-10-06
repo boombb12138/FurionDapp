@@ -62,7 +62,7 @@ export const initFurionSwapInfo = async (single_swap, chainId) => {
     let decimal_result = [];
     if (single_swap.token_0 == 'ETH') {
         if (chainId == 4) {
-            single_swap.token_0_address = WETH_ADDRESS['rinkeby'];
+            single_swap.token_0_address = WETH_ADDRESS['goerli'];
         } else if (chainId == 1) {
             single_swap.token_0_address = WETH_ADDRESS['mainnet'];
         }
@@ -76,7 +76,7 @@ export const initFurionSwapInfo = async (single_swap, chainId) => {
         single_swap.token_1_contract = token_1_contract;
     } else if (single_swap.token_1 == 'ETH') {
         if (chainId == 4) {
-            single_swap.token_1_address = WETH_ADDRESS['rinkeby'];
+            single_swap.token_1_address = WETH_ADDRESS['goerli'];
         } else if (chainId == 1) {
             single_swap.token_1_address = WETH_ADDRESS['mainnet'];
         }
@@ -144,7 +144,7 @@ export const initFurionSwapInfo = async (single_swap, chainId) => {
 export const getPriceInfo = async(token_0, token_1, frequency, chainId) => {
     let network;
     if(chainId == 4){
-        network = 'rinkeby';
+        network = 'goerli';
     }else if(chainId == 1){
         network = 'mainnet';
     }

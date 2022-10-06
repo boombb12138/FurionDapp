@@ -706,10 +706,14 @@ export default {
     },
   },
   data() {
-    const multicall = newMultiCallProvider(4);
+    const multicall = newMultiCallProvider(5);
     return {
       collection: this.$route.query.collection,
+<<<<<<< HEAD
       network: "rinkeby",
+=======
+      network: 'goerli',
+>>>>>>> b2749c940e8357d70e53e8592c40d455045fa3c8
       ready: false,
       pool_ready: false,
       dialogVisible: false,

@@ -4,7 +4,7 @@
     <div class="network_dialog_body text-[rgba(252,255,253,0.6)] font-400 leading-30px text-15px">
       <br />
       <p>
-        Please switch your wallet's network to Rinkeby Testnet for using this Dapp.
+        Please switch your wallet's network to Goerli Testnet for using this Dapp.
       </p>
       <p>* Some wallets may not support changing networks, then you may consider doing that manually.
       </p>
