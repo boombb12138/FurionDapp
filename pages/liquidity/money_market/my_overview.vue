@@ -1390,8 +1390,8 @@ export default {
 
       let i = 0;
       for (let symbol of symbols) {
-        this.market_info[symbol] = {};
-        this.user_info[symbol] = {};
+        this.$set(this.market_info, symbol, {});
+        this.$set(this.user_info, symbol, {});
 
         // Number of blocks assumed per year in interest rate contract: 2102400
         const supplyRatePerBlock = results[i];
@@ -1476,8 +1476,9 @@ export default {
       const account = this.userInfo.userAddress;
 
       const allowance = await this.tokens[this.symbol].contract.methods
-        .allowance(account, this.market.address)
+        .allowance(account, this.markets[this.symbol].address)
         .call();
+
       return _compareInt(allowance, amount) != "smaller" ? true : false;
     },
 
@@ -1499,13 +1500,12 @@ export default {
         this.successMessage(tx_result, `Borrow ${this.symbol} succeeded`);
       } catch (e) {
         this.errorMessage(`Borrow ${this.symbol} failed`);
-        closeDialog(this.dialogue_info);
-        return;
       }
 
       closeDialog(this.dialogue_info);
       this.dialog = false;
       this.interact_amount = "";
+      await this.updateAll([this.symbol]);
     },
     async repay() {
       const account = this.userInfo.userAddress;
@@ -1539,6 +1539,7 @@ export default {
             this.errorMessage(`Approve ${this.symbol} failed`);
             console.warn(e);
             closeDialog(this.dialogue_info);
+            this.dialog = false;
             return;
           }
         }
@@ -1558,16 +1559,14 @@ export default {
         this.successMessage(tx_result, `Repay ${this.symbol} succeeded`);
       } catch (e) {
         this.errorMessage(`Repay ${this.symbol} failed`);
-        closeDialog(this.dialogue_info);
-        return;
       }
 
       closeDialog(this.dialogue_info);
       this.dialog = false;
       this.interact_amount = "";
+      await this.updateAll([this.symbol]);
     },
     async supply() {
-      //console.log("amount", amount);
       const account = this.userInfo.userAddress;
       const actualAmount = toWei(
         this.interact_amount,
@@ -1608,6 +1607,7 @@ export default {
             this.errorMessage(`Approve ${this.symbol} failed`);
             console.warn(e);
             closeDialog(this.dialogue_info);
+            this.dialog = false;
             return;
           }
         }
@@ -1646,13 +1646,13 @@ export default {
       } catch (e) {
         console.warn(e);
         this.errorMessage(`Supply ${this.symbol} failed`);
-        closeDialog(this.dialogue_info);
-        return;
       }
 
       closeDialog(this.dialogue_info);
       this.dialog = false;
       this.interact_amount = "";
+      await this.updateAll([this.symbol]);
+      console.log("updated");
     },
     async withdraw() {
       const account = this.userInfo.userAddress;
@@ -1667,13 +1667,12 @@ export default {
         this.successMessage(tx_result, `Withdraw ${this.symbol} succeeded`);
       } catch (e) {
         this.errorMessage(`Withdraw ${this.symbol} failed`);
-        closeDialog(this.dialogue_info);
-        return;
       }
 
       closeDialog(this.dialogue_info);
       this.dialog = false;
       this.interact_amount = "";
+      await this.updateAll([this.symbol]);
     },
     successMessage(receipt, title) {
       // receipt是交易块的详细信息
