@@ -1,10 +1,11 @@
 import Web3 from 'web3';
-import { getProvider, providerFromEther_test, providerFromEther } from './provider';
+import { getProvider, providerFromEther, providerFromEther_goerli } from './provider';
 import { getAddress } from '../common/contractABI';
 
 export const WETH_ADDRESS = {
   'mainnet': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-  'rinkeby': getAddress()['WETH']
+  'rinkeby': getAddress()['WETH'],
+  'goerli': getAddress()['WETH']
 }
 
 export const ETHEREUM_MAINNET_PARAMS = {
@@ -20,14 +21,14 @@ export const ETHEREUM_MAINNET_PARAMS = {
 };
 
 export const ETHEREUM_TESTNET_PARAMS = {
-  chainId: '0x4',
-  chainName: 'Ethereum Rinkeby Testnet',
+  chainId: '0x5',
+  chainName: 'Ethereum Goerli Testnet',
   nativeCurrency: {
     name: 'Ether',
     symbol: 'ETH',
     decimals: 18,
   },
-  rpcUrls: [providerFromEther_test],
+  rpcUrls: [providerFromEther_goerli],
   blockExplorerUrls: ['https://testnet.etherscan.io/'],
 };
 
@@ -53,8 +54,8 @@ export const getChainName = (chainId, mode) => {
   switch (chainId) {
     case 1:
       return mode == 0 ? 'Ethereum Mainnet' : 'Ethereum';
-    case 4:
-      return mode == 0 ? 'Ethereum Rinkeby' : 'Rinkeby';
+    case 5:
+      return mode == 0 ? 'Ethereum Goerli' : 'Goerli';
     default:
       return mode == 0 ? 'Unsupported Network' : 'Unsupported';
   }

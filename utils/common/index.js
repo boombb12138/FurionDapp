@@ -210,7 +210,7 @@ export const getAddressURL_test = (address) => {
 };
 
 export const getTxURL = (transactionHash) => {
-  const url = '"https://rinkeby.etherscan.io/tx/' + transactionHash;
+  const url = '"https://goerli.etherscan.io/tx/' + transactionHash;
   // console.log(url1);
   const txURL =
     "<a href=" +

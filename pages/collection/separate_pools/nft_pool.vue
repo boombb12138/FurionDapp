@@ -517,10 +517,10 @@ export default {
     }
   },
   data() {
-    const multicall = newMultiCallProvider(4);
+    const multicall = newMultiCallProvider(5);
     return {
       collection: this.$route.query.collection,
-      network: 'rinkeby',
+      network: 'goerli',
       ready: false,
       pool_ready: false,
       dialogVisible: false,

@@ -452,7 +452,7 @@ export default {
     ...mapState(['userInfo']),
   },
   data() {
-    const multicall = newMultiCallProvider(4);
+    const multicall = newMultiCallProvider(5);
     return {
       active: 2,
       active2: 1,

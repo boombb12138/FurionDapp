@@ -457,10 +457,10 @@ export default {
     }
   },
   data() {
-    const multicall = newMultiCallProvider(4);
+    const multicall = newMultiCallProvider(5);
     return {
       html: "",
-      network: "rinkeby",
+      network: "goerli",
       nft_item: nft_item,
       nft_comment: nft_comment,
       nft_reply: nft_reply,
@@ -518,10 +518,10 @@ export default {
       return require("@/assets/images/comment/avatar_" + from_avatar + ".png");
     }, 
     clicktx(row){
-      window.open('https://rinkeby.etherscan.io/tx/'+row.tx_hash);
+      window.open('https://goerli.etherscan.io/tx/'+row.tx_hash);
     },
     clickaddress(address) {
-      window.open('https://rinkeby.etherscan.io/address/'+address);
+      window.open('https://goerli.etherscan.io/address/'+address);
     },
     toCart() {
       const address = this.nft_item.address;

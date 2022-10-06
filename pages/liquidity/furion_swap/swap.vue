@@ -282,7 +282,7 @@ export default {
     ...mapState(['userInfo']),
   },
   data() {
-    const multicall = newMultiCallProvider(4);
+    const multicall = newMultiCallProvider(5);
     return {
       chainId: 4,
       active: 1,
@@ -511,7 +511,7 @@ export default {
         if (this.swap_info.pair_address.length < 4) {
           let weth_address;
           if (this.chainId == 4) {
-            weth_address = WETH_ADDRESS['rinkeby']
+            weth_address = WETH_ADDRESS['goerli']
           } else if (this.chainId == 1) {
             weth_address = WETH_ADDRESS['mainnet'];
           }

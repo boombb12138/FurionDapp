@@ -64,8 +64,8 @@ export const User = {
 export const InitUserInfo = async (user, chainId) => {
     try {
         let network = '';
-        if (chainId == 4) {
-            network = 'rinkeby';
+        if (chainId == 5) {
+            network = 'goerli';
         } else if (chainId == 1) {
             network = 'mainnet';
         }

@@ -1,42 +1,39 @@
 import addressStore from "@/assets/info/address.json";
 import marketStore from "@/assets/info/MoneyMarket.json";
-import spStore from "@/assets/info/SeparatePool.json";
-import apStore from "@/assets/info/AggregatePool.json";
-import swapStore from "@/assets/info/FurionSwap.json";
 
-import FurionToken from "@/assets/abis/rinkeby/tokens/FurionToken.sol/FurionToken.json";
-import MockUSD from "@/assets/abis/rinkeby/mock/MockUSD.sol/MockUSD.json";
+import FurionToken from "@/assets/abis/goerli/tokens/FurionToken.sol/FurionToken.json";
+import MockUSD from "@/assets/abis/goerli/mock/MockUSD.sol/MockUSD.json";
 
-import FurionSwapFactory from "@/assets/abis/rinkeby/furion-swap/FurionSwapFactory.sol/FurionSwapFactory.json";
-import FurionSwapV2Router from "@/assets/abis/rinkeby/furion-swap/FurionSwapV2Router.sol/FurionSwapV2Router.json";
-import FurionSwapPair from "@/assets/abis/rinkeby/furion-swap/FurionSwapPair.sol/FurionSwapPair.json";
+import FurionSwapFactory from "@/assets/abis/goerli/furion-swap/FurionSwapFactory.sol/FurionSwapFactory.json";
+import FurionSwapV2Router from "@/assets/abis/goerli/furion-swap/FurionSwapV2Router.sol/FurionSwapV2Router.json";
+import FurionSwapPair from "@/assets/abis/goerli/furion-swap/FurionSwapPair.sol/FurionSwapPair.json";
 
-import SeparatePoolFactory from "@/assets/abis/rinkeby/separate-pool/SeparatePoolFactory.sol/SeparatePoolFactory.json";
-import SeparatePool from "@/assets/abis/rinkeby/separate-pool/SeparatePool.sol/SeparatePool.json";
-import AggregatePoolFactory from "@/assets/abis/rinkeby/aggregate-pool/AggregatePoolFactory.sol/AggregatePoolFactory.json";
-import AggregatePool from "@/assets/abis/rinkeby/aggregate-pool/AggregatePool.sol/AggregatePool.json";
+import SeparatePoolFactory from "@/assets/abis/goerli/separate-pool/SeparatePoolFactory.sol/SeparatePoolFactory.json";
+import SeparatePool from "@/assets/abis/goerli/separate-pool/SeparatePool.sol/SeparatePool.json";
+import AggregatePoolFactory from "@/assets/abis/goerli/aggregate-pool/AggregatePoolFactory.sol/AggregatePoolFactory.json";
+import AggregatePool from "@/assets/abis/goerli/aggregate-pool/AggregatePool.sol/AggregatePool.json";
 
-import FEther from "@/assets/abis/rinkeby/money-market/FEther.sol/FEther.json";
-import FErc20 from "@/assets/abis/rinkeby/money-market/FErc20.sol/FErc20.json";
-import RiskManager from "@/assets/abis/rinkeby/money-market/RiskManager.sol/RiskManager.json";
-import SimplePriceOracle from "@/assets/abis/rinkeby/money-market/SimplePriceOracle.sol/SimplePriceOracle.json";
+import FEther from "@/assets/abis/goerli/money-market/FEther.sol/FEther.json";
+import FErc20 from "@/assets/abis/goerli/money-market/FErc20.sol/FErc20.json";
+import RiskManager from "@/assets/abis/goerli/money-market/RiskManager.sol/RiskManager.json";
+import SimplePriceOracle from "@/assets/abis/goerli/money-market/SimplePriceOracle.sol/SimplePriceOracle.json";
 
-import FarmingPoolUpgradeable from "@/assets/abis/rinkeby/furion-farming/FarmingPoolUpgradeable.sol/FarmingPoolUpgradeable.json";
-import VoteEscrowedFurion from "@/assets/abis/rinkeby/furion-staking/VoteEscrowedFurion.sol/VoteEscrowedFurion.json";
+import FarmingPoolUpgradeable from "@/assets/abis/goerli/furion-farming/FarmingPoolUpgradeable.sol/FarmingPoolUpgradeable.json";
+import VoteEscrowedFurion from "@/assets/abis/goerli/furion-staking/VoteEscrowedFurion.sol/VoteEscrowedFurion.json";
 
-import FuNFTPass from "@/assets/abis/rinkeby/pet/FuNFTPass.sol/FuNFTPass.json";
-import FuCatNFT from "@/assets/abis/rinkeby/pet/FuCatNFT.sol/FuCatNFT.json";
+import FuNFTPass from "@/assets/abis/goerli/pet/FuNFTPass.sol/FuNFTPass.json";
+import FuCatNFT from "@/assets/abis/goerli/pet/FuCatNFT.sol/FuCatNFT.json";
 
-import TestClaim from "@/assets/abis/rinkeby/TestClaim.sol/TestClaim.json";
+import TestClaim from "@/assets/abis/goerli/TestClaim.sol/TestClaim.json";
 
 
 export const getAddress = () => {
-    let address = addressStore['rinkeby'];
+    let address = addressStore['goerli'];
     return address;
 }
 
 export const getMarkets = () => {
-    let markets = marketStore['rinkeby'];
+    let markets = marketStore['goerli'];
     return markets;
 }
 
@@ -51,21 +48,6 @@ export const getMarket = (symbol) => {
 
     console.log("Market not found");
     return {};
-}
-
-export const getSP = () => {
-    let sp = spStore['rinkeby'];
-    return sp;
-}
-
-export const getAP = () => {
-    let ap = apStore['rinkeby'];
-    return ap;
-}
-
-export const getSwap = () => {
-    let swap = swapStore['rinkeby'];
-    return swap;
 }
 
 export const getFurionTokenABI = async () => {

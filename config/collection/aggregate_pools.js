@@ -47,7 +47,7 @@ export const initPoolInfo = async (poolName) => {
 	const init = pool_info_default();
 
 	for (let collection of init.collections) {
-		const result = await getNftInfoByProject(collection.name, 'rinkeby');
+		const result = await getNftInfoByProject(collection.name, 'goerli');
     	const raw_data = result['data']['data'];
 
 		collection.image_url = raw_data['image_url'];
