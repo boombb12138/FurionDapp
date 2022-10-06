@@ -385,9 +385,9 @@
                   </template>
                 </div>
               </div>
-
+              <!-- 第一个table -->
               <div class="content" v-if="show1 && !loading1">
-                <el-table :data="tableData" style="width: 100%">
+                <el-table :data="tableData1" style="width: 100%">
                   <el-table-column
                     prop="Asset"
                     label="Asset"
@@ -492,7 +492,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Assets to Supply</div>
-                  <Abc v-model="abc1"></Abc>
+                  <Abc v-model="abc2"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -518,7 +518,7 @@
                     </div>
                   </div>
                 </div-->
-                <el-table :data="tableData" style="width: 100%">
+                <el-table :data="tableData2" style="width: 100%">
                   <el-table-column
                     prop="Asset"
                     label="Asset"
@@ -616,7 +616,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Your Borrows</div>
-                  <Abc v-model="abc2"></Abc>
+                  <Abc v-model="abc3"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -634,7 +634,7 @@
               </div>
 
               <div class="content" v-if="show2 && !loading1">
-                <el-table :data="tableData" style="width: 100%">
+                <el-table :data="tableData3" style="width: 100%">
                   <el-table-column
                     prop="Asset"
                     label="Asset"
@@ -727,7 +727,7 @@
               <div class="title">
                 <div class="flex items-center">
                   <div class="text-18px font-700 mr-30px">Assets to Borrow</div>
-                  <Abc v-model="abc3"></Abc>
+                  <Abc v-model="abc4"></Abc>
                 </div>
                 <div
                   class="flex items-center text-[#8A92A2] text-13px font-700 cursor-pointer"
@@ -754,7 +754,7 @@
                     </div>
                   </div>
                 </div-->
-                <el-table :data="tableData" style="width: 100%">
+                <el-table :data="tableData4" style="width: 100%">
                   <el-table-column
                     prop="Asset"
                     label="Asset"
@@ -850,7 +850,7 @@
             v-model="searchKey"
             class="search !w-858px"
             clearable
-            @input=""
+            @input="handleSearch"
           >
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
@@ -868,7 +868,7 @@
           class="mb-30px w-1270px"
         >
           <div>
-            <el-table :data="tableData" style="width: 100%">
+            <el-table :data="mtableData" style="width: 100%">
               <el-table-column
                 prop="Asset"
                 label="Asset"
@@ -1114,13 +1114,34 @@ export default {
     symbol() {
       return this.token_info.symbol;
     },
-    // ctableData() {
-    //   for (i = 0; i < this.abc.length; i++) {
-    //     let newArr = [];
-    //     newArr.push(this.tableData[this.abc[i] - 1]);
-    //     return newArr;
-    //   }
-    // },
+    tableData1() {
+      let newArr = [];
+      for (let i = 0; i < this.abc.length; i++) {
+        newArr.push(this.tableData[parseInt(this.abc[i]) - 1]);
+      }
+      return newArr;
+    },
+    tableData2() {
+      let newArr = [];
+      for (let i = 0; i < this.abc2.length; i++) {
+        newArr.push(this.tableData[parseInt(this.abc2[i]) - 1]);
+      }
+      return newArr;
+    },
+    tableData3() {
+      let newArr = [];
+      for (let i = 0; i < this.abc3.length; i++) {
+        newArr.push(this.tableData[parseInt(this.abc3[i]) - 1]);
+      }
+      return newArr;
+    },
+    tableData4() {
+      let newArr = [];
+      for (let i = 0; i < this.abc4.length; i++) {
+        newArr.push(this.tableData[parseInt(this.abc4[i]) - 1]);
+      }
+      return newArr;
+    },
   },
   data() {
     const multicall = newMultiCallProvider(5);
@@ -1147,6 +1168,7 @@ export default {
           Asset: "FUR",
         },
       ],
+      mtableData: [],
       user_info: {}, // user info
       market_info: {}, // market info
       token_info: {},
@@ -1723,6 +1745,15 @@ export default {
       const actualAmount =
         amount == "" ? 0 : parseFloat(amount).toFixed(decimal);
       return toWei(actualAmount, decimal);
+    },
+    handleSearch() {
+      for (let i = 0; i < this.tableData.length; i++) {
+        if (this.searchKey.toUpperCase().includes(this.tableData[i].Asset)) {
+          if (this.mtableData.indexOf(this.tableData[i]) == -1) {
+            this.mtableData.push(this.tableData[i]);
+          }
+        }
+      }
     },
   },
 };
