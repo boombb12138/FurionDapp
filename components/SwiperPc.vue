@@ -23,10 +23,18 @@
 
 <template>
   <div class="swiper-pc relative">
-    <div :style="{height}">
+    <div :style="{ height }">
       <client-only>
-        <swiper ref="swiper" :options="swiperOption" @slide-change="slideChange">
-          <swiper-slide class="slide-item cursor-pointer" v-for="(item,index) in list" :key="index">
+        <swiper
+          ref="swiper"
+          :options="swiperOption"
+          @slide-change="slideChange"
+        >
+          <swiper-slide
+            class="slide-item cursor-pointer"
+            v-for="(item, index) in list"
+            :key="index"
+          >
             <slot :item="item"></slot>
           </swiper-slide>
         </swiper>
@@ -44,14 +52,14 @@ export default {
     },
     height: {
       type: String,
-      default: 'auto',
+      default: "auto",
     },
   },
   components: {},
   computed: {
     arrowTop() {
-      if (this.height === 'auto') return '0px';
-      return parseInt(this.height) / 2 - 24 + 'px';
+      if (this.height === "auto") return "0px";
+      return parseInt(this.height) / 2 - 24 + "px";
     },
   },
   data() {
@@ -59,7 +67,7 @@ export default {
       swiperOption: {
         loop: true,
         speed: 500,
-        direction: 'horizontal',
+        direction: "horizontal",
         slidesPerView: 3,
         spaceBetween: 25,
         autoplay: { delay: 600033, disableOnInteraction: false },
@@ -78,18 +86,17 @@ export default {
     },
     turnLeft() {
       const swiper = this.$refs.swiper.$swiper;
-      console.log('swiper', swiper);
+      console.log("swiper", swiper);
       swiper.slidePrev();
     },
     turnRight() {
       const swiper = this.$refs.swiper.$swiper;
-      console.log('swiper', swiper);
+      console.log("swiper", swiper);
       swiper.slideNext();
     },
     goto(item) {
-      this.$emit('goto', item);
+      this.$emit("goto", item);
     },
   },
 };
 </script>
-

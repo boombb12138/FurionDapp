@@ -35,30 +35,118 @@
     flex-direction: column;
     .rightTop {
       margin-top: 15px;
+      padding: 8px 20px;
       background: no-repeat center url("@/assets/images/pet/bg4.png");
       background-size: 100% 100%;
+      display: grid;
+      grid: repeat(3, 160px) / auto-flow 165px;
+      // grid-template-columns: repeat(3, 160px);
+      // grid-template-rows: repeat(3, 160px);
+      justify-items: center;
+      align-items: center;
+      // grid-row-gap: 20px;
+
+      div {
+        background-color: #333572;
+        width: 140px;
+        height: 140px;
+        border-radius: 20%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        img {
+          width: 80%;
+          height: 80%;
+        }
+        .mask {
+          position: absolute !important;
+          top: 0;
+          left: 0;
+          background-color: #171732;
+          filter: Alpha(Opacity=60);
+          opacity: 0.6;
+          color: #fff;
+          display: none;
+          height: 100%;
+          line-height: 140px;
+          text-align: center;
+        }
+      }
     }
+    // .el-pagination {
+    //   color: #fff;
+    // }
+    // ::v-deep .el-pager li {
+    //   background: transparent;
+    //   background-color: transparent !important ;
+    // }
+    // ::v-deep .el-pagination .btn-prev,
+    // ::v-deep .el-pagination .btn-next {
+    //   background: transparent;
+
+    //   color: #fc64d9;
+    // }
+
+    // ::v-deep .el-pagination button:disabled {
+    //   background: transparent;
+    //   background-color: transparent !important ;
+    //   color: #667181;
+    // }
     // /deep/.el-pagination .btn-next {
     //   background-color: #99d26d;
     // }
-    // /deep/.el-pagination .el-icon-arrow-left {
+    // ::v-deep .el-pagination .el-icon-arrow-left {
     //   background: url("@/assets/images/pet/arrow-left.png") center center
-    //     no-repeat;
+    //     no-repeat transparent;
+    //   background-size: cover;
     // }
-    // /deep/.el-pagination .el-icon-arrow-left:before {
-    //   content: "";
+    // ::v-deep .el-pagination .el-icon-arrow-left:before {
+    //   content: "替";
     //   font-size: 16px;
     //   visibility: hidden;
     // }
-    // /deep/.el-pagination .el-icon-arrow-right {
+    // ::v-deep .el-pagination .el-icon-arrow-right {
     //   background: url("@/assets/images/pet/arrow-right.png") center center
-    //     no-repeat;
+    //     no-repeat transparent;
+    //   background-size: cover;
     // }
-    // /deep/.el-pagination .el-icon-arrow-right:before {
-    //   content: "";
+    // ::v-deep .el-pagination .el-icon-arrow-right:before {
+    //   content: "替";
     //   font-size: 16px;
     //   visibility: hidden;
     // }
+    .swiper {
+      width: 100%;
+      height: 100%;
+    }
+
+    .swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      background: #fff;
+
+      /* Center slide text vertically */
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
+
+    .swiper-slide img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 }
 </style>
@@ -155,9 +243,26 @@
         </div>
 
         <div class="absolute right-0 top-0 rightSide">
-          <div class="rightTop w-540px h-500px"></div>
-          <el-pagination layout="prev, pager, next" :total="30">
-          </el-pagination>
+          <!-- <el-pagination layout="prev, pager, next" :total="30">
+          </el-pagination> -->
+          <swiper-tap :list="dropList">
+            <template v-slot="slotProps">
+              <div
+                class="swiper-item-wrap h-570px rounded-20px overflow-hidden relative"
+                data-aos="fade-up"
+                :data-aos-delay="400 + dropList.indexOf(slotProps.item) * 200"
+              >
+                <div class="rightTop w-540px h-500px">
+                  <template v-for="i in 9">
+                    <div @click="display(i)" :key="i">
+                      <img src="@/assets/images/pet/tag.png" />
+                      <div class="mask" ref="mask">Displaying</div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </swiper-tap>
         </div>
       </div>
     </div>
@@ -166,12 +271,28 @@
 </template>
 
 <script>
+import SwiperTap from "@/components/SwiperTap.vue";
 export default {
   props: {},
-  components: {},
+  components: { SwiperTap },
   computed: {},
   data() {
-    return { active: 2, empty: true };
+    return {
+      active: 2,
+      empty: true,
+      displayTag: false,
+      dropList: [
+        {
+          name: "1",
+        },
+        {
+          name: "2",
+        },
+        {
+          name: "3",
+        },
+      ],
+    };
   },
   mounted() {},
   methods: {
@@ -182,6 +303,20 @@ export default {
       if (this.pet.cat.balance > 0) {
         this.empty = false;
       }
+    },
+    display(i) {
+      console.log("i", i);
+
+      console.log("this.$refs.mask", this.$refs.mask);
+      if (this.$refs.mask[i - 1].style.display === "none") {
+        for (let i = 0; i < this.$refs.mask.length; i++) {
+          this.$refs.mask[i].style.display = "none";
+        }
+        this.$refs.mask[i - 1].style.display = "block";
+      } else {
+        this.$refs.mask[i - 1].style.display = "none";
+      }
+      this.displayTag = !this.displayTag;
     },
   },
 };

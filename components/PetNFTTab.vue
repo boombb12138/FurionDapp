@@ -11,6 +11,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    background-color: #1e194d;
+    border: 1px solid #2b2353;
+    margin-top: 3px;
+    height: 70px;
+    padding: 15px;
+
     cursor: pointer;
     color: #86898c;
     border-radius: 12px;
@@ -27,6 +34,7 @@
     color: #ffffff;
     z-index: 3;
     background: #323472 !important;
+    transform: scaleX(1.1);
   }
 
   .glider {
@@ -49,28 +57,22 @@
     transform: translateX(var(--pos));
     transition: 0.4s ease;
   }
-  .inner {
-    background-color: #1e194d;
-    border: 1px solid #2b2353;
-    margin-top: 3px;
-    height: 70px;
-  }
 }
 </style>
 
 <template>
   <!-- //test nft和badges的跳转 -->
-  <div class="w-110px h-70px relative box top-100px right-20px">
-    <div class="w-110px flex flex-col h-66px relative top-10px right-2px">
+  <div class="w-160px h-70px relative box top-100px">
+    <div class="w-160px flex flex-col h-70px relative top-10px right-2px">
       <div
-        class="flex-1 text inner"
+        class="flex-1 text"
         :class="{ active: value == 1 }"
         @click="$emit('input', 1)"
       >
         NFT
       </div>
       <div
-        class="flex-1 text inner"
+        class="flex-1 text"
         :class="{ active: value == 2 }"
         @click="$emit('input', 2)"
       >
