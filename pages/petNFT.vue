@@ -225,7 +225,7 @@
               width="70"
             />
             <img
-              src="@/assets/images/pet/tag.png"
+              :src="displayImg"
               class="absolute right-10px top-60px z-10"
               width="70"
             />
@@ -253,9 +253,9 @@
                 :data-aos-delay="400 + dropList.indexOf(slotProps.item) * 200"
               >
                 <div class="rightTop w-540px h-500px">
-                  <template v-for="i in 9">
-                    <div @click="display(i)" :key="i">
-                      <img src="@/assets/images/pet/tag.png" />
+                  <template v-for="(i, index) in tagList">
+                    <div @click="display(index)" :key="index">
+                      <img :src="i.imgUrl" />
                       <div class="mask" ref="mask">Displaying</div>
                     </div>
                   </template>
@@ -280,7 +280,6 @@ export default {
     return {
       active: 2,
       empty: true,
-      displayTag: false,
       dropList: [
         {
           name: "1",
@@ -292,6 +291,18 @@ export default {
           name: "3",
         },
       ],
+      tagList: [
+        { imgUrl: require("@/assets/images/pet/tag.png") },
+        { imgUrl: require("@/assets/images/pet/tag2.png") },
+        { imgUrl: require("@/assets/images/pet/tag3.png") },
+        { imgUrl: require("@/assets/images/pet/tag.png") },
+        { imgUrl: require("@/assets/images/pet/tag.png") },
+        { imgUrl: require("@/assets/images/pet/tag.png") },
+        { imgUrl: require("@/assets/images/pet/tag.png") },
+        { imgUrl: require("@/assets/images/pet/tag.png") },
+        { imgUrl: require("@/assets/images/pet/tag.png") },
+      ],
+      displayImg: require("@/assets/images/pet/tag.png"),
     };
   },
   mounted() {},
@@ -305,18 +316,15 @@ export default {
       }
     },
     display(i) {
-      console.log("i", i);
-
-      console.log("this.$refs.mask", this.$refs.mask);
-      if (this.$refs.mask[i - 1].style.display === "none") {
+      if (this.$refs.mask[i].style.display === "none") {
         for (let i = 0; i < this.$refs.mask.length; i++) {
           this.$refs.mask[i].style.display = "none";
         }
-        this.$refs.mask[i - 1].style.display = "block";
+        this.$refs.mask[i].style.display = "block";
+        this.displayImg = this.tagList[i].imgUrl;
       } else {
-        this.$refs.mask[i - 1].style.display = "none";
+        this.$refs.mask[i].style.display = "none";
       }
-      this.displayTag = !this.displayTag;
     },
   },
 };
