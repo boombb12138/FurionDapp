@@ -9,6 +9,62 @@
   text-fill-color: transparent;
   @apply absolute left-110px top-109px;
 }
+
+.mainNFT {
+  width: 1080px;
+  height: 640px;
+  .leftSide {
+    width: 470px;
+    height: 640px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .leftTop {
+      margin-top: -3px;
+      background: no-repeat center url("@/assets/images/pet/bg1.png");
+      .pet {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -70%);
+      }
+    }
+    .btnLock {
+      background-size: 100% 100%;
+      background: no-repeat center url("@/assets/images/pet/bg5.png");
+      width: 468px;
+      height: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      div {
+        width: 130px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 24px;
+      }
+    }
+  }
+  .rightSide {
+    width: 580px;
+    height: 640px;
+    background: no-repeat center url("@/assets/images/pet/bg3.png");
+    background-size: 100% 100%;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    .rightTop {
+      margin-top: 15px;
+      padding: 8px 20px;
+      background: no-repeat center url("@/assets/images/pet/bg4.png");
+      background-size: 100% 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
 .main {
   width: 1080px;
   height: 640px;
@@ -16,7 +72,6 @@
   .leftSide {
     width: 470px;
     height: 640px;
-    background-color: pink;
     .leftTop {
       margin-top: -3px;
       background: no-repeat center url("@/assets/images/pet/bg.png");
@@ -173,13 +228,76 @@
 
     <div>
       <!-- NFT -->
-      <!-- <div
+      <div
         v-if="active == 1"
-        class="relative top-245px left-155px flex justify-between main"
+        class="absolute top-200px left-100px flex justify-between mx-auto mainNFT"
       >
-        <div class="absolute left-0 top-0 leftSide"></div>
-        <div class="absolute right-0 top-0 rightSide"></div>
-      </div> -->
+        <div class="absolute left-0 top-0 leftSide">
+          <div class="w-100% h-530px leftTop">
+            <!-- 1.如果有nft ta g就是徽章-->
+            <template v-if="!empty">
+              <div class="grid grid-cols-2 absolute right-10px top-60px z-10">
+                <img src="@/assets/images/pet/tag.png" class="" width="30" />
+                <img src="@/assets/images/pet/tag2.png" class="" width="30" />
+                <img src="@/assets/images/pet/tag3.png" class="" width="30" />
+                <img src="@/assets/images/pet/tag.png" class="" width="30" />
+              </div>
+
+              <img
+                src="@/assets/images/pet/pet2.png"
+                class="absolute center-x bottom-45px"
+              />
+
+              <div class="lv">1</div>
+
+              <div class="exp">
+                <div class="bar" :style="{ height: '70%' }"></div>
+              </div>
+
+              <div class="p w-40px text-center">70%</div>
+
+              <div class="flex items-center absolute center-x bottom-20px">
+                <img src="@/assets/images/pet/lock.svg" alt="" />
+                <div class="ml-4px font-600 text-12px">#0001</div>
+              </div>
+            </template>
+            <!-- 2.如果没有nft -->
+            <template v-else>
+              <img
+                src="@/assets/images/pet/level.png"
+                class="absolute left-10px top-60px z-10"
+                width="70"
+              />
+              <img
+                :src="displayImg"
+                class="absolute right-10px top-60px z-10"
+                width="70"
+              />
+              <img
+                src="@/assets/images/pet/pet.png"
+                class="absolute z-10 pet"
+                width="228"
+              />
+            </template>
+          </div>
+
+          <div
+            class="absolute center-x w-1/1 flex items-center justify-center bottom-0px"
+          >
+            <div class="btnLock" @click="empty = false">
+              <div>
+                <img src="@/assets/images/pet/lock.svg" width="32px" />
+                #0001
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute right-0 top-0 rightSide">
+          <div class="rightTop w-540px h-500px z-10">
+            <img src="@/assets/images/pet/Empty.png" />
+          </div>
+        </div>
+      </div>
 
       <!-- badges -->
       <div
@@ -190,56 +308,26 @@
           <!-- //test Badget左侧布局 -->
           <div class="w-100% h-530px leftTop"></div>
 
-          <!-- 1.如果有nft ta g就是徽章-->
-          <template v-if="!empty">
-            <div class="grid grid-cols-2 absolute right-10px top-60px z-10">
-              <img src="@/assets/images/pet/tag.png" class="" width="30" />
-              <img src="@/assets/images/pet/tag2.png" class="" width="30" />
-              <img src="@/assets/images/pet/tag3.png" class="" width="30" />
-              <img src="@/assets/images/pet/tag.png" class="" width="30" />
-            </div>
-
-            <img
-              src="@/assets/images/pet/pet2.png"
-              class="absolute center-x bottom-45px"
-            />
-
-            <div class="lv">1</div>
-
-            <div class="exp">
-              <div class="bar" :style="{ height: '70%' }"></div>
-            </div>
-
-            <div class="p w-40px text-center">70%</div>
-
-            <div class="flex items-center absolute center-x bottom-20px">
-              <img src="@/assets/images/pet/lock.svg" alt="" />
-              <div class="ml-4px font-600 text-12px">#0001</div>
-            </div>
-          </template>
-          <!-- 2.如果没有nft -->
-          <template v-else>
-            <img
-              src="@/assets/images/pet/level.png"
-              class="absolute left-10px top-60px z-10"
-              width="70"
-            />
-            <img
-              :src="displayImg"
-              class="absolute right-10px top-60px z-10"
-              width="70"
-            />
+          <img
+            src="@/assets/images/pet/level.png"
+            class="absolute left-10px top-60px z-10"
+            width="70"
+          />
+          <img
+            :src="displayImg"
+            class="absolute right-10px top-60px z-10"
+            width="70"
+          />
+          <div
+            class="absolute center-x w-1/1 flex items-center justify-center bottom-20px"
+          >
             <div
-              class="absolute center-x w-1/1 flex items-center justify-center bottom-20px"
+              class="btn2 !w-245px !h-60px !text-[24px]"
+              @click="empty = false"
             >
-              <div
-                class="btn2 !w-245px !h-60px !text-[24px]"
-                @click="empty = false"
-              >
-                FREEMINT
-              </div>
+              FREEMINT
             </div>
-          </template>
+          </div>
         </div>
 
         <div class="absolute right-0 top-0 rightSide">
@@ -278,7 +366,7 @@ export default {
   computed: {},
   data() {
     return {
-      active: 2,
+      active: 1,
       empty: true,
       dropList: [
         {
