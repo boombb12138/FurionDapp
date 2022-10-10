@@ -1,16 +1,11 @@
 <style lang="scss" scoped>
 .box {
-  //   background: #1b1649;
-  //   border: 3px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   z-index: 1;
 
   .text {
     font-weight: 600;
     font-size: 17px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
     background-color: #1e194d;
     border: 1px solid #2b2353;
@@ -66,13 +61,15 @@
     <div class="w-160px flex flex-col h-70px relative top-10px right-2px">
       <div
         class="flex-1 text"
+        style="text-align: end"
         :class="{ active: value == 1 }"
         @click="$emit('input', 1)"
       >
-        NFT
+        <span class="relative" style="left: -15px">NFT</span>
       </div>
       <div
         class="flex-1 text"
+        style="text-align: end"
         :class="{ active: value == 2 }"
         @click="$emit('input', 2)"
       >

@@ -49,8 +49,8 @@
             class="swiper-pagination swiper-pagination-fraction swiper-pagination-horizontal"
           ></div>
           <!-- If we need navigation buttons -->
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div>
+          <!-- <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div> -->
         </swiper>
       </client-only>
     </div>

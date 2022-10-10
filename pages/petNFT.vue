@@ -25,7 +25,7 @@
       .pet {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -70%);
+        transform: translate(-50%, -60%);
       }
     }
     .btnLock {
@@ -59,16 +59,44 @@
       padding: 8px 20px;
       background: no-repeat center url("@/assets/images/pet/bg4.png");
       background-size: 100% 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      .midLayer {
+        grid: repeat(2, 220px) / auto-flow 220px;
+        justify-content: center;
+        align-items: center;
+        padding: 25px 0px;
+
+        .midLayerDiv {
+          border-radius: 10%;
+          background-color: #333572;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+
+          .mask {
+            position: absolute !important;
+            top: 0;
+            left: 0;
+            background-color: #171732;
+            border-radius: 10%;
+            filter: Alpha(Opacity=60);
+            opacity: 0.6;
+            color: #fff;
+            display: none;
+            height: 100%;
+            width: 100%;
+            line-height: 180px;
+            text-align: center;
+          }
+        }
+      }
     }
   }
 }
+
 .main {
   width: 1080px;
   height: 640px;
-  border: 1px solid #fff;
   .leftSide {
     width: 470px;
     height: 640px;
@@ -95,11 +123,8 @@
       background-size: 100% 100%;
       display: grid;
       grid: repeat(3, 160px) / auto-flow 165px;
-      // grid-template-columns: repeat(3, 160px);
-      // grid-template-rows: repeat(3, 160px);
       justify-items: center;
       align-items: center;
-      // grid-row-gap: 20px;
 
       div {
         background-color: #333572;
@@ -234,51 +259,17 @@
       >
         <div class="absolute left-0 top-0 leftSide">
           <div class="w-100% h-530px leftTop">
-            <!-- 1.如果有nft ta g就是徽章-->
-            <template v-if="!empty">
-              <div class="grid grid-cols-2 absolute right-10px top-60px z-10">
-                <img src="@/assets/images/pet/tag.png" class="" width="30" />
-                <img src="@/assets/images/pet/tag2.png" class="" width="30" />
-                <img src="@/assets/images/pet/tag3.png" class="" width="30" />
-                <img src="@/assets/images/pet/tag.png" class="" width="30" />
-              </div>
-
-              <img
-                src="@/assets/images/pet/pet2.png"
-                class="absolute center-x bottom-45px"
-              />
-
-              <div class="lv">1</div>
-
-              <div class="exp">
-                <div class="bar" :style="{ height: '70%' }"></div>
-              </div>
-
-              <div class="p w-40px text-center">70%</div>
-
-              <div class="flex items-center absolute center-x bottom-20px">
-                <img src="@/assets/images/pet/lock.svg" alt="" />
-                <div class="ml-4px font-600 text-12px">#0001</div>
-              </div>
-            </template>
-            <!-- 2.如果没有nft -->
-            <template v-else>
-              <img
-                src="@/assets/images/pet/level.png"
-                class="absolute left-10px top-60px z-10"
-                width="70"
-              />
-              <img
-                :src="displayImg"
-                class="absolute right-10px top-60px z-10"
-                width="70"
-              />
-              <img
-                src="@/assets/images/pet/pet.png"
-                class="absolute z-10 pet"
-                width="228"
-              />
-            </template>
+            <img
+              src="@/assets/images/pet/level.png"
+              class="absolute left-25px top-30px z-10"
+              width="70"
+            />
+            <img
+              :src="displayImg"
+              class="absolute right-40px top-30px z-10"
+              width="70"
+            />
+            <img :src="displayNFTImg" class="absolute z-10 pet" width="400" />
           </div>
 
           <div
@@ -292,9 +283,47 @@
             </div>
           </div>
         </div>
-        <div class="absolute right-0 top-0 rightSide">
-          <div class="rightTop w-540px h-500px z-10">
-            <img src="@/assets/images/pet/Empty.png" />
+        <div class="absolute right-0 top-0 rightSide z-10">
+          <div>
+            <!-- 1.如果有nft ta g就是徽章-->
+            <template v-if="!empty">
+              <div>
+                <div class="rightTop w-540px h-500px z-10">
+                  <swiper-tap :list="dropList">
+                    <template v-slot="slotProps">
+                      <div
+                        class="swiper-item-wrap h-570px rounded-20px overflow-hidden"
+                        data-aos="fade-up"
+                        :data-aos-delay="
+                          400 + dropList.indexOf(slotProps.item) * 200
+                        "
+                      >
+                        <div class="w-540px h-500px grid grid-cols-2 midLayer">
+                          <template v-for="(i, index) in nftList">
+                            <div
+                              :key="index"
+                              class="w-180px h-180px midLayerDiv"
+                              @click="displayNFT(index)"
+                            >
+                              <img :src="i.imgUrl" class="" width="180" />
+                              <div class="mask" ref="mask">Displaying</div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </swiper-tap>
+                </div>
+              </div>
+            </template>
+            <!-- 2.如果没有nft -->
+            <template v-else>
+              <div>
+                <div class="rightTop w-540px h-500px z-10">
+                  <img src="@/assets/images/pet/Empty.png" />
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -330,7 +359,7 @@
           </div>
         </div>
 
-        <div class="absolute right-0 top-0 rightSide">
+        <div class="absolute right-0 top-0 rightSide z-10">
           <!-- <el-pagination layout="prev, pager, next" :total="30">
           </el-pagination> -->
           <swiper-tap :list="dropList">
@@ -367,7 +396,7 @@ export default {
   data() {
     return {
       active: 1,
-      empty: true,
+      empty: false,
       dropList: [
         {
           name: "1",
@@ -391,6 +420,13 @@ export default {
         { imgUrl: require("@/assets/images/pet/tag.png") },
       ],
       displayImg: require("@/assets/images/pet/tag.png"),
+      displayNFTImg: require("@/assets/images/pet/pet3.png"),
+      nftList: [
+        { imgUrl: require("@/assets/images/pet/pet3.png") },
+        { imgUrl: require("@/assets/images/pet/fengchen 16.png") },
+        { imgUrl: require("@/assets/images/pet/fengchen 11.png") },
+        { imgUrl: require("@/assets/images/pet/fengchen 9.png") },
+      ],
     };
   },
   mounted() {},
@@ -410,6 +446,17 @@ export default {
         }
         this.$refs.mask[i].style.display = "block";
         this.displayImg = this.tagList[i].imgUrl;
+      } else {
+        this.$refs.mask[i].style.display = "none";
+      }
+    },
+    displayNFT(i) {
+      if (this.$refs.mask[i].style.display === "none") {
+        for (let i = 0; i < this.$refs.mask.length; i++) {
+          this.$refs.mask[i].style.display = "none";
+        }
+        this.$refs.mask[i].style.display = "block";
+        this.displayNFTImg = this.nftList[i].imgUrl;
       } else {
         this.$refs.mask[i].style.display = "none";
       }
