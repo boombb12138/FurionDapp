@@ -126,13 +126,14 @@
     flex-direction: column;
     .rightTop {
       margin-top: 15px;
-      padding: 8px 20px;
       background: no-repeat center url("@/assets/images/pet/bg4.png");
       background-size: 100% 100%;
       .midLayer {
-        grid: repeat(3, 160px) / auto-flow 165px;
+        grid: repeat(3, 160px) 165px;
         justify-items: center;
         align-items: center;
+        grid-auto-flow: row;
+        grid-column-gap: 23px;
       }
 
       .containTag {
@@ -164,48 +165,6 @@
         }
       }
     }
-    // .el-pagination {
-    //   color: #fff;
-    // }
-    // ::v-deep .el-pager li {
-    //   background: transparent;
-    //   background-color: transparent !important ;
-    // }
-    // ::v-deep .el-pagination .btn-prev,
-    // ::v-deep .el-pagination .btn-next {
-    //   background: transparent;
-
-    //   color: #fc64d9;
-    // }
-
-    // ::v-deep .el-pagination button:disabled {
-    //   background: transparent;
-    //   background-color: transparent !important ;
-    //   color: #667181;
-    // }
-    // /deep/.el-pagination .btn-next {
-    //   background-color: #99d26d;
-    // }
-    // ::v-deep .el-pagination .el-icon-arrow-left {
-    //   background: url("@/assets/images/pet/arrow-left.png") center center
-    //     no-repeat transparent;
-    //   background-size: cover;
-    // }
-    // ::v-deep .el-pagination .el-icon-arrow-left:before {
-    //   content: "替";
-    //   font-size: 16px;
-    //   visibility: hidden;
-    // }
-    // ::v-deep .el-pagination .el-icon-arrow-right {
-    //   background: url("@/assets/images/pet/arrow-right.png") center center
-    //     no-repeat transparent;
-    //   background-size: cover;
-    // }
-    // ::v-deep .el-pagination .el-icon-arrow-right:before {
-    //   content: "替";
-    //   font-size: 16px;
-    //   visibility: hidden;
-    // }
     .swiper {
       width: 100%;
       height: 100%;
@@ -391,7 +350,7 @@
                   data-aos="fade-up"
                   :data-aos-delay="400 + dropList.indexOf(slotProps.item) * 200"
                 >
-                  <div class="midLayer grid grid-cols-3 w-540px h-500px">
+                  <div class="midLayer grid grid-cols-3 w-460px h-500px">
                     <template v-for="(i, index) in tagList">
                       <div
                         @click="display(index, slotProps.item.name)"

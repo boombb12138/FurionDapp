@@ -22,6 +22,8 @@
 .slide-item {
   width: 540px !important;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
 }
 
 .prev,
