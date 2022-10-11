@@ -56,7 +56,6 @@
 </style>
 
 <template>
-  <!-- //test nft和badges的跳转 -->
   <div class="w-160px h-70px relative box top-100px">
     <div class="w-160px flex flex-col h-70px relative top-10px right-2px">
       <div

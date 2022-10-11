@@ -26,18 +26,6 @@
   justify-content: center;
 }
 
-.prev,
-.next {
-  // position: absolute;
-  // bottom: 0%;
-  // width: 10px;
-  // height: 18px;
-  // z-index: 10;
-  // cursor: pointer;
-  // display: flex;
-  // align-items: center;
-  // justify-content: center;
-}
 .swiper-pagination {
   left: 40%;
   bottom: 12%;
@@ -45,15 +33,17 @@
 
 .icon-arrow-left-filling {
   color: #fa6be1;
+  font-size: 20px;
 }
 .icon-arrow-left-filling.icon-arrow-left-filling-disable {
-  opacity: 0.35;
+  color: #667181;
 }
 .icon-arrow-right-filling {
   color: #fa6be1;
+  font-size: 20px;
 }
 .icon-arrow-right-filling.icon-arrow-right-filling-disable {
-  opacity: 0.35;
+  color: #667181;
 }
 </style>
 
@@ -78,7 +68,7 @@
         </swiper>
 
         <div
-          class="swiper-pagination absolute w-100px bottom-10% flex justify-around"
+          class="swiper-pagination absolute w-100px bottom-10% flex justify-around align-center"
         >
           <span
             class="iconfont icon-arrow-left-filling"
@@ -118,13 +108,9 @@ export default {
           type: "fraction",
         },
         navigation: true,
-        // loop: true,
-        // speed: 500,
         direction: "horizontal",
         slidesPerView: 1,
         spaceBetween: 3,
-        // autoplay: { delay: 600033, disableOnInteraction: false },
-        // modules: [Pagination, Navigation],
       },
       kvIndex: 0,
       disable: false,
@@ -156,6 +142,9 @@ export default {
       swiper.slideNext();
       if (this.kvIndex == this.list.length - 1) {
         this.disable = true;
+        this.disableLeft = false;
+      } else {
+        this.disable = false;
         this.disableLeft = false;
       }
     },

@@ -42,6 +42,8 @@
         justify-content: space-between;
         align-items: center;
         font-size: 24px;
+        font-weight: 600;
+        color: #fcfffd;
       }
     }
   }
@@ -77,7 +79,7 @@
             position: absolute !important;
             top: 0;
             left: 0;
-            background-color: #171732;
+            background-color: #000000;
             border-radius: 10%;
             filter: Alpha(Opacity=60);
             opacity: 0.6;
@@ -87,6 +89,20 @@
             width: 100%;
             line-height: 180px;
             text-align: center;
+          }
+          .firstMask {
+            position: absolute !important;
+            top: 0;
+            left: 0;
+            background-color: #000000;
+            filter: Alpha(Opacity=60);
+            opacity: 0.6;
+            color: #fff;
+            height: 100%;
+            width: 100%;
+            line-height: 180px;
+            text-align: center;
+            border-radius: 10%;
           }
         }
       }
@@ -134,6 +150,8 @@
         align-items: center;
         grid-auto-flow: row;
         grid-column-gap: 23px;
+        grid-row-gap: 20px;
+        margin-top: 20px;
       }
 
       .containTag {
@@ -146,14 +164,14 @@
         align-items: center;
         position: relative;
         img {
-          width: 80%;
-          height: 80%;
+          width: 65%;
+          height: 65%;
         }
         .mask {
           position: absolute !important;
           top: 0;
           left: 0;
-          background-color: #171732;
+          background-color: #000000;
           filter: Alpha(Opacity=60);
           opacity: 0.6;
           color: #fff;
@@ -162,6 +180,21 @@
           width: 100%;
           line-height: 140px;
           text-align: center;
+          border-radius: 20%;
+        }
+        .firstMask {
+          position: absolute !important;
+          top: 0;
+          left: 0;
+          background-color: #000000;
+          filter: Alpha(Opacity=60);
+          opacity: 0.6;
+          color: #fff;
+          height: 100%;
+          width: 100%;
+          line-height: 140px;
+          text-align: center;
+          border-radius: 20%;
         }
       }
     }
@@ -223,7 +256,7 @@
     <div>
       <!-- NFT -->
       <div
-        v-if="active == 1"
+        v-show="active == 1"
         class="absolute top-200px left-100px flex justify-between mx-auto mainNFT"
       >
         <div class="absolute left-0 top-0 leftSide">
@@ -272,10 +305,20 @@
                             <div
                               :key="index"
                               class="w-180px h-180px midLayerDiv"
-                              @click="displayNFT(index)"
+                              @click="displayNFT(index, slotProps.item.name)"
                             >
                               <img :src="i.imgUrl" class="" width="180" />
-                              <div class="mask" ref="mask">Displaying</div>
+                              <div
+                                class="firstMask"
+                                v-if="
+                                  index == 0 &&
+                                  showFirstMask &&
+                                  slotProps.item.name == 1
+                                "
+                              >
+                                Displaying
+                              </div>
+                              <div class="mask" ref="nftmask">Displaying</div>
                             </div>
                           </template>
                         </div>
@@ -312,7 +355,7 @@
 
       <!-- badges -->
       <div
-        v-if="active == 2"
+        v-show="active == 2"
         class="absolute top-200px left-100px flex justify-between mx-auto main"
       >
         <div class="absolute left-0 top-0 leftSide">
@@ -321,12 +364,12 @@
 
           <img
             src="@/assets/images/pet/level.png"
-            class="absolute left-10px top-60px z-10"
+            class="absolute left-25px top-25px z-10"
             width="70"
           />
           <img
             :src="displayImg"
-            class="absolute right-10px top-60px z-10"
+            class="absolute right-40px top-30px z-10"
             width="70"
           />
           <div
@@ -350,7 +393,7 @@
                   data-aos="fade-up"
                   :data-aos-delay="400 + dropList.indexOf(slotProps.item) * 200"
                 >
-                  <div class="midLayer grid grid-cols-3 w-460px h-500px">
+                  <div class="midLayer grid grid-cols-3 w-460px h-450px">
                     <template v-for="(i, index) in tagList">
                       <div
                         @click="display(index, slotProps.item.name)"
@@ -358,6 +401,16 @@
                         class="containTag"
                       >
                         <img :src="i.imgUrl" />
+                        <div
+                          class="firstMask"
+                          v-if="
+                            index == 0 &&
+                            showTagFirstMask &&
+                            slotProps.item.name == 1
+                          "
+                        >
+                          Displaying
+                        </div>
                         <div class="mask" ref="mask">Displaying</div>
                       </div>
                     </template>
@@ -396,8 +449,8 @@ export default {
       ],
       tagList: [
         { imgUrl: require("@/assets/images/pet/tag.png") },
-        { imgUrl: require("@/assets/images/pet/tag2.png") },
-        { imgUrl: require("@/assets/images/pet/tag3.png") },
+        { imgUrl: require("@/assets/images/pet/徽章1.png") },
+        { imgUrl: require("@/assets/images/pet/徽章3.png") },
         { imgUrl: require("@/assets/images/pet/tag.png") },
         { imgUrl: require("@/assets/images/pet/tag.png") },
         { imgUrl: require("@/assets/images/pet/tag.png") },
@@ -413,6 +466,8 @@ export default {
         { imgUrl: require("@/assets/images/pet/fengchen 11.png") },
         { imgUrl: require("@/assets/images/pet/fengchen 9.png") },
       ],
+      showFirstMask: true,
+      showTagFirstMask: true,
     };
   },
   mounted() {},
@@ -427,28 +482,29 @@ export default {
     },
     display(i, page) {
       console.log("i", i);
-      console.log("page", page);
-      console.log("this.$refs.mask", this.$refs.mask);
-
+      console.log("i + (page - 1) * 9", i + (page - 1) * 9);
+      this.showTagFirstMask = false;
       if (this.$refs.mask[i + (page - 1) * 9].style.display === "none") {
         for (let i = 0; i < this.$refs.mask.length; i++) {
           this.$refs.mask[i].style.display = "none";
         }
+        console.log("this.$refs.mask", this.$refs.mask);
         this.$refs.mask[i + (page - 1) * 9].style.display = "block";
         this.displayImg = this.tagList[i].imgUrl;
       } else {
         this.$refs.mask[i + (page - 1) * 9].style.display = "none";
       }
     },
-    displayNFT(i) {
-      if (this.$refs.mask[i].style.display === "none") {
-        for (let i = 0; i < this.$refs.mask.length; i++) {
-          this.$refs.mask[i].style.display = "none";
+    displayNFT(i, page) {
+      this.showFirstMask = false;
+      if (this.$refs.nftmask[i + (page - 1) * 4].style.display === "none") {
+        for (let i = 0; i < this.$refs.nftmask.length; i++) {
+          this.$refs.nftmask[i].style.display = "none";
         }
-        this.$refs.mask[i].style.display = "block";
+        this.$refs.nftmask[i + (page - 1) * 4].style.display = "block";
         this.displayNFTImg = this.nftList[i].imgUrl;
       } else {
-        this.$refs.mask[i].style.display = "none";
+        this.$refs.nftmask[i + (page - 1) * 4].style.display = "none";
       }
     },
   },
