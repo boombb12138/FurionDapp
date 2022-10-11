@@ -91,6 +91,15 @@
         }
       }
     }
+    .icon-arrow-left-filling {
+      color: #fa6be1;
+    }
+    .icon-arrow-left-filling.icon-arrow-left-filling-disable {
+      opacity: 0.35;
+    }
+    .icon-arrow-right-filling {
+      color: #fa6be1;
+    }
   }
 }
 
@@ -232,7 +241,7 @@
 </style>
 
 <template>
-  <div class="flex justify-center min-h-100vh page">
+  <div class="flex justify-center min-h-100vh h-120vh page">
     <!-- Back to Home -->
     <div class="flex">
       <img
@@ -318,9 +327,22 @@
             </template>
             <!-- 2.如果没有nft -->
             <template v-else>
-              <div>
-                <div class="rightTop w-540px h-500px z-10">
+              <div class="flex justify-center">
+                <div
+                  class="rightTop w-540px h-500px z-10 flex justify-center items-center"
+                >
                   <img src="@/assets/images/pet/Empty.png" />
+                </div>
+
+                <div
+                  class="swiper-pagination absolute w-100px flex justify-around"
+                  style="bottom: 10%"
+                >
+                  <span
+                    class="iconfont icon-arrow-left-filling icon-arrow-left-filling-disable"
+                  ></span
+                  >1/1
+                  <span class="iconfont icon-arrow-right-filling"></span>
                 </div>
               </div>
             </template>
@@ -360,8 +382,6 @@
         </div>
 
         <div class="absolute right-0 top-0 rightSide z-10">
-          <!-- <el-pagination layout="prev, pager, next" :total="30">
-          </el-pagination> -->
           <swiper-tap :list="dropList">
             <template v-slot="slotProps">
               <div
@@ -396,7 +416,7 @@ export default {
   data() {
     return {
       active: 1,
-      empty: false,
+      empty: true,
       dropList: [
         {
           name: "1",

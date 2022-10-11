@@ -23,7 +23,34 @@
   width: 540px !important;
   overflow: hidden;
 }
-::v-deep .swiper-wrapper {
+
+.prev,
+.next {
+  // position: absolute;
+  // bottom: 0%;
+  // width: 10px;
+  // height: 18px;
+  // z-index: 10;
+  // cursor: pointer;
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
+}
+.swiper-pagination {
+  left: 45%;
+}
+
+.icon-arrow-left-filling {
+  color: #fa6be1;
+}
+.icon-arrow-left-filling.icon-arrow-left-filling-disable {
+  opacity: 0.35;
+}
+.icon-arrow-right-filling {
+  color: #fa6be1;
+}
+.icon-arrow-right-filling.icon-arrow-right-filling-disable {
+  opacity: 0.35;
 }
 </style>
 
@@ -48,10 +75,23 @@
           <div
             class="swiper-pagination swiper-pagination-fraction swiper-pagination-horizontal"
           ></div>
-          <!-- If we need navigation buttons -->
-          <!-- <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div> -->
         </swiper>
+
+        <div
+          class="swiper-pagination absolute w-100px bottom-10% flex justify-around"
+        >
+          <span
+            class="iconfont icon-arrow-left-filling"
+            :class="disableLeft ? 'icon-arrow-left-filling-disable' : ''"
+            @click="turnLeft"
+          ></span
+          >{{ kvIndex + 1 }}/{{ list.length }}
+          <span
+            class="iconfont icon-arrow-right-filling"
+            :class="disable ? 'icon-arrow-right-filling-disable' : ''"
+            @click="turnRight"
+          ></span>
+        </div>
       </client-only>
     </div>
   </div>
@@ -61,6 +101,7 @@
 // import { Pagination, Navigation } from "swiper";
 // import Swiper from "swiper/swiper-bundle.min";
 // import "swiper/swiper-bundle.min.css";
+import "@/assets/icon/iconfont.css";
 export default {
   props: {
     list: {
@@ -86,12 +127,15 @@ export default {
         // modules: [Pagination, Navigation],
       },
       kvIndex: 0,
+      disable: false,
+      disableLeft: " ",
     };
   },
   mounted() {},
   methods: {
     slideChange() {
       this.kvIndex = this.$refs.swiper.$swiper.realIndex;
+      console.log("this.kvIndex", this.kvIndex);
     },
     selectIndicator(index) {
       this.kvIndex = index;
@@ -101,11 +145,19 @@ export default {
       const swiper = this.$refs.swiper.$swiper;
       console.log("swiper", swiper);
       swiper.slidePrev();
+      if (this.kvIndex == 0) {
+        this.disableLeft = true;
+        this.disable = false;
+      }
     },
     turnRight() {
       const swiper = this.$refs.swiper.$swiper;
       console.log("swiper", swiper);
       swiper.slideNext();
+      if (this.kvIndex == this.list.length - 1) {
+        this.disable = true;
+        this.disableLeft = false;
+      }
     },
     goto(item) {
       this.$emit("goto", item);
