@@ -122,7 +122,6 @@
     background-size: 100% 100%;
 
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
     .rightTop {
@@ -130,12 +129,13 @@
       padding: 8px 20px;
       background: no-repeat center url("@/assets/images/pet/bg4.png");
       background-size: 100% 100%;
-      display: grid;
-      grid: repeat(3, 160px) / auto-flow 165px;
-      justify-items: center;
-      align-items: center;
+      .midLayer {
+        grid: repeat(3, 160px) / auto-flow 165px;
+        justify-items: center;
+        align-items: center;
+      }
 
-      div {
+      .containTag {
         background-color: #333572;
         width: 140px;
         height: 140px;
@@ -158,6 +158,7 @@
           color: #fff;
           display: none;
           height: 100%;
+          width: 100%;
           line-height: 140px;
           text-align: center;
         }
@@ -382,24 +383,30 @@
         </div>
 
         <div class="absolute right-0 top-0 rightSide z-10">
-          <swiper-tap :list="dropList">
-            <template v-slot="slotProps">
-              <div
-                class="swiper-item-wrap h-570px rounded-20px overflow-hidden relative"
-                data-aos="fade-up"
-                :data-aos-delay="400 + dropList.indexOf(slotProps.item) * 200"
-              >
-                <div class="rightTop w-540px h-500px">
-                  <template v-for="(i, index) in tagList">
-                    <div @click="display(index)" :key="index">
-                      <img :src="i.imgUrl" />
-                      <div class="mask" ref="mask">Displaying</div>
-                    </div>
-                  </template>
+          <div class="rightTop w-540px h-500px">
+            <swiper-tap :list="dropList">
+              <template v-slot="slotProps">
+                <div
+                  class="swiper-item-wrap h-570px rounded-20px overflow-hidden relative"
+                  data-aos="fade-up"
+                  :data-aos-delay="400 + dropList.indexOf(slotProps.item) * 200"
+                >
+                  <div class="midLayer grid grid-cols-3 w-540px h-500px">
+                    <template v-for="(i, index) in tagList">
+                      <div
+                        @click="display(index, slotProps.item.name)"
+                        :key="index"
+                        class="containTag"
+                      >
+                        <img :src="i.imgUrl" />
+                        <div class="mask" ref="mask">Displaying</div>
+                      </div>
+                    </template>
+                  </div>
                 </div>
-              </div>
-            </template>
-          </swiper-tap>
+              </template>
+            </swiper-tap>
+          </div>
         </div>
       </div>
     </div>
@@ -459,15 +466,19 @@ export default {
         this.empty = false;
       }
     },
-    display(i) {
-      if (this.$refs.mask[i].style.display === "none") {
+    display(i, page) {
+      console.log("i", i);
+      console.log("page", page);
+      console.log("this.$refs.mask", this.$refs.mask);
+
+      if (this.$refs.mask[i + (page - 1) * 9].style.display === "none") {
         for (let i = 0; i < this.$refs.mask.length; i++) {
           this.$refs.mask[i].style.display = "none";
         }
-        this.$refs.mask[i].style.display = "block";
+        this.$refs.mask[i + (page - 1) * 9].style.display = "block";
         this.displayImg = this.tagList[i].imgUrl;
       } else {
-        this.$refs.mask[i].style.display = "none";
+        this.$refs.mask[i + (page - 1) * 9].style.display = "none";
       }
     },
     displayNFT(i) {

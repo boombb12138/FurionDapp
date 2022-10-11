@@ -37,7 +37,8 @@
   // justify-content: center;
 }
 .swiper-pagination {
-  left: 45%;
+  left: 40%;
+  bottom: 12%;
 }
 
 .icon-arrow-left-filling {
@@ -72,9 +73,6 @@
           >
             <slot :item="item"></slot>
           </swiper-slide>
-          <div
-            class="swiper-pagination swiper-pagination-fraction swiper-pagination-horizontal"
-          ></div>
         </swiper>
 
         <div
