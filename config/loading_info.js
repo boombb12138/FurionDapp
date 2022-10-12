@@ -128,6 +128,10 @@ export const ProcessInfo = {
     detail:
       "You are going to enter a token market which allows you to use the token as colalteral, please sign and wait for the transaction to complete",
   },
+  CLAIM_TEST_TOKEN: {
+    intro: "Claim FUR, USDT, Cool Cats",
+    detail: "Claim FUR, USDT, Cool Cats"
+  }
 };
 
 export const initDialog = (DialogInfo) => {
