@@ -22,6 +22,7 @@
     .leftTop {
       margin-top: -3px;
       background: no-repeat center url("@/assets/images/pet/bg1.png");
+      background-size: 100% 100%;
       .pet {
         top: 50%;
         left: 50%;
@@ -127,8 +128,13 @@
     height: 640px;
     .leftTop {
       margin-top: -3px;
-      background: no-repeat center url("@/assets/images/pet/bg.png");
+      background: no-repeat center url("@/assets/images/pet/bg1.png");
       background-size: 100% 100%;
+      .pet {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -60%);
+      }
     }
   }
   .rightSide {
@@ -263,7 +269,7 @@
           <div class="w-100% h-530px leftTop">
             <img
               src="@/assets/images/pet/level.png"
-              class="absolute left-25px top-30px z-10"
+              class="absolute left-25px top-25px z-10"
               width="70"
             />
             <img
@@ -360,18 +366,21 @@
       >
         <div class="absolute left-0 top-0 leftSide">
           <!-- //test Badget左侧布局 -->
-          <div class="w-100% h-530px leftTop"></div>
+          <div class="w-100% h-530px leftTop">
+            <img
+              src="@/assets/images/pet/level.png"
+              class="absolute left-25px top-25px z-10"
+              width="70"
+            />
+            <img
+              :src="displayImg"
+              class="absolute right-40px top-30px z-10"
+              width="70"
+            />
 
-          <img
-            src="@/assets/images/pet/level.png"
-            class="absolute left-25px top-25px z-10"
-            width="70"
-          />
-          <img
-            :src="displayImg"
-            class="absolute right-40px top-30px z-10"
-            width="70"
-          />
+            <img :src="displayNFTImg" class="absolute z-10 pet" width="400" />
+          </div>
+
           <div
             class="absolute center-x w-1/1 flex items-center justify-center bottom-20px"
           >
