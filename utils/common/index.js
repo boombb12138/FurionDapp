@@ -67,6 +67,16 @@ export const fromWei = (FixNumber, Decimals) => {
     return result.toFixed(8);
   }
 };
+// Takes STRING as input, returns STRING
+export const fromUnit = (FixNumber, Decimals) => {
+  if (Decimals == 0) {
+    return FixNumber;
+  }
+
+  let FixDecimals = getDecimals(Decimals || 18);
+
+  return Web3.utils.fromWei(FixNumber, FixDecimals);
+};
 export const toWei = (FixNumber, Decimals = 18) => {
   let FixDecimals = getDecimals(Decimals);
   if (typeof FixNumber === "number") {
