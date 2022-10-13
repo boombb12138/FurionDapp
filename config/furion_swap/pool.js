@@ -82,7 +82,7 @@ export const initSinglePool = async (single_pool, chainId) => {
     // console.log('This is single pool', single_pool);
     let decimal_result = [];
     if (single_pool.token_0 == 'ETH') {
-        if (chainId == 4) {
+        if (chainId == 5) {
             single_pool.token_0_address = WETH_ADDRESS['goerli'];
         } else if (chainId == 1) {
             single_pool.token_0_address = WETH_ADDRESS['mainnet'];
@@ -97,7 +97,7 @@ export const initSinglePool = async (single_pool, chainId) => {
         single_pool.token_1_contract = token_1_contract;
     }
     else if (single_pool.token_1 == 'ETH') {
-        if (chainId == 4) {
+        if (chainId == 5) {
             single_pool.token_1_address = WETH_ADDRESS['goerli'];
         } else if (chainId == 1) {
             single_pool.token_1_address = WETH_ADDRESS['mainnet'];
@@ -162,7 +162,7 @@ export const initSinglePool = async (single_pool, chainId) => {
 
 export const getPoolSummary = async(token_0, token_1, chainId) => {
     let network;
-    if(chainId == 4){
+    if(chainId == 5){
         network = 'goerli';
     }else if(chainId == 1){
         network = 'mainnet';

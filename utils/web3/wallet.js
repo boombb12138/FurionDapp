@@ -97,7 +97,7 @@ export const addEthereumNetwork = provider => {
       })
       .catch(error => console.log(error));
   }
-  else if (chainId == 4) {
+  else if (chainId == 5) {
     provider
       .request({
         method: 'wallet_addEthereumChain',

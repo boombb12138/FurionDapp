@@ -3,7 +3,7 @@ import FarmingPools from "@/assets/info/FarmingPool.json";
 import SeparatePools from "@/assets/info/SeparatePool.json";
 import AggregatePools from "@/assets/info/AggregatePool.json";
 
-const default_network = 'rinkeby'
+const default_network = 'goerli'
 export const getFurionSwapPairs = (network=default_network) => {
     let swap_pairs = FurionSwapPairs[network];
     return swap_pairs;

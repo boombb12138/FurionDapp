@@ -3,7 +3,7 @@ import QRCodeModal from '@walletconnect/qrcode-modal';
 
 var provider;
 
-export const providerFromEther_test = 'https://rinkeby.infura.io/v3/800054c370de4aa7907af5b45273c7fd';
+export const providerFromEther_test = 'https://goerli.infura.io/v3/800054c370de4aa7907af5b45273c7fd';
 export const providerFromEther = 'https://mainnet.infura.io/v3/800054c370de4aa7907af5b45273c7fd';
 export const providerFromEther_goerli = 'https://goerli.infura.io/v3/800054c370de4aa7907af5b45273c7fd';
 
