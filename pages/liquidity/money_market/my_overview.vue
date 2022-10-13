@@ -294,7 +294,7 @@
       :close-on-click-modal="true"
       append-to-body
       custom-class="el-dialog-dark"
-      @close="interact_amount = ''"
+      @close="interact_amount = ''; error = ''"
     >
       <div slot="title" class="flex font-800 text-28px">
         <div class="pb-2px line" style="word-spacing: 10px">
@@ -322,7 +322,7 @@
               class="text-13px text-[rgba(252,255,253,0.4)] mr-15px flex items-end"
             >
               <!--mark  approxValue作用：转为美元？  -->
-              ~${{ displayFormat(approxValue(symbol, interact_amount), 18, 2) }}
+              ~${{ displayFormat(approxValue(symbol, interact_amount), 0) }}
             </div>
             <!-- mark writeMaxDeposit作用：将用户有的钱都填入表格 -->
             <div class="flex items-center" @click="writeMax()">
@@ -334,8 +334,8 @@
 
       <a
         class="custom_btn mt-30px mx-auto cursor-pointer"
-        :class="{ disabled: disableBtn() }"
-        @click="disableBtn() ? undefined : execute()"
+        :class="{ disabled: disable }"
+        @click="disable ? undefined : execute()"
       >
         <span>{{ error ? error : action }}</span>
       </a>
@@ -427,8 +427,7 @@
                       {{
                         displayFormat(
                           user_info[scope.row.Asset].supplied,
-                          decimals(scope.row.Asset),
-                          2
+                          decimals(scope.row.Asset)
                         )
                       }}
                     </template>
@@ -442,9 +441,7 @@
                     <template slot-scope="scope">
                       {{
                         displayFormat(
-                          market_info[scope.row.Asset].supply_rate,
-                          18,
-                          2
+                          market_info[scope.row.Asset].supply_rate
                         )
                       }}%
                     </template>
@@ -557,8 +554,7 @@
                     ><template slot-scope="scope">{{
                       displayFormat(
                         user_info[scope.row.Asset].token_balance,
-                        decimals(scope.row.Asset),
-                        2
+                        decimals(scope.row.Asset)
                       )
                     }}</template></el-table-column
                   >
@@ -566,9 +562,7 @@
                     ><template slot-scope="scope"
                       >{{
                         displayFormat(
-                          market_info[scope.row.Asset].supply_rate,
-                          18,
-                          2
+                          market_info[scope.row.Asset].supply_rate
                         )
                       }}%</template
                     ></el-table-column
@@ -580,8 +574,7 @@
                     ><template slot-scope="scope">{{
                       displayFormat(
                         market_info[scope.row.Asset].supplied,
-                        decimals(scope.row.Asset),
-                        2
+                        decimals(scope.row.Asset)
                       )
                     }}</template></el-table-column
                   >
@@ -673,8 +666,7 @@
                     ><template slot-scope="scope">{{
                       displayFormat(
                         user_info[scope.row.Asset].borrowed,
-                        decimals(scope.row.Asset),
-                        2
+                        decimals(scope.row.Asset)
                       )
                     }}</template></el-table-column
                   >
@@ -682,9 +674,7 @@
                     ><template slot-scope="scope"
                       >{{
                         displayFormat(
-                          market_info[scope.row.Asset].borrow_rate,
-                          18,
-                          2
+                          market_info[scope.row.Asset].borrow_rate
                         )
                       }}%</template
                     ></el-table-column
@@ -693,8 +683,7 @@
                     ><template slot-scope="scope">{{
                       displayFormat(
                         user_info[scope.row.Asset].borrow_quota,
-                        decimals(scope.row.Asset),
-                        2
+                        decimals(scope.row.Asset)
                       )
                     }}</template></el-table-column
                   >
@@ -793,8 +782,7 @@
                     ><template slot-scope="scope">{{
                       displayFormat(
                         market_info[scope.row.Asset].cash,
-                        decimals(scope.row.Asset),
-                        2
+                        decimals(scope.row.Asset)
                       )
                     }}</template></el-table-column
                   >
@@ -802,9 +790,7 @@
                     ><template slot-scope="scope"
                       >{{
                         displayFormat(
-                          market_info[scope.row.Asset].borrow_rate,
-                          18,
-                          2
+                          market_info[scope.row.Asset].borrow_rate
                         )
                       }}%</template
                     ></el-table-column
@@ -816,8 +802,7 @@
                     ><template slot-scope="scope">{{
                       displayFormat(
                         market_info[scope.row.Asset].borrowed,
-                        decimals(scope.row.Asset),
-                        2
+                        decimals(scope.row.Asset)
                       )
                     }}</template></el-table-column
                   >
@@ -922,8 +907,7 @@
                       {{
                         displayFormat(
                           market_info[scope.row.Asset].supplied,
-                          decimals(scope.row.Asset),
-                          2
+                          decimals(scope.row.Asset)
                         )
                       }}
                     </div>
@@ -934,8 +918,7 @@
                             scope.row.Asset,
                             market_info[scope.row.Asset].supplied
                           ),
-                          18 + decimals(scope.row.Asset),
-                          2
+                          decimals(scope.row.Asset)
                         )
                       }}
                     </div>
@@ -952,9 +935,7 @@
                 <template slot-scope="scope"
                   >{{
                     displayFormat(
-                      market_info[scope.row.Asset].supply_rate,
-                      18,
-                      2
+                      market_info[scope.row.Asset].supply_rate
                     )
                   }}%</template
                 >
@@ -972,8 +953,7 @@
                       {{
                         displayFormat(
                           market_info[scope.row.Asset].borrowed,
-                          decimals(scope.row.Asset),
-                          2
+                          decimals(scope.row.Asset)
                         )
                       }}
                     </div>
@@ -983,9 +963,7 @@
                           approxValue(
                             scope.row.Asset,
                             market_info[scope.row.Asset].borrowed
-                          ),
-                          18 + decimals(scope.row.Asset),
-                          2
+                          )
                         )
                       }}
                     </div>
@@ -1003,8 +981,6 @@
                   >{{
                     displayFormat(
                       market_info[scope.row.Asset].borrow_rate,
-                      18,
-                      2
                     )
                   }}%</template
                 >
@@ -1021,8 +997,7 @@
                     {{
                       displayFormat(
                         market_info[scope.row.Asset].cash,
-                        decimals(scope.row.Asset),
-                        2
+                        decimals(scope.row.Asset)
                       )
                     }}
                   </div>
@@ -1033,7 +1008,7 @@
                           scope.row.Asset,
                           market_info[scope.row.Asset].cash
                         ),
-                        18 + decimals(scope.row.Asset, 2)
+                        decimals(scope.row.Asset)
                       )
                     }}
                   </div>
@@ -1073,7 +1048,7 @@ import {
   _compareInt,
   getTxURL,
   toWei,
-  fromWei,
+  fromUnit,
   tokenApprove,
   getNativeTokenAmountRaw,
 } from "@/utils/common";
@@ -1195,9 +1170,15 @@ export default {
       active: 0,
       searchKey: "",
       error: "",
+      disable: true,
       dialogue_info: DialogInfo,
       multicall: multicall,
     };
+  },
+  watch: {
+    interact_amount: function (newVal, oldVal) {
+      this.disableBtn();
+    }
   },
   async mounted() {
     setTimeout(async () => {
@@ -1230,6 +1211,7 @@ export default {
 
       this.token_info = token_list[symbol];
       this.token_info.symbol = symbol;
+      await this.updateAll([symbol]);
     },
     async writeMax() {
       await this.updateAll([this.symbol]);
@@ -1239,16 +1221,13 @@ export default {
           if (this.user_info[this.symbol].token_balance == 0) {
             this.errorMessage(`No ${this.symbol} in wallet`);
           } else {
-            const decimals =
-              this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
-            this.interact_amount = parseFloat(
-              fromWei(
+            this.interact_amount = 
+              fromUnit(
                 this.user_info[this.symbol].token_balance,
                 this.token_info.decimals
-              )
-            ).toFixed(decimals);
+              );
             if (this.symbol == "ETH") {
-              this.interact_amount = (this.interact_amount - 0.001).toFixed(8);
+              this.interact_amount -= 0.001;
             }
           }
           break;
@@ -1256,42 +1235,33 @@ export default {
           if (this.user_info[this.symbol].withdraw_quota == 0) {
             this.errorMessage("No withdraw quota");
           } else {
-            const decimals =
-              this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
-            this.interact_amount = parseFloat(
-              fromWei(
+            this.interact_amount = 
+              fromUnit(
                 this.user_info[this.symbol].withdraw_quota,
                 this.token_info.decimals
-              )
-            ).toFixed(decimals);
+            );
           }
           break;
         case "Borrow":
           if (this.user_info[this.symbol].borrow_quota == 0) {
             this.errorMessage("No borrow quota");
           } else {
-            const decimals =
-              this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
-            this.interact_amount = parseFloat(
-              fromWei(
+            this.interact_amount = 
+              fromUnit(
                 this.user_info[this.symbol].borrow_quota,
                 this.token_info.decimals
-              )
-            ).toFixed(decimals);
+              );
           }
           break;
         case "Repay":
           if (this.user_info[this.symbol].borrowed == 0) {
             this.errorMessage("No outstanding borrowings");
           } else {
-            const decimals =
-              this.token_info.decimals > 8 ? 8 : this.token_info.decimals;
-            this.interact_amount = parseFloat(
-              fromWei(
+            this.interact_amount = 
+              fromUnit(
                 this.user_info[this.symbol].borrowed,
                 this.token_info.decimals
-              )
-            ).toFixed(decimals);
+            );
           }
           break;
       }
@@ -1318,7 +1288,9 @@ export default {
         this.interact_amount == 0 ||
         this.interact_amount[0] == "."
       ) {
-        return true;
+        this.error = "";
+        this.disable = true;
+        return;
       }
 
       switch (this.action) {
@@ -1334,10 +1306,12 @@ export default {
             ) == "larger"
           ) {
             this.error = "Insufficient balance";
-            return true;
+            this.disable = true;
+            return;
           } else {
             this.error = "";
-            return false;
+            this.disable = false;
+            return;
           }
         case "Withdraw":
           if (
@@ -1357,10 +1331,12 @@ export default {
             ) == "larger"
           ) {
             this.error = "Quota exceeded";
-            return true;
+            this.disable = true;
+            return;
           } else {
             this.error = "";
-            return false;
+            this.disable = false;
+            return;
           }
         case "Borrow":
           if (
@@ -1380,10 +1356,12 @@ export default {
             ) == "larger"
           ) {
             this.error = "Quota exceeded";
-            return true;
+            this.disable = true;
+            return;
           } else {
             this.error = "";
-            return false;
+            this.disable = false;
+            return;
           }
       }
     },
@@ -1447,9 +1425,9 @@ export default {
         i++;
         this.market_info[symbol].borrowed = results[i];
         this.market_info[symbol].supplied =
-          parseInt(results[i - 2]) +
+          String(parseInt(results[i - 2]) +
           parseInt(results[i]) -
-          parseInt(results[i - 1]); // cash + borrow - reserve
+          parseInt(results[i - 1])); // cash + borrow - reserve
         i++;
         this.market_info[symbol].tier = results[i][2].toString(); // [isListed, collateral factor mantissa, tier]
         i++;
@@ -1486,13 +1464,18 @@ export default {
             ) == "larger"
               ? this.market_info[symbol].cash
               : tempLiquidity.toString();
-          this.user_info[symbol].withdraw_quota =
+
+          if (!this.market_info[symbol].is_collateral) {
+            this.user_info[symbol].withdraw_quota = this.user_info[symbol].supplied;
+          } else {
+            this.user_info[symbol].withdraw_quota =
             _compareInt(
               tempLiquidity.toString(),
               this.user_info[symbol].supplied
             ) == "larger"
-              ? this.user_info.supplied
+              ? this.user_info[symbol].supplied
               : tempLiquidity.toString();
+          }
           i++;
         }
 
@@ -1746,18 +1729,22 @@ export default {
       return final_result;
     },
     approxValue(symbol, tokenAmount) {
-      const actualAmount = tokenAmount == "" ? 0 : tokenAmount;
-      return symbol ? this.market_info[symbol].token_price * actualAmount : 0;
+      let actualAmount = tokenAmount ? tokenAmount : "0";
+
+      return symbol ? fromUnit(this.market_info[symbol].token_price) * actualAmount : 0;
     },
-    displayFormat(amount, decimal = 18, fixed = 0) {
+    displayFormat(amount, decimal = 18, fixed = 2) {
       if (!amount) {
         return 0;
       }
-      return this.formatNumber(fromWei(amount, decimal), fixed);
+
+      const actual = String(amount);
+
+      return this.formatNumber(fromUnit(actual, decimal), fixed);
     },
     compareFormat(amount, decimal) {
       const actualAmount =
-        amount == "" ? 0 : parseFloat(amount).toFixed(decimal);
+        amount == "" ? "0" : amount;
       return toWei(actualAmount, decimal);
     },
     handleSearch(event) {
