@@ -42,9 +42,27 @@
   <div class>
     <div class="w-180px h-32px relative box">
       <div class="w-180px flex h-32px relative -top-2px -left-2px">
-        <div class="text w-60px" :class="{ active: time == '24H' }" @click="setData('24H')">24H</div>
-        <div class="text w-60px" :class="{ active: time == '1W' }" @click="setData('1W')">1W</div>
-        <div class="text w-60px" :class="{ active: time == '1M' }" @click="setData('1M')">1M</div>
+        <div
+          class="text w-60px"
+          :class="{ active: time == '24H' }"
+          @click="setData('24H')"
+        >
+          24H
+        </div>
+        <div
+          class="text w-60px"
+          :class="{ active: time == '1W' }"
+          @click="setData('1W')"
+        >
+          1W
+        </div>
+        <div
+          class="text w-60px"
+          :class="{ active: time == '1M' }"
+          @click="setData('1M')"
+        >
+          1M
+        </div>
       </div>
     </div>
   </div>
@@ -57,12 +75,12 @@ export default {
   props: {
     time: {
       type: String,
-      default: '1W',
+      default: "1W",
     },
   },
   data() {
     return {
-      timeList: ['24H', '1W', '1M'],
+      timeList: ["24H", "1W", "1M"],
       value: 3,
     };
   },
@@ -72,8 +90,8 @@ export default {
     setData(time) {
       // console.log(time);
       try {
-        this.$emit('update:time', time);
-        this.$emit('changeTime', time);
+        this.$emit("update:time", time);
+        this.$emit("changeTime", time);
       } catch (error) {
         console.log(error);
       }

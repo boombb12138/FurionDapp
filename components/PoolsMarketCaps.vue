@@ -20,11 +20,13 @@
     <div class="chart-title flex mb-10px">
       <div class="ml-30px mt-5px">
         <div class="mb-5px">
-          <span class="mr-10px text-[#FCFFFD] text-32px font-700">${{ show(num) }}M</span>
+          <span class="mr-10px text-[#FCFFFD] text-32px font-700"
+            >${{ show(num) }}M</span
+          >
           <span class="text-16px font-700 text-[#5DD393]">+1.77%</span>
         </div>
         <p class="text-[rgba(252,255,253,0.8)] text-13px font-600">
-          {{time.replace('T',' ').replace('Z','')}}
+          {{ time.replace("T", " ").replace("Z", "") }}
         </p>
       </div>
       <Date-Selector
@@ -46,7 +48,15 @@ export default {
   name: "PoolsMarketCaps",
   components: {},
   provide: {},
-  props: ['data_24h','data_1w','data_1m','time_list_24h','time_list_1w','time_list_1m','time'],
+  props: [
+    "data_24h",
+    "data_1w",
+    "data_1m",
+    "time_list_24h",
+    "time_list_1w",
+    "time_list_1m",
+    "time",
+  ],
   data() {
     return {
       num: 12.98,
@@ -58,23 +68,23 @@ export default {
     };
   },
   computed: {
-    ...mapState("admin", ['connectStatus']),
+    ...mapState("admin", ["connectStatus"]),
     timeArr() {
-      if (this.timeBtn=='24H') {
+      if (this.timeBtn == "24H") {
         return this.time_list_24h;
-      } else if (this.timeBtn=='1W') {
+      } else if (this.timeBtn == "1W") {
         return this.time_list_1w;
-      } else if (this.timeBtn=='1M'){
+      } else if (this.timeBtn == "1M") {
         return this.time_list_1m;
       }
     },
     dataArr() {
       var arr = [];
-      if (this.timeBtn=='24H') {
+      if (this.timeBtn == "24H") {
         arr = this.data_24h;
-      } else if (this.timeBtn=='1W') {
+      } else if (this.timeBtn == "1W") {
         arr = this.data_1w;
-      } else if (this.timeBtn=='1M') {
+      } else if (this.timeBtn == "1M") {
         arr = this.data_1m;
       }
       // for(let i = 0; i < arr.length; i++) {
@@ -94,9 +104,11 @@ export default {
     },
     option() {
       return {
+        // todo visualMap
         visualMap: [
           {
             show: false,
+            //  dimension 为 1 时，取数组下标为1的那一列，映射到视觉元素上。
             dimension: 1,
             pieces: [
               { min: 0, max: 100, color: this.colorMap.red.other },
@@ -105,8 +117,9 @@ export default {
           },
         ],
         title: [
+          //标题组件
           {
-            left: "center",
+            left: "center", //title 组件离容器左侧的距离
           },
         ],
         tooltip: {
@@ -116,32 +129,36 @@ export default {
           textStyle: {
             color: "#fff",
           },
+          //todo  提示框浮层内容格式器
           formatter: (params) => {
             // console.log(params);
             const num = params[0].data;
             this.getNum(num);
           },
         },
+        // 直角坐标系 grid 中的 x 轴
         xAxis: {
           show: true,
           data: this.dataList,
           axisTick: {
-            show: false,
+            show: false, //不显示坐标轴刻度
           },
           axisLine: {
-            show: false,
+            show: false, //不显示坐标轴轴线。
           },
+          // 坐标轴刻度标签的相关设置
           axisLabel: {
-            interval: 5,
+            interval: 5, //坐标轴刻度标签的显示间隔
             fontSize: "14px",
             color: "rgba(252, 255, 253, 0.3)",
-            margin: 10,
+            margin: 10, //刻度标签与轴线之间的距离
             align: "left",
           },
         },
         yAxis: {
           show: false,
         },
+        //直角坐标系内绘图网格
         grid: {
           top: "4%",
           left: "0%",
@@ -151,10 +168,11 @@ export default {
         },
         series: [
           {
-            type: "line",
-            showSymbol: false,
+            type: "line", //折线图
+            showSymbol: false, //是否显示 symbol, 如果 false 则只有在 tooltip hover 的时候显示。
             data: this.valueList,
-            smooth: true,
+            smooth: true, //开启曲线平滑处理
+            // 区域填充样式
             areaStyle: {
               color: {
                 x: 0,
@@ -181,11 +199,11 @@ export default {
   },
   mounted() {
     this.$refs.vChart.clear();
-    this.formatData(this.dataArr,this.timeArr);
+    this.formatData(this.dataArr, this.timeArr);
     this.$refs.vChart.setOption(this.option, true);
   },
   methods: {
-    formatData(data,time) {
+    formatData(data, time) {
       this.dataList = time.map(function (item) {
         return item;
       });
@@ -196,23 +214,23 @@ export default {
     setData(type) {
       // this.activeBtn1 = type;
       this.$refs.vChart.clear();
-      this.formatData(this.dataArr,this.timeArr);
-      this.$refs.vChart.setOption(this.option, true);
+      this.formatData(this.dataArr, this.timeArr);
+      this.$refs.vChart.setOption(this.option, true); //notMerge=true所有组件都会被删除，然后根据新 option 创建所有新组件
     },
     getNum(num) {
       this.num = num;
     },
-    show(num){
-        if (num > 1000000000) {
-          return (num / 1000000000).toFixed(2) + 'B';
-        } else if (num > 1000000) {
-          return (num / 1000000).toFixed(2) + 'M';
-        } else if (num > 1000) {
-          return (num / 1000).toFixed(2) + 'K';
-        } else {
-          return num;
-        }
+    show(num) {
+      if (num > 1000000000) {
+        return (num / 1000000000).toFixed(2) + "B";
+      } else if (num > 1000000) {
+        return (num / 1000000).toFixed(2) + "M";
+      } else if (num > 1000) {
+        return (num / 1000).toFixed(2) + "K";
+      } else {
+        return num;
       }
+    },
   },
 };
 </script>
