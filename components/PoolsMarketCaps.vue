@@ -25,8 +25,8 @@
           >
           <span class="text-16px font-700 text-[#5DD393]">+1.77%</span>
         </div>
-        <p class="text-[rgba(252,255,253,0.8)] text-13px font-600">
-          {{ time.replace("T", " ").replace("Z", "") }}
+        <p class="text-[rgba(252,255,253,0.8)] text-13px font-400">
+          {{ timeFormat }}
         </p>
       </div>
       <Date-Selector
@@ -195,6 +195,55 @@ export default {
           },
         ],
       };
+    },
+    timeFormat() {
+      let time = this.time.replace("T", " ").replace("Z", "");
+      //2022-09-22 10:46:32
+      const monthEnglish = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      time = time.split("");
+      let month;
+      if (time[5] == 0) {
+        month = monthEnglish[time[6] - 1];
+      } else {
+        month = monthEnglish[time[6] + 9];
+      }
+      let date = time[8] + time[9];
+      let year = time.splice(0, 4).join("");
+      //2022-09-22 10:46:32
+      let hourAndMin = time.slice(-8); //10:46:32
+      let pmOrAm = "AM";
+      let hour = hourAndMin[0] + hourAndMin[1]; //10
+      if (hour > 12) {
+        pmOrAm = "PM";
+        hour = hourAndMin[0] + (hourAndMin[1] - 2);
+      }
+      let min = hourAndMin[3] + hourAndMin[4]; //46
+      let timeFormatResult =
+        date +
+        " " +
+        month +
+        " " +
+        year +
+        "." +
+        hour +
+        ":" +
+        min +
+        pmOrAm +
+        " (UTC)";
+      return timeFormatResult;
     },
   },
   mounted() {

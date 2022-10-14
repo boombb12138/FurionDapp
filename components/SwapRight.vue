@@ -35,9 +35,14 @@
       <div class="chart-title">
         <div class="flex mb-10px h-full items-center pl-22px justify-between">
           <div class="flex items-center">
-            <span class="text-[#C3C6CD] text-16px mr-10px font-700">Volume {{this.timeBtn}}</span>
-            <span class="mr-10px text-[#FCFFFD] text-32px font-700">${{ show(num) }}M</span>
+            <span class="text-[#C3C6CD] text-16px mr-10px font-700"
+              >Volume {{ this.timeBtn }}</span
+            >
+            <span class="mr-10px text-[#FCFFFD] text-32px font-700"
+              >${{ show(num) }}M</span
+            >
           </div>
+
           <Date-Selector
             class="date-selector"
             :time.sync="timeBtn"
@@ -46,7 +51,11 @@
         </div>
       </div>
     </div>
-
+    <p
+      class="relative left-27px text-[rgba(252,255,253,0.8)] text-13px font-400"
+    >
+      {{ timeFormat }}
+    </p>
     <v-chart ref="vChart" autoresize class="chart" :option="option" />
   </div>
 </template>
@@ -59,7 +68,15 @@ export default {
   name: "PoolsMarketCaps",
   components: {},
   provide: {},
-  props: ['data_24h','data_1w','data_1m','time_list_24h','time_list_1w','time_list_1m','time'],
+  props: [
+    "data_24h",
+    "data_1w",
+    "data_1m",
+    "time_list_24h",
+    "time_list_1w",
+    "time_list_1m",
+    "time",
+  ],
   data() {
     return {
       num: 12.98,
@@ -71,30 +88,30 @@ export default {
     };
   },
   computed: {
-    ...mapState("admin", ['connectStatus']),
+    ...mapState("admin", ["connectStatus"]),
     timeArr() {
-        if (this.timeBtn=='24H') {
-          return this.time_list_24h;
-        } else if (this.timeBtn=='1W') {
-          return this.time_list_1w;
-        } else if (this.timeBtn=='1M'){
-          return this.time_list_1m;
-        }
-      },
-      dataArr() {
-        var arr = [];
-        if (this.timeBtn=='24H') {
-          arr = this.data_24h;
-        } else if (this.timeBtn=='1W') {
-          arr = this.data_1w;
-        } else if (this.timeBtn=='1M') {
-          arr = this.data_1m;
-        }
-        // for(let i = 0; i < arr.length; i++) {
-        //   arr[i] = Math.floor((arr[i]/1000000) * 100) / 100
-        // }
-        return arr;
-      },
+      if (this.timeBtn == "24H") {
+        return this.time_list_24h;
+      } else if (this.timeBtn == "1W") {
+        return this.time_list_1w;
+      } else if (this.timeBtn == "1M") {
+        return this.time_list_1m;
+      }
+    },
+    dataArr() {
+      var arr = [];
+      if (this.timeBtn == "24H") {
+        arr = this.data_24h;
+      } else if (this.timeBtn == "1W") {
+        arr = this.data_1w;
+      } else if (this.timeBtn == "1M") {
+        arr = this.data_1m;
+      }
+      // for(let i = 0; i < arr.length; i++) {
+      //   arr[i] = Math.floor((arr[i]/1000000) * 100) / 100
+      // }
+      return arr;
+    },
     colorMap() {
       return {
         red: {
@@ -133,6 +150,16 @@ export default {
             left: "center",
           },
         ],
+        toolbox: {
+          feature: {
+            dataZoom: {
+              yAxisIndex: false,
+            },
+            saveAsImage: {
+              pixelRatio: 2,
+            },
+          },
+        },
         tooltip: {
           trigger: "axis",
           backgroundColor: "#1F1F41",
@@ -178,7 +205,7 @@ export default {
             type: "bar",
             showSymbol: false,
             data: this.valueList,
-            smooth: true,
+            // smooth: true,
             barCategoryGap: "0%",
             areaStyle: {
               color: {
@@ -199,46 +226,97 @@ export default {
                 globalCoord: false,
               },
             },
+            large: true,
           },
         ],
       };
     },
+    timeFormat() {
+      let time = this.time.replace("T", " ").replace("Z", "");
+      //2022-09-22 10:46:32
+      const monthEnglish = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      time = time.split("");
+      let month;
+      if (time[5] == 0) {
+        month = monthEnglish[time[6] - 1];
+      } else {
+        month = monthEnglish[time[6] + 9];
+      }
+      let date = time[8] + time[9];
+      let year = time.splice(0, 4).join("");
+      //2022-09-22 10:46:32
+      let hourAndMin = time.slice(-8); //10:46:32
+      let pmOrAm = "AM";
+      let hour = hourAndMin[0] + hourAndMin[1]; //10
+      if (hour > 12) {
+        pmOrAm = "PM";
+        hour = hourAndMin[0] + (hourAndMin[1] - 2);
+      }
+      let min = hourAndMin[3] + hourAndMin[4]; //46
+      let timeFormatResult =
+        date +
+        " " +
+        month +
+        " " +
+        year +
+        "." +
+        hour +
+        ":" +
+        min +
+        pmOrAm +
+        " (UTC)";
+      return timeFormatResult;
+    },
   },
   mounted() {
     this.$refs.vChart.clear();
-    this.formatData(this.dataArr,this.timeArr);
+    this.formatData(this.dataArr, this.timeArr);
     this.$refs.vChart.setOption(this.option, true);
   },
   methods: {
-    formatData(data,time) {
-        this.dataList = time.map(function (item) {
-          return item;
-        });
-        this.valueList = data.map(function (item) {
-          return item;
-        });
-      },
+    formatData(data, time) {
+      this.dataList = time.map(function (item) {
+        return item;
+      });
+      this.valueList = data.map(function (item) {
+        return item;
+      });
+    },
     setData(type) {
       // this.activeBtn1 = type;
       this.$refs.vChart.clear();
-      this.formatData(this.dataArr,this.timeArr);
+      this.formatData(this.dataArr, this.timeArr);
       this.$refs.vChart.setOption(this.option, true);
     },
     getNum(num) {
       this.num = num;
     },
-    show(num){
-        { if (num > 1000000000) {
-            return (num / 1000000000).toFixed(2) + 'B';
-          } else if (num > 1000000) {
-            return (num / 1000000).toFixed(2) + 'M';
-          } else if (num > 1000) {
-            return (num / 1000).toFixed(2) + 'K';
-          } else {
-            return num;
-          }
+    show(num) {
+      {
+        if (num > 1000000000) {
+          return (num / 1000000000).toFixed(2) + "B";
+        } else if (num > 1000000) {
+          return (num / 1000000).toFixed(2) + "M";
+        } else if (num > 1000) {
+          return (num / 1000).toFixed(2) + "K";
+        } else {
+          return num;
+        }
       }
-    }
+    },
   },
 };
 </script>

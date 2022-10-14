@@ -361,7 +361,6 @@
         <Loading class="w-579px h-380px" :loading="loading2">
           <div class="box-border4">
             <client-only v-if="!loading2">
-              <!-- //mark 这里的是右侧的图表 //todo-->
               <SwapRight
                 :data_24h="this.dash_info.dash_list.swap_volumn_24h"
                 :data_1w="this.dash_info.dash_list.swap_volumn_1w"
