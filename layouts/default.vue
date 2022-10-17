@@ -75,7 +75,7 @@ export default {
     watchChainId(value) {
       console.log('chainId changing to:', value);
       if (value != null) {
-        if (value == 4) { //change network update
+        if (value == 5) { //change network update
           this.network_visible = false;
         } else {
           this.network_visible = true;
