@@ -243,11 +243,10 @@
 <template>
   <div class="flex justify-center min-h-100vh h-120vh page">
     <!-- Back to Home -->
-    <div class="flex">
+    <div class="flex cursor-pointer" @click="$router.push('/')">
       <img
         src="@/assets/images/icon_back.svg"
         class="absolute left-60px cursor-pointer top-100px hover:opacity-80"
-        @click="$router.push('/')"
       />
       <div class="title">Back to Home</div>
     </div>
@@ -366,7 +365,7 @@
         class="absolute top-200px left-100px flex justify-between mx-auto main"
       >
         <div class="absolute left-0 top-0 leftSide">
-          <!-- //test Badget左侧布局 -->
+          <!-- Badget左侧布局 -->
           <div class="w-100% h-530px leftTop">
             <img
               src="@/assets/images/pet/level.png"
@@ -406,7 +405,7 @@
                   <div class="midLayer grid grid-cols-3 w-460px h-450px">
                     <template v-for="(i, index) in tagList">
                       <div
-                        @click="display(index, slotProps.item.name)"
+                        @click="displayTag(index, slotProps.item.name)"
                         :key="index"
                         class="containTag"
                       >
@@ -490,31 +489,30 @@ export default {
         this.empty = false;
       }
     },
-    display(i, page) {
-      console.log("i", i);
-      console.log("i + (page - 1) * 9", i + (page - 1) * 9);
+    displayTag(i, page) {
       this.showTagFirstMask = false;
-      if (this.$refs.mask[i + (page - 1) * 9].style.display === "none") {
+      const index = i + (page - 1) * 9;
+      if (this.$refs.mask[index].style.display === "none") {
         for (let i = 0; i < this.$refs.mask.length; i++) {
           this.$refs.mask[i].style.display = "none";
         }
-        console.log("this.$refs.mask", this.$refs.mask);
-        this.$refs.mask[i + (page - 1) * 9].style.display = "block";
+        this.$refs.mask[index].style.display = "block";
         this.displayImg = this.tagList[i].imgUrl;
       } else {
-        this.$refs.mask[i + (page - 1) * 9].style.display = "none";
+        this.$refs.mask[index].style.display = "none";
       }
     },
     displayNFT(i, page) {
       this.showFirstMask = false;
-      if (this.$refs.nftmask[i + (page - 1) * 4].style.display === "none") {
+      const index = i + (page - 1) * 4;
+      if (this.$refs.nftmask[index].style.display === "none") {
         for (let i = 0; i < this.$refs.nftmask.length; i++) {
           this.$refs.nftmask[i].style.display = "none";
         }
-        this.$refs.nftmask[i + (page - 1) * 4].style.display = "block";
+        this.$refs.nftmask[index].style.display = "block";
         this.displayNFTImg = this.nftList[i].imgUrl;
       } else {
-        this.$refs.nftmask[i + (page - 1) * 4].style.display = "none";
+        this.$refs.nftmask[index].style.display = "none";
       }
     },
   },
