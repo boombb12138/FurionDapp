@@ -37,6 +37,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      cursor: pointer;
       div {
         width: 130px;
         display: flex;
@@ -293,7 +294,7 @@
         </div>
         <div class="absolute right-0 top-0 rightSide z-10">
           <div>
-            <!-- 1.如果有nft ta g就是徽章-->
+            <!-- 1.如果有nft-->
             <template v-if="!empty">
               <div>
                 <div class="rightTop w-540px h-500px z-10">

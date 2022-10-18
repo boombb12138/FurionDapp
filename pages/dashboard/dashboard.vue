@@ -337,14 +337,13 @@
           />
         </div>
       </Loading>
-      <!-- //todo 这里左侧的竖线是怎么做的 -->
+      <!-- //mark 这里左侧的竖线是怎么做的 在section-title类里面設置僞元素-->
       <p class="section-title mb-30px mt-40px">Swap</p>
       <div class="flex justify-between">
         <Loading class="w-579px h-380px" :loading="loading2">
           <div class="box-border4">
-            <!-- //todo 这里为什么要加上一个 client-only -->
+            <!-- //mark 这里为什么要加上一个 client-only 指定在客户端渲染-->
             <client-only v-if="!loading2">
-              <!-- //todo 这里把表格封装成自定义组件 看下这里引用的所有自定义组件  -->
               <SwapLeft
                 :data_24h="this.dash_info.dash_list.swap_tvl_24h"
                 :data_1w="this.dash_info.dash_list.swap_tvl_1w"
@@ -481,6 +480,16 @@ export default {
           tvl: "$828.07m",
           priceChange: "2.25%",
           priceTrend: "decrease",
+        },
+        {
+          id: 3,
+          name: "Ethereum",
+          shortName: "ETH",
+          price: "$19.72K",
+          volume: "$439.94m",
+          tvl: "$828.07m",
+          priceChange: "2.25%",
+          priceTrend: "increase",
         },
       ],
       loading1: true,
